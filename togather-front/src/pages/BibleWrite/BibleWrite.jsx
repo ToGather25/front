@@ -102,12 +102,15 @@ export default function BibleWrite() {
 
   const handleTyping = (e) => {
     const val = e.target.value;
+    // 목표 텍스트 길이 초과 입력 방지
+    if (val.length > targetText.length) return;
     setTyped(val);
     if (val.length === 0) { setIsCorrect(null); return; }
-    const correct = targetText.startsWith(val);
     if (val === targetText) setIsCorrect(true);
-    else setIsCorrect(correct ? null : false);
+    else setIsCorrect(null);
   };
+
+  const isDone = isCorrect === true;
 
   return (
     <div className="flex h-[calc(100vh-64px)]">
@@ -178,43 +181,79 @@ export default function BibleWrite() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 max-w-2xl w-full mx-auto">
-          {/* 원문 */}
-          <div className="bg-grey-1 rounded-2xl p-6">
-            <p className="text-body-5 text-grey-5 mb-2">
-              {BOOK_MAP[selectedBook]} {selectedChapter}장 {selectedVerse}절
-            </p>
-            <p className="text-body-2 text-grey-9 leading-relaxed">
-              {targetText || "해당 구절을 찾을 수 없습니다."}
-            </p>
+        <div className="flex-1 overflow-y-auto px-8 py-10 flex flex-col gap-8 max-w-2xl w-full mx-auto">
+          {/* 구절 정보 */}
+          <p className="text-body-4 text-grey-5">
+            {BOOK_MAP[selectedBook]} {selectedChapter}장 {selectedVerse}절
+          </p>
+
+          {/* 오버레이 타이핑 영역 */}
+          <div
+            className="relative cursor-text"
+            onClick={() => !isDone && textareaRef.current?.focus()}
+          >
+            {/* 글자별 색상 표시 */}
+            <div className="text-body-1 leading-loose whitespace-pre-wrap tracking-wide select-none">
+              {targetText.split("").map((char, i) => {
+                if (i < typed.length) {
+                  const correct = typed[i] === char;
+                  return (
+                    <span
+                      key={i}
+                      className={correct
+                        ? "text-grey-9"
+                        : "text-red-500"}
+                    >
+                      {char}
+                    </span>
+                  );
+                }
+                // 커서 위치
+                if (i === typed.length) {
+                  return (
+                    <span key={i} className="relative">
+                      <span className="absolute -left-px top-0 bottom-0 w-0.5 bg-blue-6 animate-pulse" />
+                      <span className="text-grey-3">{char}</span>
+                    </span>
+                  );
+                }
+                // 아직 입력 안 된 글자
+                return <span key={i} className="text-grey-3">{char}</span>;
+              })}
+            </div>
+
+            {/* 투명 textarea (입력 캡처) */}
+            {!isDone && (
+              <textarea
+                ref={textareaRef}
+                value={typed}
+                onChange={handleTyping}
+                autoFocus
+                rows={1}
+                className="absolute inset-0 w-full h-full opacity-0 resize-none cursor-text"
+              />
+            )}
           </div>
 
-          {/* 입력창 */}
-          <div className={`border-2 rounded-2xl p-6 transition-colors ${
-            isCorrect === true ? "border-green-400 bg-green-50" :
-            isCorrect === false ? "border-red-300 bg-red-50" :
-            "border-bluegrey-2"
-          }`}>
-            <p className="text-body-5 text-grey-5 mb-3">위 구절을 그대로 입력하세요</p>
-            <textarea
-              ref={textareaRef}
-              value={typed}
-              onChange={handleTyping}
-              rows={5}
-              className="w-full outline-none text-body-2 text-grey-9 leading-relaxed resize-none bg-transparent placeholder:text-grey-4"
-              placeholder="여기에 성경 구절을 입력하세요..."
-            />
-            {isCorrect === true && (
-              <p className="text-body-5 text-green-600 font-semibold mt-2">✓ 정확히 입력했습니다!</p>
-            )}
-            {isCorrect === false && (
-              <p className="text-body-5 text-red-500 mt-2">입력이 일치하지 않습니다.</p>
-            )}
-          </div>
+          {/* 완료 메시지 */}
+          {isDone && (
+            <div className="flex items-center gap-3 bg-green-50 border border-green-300 rounded-2xl px-6 py-4">
+              <svg className="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-body-3 text-green-700 font-semibold">정확히 완료했습니다!</p>
+              <button
+                onClick={() => { setTyped(""); setIsCorrect(null); textareaRef.current?.focus(); }}
+                className="ml-auto text-body-4 text-green-700 underline hover:no-underline"
+              >
+                다시 쓰기
+              </button>
+            </div>
+          )}
 
           {/* 진행 바 */}
           <div>
-            <div className="flex justify-between text-body-5 text-grey-6 mb-1">
+            <div className="flex justify-between text-body-5 text-grey-6 mb-2">
               <span>{typed.length} / {targetText.length} 자</span>
               <span>{targetText.length > 0 ? Math.round((typed.length / targetText.length) * 100) : 0}%</span>
             </div>
