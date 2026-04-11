@@ -1,0 +1,159 @@
+/* ============================================================
+   ToGather Design Tokens
+   Source: Figma 디자인 시스템 (Color.png + Font.png)
+   Tailwind v4 @theme 블록으로 CSS 변수를 Tailwind 유틸리티로 자동 노출
+   ============================================================ */
+
+@theme {
+  /* ----------------------------------------------------------
+     FONTS
+  ---------------------------------------------------------- */
+  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", sans-serif;
+
+  /* ----------------------------------------------------------
+     COLORS — Primary
+  ---------------------------------------------------------- */
+  --color-primary: #3b5280;
+  --color-pale: #b8c4d8;
+
+  /* ----------------------------------------------------------
+     COLORS — Blue scale (blue-1: 가장 연함 → blue-10: 가장 진함)
+     Source: Figma 디자인 실측값
+  ---------------------------------------------------------- */
+  --color-blue-1: #eceef3;
+  --color-blue-2: #d0d6e2;
+  --color-blue-3: #acb6cc;
+  --color-blue-4: #8395b3;
+  --color-blue-5: #60749d;
+  --color-blue-6: #3d5588;
+  --color-blue-7: #344874;
+  --color-blue-8: #2b3c61;
+  --color-blue-9: #232f4f;
+  --color-blue-10: #1b263d;
+
+  /* ----------------------------------------------------------
+     COLORS — Blue-Grey scale (secondary brand neutral)
+     Source: Figma secondary/bluegrey palette
+  ---------------------------------------------------------- */
+  --color-bluegrey-1: #f4f5f6;
+  --color-bluegrey-2: #e6e8ea;
+  --color-bluegrey-3: #d3d7db;
+  --color-bluegrey-4: #b1b8be;
+  --color-bluegrey-5: #8d969e;
+  --color-bluegrey-6: #6d7882;
+  --color-bluegrey-7: #58616a;
+  --color-bluegrey-8: #454d54;
+  --color-bluegrey-9: #333a40;
+  --color-bluegrey-10: #1e2124;
+
+  /* ----------------------------------------------------------
+     COLORS — Point / Brown scale (warm accent)
+  ---------------------------------------------------------- */
+  --color-point-1: #f6f1ec;
+  --color-point-2: #ebe0d5;
+  --color-point-3: #d8c8b5;
+  --color-point-4: #c5ae96;
+  --color-point-5: #af9179;
+  --color-point-6: #95745e;
+  --color-point-7: #7a5c47;
+  --color-point-8: #624834;
+  --color-point-9: #4c3626;
+  --color-point-10: #38261a;
+
+  /* ----------------------------------------------------------
+     COLORS — Grey scale (grey-1: 가장 밝음 → grey-12: 가장 어두움)
+  ---------------------------------------------------------- */
+  --color-grey-1: #fafafa;
+  --color-grey-2: #f5f5f5;
+  --color-grey-3: #eeeeee;
+  --color-grey-4: #e3e3e3;
+  --color-grey-5: #d0d0d0;
+  --color-grey-6: #b8b8b8;
+  --color-grey-7: #9a9a9a;
+  --color-grey-8: #787878;
+  --color-grey-9: #595959;
+  --color-grey-10: #3d3d3d;
+  --color-grey-11: #272727;
+  --color-grey-12: #141414;
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY — Font sizes & line-heights
+     Tailwind v4: --text-{name} / --text-{name}--line-height
+     사용법: className="text-headline-1"
+  ---------------------------------------------------------- */
+
+  /* Headlines (Bold) */
+  --text-headline-1: 3.5rem;       /* 56px */
+  --text-headline-1--line-height: 4rem;        /* 64px */
+
+  --text-headline-2: 3rem;         /* 48px */
+  --text-headline-2--line-height: 3.25rem;     /* 52px */
+
+  --text-headline-3: 2.25rem;      /* 36px */
+  --text-headline-3--line-height: 2.75rem;     /* 44px */
+
+  --text-headline-4: 1.5rem;       /* 24px */
+  --text-headline-4--line-height: 2rem;        /* 32px */
+
+  --text-headline-5: 1.125rem;     /* 18px */
+  --text-headline-5--line-height: 1.5rem;      /* 24px */
+
+  /* Sub Titles (SemiBold) */
+  --text-sub-tit-1: 1.75rem;       /* 28px */
+  --text-sub-tit-1--line-height: 2.5rem;       /* 40px */
+
+  --text-sub-tit-2: 1.5rem;        /* 24px */
+  --text-sub-tit-2--line-height: 2rem;         /* 32px */
+
+  --text-sub-tit-3: 1.25rem;       /* 20px */
+  --text-sub-tit-3--line-height: 1.75rem;      /* 28px */
+
+  --text-sub-tit-4: 1.125rem;      /* 18px */
+  --text-sub-tit-4--line-height: 1.5rem;       /* 24px */
+
+  --text-sub-tit-5: 1rem;          /* 16px */
+  --text-sub-tit-5--line-height: 1.5rem;       /* 24px */
+
+  /* Body (Regular) */
+  --text-body-1: 1.125rem;         /* 18px */
+  --text-body-1--line-height: 1.75rem;         /* 28px */
+
+  --text-body-2: 1rem;             /* 16px */
+  --text-body-2--line-height: 1.5rem;          /* 24px */
+
+  --text-body-3: 0.875rem;         /* 14px */
+  --text-body-3--line-height: 1.375rem;        /* 22px */
+
+  --text-body-4: 0.875rem;         /* 14px */
+  --text-body-4--line-height: 1.25rem;         /* 20px */
+
+  --text-body-5: 0.75rem;          /* 12px */
+  --text-body-5--line-height: 1.125rem;        /* 18px */
+
+  /* Button / Link */
+  --text-btn-large: 1.125rem;      /* 18px */
+  --text-btn-large--line-height: 1.375rem;     /* 22px */
+
+  --text-btn-normal: 1rem;         /* 16px */
+  --text-btn-normal--line-height: 1.25rem;     /* 20px */
+
+  --text-btn-medium: 0.875rem;     /* 14px */
+  --text-btn-medium--line-height: 1.25rem;     /* 20px */
+
+  --text-btn-small: 0.875rem;      /* 14px */
+  --text-btn-small--line-height: 1.25rem;      /* 20px */
+
+  --text-btn-xs: 0.75rem;          /* 12px */
+  --text-btn-xs--line-height: 1rem;            /* 16px */
+
+  /* Fields */
+  --text-field-placeholder: 1rem;  /* 16px */
+  --text-field-placeholder--line-height: 1.25rem; /* 20px */
+
+  --text-field-title: 0.75rem;     /* 12px */
+  --text-field-title--line-height: 1rem;       /* 16px */
+
+  --text-field-desc: 0.75rem;      /* 12px */
+  --text-field-desc--line-height: 1rem;        /* 16px */
+}
