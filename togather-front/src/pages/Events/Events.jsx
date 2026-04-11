@@ -3,8 +3,7 @@ import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getEvents } from "@/services/eventsService";
-
-const CATEGORIES = ["예배", "청년부", "선교회", "내 공동체"];
+import { EVENT_CATEGORIES } from "@/config/events.config";
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
@@ -79,7 +78,7 @@ export default function Events() {
           </svg>
           행사 검색
         </button>
-        {CATEGORIES.map((cat) => (
+        {EVENT_CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}

@@ -1,26 +1,5 @@
 import { Link } from "react-router";
-
-const MOCK_USER = {
-  name: "홍길동",
-  email: "hong@gmail.com",
-  community: "청년부",
-  joinDate: "2024.03.01",
-};
-
-const STATS = [
-  { label: "성경 읽기", value: "34절", sub: "이번 주" },
-  { label: "성경 쓰기", value: "12절", sub: "이번 주" },
-  { label: "연속 출석", value: "7일", sub: "streak" },
-];
-
-const MENUS = [
-  { label: "내 정보 수정", icon: "✏️" },
-  { label: "비밀번호 변경", icon: "🔒" },
-  { label: "알림 설정", icon: "🔔" },
-  { label: "개인정보 처리방침", icon: "📄" },
-  { label: "이용약관", icon: "📋" },
-  { label: "로그아웃", icon: "🚪", danger: true },
-];
+import { MOCK_USER, MYPAGE_STATS, MYPAGE_MENUS } from "@/config/mypage.config";
 
 export default function MyPage() {
   return (
@@ -40,7 +19,7 @@ export default function MyPage() {
           </div>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          {STATS.map(({ label, value, sub }) => (
+          {MYPAGE_STATS.map(({ label, value, sub }) => (
             <div key={label} className="bg-white/10 rounded-xl p-3 text-center">
               <p className="text-sub-tit-5 font-bold">{value}</p>
               <p className="text-body-5 text-white/70">{label}</p>
@@ -76,11 +55,11 @@ export default function MyPage() {
 
       {/* Settings Menu */}
       <div className="border border-bluegrey-2 rounded-2xl overflow-hidden">
-        {MENUS.map(({ label, icon, danger }, i) => (
+        {MYPAGE_MENUS.map(({ label, icon, danger }, i) => (
           <button
             key={label}
             className={`w-full flex items-center gap-3 px-5 py-4 text-body-3 transition-colors ${
-              i < MENUS.length - 1 ? "border-b border-grey-3" : ""
+              i < MYPAGE_MENUS.length - 1 ? "border-b border-grey-3" : ""
             } ${danger ? "text-red-500 hover:bg-red-50" : "text-grey-9 hover:bg-grey-1"}`}
           >
             <span>{icon}</span>

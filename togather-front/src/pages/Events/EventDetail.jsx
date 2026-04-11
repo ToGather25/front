@@ -1,29 +1,9 @@
 import { useParams, Link } from "react-router";
-
-const SAMPLE_EVENTS = {
-  1: {
-    id: 1,
-    title: "전교인 체육대회",
-    location: "장소명",
-    department: "전교인",
-    date: "2025/01/21",
-    description:
-      "전교인이 하나되는 행사입니다. 남녀노소 함께 보여 하나님안에서 하나되는 기쁨을 누리시길 바랍니다.\n참석을 희망하시는 분은...",
-    canApply: true,
-  },
-};
+import { SAMPLE_EVENTS, DEFAULT_EVENT } from "@/config/events.config";
 
 export default function EventDetail() {
   const { id } = useParams();
-  const event = SAMPLE_EVENTS[id] ?? {
-    id,
-    title: "행사 이름",
-    location: "장소명",
-    department: "부서 이름",
-    date: "2025/01/01",
-    description: "행사 내용을 입력하세요.",
-    canApply: true,
-  };
+  const event = SAMPLE_EVENTS[id] ?? { id, ...DEFAULT_EVENT };
 
   return (
     <div className="max-w-2xl mx-auto px-8 py-10">

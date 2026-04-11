@@ -1,5 +1,6 @@
 import { useActionState } from "react";
 import { Link } from "react-router";
+import { useChurch } from "@/contexts/ChurchContext";
 
 async function registerAction(prevState, formData) {
   const password = formData.get("password");
@@ -10,6 +11,7 @@ async function registerAction(prevState, formData) {
 }
 
 export default function Register() {
+  const { church } = useChurch();
   const [state, formAction, isPending] = useActionState(registerAction, null);
 
   return (
@@ -46,7 +48,7 @@ export default function Register() {
             className="w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none"
           >
             <option value="">선택하세요</option>
-            {["옥길교회", "청년부", "투게더", "유치부", "초등부", "중고등부"].map((c) => (
+            {church.communities.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
