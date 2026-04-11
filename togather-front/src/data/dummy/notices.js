@@ -1,0 +1,48 @@
+/** @type {import('@/services/noticeService').Notice[]} */
+export const DUMMY_NOTICES = [
+  {
+    id: 1,
+    type: "공지",
+    featured: true,
+    title: "2026년 교회 달력 및 연간 행사 안내",
+    body: "2026년 한 해 동안의 주요 교회 행사 일정을 안내드립니다. 자세한 내용은 주보 또는 교회 홈페이지를 확인해 주세요.",
+    date: "2026-01-01",
+    author: "사무국",
+  },
+  {
+    id: 2,
+    type: "일반",
+    featured: false,
+    title: "봄 야외 예배 참가 신청",
+    body: "4월 20일 전교인 야외 예배 참가 신청을 받습니다.\n신청 기간: 4/7 ~ 4/14",
+    date: "2026-04-07",
+    author: "교역자실",
+  },
+  {
+    id: 3,
+    type: "일반",
+    featured: false,
+    title: "2분기 새신자 환영 모임",
+    body: "올해 2분기 새신자 환영 모임을 준비했습니다.\n참석을 원하시는 분은 안내 데스크에 등록해 주세요.",
+    date: "2026-04-05",
+    author: "새신자부",
+  },
+  {
+    id: 4,
+    type: "일반",
+    featured: false,
+    title: "주일학교 교사 모집",
+    body: "유치부·초등부 주일학교 교사를 모집합니다.\n지원 문의: 교육부",
+    date: "2026-03-30",
+    author: "교육부",
+  },
+  {
+    id: 5,
+    type: "일반",
+    featured: false,
+    title: "성전 보수 공사 안내",
+    body: "4월 28일(화) ~ 5월 2일(토) 기간 동안 3층 교육관 보수 공사가 진행됩니다.",
+    date: "2026-03-25",
+    author: "시설부",
+  },
+];
