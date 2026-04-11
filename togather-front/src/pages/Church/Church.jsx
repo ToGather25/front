@@ -272,14 +272,14 @@ export default function Church() {
       {/* Hero Banner */}
       <div className="relative h-[120px] bg-blue-9 flex items-end">
         <div className="absolute inset-0 bg-black/40" />
-        <div className="relative max-w-[1576px] mx-auto px-4 pb-5 w-full">
+        <div className="relative max-w-[1576px] mx-auto px-8 pb-5 w-full">
           <h1 className="text-2xl font-bold text-white">교회 소개</h1>
         </div>
       </div>
 
       {/* Sub-tab Navigation — Figma main_box_nav 스타일 */}
       <div className="border-b border-bluegrey-2 bg-white sticky top-[72px] z-40">
-        <div className="max-w-[1576px] mx-auto px-4">
+        <div className="max-w-[1576px] mx-auto px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -299,7 +299,7 @@ export default function Church() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1576px] mx-auto px-4 py-10">
+      <div className="max-w-[1576px] mx-auto px-8 py-10">
         {TAB_CONTENT[activeTab]}
       </div>
     </div>

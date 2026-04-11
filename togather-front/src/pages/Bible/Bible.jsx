@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 export default function Bible() {
   return (
-    <div className="max-w-[1576px] mx-auto px-4 py-20 flex flex-col items-center">
+    <div className="max-w-[1576px] mx-auto px-8 py-20 flex flex-col items-center">
       <h1 className="text-2xl font-bold text-grey-12 mb-16 text-center">
         오늘 하실 신앙 활동은 무엇인가요?
       </h1>

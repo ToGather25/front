@@ -92,7 +92,7 @@ function Footer() {
   const { church } = useChurch();
   return (
     <footer className="bg-bluegrey-1 border-t border-bluegrey-2">
-      <div className="max-w-[1920px] mx-auto px-16 py-14 flex items-end justify-between gap-8">
+      <div className="max-w-[1920px] mx-auto px-8 py-14 flex items-end justify-between gap-8">
         {/* Left: logo + info */}
         <div className="flex gap-16 items-start">
           {/* Logo */}

@@ -56,7 +56,7 @@ export default function Events() {
     : "";
 
   return (
-    <div className="max-w-[1576px] mx-auto px-4 py-10">
+    <div className="max-w-[1576px] mx-auto px-8 py-10">
       {/* Header Row */}
       <div className="flex items-center gap-4 mb-6 flex-wrap">
         <div className="flex items-center gap-3">

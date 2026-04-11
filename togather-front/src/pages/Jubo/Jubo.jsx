@@ -286,7 +286,7 @@ export default function Jubo() {
   const [activeTab, setActiveTab] = useState("표지");
 
   return (
-    <div className="max-w-[1576px] mx-auto px-4 py-10">
+    <div className="max-w-[1576px] mx-auto px-8 py-10">
       <h1 className="text-[2rem] font-semibold text-grey-12 mb-6 tracking-tight">스마트 주보</h1>
 
       {/* Tab Navigation */}

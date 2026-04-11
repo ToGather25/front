@@ -109,7 +109,7 @@ export default function Gallery() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <div className="max-w-[1576px] mx-auto px-4 py-10">
+    <div className="max-w-[1576px] mx-auto px-8 py-10">
       {!selected ? (
         /* Community List */
         loading ? (
