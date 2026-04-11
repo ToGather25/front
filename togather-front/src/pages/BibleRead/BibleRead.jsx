@@ -1,28 +1,27 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import bibleData from "@/data/bible.json";
+import { READ_BOOKS, BOOK_ABBREV, BIBLE_READ_SIDEBAR_MENUS } from "@/config/bible.config";
 
-const BOOKS = ["창세기", "출애굽기", "레위기", "민수기", "신명기", "시편", "잠언", "전도서", "아가", "이사야", "예레미야", "마태복음", "마가복음", "누가복음", "요한복음", "로마서"];
-const SIDEBAR_MENUS = ["성경읽기", "랭킹", "내 구절", "내 현황"];
-
-const SAMPLE_VERSES = [
-  "1 여호와는 나의 목자시니 내게 부족함이 없으리로다",
-  "2 그가 나를 푸른 풀밭에 누이시며 쉴 만한 물가로 인도하시는도다",
-  "3 내 영혼을 소생시키시고 자기 이름을 위하여 의의 길로 인도하시는도다",
-  "4 내가 사망의 음침한 골짜기로 다닐지라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라",
-  "5 주께서 내 원수의 목전에서 내게 상을 차려 주시고 기름을 내 머리에 부으셨으니 내 잔이 넘치나이다",
-  "6 내 평생에 선하심과 인자하심이 반드시 나를 따르리니 내가 여호와의 집에 영원히 살리로다",
-  "7 아여호와여 나는 주께 피하나이다 나를 영원히 부끄럽게 하지 마시고 주의 공의로 나를 건지소서",
-  "8 내게 귀를 기울여 속히 건지시고 내게 견고한 바위와 구원하는 산성이 되소서",
-  "9 주는 나의 반석과 산성이시니 그러므로 주의 이름을 생각하셔서 나를 인도하시고 지도하소서",
-];
+function getVerses(book, chapter) {
+  const abbrev = BOOK_ABBREV[book];
+  if (!abbrev) return [];
+  const prefix = `${abbrev}${chapter}:`;
+  return Object.entries(bibleData)
+    .filter(([key]) => key.startsWith(prefix))
+    .map(([key, text]) => ({ num: parseInt(key.split(":")[1]), text: text.trim() }))
+    .sort((a, b) => a.num - b.num);
+}
 
 export default function BibleRead() {
   const [activeMenu, setActiveMenu] = useState("성경읽기");
-  const [selectedBook, setSelectedBook] = useState("시편");
-  const [chapter, setChapter] = useState(23);
+  const [selectedBook, setSelectedBook] = useState("창세기");
+  const [chapter, setChapter] = useState(1);
   const [checkedVerses, setCheckedVerses] = useState({});
   const [bookOpen, setBookOpen] = useState(false);
   const [fontSize, setFontSize] = useState(false);
+
+  const verses = getVerses(selectedBook, chapter);
 
   const toggleVerse = (idx) =>
     setCheckedVerses((prev) => ({ ...prev, [idx]: !prev[idx] }));
@@ -36,7 +35,7 @@ export default function BibleRead() {
           <button className="text-grey-6 hover:text-grey-9">✕</button>
         </div>
         <nav className="flex flex-col py-2">
-          {SIDEBAR_MENUS.map((menu) => (
+          {BIBLE_READ_SIDEBAR_MENUS.map((menu) => (
             <button
               key={menu}
               onClick={() => setActiveMenu(menu)}
@@ -90,10 +89,10 @@ export default function BibleRead() {
             </button>
             {bookOpen && (
               <div className="absolute top-full left-0 mt-1 bg-white border border-bluegrey-2 rounded-xl shadow-lg py-2 z-10 max-h-60 overflow-y-auto w-32">
-                {BOOKS.map((book) => (
+                {READ_BOOKS.map((book) => (
                   <button
                     key={book}
-                    onClick={() => { setSelectedBook(book); setBookOpen(false); }}
+                    onClick={() => { setSelectedBook(book); setChapter(1); setCheckedVerses({}); setBookOpen(false); }}
                     className={`block w-full text-left px-4 py-2 text-body-4 hover:bg-bluegrey-1 ${selectedBook === book ? "text-blue-7 font-semibold" : "text-grey-8"}`}
                   >
                     {book}
@@ -103,9 +102,9 @@ export default function BibleRead() {
             )}
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg">
-            <button onClick={() => setChapter((c) => Math.max(1, c - 1))} className="text-grey-6 hover:text-grey-9">‹</button>
+            <button onClick={() => { setChapter((c) => Math.max(1, c - 1)); setCheckedVerses({}); }} className="text-grey-6 hover:text-grey-9">‹</button>
             <span className="text-body-4 text-grey-8 w-6 text-center">{chapter}</span>
-            <button onClick={() => setChapter((c) => c + 1)} className="text-grey-6 hover:text-grey-9">›</button>
+            <button onClick={() => { setChapter((c) => c + 1); setCheckedVerses({}); }} className="text-grey-6 hover:text-grey-9">›</button>
           </div>
           <div className="flex-1 flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg">
             <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -116,7 +115,7 @@ export default function BibleRead() {
         {/* Verses */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="flex flex-col gap-1">
-            {SAMPLE_VERSES.map((verse, idx) => (
+            {verses.map(({ num, text }, idx) => (
               <label
                 key={idx}
                 className={`flex items-start gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-grey-1 transition-colors ${
@@ -135,7 +134,7 @@ export default function BibleRead() {
                   }`}
                   style={fontSize ? { fontSize: "1.125rem" } : {}}
                 >
-                  {verse}
+                  {num} {text}
                 </span>
                 {checkedVerses[idx] && (
                   <button className="ml-auto shrink-0 text-grey-5 hover:text-blue-7">

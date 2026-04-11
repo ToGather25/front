@@ -1,21 +1,113 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router";
+import bibleData from "@/data/bible.json";
+import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
 
-const BOOKS = ["창세기", "출애굽기", "시편", "잠언", "마태복음", "요한복음", "로마서"];
-const SIDEBAR_MENUS = ["성경쓰기", "랭킹", "내 구절", "내 현황"];
+// ── 유틸 ───────────────────────────────────────────────
+function getChapters(bookAbbr) {
+  const re = new RegExp(`^${bookAbbr}(\\d+):\\d+$`);
+  const set = new Set();
+  for (const key of Object.keys(bibleData)) {
+    const m = key.match(re);
+    if (m) set.add(Number(m[1]));
+  }
+  return [...set].sort((a, b) => a - b);
+}
 
-const REFERENCE_VERSE = "너희 의인들아 여호와를 즐거워하라 찬송은 정직한 자의 마땅히 할바로다";
+function getVerses(bookAbbr, chapter) {
+  const re = new RegExp(`^${bookAbbr}${chapter}:(\\d+)$`);
+  const arr = [];
+  for (const [key, text] of Object.entries(bibleData)) {
+    const m = key.match(re);
+    if (m) arr.push({ verse: Number(m[1]), text: text.trim() });
+  }
+  return arr.sort((a, b) => a.verse - b.verse);
+}
+
+// ── 책 선택 모달 ───────────────────────────────────────
+function BookModal({ current, onSelect, onClose }) {
+  const [tab, setTab] = useState(OT.includes(current) ? "OT" : "NT");
+  const list = tab === "OT" ? OT : NT;
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-bluegrey-2">
+          <span className="text-sub-tit-4 font-semibold text-grey-11">성경 선택</span>
+          <button onClick={onClose} className="text-grey-6 hover:text-grey-11">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex border-b border-bluegrey-2">
+          {["OT", "NT"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex-1 py-3 text-body-4 font-medium transition-colors ${tab === t ? "text-blue-8 border-b-2 border-blue-8" : "text-grey-6 hover:text-grey-9"}`}
+            >
+              {t === "OT" ? "구약" : "신약"}
+            </button>
+          ))}
+        </div>
+        <div className="overflow-y-auto p-4 grid grid-cols-4 gap-2">
+          {list.map((abbr) => (
+            <button
+              key={abbr}
+              onClick={() => onSelect(abbr)}
+              className={`py-2 px-3 rounded-lg text-body-4 transition-colors ${current === abbr ? "bg-blue-8 text-white font-semibold" : "hover:bg-bluegrey-1 text-grey-9"}`}
+            >
+              {BOOK_MAP[abbr]}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function BibleWrite() {
   const [activeMenu, setActiveMenu] = useState("성경쓰기");
-  const [selectedBook, setSelectedBook] = useState("시편");
-  const [chapter, setChapter] = useState(33);
-  const [input, setInput] = useState("");
-  const [bookOpen, setBookOpen] = useState(false);
-  const [verseCount] = useState(34);
+  const [bookModalOpen, setBookModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState("창");
+  const [selectedChapter, setSelectedChapter] = useState(1);
+  const [selectedVerse, setSelectedVerse] = useState(1);
+  const [typed, setTyped] = useState("");
+  const [isCorrect, setIsCorrect] = useState(null);
 
-  const correctCount = input.length;
-  const isCorrect = REFERENCE_VERSE.startsWith(input);
+  const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
+  const verses = useMemo(() => getVerses(selectedBook, selectedChapter), [selectedBook, selectedChapter]);
+  const currentVerse = verses.find((v) => v.verse === selectedVerse);
+  const targetText = currentVerse?.text ?? "";
+
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    setSelectedChapter(1);
+    setSelectedVerse(1);
+    setTyped("");
+    setIsCorrect(null);
+  }, [selectedBook]);
+
+  useEffect(() => {
+    setSelectedVerse(1);
+    setTyped("");
+    setIsCorrect(null);
+  }, [selectedChapter]);
+
+  useEffect(() => {
+    setTyped("");
+    setIsCorrect(null);
+  }, [selectedVerse]);
+
+  const handleTyping = (e) => {
+    const val = e.target.value;
+    setTyped(val);
+    if (val.length === 0) { setIsCorrect(null); return; }
+    const correct = targetText.startsWith(val);
+    if (val === targetText) setIsCorrect(true);
+    else setIsCorrect(correct ? null : false);
+  };
 
   return (
     <div className="flex h-[calc(100vh-64px)]">
@@ -26,7 +118,7 @@ export default function BibleWrite() {
           <button className="text-grey-6 hover:text-grey-9">✕</button>
         </div>
         <nav className="flex flex-col py-2">
-          {SIDEBAR_MENUS.map((menu) => (
+          {BIBLE_WRITE_SIDEBAR_MENUS.map((menu) => (
             <button
               key={menu}
               onClick={() => setActiveMenu(menu)}
@@ -36,24 +128,12 @@ export default function BibleWrite() {
                   : "text-grey-8 hover:bg-bluegrey-1"
               }`}
             >
-              {menu === "성경쓰기" && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              )}
-              {menu === "랭킹" && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              )}
-              {menu === "내 구절" && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
-              )}
-              {menu === "내 현황" && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              )}
               {menu}
             </button>
           ))}
         </nav>
-        <div className="mt-auto p-4 border-t border-bluegrey-2">
-          <Link to="/말씀/읽기" className="block w-full py-2 bg-grey-3 rounded-lg text-body-5 text-grey-7 text-center hover:bg-grey-4 transition-colors">
+        <div className="mt-auto p-4 border-t border-bluegrey-2 flex gap-2">
+          <Link to="/말씀/읽기" className="flex-1 py-2 bg-grey-3 rounded-lg text-body-5 text-grey-7 text-center hover:bg-grey-4 transition-colors">
             성경읽기
           </Link>
         </div>
@@ -62,83 +142,99 @@ export default function BibleWrite() {
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="flex items-center gap-4 px-6 py-3 border-b border-bluegrey-2 bg-white">
-          <button className="text-body-3 text-grey-7 font-semibold px-2 hover:text-grey-11">가가</button>
-          <div className="w-px h-5 bg-grey-4" />
-          <div className="relative">
-            <button
-              onClick={() => setBookOpen(!bookOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 hover:border-blue-7"
-            >
-              {selectedBook}
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-            </button>
-            {bookOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-bluegrey-2 rounded-xl shadow-lg py-2 z-10 max-h-60 overflow-y-auto w-32">
-                {BOOKS.map((book) => (
-                  <button
-                    key={book}
-                    onClick={() => { setSelectedBook(book); setBookOpen(false); }}
-                    className={`block w-full text-left px-4 py-2 text-body-4 hover:bg-bluegrey-1 ${selectedBook === book ? "text-blue-7 font-semibold" : "text-grey-8"}`}
-                  >
-                    {book}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg">
-            <button onClick={() => setChapter((c) => Math.max(1, c - 1))} className="text-grey-6 hover:text-grey-9">‹</button>
-            <span className="text-body-4 text-grey-8 w-6 text-center">{chapter}</span>
-            <button onClick={() => setChapter((c) => c + 1)} className="text-grey-6 hover:text-grey-9">›</button>
-          </div>
-          <div className="flex-1 flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg">
-            <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            <input className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5" placeholder="검색할 내용을 입력하세요" />
-          </div>
+        <div className="flex items-center gap-3 px-6 py-3 border-b border-bluegrey-2 bg-white flex-wrap">
+          {/* 책 선택 */}
+          <button
+            onClick={() => setBookModalOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 hover:border-blue-7 min-w-[96px]"
+          >
+            {BOOK_MAP[selectedBook]}
+            <svg className="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* 장 선택 */}
+          <select
+            value={selectedChapter}
+            onChange={(e) => setSelectedChapter(Number(e.target.value))}
+            className="px-3 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 hover:border-blue-7 outline-none"
+          >
+            {chapters.map((c) => (
+              <option key={c} value={c}>{c}장</option>
+            ))}
+          </select>
+
+          {/* 절 선택 */}
+          <select
+            value={selectedVerse}
+            onChange={(e) => setSelectedVerse(Number(e.target.value))}
+            className="px-3 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 hover:border-blue-7 outline-none"
+          >
+            {verses.map(({ verse }) => (
+              <option key={verse} value={verse}>{verse}절</option>
+            ))}
+          </select>
         </div>
 
-        {/* Writing Area */}
-        <div className="flex-1 overflow-y-auto px-10 py-8">
-          <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-sub-tit-4 font-semibold text-grey-11">
-              {selectedBook} {chapter}편 1절
-            </h2>
-            <button className="text-grey-5 hover:text-red-400">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-            </button>
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-8 py-8 flex flex-col gap-6 max-w-2xl w-full mx-auto">
+          {/* 원문 */}
+          <div className="bg-grey-1 rounded-2xl p-6">
+            <p className="text-body-5 text-grey-5 mb-2">
+              {BOOK_MAP[selectedBook]} {selectedChapter}장 {selectedVerse}절
+            </p>
+            <p className="text-body-2 text-grey-9 leading-relaxed">
+              {targetText || "해당 구절을 찾을 수 없습니다."}
+            </p>
           </div>
-          <hr className="border-bluegrey-2 mb-6" />
 
-          {/* Input line */}
-          <div className="relative mb-8">
-            <div className="text-body-1 text-grey-9 leading-relaxed relative">
-              {/* User typed text */}
-              <span className={isCorrect ? "text-grey-11" : "text-red-500"}>
-                {input}
-              </span>
-              {/* Cursor */}
-              <span className="border-r-2 border-grey-8 animate-pulse">&nbsp;</span>
-              {/* Ghost text */}
-              <span className="text-grey-4">
-                {REFERENCE_VERSE.slice(input.length)}
-              </span>
-            </div>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-text"
-              autoFocus
+          {/* 입력창 */}
+          <div className={`border-2 rounded-2xl p-6 transition-colors ${
+            isCorrect === true ? "border-green-400 bg-green-50" :
+            isCorrect === false ? "border-red-300 bg-red-50" :
+            "border-bluegrey-2"
+          }`}>
+            <p className="text-body-5 text-grey-5 mb-3">위 구절을 그대로 입력하세요</p>
+            <textarea
+              ref={textareaRef}
+              value={typed}
+              onChange={handleTyping}
+              rows={5}
+              className="w-full outline-none text-body-2 text-grey-9 leading-relaxed resize-none bg-transparent placeholder:text-grey-4"
+              placeholder="여기에 성경 구절을 입력하세요..."
             />
+            {isCorrect === true && (
+              <p className="text-body-5 text-green-600 font-semibold mt-2">✓ 정확히 입력했습니다!</p>
+            )}
+            {isCorrect === false && (
+              <p className="text-body-5 text-red-500 mt-2">입력이 일치하지 않습니다.</p>
+            )}
           </div>
-          <hr className="border-grey-3" />
 
-          <div className="mt-4 text-body-4 text-grey-7">
-            오늘 쓴 절수 : {verseCount}절
+          {/* 진행 바 */}
+          <div>
+            <div className="flex justify-between text-body-5 text-grey-6 mb-1">
+              <span>{typed.length} / {targetText.length} 자</span>
+              <span>{targetText.length > 0 ? Math.round((typed.length / targetText.length) * 100) : 0}%</span>
+            </div>
+            <div className="h-1.5 bg-grey-3 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-7 rounded-full transition-all"
+                style={{ width: `${targetText.length > 0 ? Math.min((typed.length / targetText.length) * 100, 100) : 0}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {bookModalOpen && (
+        <BookModal
+          current={selectedBook}
+          onSelect={(abbr) => { setSelectedBook(abbr); setBookModalOpen(false); }}
+          onClose={() => setBookModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
