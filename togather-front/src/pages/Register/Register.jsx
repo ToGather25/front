@@ -63,7 +63,7 @@ export default function Register() {
         </button>
 
         {state?.error && <p className="text-center text-red-500 text-body-4">{state.error}</p>}
-        {state?.message && <p className="text-center text-green-600 text-body-4">{state.message}</p>}
+        {state?.message && <p className="text-center text-blue-7 text-body-4">{state.message}</p>}
       </form>
 
       <p className="text-center text-body-4 text-grey-6 mt-6">

@@ -151,7 +151,7 @@ export default function WorshipSection() {
         </div>
 
         {/* 예배 영상 카드 */}
-        <div className="w-[380px] border border-bluegrey-2 rounded-2xl p-6 flex flex-col gap-4 bg-white">
+        <div className="w-1/3 border border-bluegrey-2 rounded-2xl p-6 flex flex-col gap-4 bg-white">
           <h3 className="text-sub-tit-2 font-bold text-grey-12">예배 영상</h3>
           <VideoPlayer channelId={channelId} apiKey={apiKey} />
           {(!channelId || !apiKey) && (

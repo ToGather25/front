@@ -134,7 +134,7 @@ function MyVersesView({ completed }) {
               <p className="text-body-5 text-blue-6 font-semibold mb-2">
                 {v.bookName} {v.chapter}장 {v.verse}절
               </p>
-              <p className="text-body-2 text-grey-9 leading-relaxed">{v.text}</p>
+              <p className="text-body-2 text-grey-9">{v.text}</p>
             </div>
           ))}
         </div>
@@ -340,7 +340,7 @@ export default function BibleWrite() {
               className="relative cursor-text"
               onClick={() => !isDone && textareaRef.current?.focus()}
             >
-              <div className="text-body-1 leading-loose whitespace-pre-wrap tracking-wide select-none">
+              <div className="text-body-1 whitespace-pre-wrap tracking-wide select-none">
                 {targetText.split("").map((char, i) => {
                   if (i < typed.length) {
                     const correct = typed[i] === char;
@@ -376,14 +376,14 @@ export default function BibleWrite() {
 
             {/* 완료 메시지 */}
             {isDone && (
-              <div className="flex items-center gap-3 bg-green-50 border border-green-300 rounded-2xl px-6 py-4">
-                <svg className="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-3 bg-blue-1 border border-blue-3 rounded-2xl px-6 py-4">
+                <svg className="w-5 h-5 text-blue-7 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <p className="text-body-3 text-green-700 font-semibold">정확히 완료했습니다!</p>
+                <p className="text-body-3 text-blue-8 font-semibold">정확히 완료했습니다!</p>
                 <button
                   onClick={() => { setTyped(""); setIsCorrect(null); textareaRef.current?.focus(); }}
-                  className="ml-auto text-body-4 text-green-700 underline hover:no-underline"
+                  className="ml-auto text-body-4 text-blue-7 underline hover:no-underline"
                 >
                   다시 쓰기
                 </button>

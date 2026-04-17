@@ -44,7 +44,7 @@ function PhotoModal({ photo, photos, currentIndex, onClose, onPrev, onNext }) {
         <div className="p-5">
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-1">{photo.title}</h3>
           <p className="text-body-5 text-grey-6 mb-3">{photo.date}</p>
-          <p className="text-body-4 text-grey-8 whitespace-pre-line leading-relaxed">{photo.desc}</p>
+          <p className="text-body-4 text-grey-8 whitespace-pre-line">{photo.desc}</p>
         </div>
       </div>
     </div>

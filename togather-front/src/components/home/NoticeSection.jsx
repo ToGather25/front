@@ -46,7 +46,7 @@ export default function NoticeSection() {
               className="bg-white border border-bluegrey-2 rounded-2xl p-5 flex flex-col gap-2 hover:border-blue-3 transition-colors cursor-pointer"
             >
               <p className="text-body-2 font-semibold text-grey-11 truncate">{n.title}</p>
-              <p className="text-body-4 text-grey-7 line-clamp-2 leading-relaxed whitespace-pre-line">
+              <p className="text-body-4 text-grey-7 line-clamp-2 whitespace-pre-line">
                 {n.body}
               </p>
             </div>

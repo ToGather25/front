@@ -41,7 +41,7 @@ export default function JuboPreviewSection() {
                 <span className="text-body-5 opacity-80">표어</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-center">
-                <p className="text-body-2 font-semibold text-grey-11 leading-relaxed">{vision.verse}</p>
+                <p className="text-body-2 font-semibold text-grey-11">{vision.verse}</p>
                 <p className="text-body-4 text-grey-6">{church.name} 공동체</p>
               </div>
             </div>

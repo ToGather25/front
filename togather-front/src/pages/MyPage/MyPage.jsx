@@ -35,7 +35,7 @@ export default function MyPage() {
           to="/말씀/읽기"
           className="border border-bluegrey-2 rounded-2xl p-4 flex items-center gap-3 hover:bg-grey-1 transition-colors"
         >
-          <span className="text-2xl">📖</span>
+          <span className="text-headline-4">📖</span>
           <div>
             <p className="text-body-3 font-semibold text-grey-10">성경 읽기</p>
             <p className="text-body-5 text-grey-6">오늘도 말씀 읽기</p>
@@ -45,7 +45,7 @@ export default function MyPage() {
           to="/말씀/필사"
           className="border border-bluegrey-2 rounded-2xl p-4 flex items-center gap-3 hover:bg-grey-1 transition-colors"
         >
-          <span className="text-2xl">✍️</span>
+          <span className="text-headline-4">✍️</span>
           <div>
             <p className="text-body-3 font-semibold text-grey-10">성경 쓰기</p>
             <p className="text-body-5 text-grey-6">오늘도 성경 필사</p>

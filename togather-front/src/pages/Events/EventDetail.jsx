@@ -26,7 +26,7 @@ export default function EventDetail() {
       </div>
 
       {/* Description */}
-      <p className="text-body-2 text-grey-8 whitespace-pre-line mb-10 leading-relaxed">
+      <p className="text-body-2 text-grey-8 whitespace-pre-line mb-10">
         {event.description}
       </p>
 

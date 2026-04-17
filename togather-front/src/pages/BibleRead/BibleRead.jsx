@@ -85,7 +85,7 @@ function MyVersesView({ saved }) {
               <p className="text-body-5 text-blue-6 font-semibold mb-2">
                 {v.book} {v.chapter}장 {v.num}절
               </p>
-              <p className="text-body-2 text-grey-9 leading-relaxed">{v.text}</p>
+              <p className="text-body-2 text-grey-9">{v.text}</p>
             </div>
           ))}
         </div>
@@ -275,7 +275,7 @@ export default function BibleRead() {
                       className="mt-1 shrink-0 accent-primary"
                     />
                     <span
-                      className={`flex-1 leading-relaxed ${
+                      className={`flex-1 ${
                         fontSize ? "text-body-1" : "text-body-2"
                       } ${checkedVerses[idx] ? "text-blue-7" : "text-grey-9"}`}
                     >

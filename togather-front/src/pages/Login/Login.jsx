@@ -42,7 +42,7 @@ export default function LoginPage() {
         </button>
 
         {state?.error && <p className="text-center text-red-500 text-body-4 font-medium">{state.error}</p>}
-        {state?.message && <p className="text-center text-green-500 text-body-4 font-medium">{state.message}</p>}
+        {state?.message && <p className="text-center text-blue-7 text-body-4 font-medium">{state.message}</p>}
       </form>
     </div>
   );
