@@ -43,8 +43,8 @@ const churchConfig = {
   nav: [
     { label: "교회소개",  to: "/교회소개" },
     { label: "말씀·찬양", to: "/말씀" },
-    { label: "전도·선교", to: "#" },
-    { label: "양육·훈련", to: "#" },
+    { label: "전도·선교", to: "/전도선교" },
+    { label: "양육·훈련", to: "/양육훈련" },
     {
       label: "교회소식",
       children: [
@@ -65,7 +65,8 @@ const churchConfig = {
   },
 
   // ── 히어로 배너 텍스트 ────────────────────────────────
-  heroBanner: {
+  mainBanner: {
+    url: "",
     title: "하나님의 사랑이 우리에게\n이렇게 나타난 바 되었으니",
     subtitle: "하나님의 자기의 독생자를 세상에 보내심은\n저로 말미암아 우리를 살리려 하심이니라 (요일 4:9)",
   },

@@ -12,6 +12,8 @@ import BibleWrite from "@/pages/BibleWrite/BibleWrite";
 import Login from "@/pages/Login/Login";
 import Register from "@/pages/Register/Register";
 import MyPage from "@/pages/MyPage/MyPage";
+import Mission from "@/pages/Mission/Mission";
+import Nurture from "@/pages/Nurture/Nurture";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 
 const router = createBrowserRouter([
@@ -31,6 +33,8 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "mypage", element: <MyPage /> },
+      { path: "전도선교", element: <Mission /> },
+      { path: "양육훈련", element: <Nurture /> },
       { path: "*", element: <PageNotFound /> },
     ],
   },

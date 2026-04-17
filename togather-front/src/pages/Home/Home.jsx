@@ -1,4 +1,4 @@
-import HeroBanner from "@/components/home/HeroBanner";
+import MainBanner from "@/components/home/MainBanner";
 import SearchSection from "@/components/home/SearchSection";
 import SubMenu from "@/components/home/SubMenu";
 import WorshipSection from "@/components/home/WorshipSection";
@@ -9,7 +9,7 @@ import JuboPreviewSection from "@/components/home/JuboPreviewSection";
 export default function Home() {
   return (
     <div className="flex flex-col">
-      <HeroBanner />
+      <MainBanner />
       <SearchSection />
       <SubMenu />
       <WorshipSection />
