@@ -126,7 +126,7 @@ function Staff() {
           <div className="flex-1">
             <div className="flex justify-between mb-1">
               <p className="text-body-3 font-semibold text-grey-11">{headPastor.name}</p>
-              <button className="text-body-5 text-blue-7 border border-blue-7 px-3 py-0.5 rounded-full">글 남기기</button>
+              <button className="text-body-5 text-blue-7 border border-blue-7 px-3 py-0.5 rounded-full">설교방송</button>
             </div>
             <p className="text-body-5 text-grey-6">{headPastor.tel}</p>
             <p className="text-body-5 text-grey-6">{headPastor.email}</p>
@@ -154,7 +154,7 @@ function Staff() {
               <div className="flex-1">
                 <div className="flex justify-between">
                   <p className="text-body-4 font-semibold text-grey-11">{name}</p>
-                  <button className="text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full">글 남기기</button>
+                  <button className="text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full">설교방송</button>
                 </div>
                 <p className="text-body-5 text-grey-6">{tel}</p>
                 <p className="text-body-5 text-grey-6">{email}</p>
@@ -270,10 +270,10 @@ export default function Church() {
   return (
     <div>
       {/* Hero Banner */}
-      <div className="relative h-[120px] bg-blue-9 flex items-end">
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-5 w-full">
-          <h1 className="text-2xl font-bold text-white">교회 소개</h1>
+      <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
+        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
+          <h1 className="text-headline-4 font-bold text-white">교회 소개</h1>
         </div>
       </div>
 
@@ -285,7 +285,7 @@ export default function Church() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-5 text-base whitespace-nowrap border-b-2 transition-colors font-medium ${
+                className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
                     : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"

@@ -60,7 +60,7 @@ export default function Events() {
       {/* Header Row */}
       <div className="flex items-center gap-4 mb-6 flex-wrap">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-grey-12">{monthName}</h1>
+          <h1 className="text-sub-tit-1 font-bold text-grey-12">{monthName}</h1>
           <button onClick={prevMonth} className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors">
             <svg className="w-4 h-4 text-grey-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -171,7 +171,7 @@ export default function Events() {
                     <span className="font-medium text-bluegrey-6">{evt.department}</span>
                     <span className="text-bluegrey-4">{evt.date}</span>
                   </div>
-                  <p className="text-base font-semibold text-bluegrey-10">{evt.title}</p>
+                  <p className="text-body-2 font-semibold text-bluegrey-10">{evt.title}</p>
                   <div className="flex gap-4 justify-end">
                     <Link
                       to={`/교회행사/${evt.id}`}

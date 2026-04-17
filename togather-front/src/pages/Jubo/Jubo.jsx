@@ -287,7 +287,7 @@ export default function Jubo() {
 
   return (
     <div className="max-w-[1576px] mx-auto px-8 py-10">
-      <h1 className="text-[2rem] font-semibold text-grey-12 mb-6 tracking-tight">스마트 주보</h1>
+      <h1 className="text-sub-tit-1 font-bold text-grey-12 mb-6">스마트 주보</h1>
 
       {/* Tab Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
@@ -296,7 +296,7 @@ export default function Jubo() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-full text-base border-2 transition-colors font-medium ${
+              className={`px-6 py-2 rounded-full text-body-2 border-2 transition-colors font-medium ${
                 activeTab === tab
                   ? "bg-blue-8 border-blue-10 text-white font-semibold"
                   : "bg-white border-blue-2 text-blue-2 hover:border-blue-5 hover:text-blue-5"
