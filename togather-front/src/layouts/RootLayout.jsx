@@ -54,6 +54,7 @@ function Header() {
               <NavLink
                 key={item.label}
                 to={item.to}
+                end
                 className={({ isActive }) =>
                   `text-body-2 font-medium transition-colors whitespace-nowrap ${
                     isActive
