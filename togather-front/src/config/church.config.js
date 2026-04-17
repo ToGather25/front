@@ -33,9 +33,10 @@ const churchConfig = {
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube:   null,
-    instagram: null,
-    facebook:  null,
+    youtube: "https://www.youtube.com/channel/UCEqVXU3lm5RbDRWbTSPc_yg",           // 채널 URL (푸터 링크용)
+    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg",           // UC로 시작하는 채널 ID (예: UCxxxxxxxxxxxxxxxxxx)
+    instagram:        null,
+    facebook:         null,
   },
 
   // ── 네비게이션 (교회별 커스텀 가능) ──────────────────
