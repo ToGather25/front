@@ -66,7 +66,7 @@ const churchConfig = {
   },
 
   // 히어로 배너 텍스트
-  heroBanner: { title, subtitle },
+  mainBanner: { url, title, subtitle },
 };
 ```
 

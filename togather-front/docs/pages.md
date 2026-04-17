@@ -32,7 +32,7 @@
 
 **섹션 구성:**
 
-1. **HeroBanner** — `church.heroBanner.title/subtitle` 표시
+1. **MainBanner** — `church.mainBanner.title/subtitle` 표시
 2. **SearchSection** — 교회 내 검색 (UI만, 기능 미구현)
 3. **SubMenu** — 주보/행사/갤러리/말씀 바로가기 카드 4개
 4. **WorshipSection** — `church.worshipSchedule` (정기 예배 + 부서 예배)
