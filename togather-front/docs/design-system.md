@@ -1,9 +1,10 @@
 # 디자인 시스템
 
-소스: Figma — `2KLWYlKyG81yEqobYDFyZc`
+디자인 시스템 소스: Figma — `2KLWYlKyG81yEqobYDFyZc`
+디자인 소스: `cjB2vAxWxHDuRIQbIPgDdy`
 
 - **디자인 시스템 프레임**: node `5:722`
-- **화면 디자인**: node `12:2131`
+- **화면 디자인**: node `0:1`
 
 토큰 파일: `src/styles/tokens.css` (Tailwind v4 `@theme` 블록)
 

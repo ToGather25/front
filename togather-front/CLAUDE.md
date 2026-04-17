@@ -57,8 +57,8 @@ togather-front/
 ### Figma 파일
 - **디자인 시스템**: https://www.figma.com/design/2KLWYlKyG81yEqobYDFyZc/ToGather_ver2.?node-id=5-722&p=f&t=PrPIWoIc6Nejspnd-0
   - fileKey: `2KLWYlKyG81yEqobYDFyZc`, nodeId: `5:722`
-- **디자인 (화면)**: https://www.figma.com/design/2KLWYlKyG81yEqobYDFyZc/ToGather_ver2.?node-id=12-2131&p=f&t=PrPIWoIc6Nejspnd-0
-  - fileKey: `2KLWYlKyG81yEqobYDFyZc`, nodeId: `12:2131`
+- **디자인 (화면)**: https://www.figma.com/design/cjB2vAxWxHDuRIQbIPgDdy/ToGather_Design?node-id=0-1&p=f&t=ktuDp2EHgJIWFimO-0
+  - fileKey: `cjB2vAxWxHDuRIQbIPgDdy`, nodeId: `0:1`
 
 ### 색상 네이밍
 ```
