@@ -10,5 +10,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Kakao Maps SDK — autoload=false: React 컴포넌트에서 kakao.maps.load() 호출 후 초기화 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=%VITE_KAKAO_MAP_KEY%&autoload=false&libraries=services"></script>
   </body>
 </html>

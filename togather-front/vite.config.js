@@ -1,13 +1,20 @@
+import path from 'path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      workbox: {
+        // bible.json 포함으로 번들이 커짐 — 8MB로 제한 상향
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+      },
       manifest: {
         name: 'ToGather',
         short_name: 'ToGather',
@@ -27,5 +34,10 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+  resolve: {
+    alias: [
+      {find: '@', replacement: path.resolve(__dirname, 'src')},
+    ],
+  },
 })
