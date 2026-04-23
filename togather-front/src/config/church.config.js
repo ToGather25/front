@@ -43,6 +43,7 @@ const churchConfig = {
   nav: [
     { label: "교회소개",  to: "/교회소개" },
     { label: "말씀·찬양", to: "/말씀" },
+    { label: "주일학교", to: "/주일학교" },
     { label: "전도·선교", to: "/전도선교" },
     { label: "양육·훈련", to: "/양육훈련" },
     {
