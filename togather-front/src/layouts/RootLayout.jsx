@@ -1,11 +1,12 @@
 import { Outlet, Link, NavLink } from "react-router";
 import { useState } from "react";
 import LogoIcon from "@/assets/icons/512x512.png";
-import { AuthProvider } from "@/contexts/auth";
+import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 
 function Header() {
   const { church } = useChurch();
+  const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
   const [openMenu, setOpenMenu] = useState(null);
 
@@ -70,19 +71,44 @@ function Header() {
         </nav>
 
         {/* Auth */}
-        <div className="flex items-center gap-5 shrink-0 w-[180px] justify-end">
-          <Link
-            to="/register"
-            className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
-          >
-            회원가입
-          </Link>
-          <Link
-            to="/login"
-            className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
-          >
-            로그인
-          </Link>
+        <div className="flex items-center gap-4 shrink-0 justify-end">
+          {currentUser ? (
+            <>
+              <Link
+                to="/교적부"
+                className="px-3 py-1 rounded-lg text-body-3 font-semibold bg-blue-6 text-white hover:bg-blue-4 transition-colors"
+              >
+                교적부
+              </Link>
+              <Link
+                to="/mypage"
+                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+              >
+                마이페이지
+              </Link>
+              <button
+                onClick={logout}
+                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/register"
+                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+              >
+                회원가입
+              </Link>
+              <Link
+                to="/login"
+                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+              >
+                로그인
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
