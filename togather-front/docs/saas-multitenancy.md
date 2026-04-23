@@ -32,7 +32,7 @@ const churchConfig = {
   address: "경기도 부천시 …",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
-  email: "okc0120@gmail.com",
+  email: "algok@gmail.com",
   pastor: "김함께",
   denomination: "대한예수교장로회 고신교단",
 

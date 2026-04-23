@@ -15,7 +15,7 @@ export default function Register() {
   const [state, formAction, isPending] = useActionState(registerAction, null);
 
   return (
-    <div className="max-w-md mx-auto py-16 px-4">
+    <div className="max-w-md mx-auto my-10 p-8 bg-white rounded-2xl shadow-xl border border-bluegrey-2">
       <h1 className="text-sub-tit-2 font-bold text-grey-11 text-center mb-8">회원가입</h1>
 
       <form action={formAction} className="flex flex-col gap-5">

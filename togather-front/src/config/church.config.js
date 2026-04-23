@@ -18,7 +18,7 @@ const churchConfig = {
   address: "서울 관악구 난곡로24길 42 (신림동)",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
-  email: "okc0120@gmail.com",
+  email: "algok@gmail.com",
   pastor: "유상현",
   denomination: "대한예수교장로회 고신교단",
 
@@ -193,7 +193,7 @@ const churchConfig = {
   ],
 
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
-  communities: ["옥길교회", "청년부", "투게더", "유치부", "초등부", "중고등부"],
+  communities: ["알곡교회", "청년부", "투게더", "유치부", "초등부", "중고등부"],
 
   // ── 차량운행 안내 ─────────────────────────────────────
   transportGuide: {

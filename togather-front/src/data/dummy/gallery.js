@@ -1,6 +1,6 @@
 /** @type {import('@/services/galleryService').Community[]} */
 export const DUMMY_COMMUNITIES = [
-  { id: 1, name: "옥길교회", desc: "교회 전체 사진을 볼 수 있습니다" },
+  { id: 1, name: "알곡교회", desc: "교회 전체 사진을 볼 수 있습니다" },
   { id: 2, name: "청년부",   desc: "젊은 에너지로 하나님을 찾는" },
   { id: 3, name: "투게더",   desc: "ToFather 하나님 아버지께로" },
   { id: 4, name: "유치부",   desc: "어린아이의 순수함으로" },
