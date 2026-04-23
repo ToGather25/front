@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import LogoIcon from "../../../public/icons/512x512.png";
+import LogoIcon from "@/assets/icons/512x512.png";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import SectionTitle from "@/components/common/SectionTitle";

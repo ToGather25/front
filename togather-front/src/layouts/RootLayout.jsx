@@ -1,6 +1,6 @@
 import { Outlet, Link, NavLink } from "react-router";
 import { useState } from "react";
-import LogoIcon from "../../public/icons/512x512.png";
+import LogoIcon from "@/assets/icons/512x512.png";
 import { AuthProvider } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 
