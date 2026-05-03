@@ -35,7 +35,7 @@ export default function DirectionsSection() {
           </div>
 
           {/* 버튼 그룹 */}
-          <div className="w-64 flex flex-col gap-3">
+          <div className="w-120 flex flex-col gap-6 my-2">
             {DIRECTION_BUTTONS.map(({ label }) => (
               <button
                 key={label}

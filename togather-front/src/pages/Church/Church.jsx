@@ -3,8 +3,8 @@ import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 
 const TABS = [
-  "인사말", "교회 비전", "예배 안내", "섬기는 사람들",
-  "교회 연혁", "층별 안내", "오시는 길", "차량운행 안내",
+  "인사말", "교회 연혁·비전", "예배 안내", "섬기는 사람들",
+  "층별 안내", "오시는 길", "차량운행 안내",
 ];
 
 // ── 인사말 ─────────────────────────────────────────────
@@ -173,11 +173,11 @@ function History() {
   const { church } = useChurch();
 
   return (
-    <div className="max-w-xl">
+    <div className="max-w-2xl">
       {church.history.map(({ era, events }) => (
-        <div key={era} className="mb-8">
-          <h3 className="text-headline-3 font-bold text-grey-11 mb-4">{era}</h3>
-          <ul className="flex flex-col gap-2">
+        <div key={era} className="flex gap-10 mb-10">
+          <h3 className="text-headline-3 font-bold text-grey-11 w-28 shrink-0 pt-1">{era}</h3>
+          <ul className="flex-1 flex flex-col gap-2">
             {events.map(({ date, content }) => (
               <li key={date} className="flex items-start gap-4 text-body-4">
                 <span className="text-blue-7 shrink-0">◆</span>
@@ -253,12 +253,22 @@ function TransportGuide() {
   );
 }
 
+function HistoryAndVision() {
+  return (
+    <div className="flex flex-col gap-16">
+      <Vision />
+      <div className="border-t border-bluegrey-2 pt-12">
+        <History />
+      </div>
+    </div>
+  );
+}
+
 const TAB_CONTENT = {
   "인사말": <Greeting />,
-  "교회 비전": <Vision />,
   "예배 안내": <WorshipInfo />,
   "섬기는 사람들": <Staff />,
-  "교회 연혁": <History />,
+  "교회 연혁·비전": <HistoryAndVision />,
   "층별 안내": <FloorGuide />,
   "오시는 길": <Direction />,
   "차량운행 안내": <TransportGuide />,
