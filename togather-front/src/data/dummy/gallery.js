@@ -5,7 +5,7 @@ export const DUMMY_COMMUNITIES = [
   { id: 3, name: "투게더",   desc: "ToFather 하나님 아버지께로" },
   { id: 4, name: "유치부",   desc: "어린아이의 순수함으로" },
   { id: 5, name: "초등부",   desc: "하나님의 말씀을 배우는 초등부" },
-  { id: 6, name: "중고등부", desc: "믿음으로 자라나는 다음 세대" },
+  { id: 6, name: "중·고등부", desc: "믿음으로 자라나는 다음 세대" },
 ];
 
 /** @type {import('@/services/galleryService').Photo[]} */
