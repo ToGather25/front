@@ -61,7 +61,7 @@ export default function MainBanner() {
         <p
           className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"
           style={{
-            fontSize: "96px",
+            fontSize: "80px",
             whiteSpace: "pre-line",
             textShadow: "0 4px 30px rgba(0,0,0,.35)",
           }}

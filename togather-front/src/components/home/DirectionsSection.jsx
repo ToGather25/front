@@ -47,7 +47,7 @@ export default function DirectionsSection() {
 
       <div className="grid gap-8" style={{ gridTemplateColumns: "1fr 540px" }}>
         {/* Map */}
-        <div className="rounded-[20px] overflow-hidden bg-bluegrey-2" style={{ aspectRatio: "4/3" }}>
+        <div className="rounded-[20px] overflow-hidden bg-bluegrey-2" style={{ aspectRatio: "16/9" }}>
           <KakaoMap
             level={church.location?.level ?? 3}
             address={church.address}
@@ -75,11 +75,11 @@ export default function DirectionsSection() {
           ))}
 
           {/* Action buttons */}
-          <div className="flex flex-col gap-3 mt-4">
+          <div className="flex flex-col gap-5 mt-5">
             {["주차 안내", "셔틀 안내", "문의하기"].map((label) => (
               <button
                 key={label}
-                className="flex items-center justify-between px-6 py-5 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
+                className="flex items-center justify-between px-6 py-7 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
