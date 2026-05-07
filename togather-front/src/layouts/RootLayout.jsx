@@ -3,101 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import LogoIcon from "@/assets/icons/512x512.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
-import { SearchProvider, useSearch } from "@/contexts/SearchContext";
-
-const QUICK_KEYWORDS = ["주보", "교회소개", "교회행사", "갤러리", "성경읽기", "양육훈련"];
-
-function SearchOverlay() {
-  const { setOpen } = useSearch();
-  const onClose = () => setOpen(false);
-  const [visible, setVisible] = useState(false);
-  const [query, setQuery] = useState("");
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setVisible(true));
-    setTimeout(() => inputRef.current?.focus(), 50);
-    return () => cancelAnimationFrame(frame);
-  }, []);
-
-  useEffect(() => {
-    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  return (
-    <>
-      {/* 백드롭 */}
-      <div
-        className={`fixed inset-0 z-[60] bg-black/50 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
-        onClick={onClose}
-      />
-
-      {/* 검색 패널 — 상단에서 슬라이드 다운 */}
-      <div
-        className={`fixed top-0 left-0 right-0 z-[70] bg-white shadow-2xl transition-transform duration-300 ease-out ${visible ? "translate-y-0" : "-translate-y-full"}`}
-      >
-        <div className="max-w-[1920px] mx-auto px-8 pt-6 pb-5">
-          {/* 검색 입력 */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center gap-3 border-2 border-primary rounded-2xl px-5 py-3.5 focus-within:border-blue-7 transition-colors">
-              <svg className="w-5 h-5 text-grey-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && query.trim() && onClose()}
-                placeholder="검색어를 입력하세요"
-                className="flex-1 outline-none text-sub-tit-5 text-grey-10 placeholder:text-grey-4 bg-transparent"
-              />
-              {query && (
-                <button
-                  onClick={() => { setQuery(""); inputRef.current?.focus(); }}
-                  className="text-grey-4 hover:text-grey-7 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              )}
-              <button className="px-4 py-1.5 bg-primary text-white text-body-3 font-semibold rounded-lg hover:bg-blue-8 transition-colors shrink-0">
-                검색
-              </button>
-            </div>
-
-            {/* 닫기 */}
-            <button
-              onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-bluegrey-1 text-grey-6 hover:text-grey-10 transition-colors shrink-0"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* 추천 키워드 */}
-          <div className="mt-4 flex items-center gap-2 flex-wrap">
-            <span className="text-body-5 text-grey-5">추천</span>
-            {QUICK_KEYWORDS.map((kw) => (
-              <button
-                key={kw}
-                onClick={() => setQuery(kw)}
-                className="px-3 py-1 rounded-full bg-bluegrey-1 text-body-5 text-grey-8 hover:bg-blue-1 hover:text-primary transition-colors"
-              >
-                {kw}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function FloatingGyojeokbu() {
   const { currentUser } = useAuth();
@@ -303,25 +208,17 @@ function Footer() {
   );
 }
 
-function SearchOverlayController() {
-  const { open } = useSearch();
-  return open ? <SearchOverlay /> : null;
-}
-
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <SearchProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Outlet />
-          </main>
-          <Footer />
-          <FloatingGyojeokbu />
-          <SearchOverlayController />
-        </div>
-      </SearchProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+        <FloatingGyojeokbu />
+      </div>
     </AuthProvider>
   );
 }
