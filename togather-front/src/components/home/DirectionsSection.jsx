@@ -1,49 +1,89 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
-import SectionTitle from "@/components/common/SectionTitle";
 import KakaoMap from "@/components/common/KakaoMap";
-
-const DIRECTION_BUTTONS = [
-  { label: "주차 안내", icon: "🚗" },
-  { label: "셔틀 안내", icon: "🚌" },
-  { label: "문의하기", icon: "📞" },
-];
 
 export default function DirectionsSection() {
   const { church } = useChurch();
 
-  return (
-    <Section className="py-12 bg-white">
-      <div className="flex flex-col gap-6">
-        <SectionTitle>찾아오시는 길</SectionTitle>
-        <div className="flex gap-6">
-          {/* 지도 카드 */}
-          <div className="flex-1 border border-bluegrey-2 rounded-2xl p-6 flex flex-col gap-4 bg-white">
-            <KakaoMap
-              level={church.location.level}
-              address={church.address}
-              draggable={false}
-              className="w-full h-60 rounded-xl overflow-hidden"
-            />
-            <div className="flex items-start gap-2">
-              <svg className="w-4 h-4 text-grey-6 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-              </svg>
-              <p className="text-body-3 text-grey-7">{church.address}</p>
-            </div>
-          </div>
+  const infoRows = [
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path d="M12 2c4 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2-7 6-11z" />
+          <circle cx="12" cy="12" r="2.5" />
+        </svg>
+      ),
+      label: "주소",
+      content: church.address,
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path d="M4 6c0-1 1-2 2-2h2l2 5-2 2a12 12 0 0 0 5 5l2-2 5 2v2c0 1-1 2-2 2A18 18 0 0 1 4 6z" />
+        </svg>
+      ),
+      label: "전화",
+      content: `TEL ${church.tel}${church.fax ? ` · FAX ${church.fax}` : ""}`,
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="14" rx="2" />
+          <path d="M4 11h16M7 18v2M17 18v2" />
+          <circle cx="8" cy="15" r="1" />
+          <circle cx="16" cy="15" r="1" />
+        </svg>
+      ),
+      label: "대중교통",
+      content: "지하철 7호선 까치울역 2번 출구 · 버스 56, 74, 88번",
+    },
+  ];
 
-          {/* 버튼 그룹 */}
-          <div className="w-120 flex flex-col gap-6 my-2">
-            {DIRECTION_BUTTONS.map(({ label }) => (
+  return (
+    <Section className="py-[120px] bg-bluegrey-1">
+      <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0 mb-8">
+        찾아오시는 길
+      </h3>
+
+      <div className="grid gap-8" style={{ gridTemplateColumns: "1fr 540px" }}>
+        {/* Map */}
+        <div className="rounded-[20px] overflow-hidden bg-bluegrey-2" style={{ aspectRatio: "4/3" }}>
+          <KakaoMap
+            level={church.location?.level ?? 3}
+            address={church.address}
+            draggable={false}
+            className="w-full h-full"
+          />
+        </div>
+
+        {/* Info */}
+        <div className="flex flex-col gap-5 py-3">
+          {infoRows.map((row) => (
+            <div key={row.label} className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
+                {row.icon}
+              </div>
+              <div className="pt-1">
+                <span className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">
+                  {row.label}
+                </span>
+                <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">
+                  {row.content}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Action buttons */}
+          <div className="flex flex-col gap-3 mt-4">
+            {["주차 안내", "셔틀 안내", "문의하기"].map((label) => (
               <button
                 key={label}
-                className="flex-1 bg-primary hover:bg-blue-7 transition-colors rounded-xl px-6 flex items-center justify-between text-white group"
+                className="flex items-center justify-between px-6 py-5 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
-                <span className="text-sub-tit-4 font-bold py-6">{label}</span>
-                <svg className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                <span>{label}</span>
+                <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                 </svg>
               </button>
             ))}

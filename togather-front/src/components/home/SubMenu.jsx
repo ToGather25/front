@@ -1,39 +1,53 @@
 import { Link } from "react-router";
 
-const SUB_MENU_ITEMS = [
+const MENU_ITEMS = [
   {
+    id: "intro",
     label: "교회소개",
+    sub: "비전 · 섬기는 사람들 · 오시는 길",
     to: "/교회소개",
+    accent: "#3d5588",
     icon: (
-      <svg className="w-7 h-7 text-blue-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path d="M12 2v4M10 4h4M3 22V9l9-4 9 4v13M9 22v-7h6v7" />
       </svg>
     ),
   },
   {
-    label: "행사·소식",
+    id: "news",
+    label: "행사 ∙ 소식",
+    sub: "캘린더 · 갤러리 · 공지사항",
     to: "/교회행사",
+    accent: "#ff961b",
     icon: (
-      <svg className="w-7 h-7 text-blue-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path d="M3 10v4h4l10 5V5L7 10H3zM18 8a4 4 0 0 1 0 8" />
       </svg>
     ),
   },
   {
+    id: "bull",
     label: "스마트 주보",
+    sub: "주보 · 예배순서 · 교회 소식",
     to: "/주보",
+    accent: "#2098f3",
     icon: (
-      <svg className="w-7 h-7 text-blue-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path d="M6 3h9l4 4v14H6z" />
+        <path d="M15 3v5h4M9 12h7M9 16h7M9 8h3" />
       </svg>
     ),
   },
   {
+    id: "type",
     label: "성경 타자",
+    sub: "필사 · 통독 · 랭킹",
     to: "/말씀",
+    accent: "#00ba34",
     icon: (
-      <svg className="w-7 h-7 text-blue-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12" />
       </svg>
     ),
   },
@@ -41,21 +55,60 @@ const SUB_MENU_ITEMS = [
 
 export default function SubMenu() {
   return (
-    <section className="w-full bg-bluegrey-1 py-10">
+    <section className="w-full bg-bluegrey-1 py-[100px]">
       <div className="max-w-[1576px] mx-auto px-4">
-        <div className="grid grid-cols-4 gap-4">
-          {SUB_MENU_ITEMS.map((item) => (
+        {/* Section head */}
+        <div className="mb-8">
+          <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
+            SHORTCUTS
+          </p>
+          <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0">
+            바로가기 메뉴
+          </h3>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-4 gap-6">
+          {MENU_ITEMS.map((item, i) => (
             <Link
-              key={item.label}
+              key={item.id}
               to={item.to}
-              className="bg-white rounded-2xl shadow-sm border border-bluegrey-2 flex flex-col items-center justify-center gap-4 py-8 px-6 hover:shadow-md hover:border-blue-3 hover:-translate-y-0.5 transition-all"
+              className="group bg-white rounded-[20px] border border-bluegrey-2 p-7 flex items-center gap-5 hover:-translate-y-1 hover:border-blue-3 transition-all duration-200"
+              style={{ boxShadow: "0 6px 6px 0 rgba(0,0,0,.06)" }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-blue-1 flex items-center justify-center">
+              {/* Number */}
+              <div className="text-[13px] font-bold tracking-[0.14em] text-blue-6 shrink-0 self-start pt-0.5">
+                0{i + 1}
+              </div>
+
+              {/* Icon */}
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 text-white"
+                style={{ background: item.accent }}
+              >
                 {item.icon}
               </div>
-              <span className="text-sub-tit-4 font-semibold text-grey-11 tracking-tight">
-                {item.label}
-              </span>
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[18px] font-bold text-grey-12 tracking-[-0.4px] m-0 leading-tight">
+                  {item.label}
+                </p>
+                <p className="text-[13px] text-grey-6 mt-1.5 m-0 leading-snug">
+                  {item.sub}
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <svg
+                className="w-5 h-5 text-grey-4 shrink-0 group-hover:text-blue-6 group-hover:translate-x-0.5 transition-all"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
             </Link>
           ))}
         </div>
