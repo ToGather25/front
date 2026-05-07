@@ -1,24 +1,9 @@
 import { Outlet, Link, NavLink } from "react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import LogoIcon from "@/assets/icons/512x512.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 
-function FloatingGyojeokbu() {
-  const { currentUser } = useAuth();
-  if (!currentUser) return null;
-  return (
-    <Link
-      to="/교적부"
-      className="fixed bottom-8 right-8 z-50 flex items-center gap-2 px-5 py-5 rounded-full bg-primary text-white text-btn-2 font-semibold shadow-lg hover:bg-blue-8 active:scale-95 transition-all"
-    >
-      <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-      </svg>
-      교적부
-    </Link>
-  );
-}
 
 function Header() {
   const { church } = useChurch();
@@ -86,19 +71,31 @@ function Header() {
           )}
         </nav>
 
-        {/* Auth */}
-        <div className="flex items-center gap-4 shrink-0 justify-end">
+        {/* Utility */}
+        <div className="flex items-center gap-3 shrink-0 justify-end">
+          {/* 교적부 — primary pill */}
+          <Link
+            to="/교적부"
+            className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+          >
+            교적부
+          </Link>
+
+          {/* Divider */}
+          <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
+
+          {/* Auth */}
           {currentUser ? (
             <>
               <Link
                 to="/mypage"
-                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 마이페이지
               </Link>
               <button
                 onClick={logout}
-                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 로그아웃
               </button>
@@ -107,13 +104,13 @@ function Header() {
             <>
               <Link
                 to="/register"
-                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 회원가입
               </Link>
               <Link
                 to="/login"
-                className="text-body-3 font-semibold text-grey-9 hover:text-primary transition-colors"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 로그인
               </Link>
@@ -217,7 +214,6 @@ export default function RootLayout() {
           <Outlet />
         </main>
         <Footer />
-        <FloatingGyojeokbu />
       </div>
     </AuthProvider>
   );
