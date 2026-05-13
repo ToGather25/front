@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 
@@ -41,21 +41,57 @@ function Vision() {
   const { church } = useChurch();
   const { mainTitle, mainVerse, items } = church.vision;
 
+  const D    = 280;
+  const SIDE = 220;
+  const TH   = Math.round(SIDE * Math.sqrt(3) / 2);
+  const W    = SIDE + D;
+  const H    = TH + D;
+
+  const layout = [
+    { item: items[0], left: Math.round((W - D) / 2), top: 0,  z: 3, delay: "0s"    },
+    { item: items[1], left: 0,                        top: TH, z: 2, delay: "0.25s" },
+    { item: items[2], left: W - D,                    top: TH, z: 1, delay: "0.5s"  },
+  ];
+
   return (
     <div>
-      <div className="bg-grey-2 rounded-2xl p-6 text-center mb-10">
-        <p className="text-sub-tit-4 font-semibold text-grey-10">{mainTitle}</p>
-        <p className="text-body-2 text-grey-7 mt-1">{mainVerse}</p>
+      <style>{`
+        @keyframes circleIn {
+          from { opacity: 0; transform: scale(0.6); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+
+      <div className="bg-blue-1 rounded-2xl p-12 text-center mb-10">
+        <p className="text-sub-tit-4 font-semibold text-grey-9">{mainTitle}</p>
+        <p className="text-body-2 text-grey-8 mt-1">{mainVerse}</p>
       </div>
-      <div className="relative flex flex-col items-start gap-6 ml-20">
-        {items.map(({ label, description }, i) => (
-          <div key={label} className="flex items-center gap-8" style={{ marginLeft: i * 40 }}>
-            <div className="w-36 h-36 rounded-full border-2 border-bluegrey-3 flex items-center justify-center shrink-0">
-              <span className="text-sub-tit-4 font-semibold text-grey-9">{label}</span>
-            </div>
-            <p className="text-body-2 text-grey-7">── {description}</p>
+
+      <div className="flex flex-col items-center gap-4">
+        <p className="text-body-2 text-grey-7 text-center">{items[0].description}</p>
+
+        <div className="flex items-start gap-10">
+          <p className="text-body-2 text-grey-7 text-right w-40 pt-70">{items[1].description}</p>
+
+          <div className="relative shrink-0" style={{ width: W, height: H }}>
+            {layout.map(({ item, left, top, z, delay }) => (
+              <div
+                key={item.label}
+                className="absolute rounded-full border-2 border-grey-9 bg-transparent flex items-center justify-center"
+                style={{
+                  width: D, height: D, left, top, zIndex: z,
+                  animation: `circleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay} both`,
+                }}
+              >
+                <span className="text-sub-tit-3 font-semibold text-grey-10 text-center px-8 leading-tight">
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
+
+          <p className="text-body-2 text-grey-7 text-left w-40 pt-70">{items[2].description}</p>
+        </div>
       </div>
     </div>
   );
@@ -169,25 +205,77 @@ function Staff() {
 }
 
 // ── 교회 연혁 ──────────────────────────────────────────
+const HISTORY_ROW = ({ era, events, style }) => (
+  <div className="flex gap-10 mb-10" style={style}>
+    <h3 className="text-headline-3 font-bold text-grey-11 w-28 shrink-0 pt-1">{era}</h3>
+    <ul className="flex-1 flex flex-col gap-2">
+      {events.map(({ date, content }) => (
+        <li key={date} className="flex items-start gap-4 text-body-4">
+          <span className="text-blue-7 shrink-0">◆</span>
+          <span className="text-grey-7 w-24 shrink-0">{date}</span>
+          <span className="text-grey-9">{content}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 function History() {
   const { church } = useChurch();
+  const [expanded, setExpanded] = useState(false);
+  const moreRef = useRef(null);
+
+  const SHOW = 2;
+  const shown  = church.history.slice(0, SHOW);
+  const hidden = church.history.slice(SHOW);
 
   return (
-    <div className="max-w-2xl">
-      {church.history.map(({ era, events }) => (
-        <div key={era} className="flex gap-10 mb-10">
-          <h3 className="text-headline-3 font-bold text-grey-11 w-28 shrink-0 pt-1">{era}</h3>
-          <ul className="flex-1 flex flex-col gap-2">
-            {events.map(({ date, content }) => (
-              <li key={date} className="flex items-start gap-4 text-body-4">
-                <span className="text-blue-7 shrink-0">◆</span>
-                <span className="text-grey-7 w-24 shrink-0">{date}</span>
-                <span className="text-grey-9">{content}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="max-w-2xl ml-16">
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      {shown.map(({ era, events }, i) => (
+        <HISTORY_ROW
+          key={era}
+          era={era}
+          events={events}
+          style={{ animation: `fadeUp 0.5s ease-out ${i * 0.1}s both` }}
+        />
       ))}
+
+      {hidden.length > 0 && (
+        <>
+          <div
+            ref={moreRef}
+            style={{
+              maxHeight: expanded ? (moreRef.current ? moreRef.current.scrollHeight + "px" : "9999px") : "0px",
+              overflow: "hidden",
+              transition: "max-height 0.55s ease-in-out",
+            }}
+          >
+            {hidden.map(({ era, events }) => (
+              <HISTORY_ROW key={era} era={era} events={events} />
+            ))}
+          </div>
+
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="flex items-center gap-1.5 text-body-3 text-blue-7 font-semibold mt-2 mb-4 hover:text-blue-9 transition-colors"
+          >
+            {expanded ? "접기" : "더보기"}
+            <svg
+              className={`w-4 h-4 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+              fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </>
+      )}
     </div>
   );
 }
