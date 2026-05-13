@@ -1,6 +1,6 @@
 import { Outlet, Link, NavLink } from "react-router";
 import { useState } from "react";
-import LogoIcon from "@/assets/icons/512x512.png";
+import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 
@@ -27,10 +27,9 @@ function Header() {
         >
           <img
             src={church.logoUrl ?? LogoIcon}
-            className="h-9 w-9 object-contain"
+            className="h-22 w-22 object-contain"
             alt={`${church.name} 로고`}
           />
-          <span className="font-semibold text-grey-11 text-body-2 whitespace-nowrap">{church.name}</span>
         </Link>
 
         {/* GNB */}
@@ -186,10 +185,9 @@ function Footer() {
           <div className="flex items-center gap-2.5 h-[52px]">
             <img
               src={church.logoUrl ?? LogoIcon}
-              className="h-12 w-12 object-contain"
+              className="h-22 w-22 object-contain"
               alt={`${church.name} 로고`}
             />
-            <span className="font-semibold text-grey-10 text-sub-tit-5 whitespace-nowrap">{church.name}</span>
           </div>
 
           {/* Info */}

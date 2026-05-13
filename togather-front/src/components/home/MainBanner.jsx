@@ -54,7 +54,7 @@ export default function MainBanner() {
             className="w-1.5 h-1.5 rounded-full bg-blue-4"
             style={{ boxShadow: "0 0 0 4px rgba(160,196,107,.25)" }}
           />
-          <span>2026 봄 — 함께 드리는 예배</span>
+          <span>2026년 — 함께 드리는 예배</span>
         </div>
 
         {/* Verse */}
