@@ -45,8 +45,8 @@ export default function DirectionsSection() {
         찾아오시는 길
       </h3>
 
-      <div className="grid gap-8" style={{ gridTemplateColumns: "1fr 540px" }}>
-        {/* Map */}
+      <div className="grid gap-8 items-stretch" style={{ gridTemplateColumns: "1fr 540px" }}>
+        {/* Map — 16:9 비율로 높이 결정 */}
         <div className="rounded-[20px] overflow-hidden bg-bluegrey-2" style={{ aspectRatio: "16/9" }}>
           <KakaoMap
             level={church.location?.level ?? 3}
@@ -56,30 +56,33 @@ export default function DirectionsSection() {
           />
         </div>
 
-        {/* Info */}
-        <div className="flex flex-col gap-5 py-3">
-          {infoRows.map((row) => (
-            <div key={row.label} className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
-                {row.icon}
+        {/* Info — 지도 높이에 맞춰 flex 분배 */}
+        <div className="h-full flex flex-col py-3">
+          {/* 주소·전화·교통 정보 */}
+          <div className="flex flex-col gap-5 shrink-0">
+            {infoRows.map((row) => (
+              <div key={row.label} className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
+                  {row.icon}
+                </div>
+                <div className="pt-1">
+                  <span className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">
+                    {row.label}
+                  </span>
+                  <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">
+                    {row.content}
+                  </p>
+                </div>
               </div>
-              <div className="pt-1">
-                <span className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">
-                  {row.label}
-                </span>
-                <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">
-                  {row.content}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-col gap-5 mt-5">
+          {/* Action buttons — 남은 공간 균등 분배 */}
+          <div className="flex flex-col gap-3 mt-6 flex-1 min-h-0">
             {["주차 안내", "셔틀 안내", "문의하기"].map((label) => (
               <button
                 key={label}
-                className="flex items-center justify-between px-6 py-7 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
+                className="flex-1 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
