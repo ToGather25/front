@@ -22,6 +22,8 @@ import WordPraise from "@/pages/WordPraise/WordPraise";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 
 const router = createBrowserRouter([
+  { path: "말씀/필사", element: <BibleWrite /> },
+  { path: "말씀/읽기", element: <BibleRead /> },
   {
     path: "/",
     element: <RootLayout />,
@@ -37,8 +39,6 @@ const router = createBrowserRouter([
       { path: "말씀/방송", element: <WordBroadcast /> },
       { path: "말씀/설교", element: <WordSermon /> },
       { path: "말씀/찬양", element: <WordPraise /> },
-      { path: "말씀/읽기", element: <BibleRead /> },
-      { path: "말씀/필사", element: <BibleWrite /> },
       // 주일학교
       { path: "주일학교", element: <SundaySchool /> },
       { path: "주일학교/:dept", element: <SundaySchool /> },
