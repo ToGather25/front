@@ -1,0 +1,514 @@
+// ToGather Backend — Prisma Schema
+// DB: PostgreSQL 16
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// ENUM
+// ─────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  CHURCH_ADMIN
+  PASTOR
+  LEADER
+  MEMBER
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum NoticeCategory {
+  NOTICE
+  EVENT
+  NEWS
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────
+// TENANT
+// ─────────────────────────────────────────
+
+model ChurchPlan {
+  id           String   @id @default(uuid())
+  name         String   // free | standard | premium
+  maxMembers   Int      @map("max_members")
+  priceMonthly Int      @map("price_monthly")
+  churches     Church[]
+
+  @@map("church_plans")
+}
+
+model Church {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  name      String
+  logoUrl   String?  @map("logo_url")
+  address   String?
+  tel       String?
+  fax       String?
+  email     String?
+  plan      ChurchPlan? @relation(fields: [planId], references: [id])
+  planId    String?  @map("plan_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users             User[]
+  members           Member[]
+  districts         District[]
+  smallGroups       SmallGroup[]
+  worshipSchedules  WorshipSchedule[]
+  jubos             Jubo[]
+  notices           Notice[]
+  events            Event[]
+  galleryCommunities GalleryCommunity[]
+  galleryAlbums     GalleryAlbum[]
+  bibleReadLogs     BibleReadLog[]
+  bibleWriteLogs    BibleWriteLog[]
+  churchStaff       ChurchStaff[]
+  churchHistory     ChurchHistory[]
+
+  @@map("churches")
+}
+
+// ─────────────────────────────────────────
+// AUTH
+// ─────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  church       Church   @relation(fields: [churchId], references: [id])
+  churchId     String   @map("church_id")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         Role     @default(MEMBER)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  member         Member?
+  refreshTokens  RefreshToken[]
+  passwordResets PasswordReset[]
+  notices        Notice[]
+  events         Event[]
+  galleryPhotos  GalleryPhoto[]
+  bibleReadLogs  BibleReadLog[]
+  bibleWriteLogs BibleWriteLog[]
+  bibleFavorites BibleFavorite[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @map("user_id")
+  familyId  String    @map("family_id")  // reuse detection
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+
+  @@map("refresh_tokens")
+}
+
+model PasswordReset {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+
+  @@map("password_resets")
+}
+
+// ─────────────────────────────────────────
+// MEMBER (교적부)
+// ─────────────────────────────────────────
+
+model District {
+  id       String  @id @default(uuid())
+  church   Church  @relation(fields: [churchId], references: [id])
+  churchId String  @map("church_id")
+  name     String
+  leader   Member? @relation("DistrictLeader", fields: [leaderId], references: [id])
+  leaderId String? @map("leader_id")
+  members  Member[] @relation("DistrictMembers")
+
+  @@map("districts")
+}
+
+model SmallGroup {
+  id       String  @id @default(uuid())
+  church   Church  @relation(fields: [churchId], references: [id])
+  churchId String  @map("church_id")
+  name     String
+  leader   Member? @relation("SmallGroupLeader", fields: [leaderId], references: [id])
+  leaderId String? @map("leader_id")
+  members  Member[] @relation("SmallGroupMembers")
+
+  @@map("small_groups")
+}
+
+model Member {
+  id           String    @id @default(uuid())
+  church       Church    @relation(fields: [churchId], references: [id])
+  churchId     String    @map("church_id")
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?   @unique @map("user_id")
+  name         String
+  nameRoman    String?   @map("name_roman")
+  gender       Gender?
+  birthDate    DateTime? @map("birth_date") @db.Date
+  phone        String?
+  email        String?
+  address      String?
+  district     District? @relation("DistrictMembers", fields: [districtId], references: [id])
+  districtId   String?   @map("district_id")
+  smallGroup   SmallGroup? @relation("SmallGroupMembers", fields: [smallGroupId], references: [id])
+  smallGroupId String?   @map("small_group_id")
+  role         String?
+  department   String?
+  baptismDate  DateTime? @map("baptism_date") @db.Date
+  registeredAt DateTime? @map("registered_at") @db.Date
+  notes        String?
+  avatarTone   Int?      @map("avatar_tone")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  districtLead    District[]    @relation("DistrictLeader")
+  smallGroupLead  SmallGroup[]  @relation("SmallGroupLeader")
+  families        MemberFamily[]
+  history         MemberHistory[]
+  attendance      MemberAttendance[]
+  eventRegs       EventRegistration[]
+
+  @@map("members")
+}
+
+model MemberFamily {
+  id       String  @id @default(uuid())
+  member   Member  @relation(fields: [memberId], references: [id])
+  memberId String  @map("member_id")
+  rel      String                        // 배우자·부·모·자녀 등
+  name     String
+  phone    String?
+  linked   Member? @relation("LinkedMember", fields: [linkedId], references: [id])
+  linkedId String? @map("linked_id")
+
+  @@map("member_families")
+}
+
+// self-ref 방지를 위한 별도 relation name 처리
+// Prisma에서 MemberFamily.linked → Member (별도 relation 정의 필요)
+// 실제 구현 시 Member 모델에 linkedFamilies 역방향 추가
+
+model MemberHistory {
+  id       String @id @default(uuid())
+  member   Member @relation(fields: [memberId], references: [id])
+  memberId String @map("member_id")
+  year     Int
+  content  String
+
+  @@map("member_history")
+}
+
+model WorshipSchedule {
+  id         String  @id @default(uuid())
+  church     Church  @relation(fields: [churchId], references: [id])
+  churchId   String  @map("church_id")
+  name       String
+  dayOfWeek  Int     @map("day_of_week")  // 0=일 ~ 6=토
+  time       String                        // "10:30" 형식
+  location   String?
+  isActive   Boolean @default(true) @map("is_active")
+
+  attendance MemberAttendance[]
+
+  @@map("worship_schedules")
+}
+
+model MemberAttendance {
+  id         String          @id @default(uuid())
+  churchId   String          @map("church_id")
+  member     Member          @relation(fields: [memberId], references: [id])
+  memberId   String          @map("member_id")
+  service    WorshipSchedule @relation(fields: [serviceId], references: [id])
+  serviceId  String          @map("service_id")
+  attendedAt DateTime        @map("attended_at")
+  note       String?
+
+  @@map("member_attendance")
+}
+
+// ─────────────────────────────────────────
+// JUBO (주보)
+// ─────────────────────────────────────────
+
+model Jubo {
+  id          String   @id @default(uuid())
+  church      Church   @relation(fields: [churchId], references: [id])
+  churchId    String   @map("church_id")
+  date        DateTime @db.Date
+  title       String?
+  coverImage  String?  @map("cover_image")
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  worshipOrders JuboWorshipOrder[]
+  volunteers    JuboVolunteer[]
+  news          JuboNews[]
+  offerings     JuboOffering[]
+  supports      JuboSupport[]
+
+  @@unique([churchId, date])
+  @@map("jubo")
+}
+
+model JuboWorshipOrder {
+  id      String @id @default(uuid())
+  jubo    Jubo   @relation(fields: [juboId], references: [id], onDelete: Cascade)
+  juboId  String @map("jubo_id")
+  seq     Int
+  role    String
+  content String
+  person  String?
+
+  @@map("jubo_worship_order")
+}
+
+model JuboVolunteer {
+  id     String @id @default(uuid())
+  jubo   Jubo   @relation(fields: [juboId], references: [id], onDelete: Cascade)
+  juboId String @map("jubo_id")
+  dept   String
+  person String
+
+  @@map("jubo_volunteers")
+}
+
+model JuboNews {
+  id     String @id @default(uuid())
+  jubo   Jubo   @relation(fields: [juboId], references: [id], onDelete: Cascade)
+  juboId String @map("jubo_id")
+  seq    Int
+  content String
+
+  @@map("jubo_news")
+}
+
+model JuboOffering {
+  id       String @id @default(uuid())
+  jubo     Jubo   @relation(fields: [juboId], references: [id], onDelete: Cascade)
+  juboId   String @map("jubo_id")
+  category String
+  amount   Int
+  person   String?
+
+  @@map("jubo_offering")
+}
+
+model JuboSupport {
+  id     String @id @default(uuid())
+  jubo   Jubo   @relation(fields: [juboId], references: [id], onDelete: Cascade)
+  juboId String @map("jubo_id")
+  target String
+  amount Int
+  note   String?
+
+  @@map("jubo_support")
+}
+
+// ─────────────────────────────────────────
+// CONTENT (공지·행사·갤러리)
+// ─────────────────────────────────────────
+
+model Notice {
+  id          String         @id @default(uuid())
+  church      Church         @relation(fields: [churchId], references: [id])
+  churchId    String         @map("church_id")
+  author      User           @relation(fields: [authorId], references: [id])
+  authorId    String         @map("author_id")
+  category    NoticeCategory @default(NOTICE)
+  title       String
+  body        String
+  pinned      Boolean        @default(false)
+  publishedAt DateTime?      @map("published_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@map("notices")
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  church      Church   @relation(fields: [churchId], references: [id])
+  churchId    String   @map("church_id")
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String   @map("author_id")
+  title       String
+  description String?
+  location    String?
+  startAt     DateTime @map("start_at")
+  endAt       DateTime @map("end_at")
+  coverImage  String?  @map("cover_image")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  attachments   EventAttachment[]
+  registrations EventRegistration[]
+
+  @@map("events")
+}
+
+model EventAttachment {
+  id       String @id @default(uuid())
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId  String @map("event_id")
+  url      String
+  filename String
+
+  @@map("event_attachments")
+}
+
+model EventRegistration {
+  id        String             @id @default(uuid())
+  event     Event              @relation(fields: [eventId], references: [id])
+  eventId   String             @map("event_id")
+  member    Member             @relation(fields: [memberId], references: [id])
+  memberId  String             @map("member_id")
+  status    RegistrationStatus @default(PENDING)
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  @@unique([eventId, memberId])
+  @@map("event_registrations")
+}
+
+model GalleryCommunity {
+  id       String @id @default(uuid())
+  church   Church @relation(fields: [churchId], references: [id])
+  churchId String @map("church_id")
+  name     String
+  orderIdx Int    @default(0) @map("order_idx")
+
+  albums GalleryAlbum[]
+
+  @@map("gallery_communities")
+}
+
+model GalleryAlbum {
+  id           String           @id @default(uuid())
+  church       Church           @relation(fields: [churchId], references: [id])
+  churchId     String           @map("church_id")
+  community    GalleryCommunity @relation(fields: [communityId], references: [id])
+  communityId  String           @map("community_id")
+  title        String
+  date         DateTime         @db.Date
+  coverPhotoId String?          @map("cover_photo_id")
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  photos GalleryPhoto[]
+
+  @@map("gallery_albums")
+}
+
+model GalleryPhoto {
+  id          String       @id @default(uuid())
+  album       GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId     String       @map("album_id")
+  url         String
+  thumbUrl    String?      @map("thumb_url")
+  caption     String?
+  orderIdx    Int          @default(0) @map("order_idx")
+  uploadedBy  User         @relation(fields: [uploadedById], references: [id])
+  uploadedById String     @map("uploaded_by")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  @@map("gallery_photos")
+}
+
+// ─────────────────────────────────────────
+// BIBLE
+// ─────────────────────────────────────────
+
+model BibleReadLog {
+  id        String   @id @default(uuid())
+  church    Church   @relation(fields: [churchId], references: [id])
+  churchId  String   @map("church_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  book      String
+  chapter   Int
+  verse     Int
+  checkedAt DateTime @map("checked_at")
+
+  @@unique([userId, book, chapter, verse])
+  @@map("bible_read_logs")
+}
+
+model BibleWriteLog {
+  id        String   @id @default(uuid())
+  church    Church   @relation(fields: [churchId], references: [id])
+  churchId  String   @map("church_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  book      String
+  chapter   Int
+  verse     Int
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("bible_write_logs")
+}
+
+model BibleFavorite {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  book      String
+  chapter   Int
+  verse     Int
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, book, chapter, verse])
+  @@map("bible_favorites")
+}
+
+// ─────────────────────────────────────────
+// STATIC (교회 소개)
+// ─────────────────────────────────────────
+
+model ChurchStaff {
+  id       String @id @default(uuid())
+  church   Church @relation(fields: [churchId], references: [id])
+  churchId String @map("church_id")
+  name     String
+  title    String
+  photoUrl String? @map("photo_url")
+  orderIdx Int    @default(0) @map("order_idx")
+
+  @@map("church_staff")
+}
+
+model ChurchHistory {
+  id       String @id @default(uuid())
+  church   Church @relation(fields: [churchId], references: [id])
+  churchId String @map("church_id")
+  year     Int
+  month    Int?
+  content  String
+
+  @@map("church_history")
+}
