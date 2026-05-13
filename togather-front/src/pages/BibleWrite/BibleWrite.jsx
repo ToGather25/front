@@ -145,6 +145,13 @@ function MyVersesView({ completed }) {
 }
 
 // ── 내 현황 ─────────────────────────────────────────────
+function progressStyle(pct) {
+  if (pct <= 25) return { bg: "bg-blue-2", text: "text-blue-9", sub: "text-blue-6", circle: "border-blue-4" };
+  if (pct <= 50) return { bg: "bg-blue-3", text: "text-blue-9", sub: "text-blue-7", circle: "border-blue-5" };
+  if (pct <= 75) return { bg: "bg-blue-5", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
+  return               { bg: "bg-blue-7", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
+}
+
 const BOOK_PROGRESS_WRITE = {
   창: 100, 출: 100, 레: 73, 민: 100, 신: 73, 수: 17, 삿: 21, 룻: 0,
   삼상: 0, 삼하: 0, 왕상: 0, 왕하: 0, 대상: 0, 대하: 0, 스: 0, 느: 0, 에: 0,
@@ -247,13 +254,26 @@ function MyStatusView() {
             {listBooks.map(abbr => {
               const pct = BOOK_PROGRESS_WRITE[abbr] ?? 0;
               const done = pct === 100;
+              const inProgress = pct > 0 && pct < 100;
+              const s = inProgress ? progressStyle(pct) : null;
               return (
-                <div key={abbr} className={`flex items-center px-4 py-3 rounded-xl ${done ? "bg-grey-1" : "bg-primary"}`}>
-                  <span className={`text-body-3 font-medium ${done ? "text-grey-9" : "text-white"}`}>{BOOK_MAP[abbr]}</span>
-                  <span className={`ml-auto mr-4 text-body-3 ${done ? "text-grey-5" : "text-white/70"}`}>{pct}%</span>
+                <div
+                  key={abbr}
+                  className={`flex items-center px-4 py-3 rounded-xl ${
+                    done ? "bg-grey-2" : inProgress ? s.bg : "bg-white border border-bluegrey-2"
+                  }`}
+                >
+                  <span className={`text-body-3 font-medium ${done ? "text-grey-6" : inProgress ? s.text : "text-grey-5"}`}>
+                    {BOOK_MAP[abbr]}
+                  </span>
+                  <span className={`ml-auto mr-3 text-body-4 ${done ? "text-grey-5" : inProgress ? s.sub : "text-grey-4"}`}>
+                    {pct > 0 ? `${pct}%` : ""}
+                  </span>
                   {done
-                    ? <svg className="w-6 h-6 text-grey-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
-                    : <div className="w-6 h-6 rounded-full bg-white shrink-0" />
+                    ? <svg className="w-5 h-5 text-grey-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
+                    : inProgress
+                      ? <div className={`w-5 h-5 rounded-full border-2 ${s.circle} shrink-0`} />
+                      : <div className="w-5 h-5 rounded-full border-2 border-bluegrey-2 shrink-0" />
                   }
                 </div>
               );

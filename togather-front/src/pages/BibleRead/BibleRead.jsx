@@ -27,50 +27,89 @@ function getChapters(bookFullName) {
 }
 
 // ── 랭킹 ───────────────────────────────────────────────
-const MOCK_RANKING = [
-  { rank: 1, name: "김민준", count: 245 },
-  { rank: 2, name: "이서연", count: 198 },
-  { rank: 3, name: "박지호", count: 176 },
-  { rank: 4, name: "최유진", count: 134 },
-  { rank: 5, name: "정도현", count: 112 },
-  { rank: 6, name: "나", count: 87, isMe: true },
-  { rank: 7, name: "강민서", count: 65 },
-  { rank: 8, name: "오준혁", count: 43 },
-  { rank: 9, name: "한지수", count: 31 },
-  { rank: 10, name: "임채원", count: 22 },
+const MY_RANK = { rank: 22, name: "나", count: 20511, trend: 0 };
+const MOCK_MONTHLY = [
+  { rank: 1, name: "요한", count: 12345566 },
+  { rank: 2, name: "베드로", count: 12344433 },
+  { rank: 3, name: "김미정", count: 3342343 },
+  { rank: 4, name: "김수빈", count: 5638383 },
+  { rank: 5, name: "이미자", count: 234324 },
+  { rank: 6, name: "박은진", count: 123455 },
+  { rank: 7, name: "미수리", count: 122222 },
+];
+const MOCK_TOTAL = [
+  { rank: 1, name: "요한", count: 12345566 },
+  { rank: 2, name: "베드로", count: 12344433 },
+  { rank: 3, name: "김미정", count: 3342343 },
+  { rank: 4, name: "김수빈", count: 5638383 },
+  { rank: 5, name: "이미자", count: 234324 },
+  { rank: 6, name: "박은진", count: 123455 },
+  { rank: 7, name: "미수리", count: 122222 },
+];
+const NEIGHBORS = [
+  { rank: MY_RANK.rank + 1, name: "임예원", count: 14408, trend: -1 },
+  MY_RANK,
+  { rank: MY_RANK.rank - 1, name: "임예빈", count: 21511, trend: 1 },
 ];
 
-const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
+function TrendIcon({ trend }) {
+  if (trend > 0) return <span className="text-[10px] text-blue-7">▲</span>;
+  if (trend < 0) return <span className="text-[10px] text-red-400">▼</span>;
+  return null;
+}
+
+function RankTable({ title, rows }) {
+  return (
+    <div className="flex-1 min-w-0">
+      <div className="bg-grey-2 rounded-t-xl px-4 py-2.5 text-center">
+        <span className="text-body-3 font-semibold text-grey-10">{title}</span>
+      </div>
+      <div className="border border-t-0 border-bluegrey-2 rounded-b-xl overflow-hidden">
+        {rows.map(({ rank, name, count }, i) => (
+          <div key={rank} className={`flex items-center px-4 py-3 gap-4 ${i < rows.length - 1 ? "border-b border-bluegrey-2" : ""}`}>
+            <span className="w-5 text-body-4 text-grey-7 font-medium shrink-0">{rank}</span>
+            <span className="flex-1 text-body-3 text-grey-10">{name}</span>
+            <span className="text-body-3 text-grey-9">{count.toLocaleString()}절</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function RankingView() {
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 max-w-xl w-full mx-auto">
-      <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">성경 읽기 랭킹</h2>
-      <div className="flex flex-col gap-2">
-        {MOCK_RANKING.map(({ rank, name, count, isMe }) => (
-          <div
-            key={rank}
-            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border transition-colors ${
-              isMe
-                ? "bg-blue-1 border-blue-3"
-                : "bg-white border-bluegrey-2"
-            }`}
-          >
-            <span className="w-8 text-center text-body-3 font-bold text-grey-7">
-              {MEDAL[rank] ?? rank}
-            </span>
-            <div className="w-9 h-9 rounded-full bg-blue-2 flex items-center justify-center shrink-0">
-              <span className="text-body-4 font-semibold text-blue-8">{name[0]}</span>
+    <div className="flex-1 overflow-y-auto px-10 py-8">
+      {/* 내 순위 — 3인 원형 */}
+      <div className="flex items-end justify-center gap-8 mb-10">
+        {NEIGHBORS.map((u, i) => {
+          const isMe = u.name === "나";
+          return (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div
+                className={`rounded-full flex items-center justify-center font-bold text-grey-10 ${
+                  isMe
+                    ? "w-36 h-36 bg-grey-6 text-white text-sub-tit-2"
+                    : "w-28 h-28 bg-grey-2 text-sub-tit-3"
+                }`}
+              >
+                {u.name}
+              </div>
+              <div className="text-center">
+                <p className="text-body-3 font-medium text-grey-9 flex items-center justify-center gap-1">
+                  {u.rank}위 <TrendIcon trend={u.trend} />
+                </p>
+                <p className="text-body-4 text-grey-5">{u.count.toLocaleString()}절</p>
+              </div>
             </div>
-            <span className={`flex-1 text-body-3 font-medium ${isMe ? "text-blue-8 font-semibold" : "text-grey-10"}`}>
-              {name}{isMe && " (나)"}
-            </span>
-            <div className="flex flex-col items-end gap-0.5">
-              <span className="text-body-4 font-bold text-grey-10">{count.toLocaleString()}</span>
-              <span className="text-body-5 text-grey-5">구절</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      {/* 순위표 2열 */}
+      <div className="flex gap-6">
+        <RankTable title="월간 순위표" rows={MOCK_MONTHLY} />
+        <RankTable title="전체 순위표" rows={MOCK_TOTAL} />
       </div>
     </div>
   );
@@ -163,6 +202,13 @@ function MyVersesView({ saved, onUnsave }) {
 }
 
 // ── 내 현황 ─────────────────────────────────────────────
+function progressStyle(pct) {
+  if (pct <= 25) return { bg: "bg-blue-2", text: "text-blue-9", sub: "text-blue-6", circle: "border-blue-4" };
+  if (pct <= 50) return { bg: "bg-blue-3", text: "text-blue-9", sub: "text-blue-7", circle: "border-blue-5" };
+  if (pct <= 75) return { bg: "bg-blue-5", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
+  return               { bg: "bg-blue-7", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
+}
+
 const BOOK_PROGRESS_READ = {
   창: 100, 출: 85, 레: 40, 민: 100, 신: 60, 수: 30, 삿: 0, 룻: 100,
   삼상: 0, 삼하: 0, 왕상: 0, 왕하: 0, 대상: 0, 대하: 0, 스: 0, 느: 0, 에: 0,
@@ -265,13 +311,26 @@ function MyStatusView() {
             {listBooks.map(abbr => {
               const pct = BOOK_PROGRESS_READ[abbr] ?? 0;
               const done = pct === 100;
+              const inProgress = pct > 0 && pct < 100;
+              const s = inProgress ? progressStyle(pct) : null;
               return (
-                <div key={abbr} className={`flex items-center px-4 py-3 rounded-xl ${done ? "bg-grey-1" : "bg-primary"}`}>
-                  <span className={`text-body-3 font-medium ${done ? "text-grey-9" : "text-white"}`}>{BOOK_MAP[abbr]}</span>
-                  <span className={`ml-auto mr-4 text-body-3 ${done ? "text-grey-5" : "text-white/70"}`}>{pct}%</span>
+                <div
+                  key={abbr}
+                  className={`flex items-center px-4 py-3 rounded-xl ${
+                    done ? "bg-grey-2" : inProgress ? s.bg : "bg-white border border-bluegrey-2"
+                  }`}
+                >
+                  <span className={`text-body-3 font-medium ${done ? "text-grey-6" : inProgress ? s.text : "text-grey-5"}`}>
+                    {BOOK_MAP[abbr]}
+                  </span>
+                  <span className={`ml-auto mr-3 text-body-4 ${done ? "text-grey-5" : inProgress ? s.sub : "text-grey-4"}`}>
+                    {pct > 0 ? `${pct}%` : ""}
+                  </span>
                   {done
-                    ? <svg className="w-6 h-6 text-grey-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
-                    : <div className="w-6 h-6 rounded-full bg-white shrink-0" />
+                    ? <svg className="w-5 h-5 text-grey-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
+                    : inProgress
+                      ? <div className={`w-5 h-5 rounded-full border-2 ${s.circle} shrink-0`} />
+                      : <div className="w-5 h-5 rounded-full border-2 border-bluegrey-2 shrink-0" />
                   }
                 </div>
               );
