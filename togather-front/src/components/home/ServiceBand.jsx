@@ -40,9 +40,6 @@ export default function ServiceBand() {
             onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 14px 24px -8px rgba(0,0,0,.10)")}
             onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 14px 24px -8px rgba(0,0,0,0)")}
           >
-            <div className="text-[13px] font-bold tracking-[0.14em] text-blue-6 mb-7">
-              0{i + 1}
-            </div>
             <div className="text-[20px] font-bold tracking-[-0.4px] text-grey-12 leading-[1.3]">
               {s.name}
             </div>

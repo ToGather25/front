@@ -76,11 +76,6 @@ export default function SubMenu() {
               className="group bg-white rounded-[20px] border border-bluegrey-2 p-7 flex items-center gap-5 hover:-translate-y-1 hover:border-blue-3 transition-all duration-200"
               style={{ boxShadow: "0 6px 6px 0 rgba(0,0,0,.06)" }}
             >
-              {/* Number */}
-              <div className="text-[13px] font-bold tracking-[0.14em] text-blue-6 shrink-0 self-start pt-0.5">
-                0{i + 1}
-              </div>
-
               {/* Icon */}
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 text-white"
