@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
+
+const SECTION_TAB_MAP = {
+  구역: "구역모임",
+  묵상: "오늘의 묵상",
+  제자훈련: "제자훈련",
+  프로그램: "양육프로그램",
+  게시판: "양육/훈련 게시판",
+};
 
 const TABS = ["구역모임", "오늘의 묵상", "제자훈련", "양육프로그램", "양육/훈련 게시판", "성경읽기/쓰기"];
 
@@ -87,7 +95,8 @@ const CATEGORY_COLORS = {
 };
 
 export default function Nurture() {
-  const [activeTab, setActiveTab] = useState("구역모임");
+  const { section } = useParams();
+  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "구역모임");
 
   return (
     <div>

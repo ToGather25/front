@@ -1,4 +1,12 @@
 import { useState } from "react";
+import { useParams } from "react-router";
+
+const SECTION_TAB_MAP = {
+  전도회: "전도회 소개",
+  국내: "국내·해외 선교",
+  해외: "국내·해외 선교",
+  소식: "선교지 소식",
+};
 
 const TABS = ["전도회 소개", "국내·해외 선교", "선교지 소식"];
 
@@ -67,8 +75,9 @@ const MISSION_NEWS = [
 ];
 
 export default function Mission() {
-  const [activeTab, setActiveTab] = useState("전도회 소개");
-  const [missionType, setMissionType] = useState("국내");
+  const { section } = useParams();
+  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "전도회 소개");
+  const [missionType, setMissionType] = useState(section === "해외" ? "해외" : "국내");
 
   return (
     <div>

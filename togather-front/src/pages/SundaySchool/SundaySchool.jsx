@@ -1,4 +1,12 @@
 import { useState } from "react";
+import { useParams } from "react-router";
+
+const DEPT_PARAM_MAP = {
+  유치부: "유치부",
+  초등부: "초등부",
+  중고등부: "중·고등부",
+  청년부: "대학·청년부",
+};
 
 const DEPARTMENTS = [
   {
@@ -123,7 +131,8 @@ function DeptContent({ dept }) {
 }
 
 export default function SundaySchool() {
-  const [activeTab, setActiveTab] = useState(DEPARTMENTS[0].key);
+  const { dept: deptParam } = useParams();
+  const [activeTab, setActiveTab] = useState(DEPT_PARAM_MAP[deptParam] ?? DEPARTMENTS[0].key);
   const dept = DEPARTMENTS.find((d) => d.key === activeTab);
 
   return (

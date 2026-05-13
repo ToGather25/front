@@ -11,11 +11,20 @@ function Header() {
   const NAV_ITEMS = church.nav;
   const [openMenu, setOpenMenu] = useState(null);
 
+  const activeItem = NAV_ITEMS.find((n) => n.label === openMenu);
+
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-bluegrey-2">
+    <header
+      className="sticky top-0 z-50 bg-white border-b border-bluegrey-2"
+      onMouseLeave={() => setOpenMenu(null)}
+    >
       <div className="max-w-[1920px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0 w-[180px]">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 shrink-0 w-[180px]"
+          onMouseEnter={() => setOpenMenu(null)}
+        >
           <img
             src={church.logoUrl ?? LogoIcon}
             className="h-9 w-9 object-contain"
@@ -25,68 +34,56 @@ function Header() {
         </Link>
 
         {/* GNB */}
-        <nav className="flex items-center gap-10">
-          {NAV_ITEMS.map((item) =>
-            item.children ? (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => setOpenMenu(item.label)}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
-                <button className="text-body-2 font-medium text-grey-10 hover:text-primary transition-colors py-2 whitespace-nowrap">
+        <nav className="flex items-center gap-10 h-full">
+          {NAV_ITEMS.map((item) => (
+            <div
+              key={item.label}
+              className="flex items-center h-full"
+              onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
+            >
+              {item.children ? (
+                <button
+                  className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
+                    openMenu === item.label
+                      ? "text-primary"
+                      : "text-grey-10 hover:text-primary"
+                  }`}
+                >
                   {item.label}
                 </button>
-                {openMenu === item.label && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-bluegrey-2 rounded-xl shadow-lg py-2 min-w-36 z-50">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.to}
-                        to={child.to}
-                        className="block px-4 py-2 text-body-3 text-grey-9 hover:bg-bluegrey-1 hover:text-primary transition-colors whitespace-nowrap"
-                        onClick={() => setOpenMenu(null)}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <NavLink
-                key={item.label}
-                to={item.to}
-                end
-                className={({ isActive }) =>
-                  `text-body-2 font-medium transition-colors whitespace-nowrap ${
-                    isActive
-                      ? "text-primary font-bold border-b-2 border-primary pb-0.5"
-                      : "text-grey-10 hover:text-primary"
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            )
-          )}
+              ) : (
+                <NavLink
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `text-body-2 font-medium transition-colors whitespace-nowrap ${
+                      isActive
+                        ? "text-primary font-bold border-b-2 border-primary pb-0.5"
+                        : "text-grey-10 hover:text-primary"
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              )}
+            </div>
+          ))}
         </nav>
 
         {/* Utility */}
-        <div className="flex items-center gap-3 shrink-0 justify-end">
-          {/* 교적부 — primary pill */}
-          <Link
-            to="/교적부"
-            className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
-          >
-            교적부
-          </Link>
-
-          {/* Divider */}
-          <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
-
-          {/* Auth */}
+        <div
+          className="flex items-center gap-2.5 shrink-0 justify-end"
+          onMouseEnter={() => setOpenMenu(null)}
+        >
           {currentUser ? (
             <>
+              <Link
+                to="/교적부"
+                className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+              >
+                교적부
+              </Link>
+              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
               <Link
                 to="/mypage"
                 className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
@@ -110,7 +107,7 @@ function Header() {
               </Link>
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
               >
                 로그인
               </Link>
@@ -118,6 +115,62 @@ function Header() {
           )}
         </div>
       </div>
+
+      {/* Mega dropdown — 전체 메뉴 */}
+      {openMenu && (
+        <div
+          className="absolute left-0 right-0 bg-white shadow-xl"
+          style={{
+            animation: "megaFadeIn 0.15s ease-out",
+            borderBottom: "2px solid var(--color-primary)",
+          }}
+        >
+          <style>{`
+            @keyframes megaFadeIn {
+              from { opacity: 0; transform: translateY(-8px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+          <div className="max-w-[1920px] mx-auto px-8 py-6 grid grid-cols-6">
+            {NAV_ITEMS.map((item, idx) => {
+              const isActive = openMenu === item.label;
+              return (
+                <div
+                  key={item.label}
+                  className={`px-5 py-1 ${idx < NAV_ITEMS.length - 1 ? "border-r border-bluegrey-2" : ""}`}
+                >
+                  {/* 컬럼 헤더 */}
+                  <div className={`mb-3 pb-2.5 border-b-2 ${isActive ? "border-primary" : "border-transparent"}`}>
+                    <Link
+                      to={item.to ?? item.children[0].to}
+                      onClick={() => setOpenMenu(null)}
+                      className={`text-body-2 font-bold transition-colors whitespace-nowrap ${
+                        isActive ? "text-primary" : "text-grey-10 hover:text-primary"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </div>
+                  {/* 하위 항목 */}
+                  <div className="flex flex-col gap-0.5">
+                    {item.children?.map((child) => (
+                      <Link
+                        key={child.label}
+                        to={child.to}
+                        onClick={() => setOpenMenu(null)}
+                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap"
+                      >
+                        <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home/Home";
 import Jubo from "@/pages/Jubo/Jubo";
@@ -16,6 +16,9 @@ import Mission from "@/pages/Mission/Mission";
 import Nurture from "@/pages/Nurture/Nurture";
 import SundaySchool from "@/pages/SundaySchool/SundaySchool";
 import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
+import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
+import WordSermon from "@/pages/WordSermon/WordSermon";
+import WordPraise from "@/pages/WordPraise/WordPraise";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 
 const router = createBrowserRouter([
@@ -29,15 +32,26 @@ const router = createBrowserRouter([
       { path: "교회행사", element: <Events /> },
       { path: "교회행사/:id", element: <EventDetail /> },
       { path: "갤러리", element: <Gallery /> },
+      // 말씀·찬양
       { path: "말씀", element: <Bible /> },
+      { path: "말씀/방송", element: <WordBroadcast /> },
+      { path: "말씀/설교", element: <WordSermon /> },
+      { path: "말씀/찬양", element: <WordPraise /> },
       { path: "말씀/읽기", element: <BibleRead /> },
       { path: "말씀/필사", element: <BibleWrite /> },
+      // 주일학교
+      { path: "주일학교", element: <SundaySchool /> },
+      { path: "주일학교/:dept", element: <SundaySchool /> },
+      // 전도·선교
+      { path: "전도선교", element: <Mission /> },
+      { path: "전도선교/:section", element: <Mission /> },
+      // 양육·훈련
+      { path: "양육훈련", element: <Nurture /> },
+      { path: "양육훈련/:section", element: <Nurture /> },
+      // 기타
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "mypage", element: <MyPage /> },
-      { path: "주일학교", element: <SundaySchool /> },
-      { path: "전도선교", element: <Mission /> },
-      { path: "양육훈련", element: <Nurture /> },
       { path: "교적부", element: <Gyojeokbu /> },
       { path: "*", element: <PageNotFound /> },
     ],
