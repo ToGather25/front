@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import KakaoMap from "@/components/common/KakaoMap";
@@ -79,16 +80,21 @@ export default function DirectionsSection() {
 
           {/* Action buttons — 남은 공간 균등 분배 */}
           <div className="flex flex-col gap-3 mt-6 flex-1 min-h-0">
-            {["주차 안내", "셔틀 안내", "문의하기"].map((label) => (
-              <button
+            {[
+              { label: "주차 안내", to: "/교회소개?tab=오시는 길" },
+              { label: "셔틀 안내", to: "/교회소개?tab=차량운행 안내" },
+              { label: "문의하기", to: "/문의하기" },
+            ].map(({ label, to }) => (
+              <Link
                 key={label}
+                to={to}
                 className="flex-1 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                 </svg>
-              </button>
+              </Link>
             ))}
           </div>
         </div>

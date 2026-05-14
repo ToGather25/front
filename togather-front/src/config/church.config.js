@@ -45,13 +45,13 @@ const churchConfig = {
       label: "교회소개",
       to: "/교회소개",
       children: [
-        { label: "인사말",        to: "/교회소개" },
-        { label: "교회 연혁·비전", to: "/교회소개" },
-        { label: "예배 안내",     to: "/교회소개" },
-        { label: "섬기는 분들",   to: "/교회소개" },
-        { label: "층별 안내",     to: "/교회소개" },
-        { label: "오시는 길",     to: "/교회소개" },
-        { label: "차량운행 안내", to: "/교회소개" },
+        { label: "인사말",        to: "/교회소개?tab=인사말" },
+        { label: "교회 연혁·비전", to: "/교회소개?tab=교회 연혁·비전" },
+        { label: "예배 안내",     to: "/교회소개?tab=예배 안내" },
+        { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
+        { label: "층별 안내",     to: "/교회소개?tab=층별 안내" },
+        { label: "오시는 길",     to: "/교회소개?tab=오시는 길" },
+        { label: "차량운행 안내", to: "/교회소개?tab=차량운행 안내" },
       ],
     },
     {
@@ -241,14 +241,53 @@ const churchConfig = {
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
   communities: ["알곡교회", "청년부", "투게더", "유치부", "초등부", "중·고등부"],
 
+  // ── 주차 안내 ─────────────────────────────────────────
+  parking: {
+    details: [
+      { label: "주차 가능 대수", value: "00대" },
+      { label: "주차 요금", value: "무료" },
+      { label: "주차 가능 시간", value: "주일 오전 9시 ~ 오후 2시" },
+      { label: "안내", value: "주차 공간이 협소하니 가급적 대중교통을 이용해 주세요." },
+    ],
+  },
+
   // ── 차량운행 안내 ─────────────────────────────────────
+  // waypoints: 각 경유지의 위도(lat)·경도(lng)·표시명(label) 입력 시 지도에 경로가 표시됩니다.
+  // 좌표는 카카오맵(map.kakao.com)에서 원하는 지점 우클릭 → "이 위치" 로 확인 가능합니다.
   transportGuide: {
     routes: [
-      { name: "운행코스 1", schedule: "시간을 입력하세요." },
-      { name: "운행코스 2", schedule: "시간을 입력하세요." },
-      { name: "운행코스 3", schedule: "시간을 입력하세요." },
-      { name: "운행코스 4", schedule: "시간을 입력하세요." },
-      { name: "운행코스 5", schedule: "시간을 입력하세요." },
+      {
+        name: "운행코스 1",
+        schedule: "시간을 입력하세요.",
+        color: "#3B5280",
+        waypoints: [
+          // { lat: 37.123, lng: 126.123, label: "출발지명" },
+        ],
+      },
+      {
+        name: "운행코스 2",
+        schedule: "시간을 입력하세요.",
+        color: "#E05C2D",
+        waypoints: [],
+      },
+      {
+        name: "운행코스 3",
+        schedule: "시간을 입력하세요.",
+        color: "#2D9E6B",
+        waypoints: [],
+      },
+      {
+        name: "운행코스 4",
+        schedule: "시간을 입력하세요.",
+        color: "#9B51E0",
+        waypoints: [],
+      },
+      {
+        name: "운행코스 5",
+        schedule: "시간을 입력하세요.",
+        color: "#E0A82D",
+        waypoints: [],
+      },
     ],
   },
 };

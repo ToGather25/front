@@ -19,6 +19,7 @@ import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
 import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
 import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordPraise from "@/pages/WordPraise/WordPraise";
+import Contact from "@/pages/Contact/Contact";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 
 const router = createBrowserRouter([
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
       { path: "mypage", element: <MyPage /> },
       { path: "교적부", element: <Gyojeokbu /> },
+      { path: "문의하기", element: <Contact /> },
       { path: "*", element: <PageNotFound /> },
     ],
   },
