@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
+import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
+import KakaoMapRoute from "@/components/common/KakaoMapRoute";
 
 const TABS = [
   "인사말", "교회 연혁·비전", "예배 안내", "섬기는 사람들",
@@ -304,13 +306,31 @@ function FloorGuide() {
 function Direction() {
   const { church } = useChurch();
   return (
-    <div className="max-w-2xl">
-      <KakaoMap
-        level={church.location.level}
-        address={church.address}
-        className="w-full h-72 rounded-2xl overflow-hidden mb-4"
-      />
-      <p className="text-body-4 text-grey-7">{church.address}</p>
+    <div className="flex gap-12 items-start">
+      {/* 좌측: 주차 안내 */}
+      <div className="flex-1">
+        <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">주차 안내</h3>
+        <table className="w-full text-body-4 border-t border-bluegrey-3">
+          <tbody>
+            {church.parking.details.map(({ label, value }) => (
+              <tr key={label} className="border-b border-grey-3">
+                <td className="py-4 font-semibold text-grey-10 w-36">{label}</td>
+                <td className="py-4 text-grey-6">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 우측: 지도 */}
+      <div className="w-[480px] shrink-0">
+        <KakaoMap
+          level={church.location.level}
+          address={church.address}
+          className="w-full h-72 rounded-2xl overflow-hidden mb-3"
+        />
+        <p className="text-body-4 text-grey-7">{church.address}</p>
+      </div>
     </div>
   );
 }
@@ -319,24 +339,56 @@ function Direction() {
 function TransportGuide() {
   const { church } = useChurch();
   const { routes } = church.transportGuide;
+  const hasAnyRoute = routes.some((r) => r.waypoints?.length > 0);
 
   return (
-    <div className="max-w-2xl">
-      <table className="w-full text-body-4 border-t border-bluegrey-3 mb-8">
-        <tbody>
-          {routes.map(({ name, schedule }) => (
-            <tr key={name} className="border-b border-grey-3">
-              <td className="py-4 font-semibold text-grey-10 w-32">{name}</td>
-              <td className="py-4 text-grey-6">{schedule}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <KakaoMap
-        level={church.location.level}
-        address={church.address}
-        className="w-full h-64 rounded-2xl overflow-hidden"
-      />
+    <div className="flex gap-10 items-start">
+      {/* 좌측: 운행 코스 */}
+      <div className="flex-1">
+        <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">코스 안내</h3>
+        <table className="w-full text-body-4 border-t border-bluegrey-3">
+          <tbody>
+            {routes.map(({ name, schedule, color }) => (
+              <tr key={name} className="border-b border-grey-3">
+                <td className="py-4 w-8 pr-2">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full shrink-0"
+                    style={{ background: color ?? "var(--color-primary)" }}
+                  />
+                </td>
+                <td className="py-4 font-semibold text-grey-10 w-28">{name}</td>
+                <td className="py-4 text-grey-6">{schedule}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {!hasAnyRoute && (
+          <p className="mt-4 text-body-5 text-grey-5">
+            경유지 좌표를 입력하면 지도에 경로가 표시됩니다.
+          </p>
+        )}
+      </div>
+
+      {/* 우측: 경로 지도 */}
+      <div className="w-[480px] shrink-0">
+        <KakaoMapRoute
+          address={church.address}
+          level={church.location?.level ?? 5}
+          routes={routes}
+          className="w-full h-[420px] rounded-2xl overflow-hidden"
+        />
+        {hasAnyRoute && (
+          <div className="mt-3 flex flex-wrap gap-3">
+            {routes.filter((r) => r.waypoints?.length > 0).map(({ name, color }) => (
+              <div key={name} className="flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 rounded-full" style={{ background: color }} />
+                <span className="text-body-5 text-grey-7">{name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -363,7 +415,8 @@ const TAB_CONTENT = {
 };
 
 export default function Church() {
-  const [activeTab, setActiveTab] = useState("인사말");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "인사말";
 
   return (
     <div>
@@ -382,7 +435,7 @@ export default function Church() {
             {TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setSearchParams({ tab })}
                 className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
