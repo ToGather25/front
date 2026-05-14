@@ -8,6 +8,11 @@ const juboConfig = {
   cover: {
     issueNumber: "제10-7",
     date: "2026년 2월 15일",
+    photos: {
+      church:   null,  // 교회 건물 사진 URL
+      panorama: null,  // 전체 예배 파노라마 사진 URL
+      group:    null,  // 공동체 단체 사진 URL
+    },
   },
 
   // ── 예배 순서 ─────────────────────────────────────────
@@ -20,18 +25,19 @@ const juboConfig = {
   ],
 
   worshipOrder: [
-    { order: "예배 부름",  person: "성가대" },
-    { order: "경배와 찬양", person: "찬양팀" },
-    { order: "사도신경",   person: "다같이" },
-    { order: "찬 송",     person: "20장 / 큰 영광 중에 계신 주" },
-    { order: "기 도",     person: "000목사 / 000목사" },
-    { order: "성경봉독",   person: "시편 23장 1절" },
-    { order: "설 교",     person: "000목사" },
-    { order: "헌 금",     person: "331장 / 영광을 받으신 만왕의 주여" },
-    { order: "헌금기도",   person: "성가대" },
-    { order: "교회소식",   person: "성가대" },
-    { order: "찬 양",     person: "함께" },
-    { order: "강복선언",   person: "000목사" },
+    { order: "예배 부름",  part1: "성가대",                     part2: "성가대" },
+    { order: "경배와 찬양", part1: "찬양팀",                    part2: "찬양팀" },
+    { order: "사도신경",   part1: "다같이",                     part2: "다같이" },
+    { order: "찬 송",     part1: "20장 / 큰 영광 중에 계신 주", part2: "OOO장 / OOO" },
+    { order: "대표기도",   part1: "(1부) OOO집사, (2부) OOO집사", part2: "OOO 집사" },
+    { order: "찬 송",     part1: "OOO장 /* 큰 영광 중에 계신 주 *", part2: "OOO장" },
+    { order: "성경봉독",   part1: "로마서 2장 27절 (구역 2:111)", part2: "OOO장 OOO절" },
+    { order: "설 교",     part1: "이러한 율법을 행하는 이방인이 정죄하리라\n(제3개혁)", part2: "OOO목사" },
+    { order: "헌 금",     part1: "331장 / 영광을 받으신 만왕의 주여", part2: "OOO장" },
+    { order: "헌금기도",   part1: "성가대",                     part2: "성가대" },
+    { order: "교회소식",   part1: "성가대",                     part2: "성가대" },
+    { order: "찬 양",     part1: "함께",                        part2: "함께" },
+    { order: "강복선언",   part1: "성가대",                     part2: "성가대" },
   ],
 
   // 예배 시간 요약 (주보 우측 사이드 표시용)
@@ -81,9 +87,15 @@ const juboConfig = {
 
   // ── 후원 ─────────────────────────────────────────────
   support: [
-    { category: "국내 선교", items: ["기관명을 입력하세요.", "기관명을 입력하세요."] },
-    { category: "해외 선교", items: ["기관명을 입력하세요.", "기관명을 입력하세요.", "기관명을 입력하세요."] },
-    { category: "사회복지",  items: ["기관명을 입력하세요.", "기관명을 입력하세요."] },
+    { organization: "베트남 | 호치민",          target: "선교사님 성함", region: "후원구역명" },
+    { organization: "일본 | 동경",              target: "선교사님 성함", region: "후원구역명" },
+    { organization: "말레이시아 | 쿠알라룸푸르", target: "선교사님 성함", region: "후원구역명" },
+    { organization: "호주 | 시드니",            target: "선교사님 성함", region: "후원구역명" },
+    { organization: "브라질 | 상갈루스",         target: "선교사님 성함", region: "후원구역명" },
+    { organization: "태국 | 파티아",            target: "선교사님 성함", region: "후원구역명" },
+    { organization: "OOO교회",                 target: "목사님 성함",   region: "후원구역명" },
+    { organization: "OOO교회",                 target: "목사님 성함",   region: "후원구역명" },
+    { organization: "기독교보",                 target: "기관이름",      region: "후원구역명" },
   ],
 
   // ── 구역 ─────────────────────────────────────────────
