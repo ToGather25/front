@@ -7,6 +7,12 @@
  * 현재는 로컬 설정 파일 사용 (개발 단계)
  */
 
+import floor1  from "@/assets/floors/1.png";
+import floor2  from "@/assets/floors/2.png";
+import floor3  from "@/assets/floors/3.png";
+import floor4  from "@/assets/floors/4.png";
+import floorB1 from "@/assets/floors/B1.png";
+
 const churchConfig = {
   // ── 식별자 ────────────────────────────────────────────
   id: "togather-church",          // API 요청 시 churchId로 사용
@@ -46,7 +52,8 @@ const churchConfig = {
       to: "/교회소개",
       children: [
         { label: "인사말",        to: "/교회소개?tab=인사말" },
-        { label: "교회 비전·연혁", to: "/교회소개?tab=교회 비전·연혁" },
+        { label: "교회 비전",      to: "/교회소개?tab=교회 비전" },
+        { label: "교회 연혁",      to: "/교회소개?tab=교회 연혁" },
         { label: "예배 안내",     to: "/교회소개?tab=예배 안내" },
         { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
         { label: "층별 안내",     to: "/교회소개?tab=층별 안내" },
@@ -250,11 +257,11 @@ const churchConfig = {
 
   // ── 층별 안내 ─────────────────────────────────────────
   floorGuide: [
-    { floor: "4층",  rooms: "청년부실, 사무실" },
-    { floor: "3층",  rooms: "목양실, 당회실, 방송실, 재정부실" },
-    { floor: "2층",  rooms: "본당, 자모실" },
-    { floor: "1층",  rooms: "식당, 새가족실, 카페, 유치부실" },
-    { floor: "B1층", rooms: "중·고등부실, 초등부실, 소회의실1, 소회의실2, 소회의실3" },
+    { floor: "4층",  rooms: "청년부실, 사무실",                                          image: floor4  },
+    { floor: "3층",  rooms: "목양실, 당회실, 방송실, 재정부실",                          image: floor3  },
+    { floor: "2층",  rooms: "본당, 자모실",                                               image: floor2  },
+    { floor: "1층",  rooms: "식당, 새가족실, 카페, 유치부실",                            image: floor1  },
+    { floor: "B1층", rooms: "중·고등부실, 초등부실, 소회의실1, 소회의실2, 소회의실3",    image: floorB1 },
   ],
 
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
