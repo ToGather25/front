@@ -143,7 +143,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">전화</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">전화</p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.tel}</p>
                     {church.fax && <p className="text-body-4 text-grey-6 mt-0.5">FAX {church.fax}</p>}
                   </div>
@@ -157,7 +157,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">이메일</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">이메일</p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.email}</p>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">운영 시간</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">운영 시간</p>
                     <p className="text-body-3 text-grey-9 mt-0.5">평일 오전 9시 ~ 오후 6시</p>
                     <p className="text-body-4 text-grey-6 mt-0.5">월요일·공휴일 휴무</p>
                   </div>
@@ -184,7 +184,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">주소</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">주소</p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.address}</p>
                   </div>
                 </div>

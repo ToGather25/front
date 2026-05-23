@@ -77,12 +77,6 @@ function VideoThumb({ channelId, apiKey }) {
           LIVE
         </span>
       )}
-
-      {/* Bottom meta */}
-      <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/70 to-transparent text-white">
-        <p className="text-[15px] font-semibold leading-snug m-0">주일 예배 실시간 방송</p>
-        <p className="text-[13px] opacity-75 mt-1 m-0">설교 · 담임목사 · 매주 주일 11:00</p>
-      </div>
     </div>
   );
 }
@@ -103,23 +97,23 @@ export default function WorshipSection() {
       <div className="grid gap-14 items-center" style={{ gridTemplateColumns: "560px 1fr" }}>
         {/* Sermon info */}
         <div className="py-2">
-          <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
+          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
             THIS WEEK
           </p>
-          <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0 mb-2">
+          <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0 mb-2">
             이번 주 말씀
           </h3>
           <p className="text-[15px] font-medium text-grey-7 tracking-[0.02em] mt-2 mb-6 m-0">
             {sermon.date}
           </p>
           <div
-            className="text-[56px] font-bold leading-[1.18] tracking-[-1.6px] text-grey-12"
+            className="text-headline-1 font-bold leading-[1.18] tracking-[-1.6px] text-grey-12"
             style={{ whiteSpace: "pre-line" }}
           >
             {sermon.title}
           </div>
           <p
-            className="mt-5 text-[18px] leading-[1.6] text-grey-9 pl-4 m-0"
+            className="mt-5 text-body-1 leading-[1.6] text-grey-9 pl-4 m-0"
             style={{ borderLeft: "3px solid #60749d" }}
           >
             {sermon.verse}
@@ -131,12 +125,12 @@ export default function WorshipSection() {
                 <path d="M6 4l14 8-14 8z" />
               </svg>
             </button>
-            <button className="inline-flex items-center gap-3 px-7 py-[16px] rounded-full bg-white text-grey-9 font-semibold text-[17px] border border-bluegrey-3 hover:bg-bluegrey-1 hover:border-blue-6 hover:text-blue-8 hover:-translate-y-0.5 transition-all">
+            {/* <button className="inline-flex items-center gap-3 px-7 py-[16px] rounded-full bg-white text-grey-9 font-semibold text-[17px] border border-bluegrey-3 hover:bg-bluegrey-1 hover:border-blue-6 hover:text-blue-8 hover:-translate-y-0.5 transition-all">
               <span>설교 노트</span>
               <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                 <path d="M12 4v12M6 12l6 6 6-6M4 20h16" />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
 

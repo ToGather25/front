@@ -10,7 +10,7 @@ export default function SearchSection() {
   return (
     <section className="w-full py-[100px] pb-[60px] flex flex-col items-center">
       {/* Eye label */}
-      <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
+      <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
         QUICK FIND
       </p>
 
@@ -22,7 +22,7 @@ export default function SearchSection() {
       <label
         className="flex items-center gap-4 px-8 rounded-full cursor-text transition-all duration-200 w-full max-w-[900px]"
         style={{
-          height: "80px",
+          height: "70px",
           background: "var(--tw-color-bluegrey-1, #f4f5f6)",
           border: "2px solid #dde0e5",
         }}
@@ -48,7 +48,7 @@ export default function SearchSection() {
           value={value}
           onChange={e => setValue(e.target.value)}
           onClick={() => setOpen(true)}
-          className="flex-1 bg-transparent border-0 outline-none text-[20px] text-grey-11 placeholder:text-grey-5"
+          className="flex-1 bg-transparent border-0 outline-none text-sub-tit-3 text-grey-11 placeholder:text-grey-5"
           readOnly
         />
         {value && (

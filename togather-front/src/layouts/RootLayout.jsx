@@ -84,20 +84,20 @@ function Header() {
             <>
               <Link
                 to="/교적부"
-                className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
               >
                 교적부
               </Link>
               <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
               <Link
                 to="/mypage"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 마이페이지
               </Link>
               <button
                 onClick={logout}
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 로그아웃
               </button>
@@ -106,13 +106,13 @@ function Header() {
             <>
               <Link
                 to="/register"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
                 회원가입
               </Link>
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-full bg-primary text-white text-[14px] font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
               >
                 로그인
               </Link>

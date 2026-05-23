@@ -82,7 +82,7 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
             </div>
           </div>
           <p>
-            <span className="text-[28px] font-bold text-grey-11">{streakDays} 일</span>
+            <span className="text-sub-tit-1 font-bold text-grey-11">{streakDays} 일</span>
             <span className="text-body-2 text-grey-8 ml-2">{streakLabel}</span>
           </p>
           <div className="flex gap-4">
@@ -106,12 +106,12 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
                 </div>
               </div>
               <div className="grid grid-cols-7 text-center mb-2">
-                {["월","화","수","목","금","토","일"].map(d => <span key={d} className="text-[12px] text-grey-5 font-medium">{d}</span>)}
+                {["월","화","수","목","금","토","일"].map(d => <span key={d} className="text-body-5 text-grey-5 font-medium">{d}</span>)}
               </div>
               {weeks.map((week, wi) => (
                 <div key={wi} className={`grid grid-cols-7 text-center rounded-lg mb-0.5 ${week.some(d => d && inWeek(d)) ? "bg-grey-2" : ""}`}>
                   {[...Array(7)].map((_, di) => (
-                    <span key={di} className={`py-3.5 text-[13px] ${week[di] ? "text-grey-9" : ""}`}>{week[di] ?? ""}</span>
+                    <span key={di} className={`py-3.5 text-caption ${week[di] ? "text-grey-9" : ""}`}>{week[di] ?? ""}</span>
                   ))}
                 </div>
               ))}

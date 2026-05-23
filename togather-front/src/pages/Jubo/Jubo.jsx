@@ -27,7 +27,7 @@ function JuboPage({ children, noPadding = false, ref }) {
 function SectionTitle({ icon, children }) {
   return (
     <>
-      <h3 className="flex items-center gap-2.5 text-[18px] font-bold text-grey-11 mb-4">
+      <h3 className="flex items-center gap-2.5 text-sub-tit-4 font-bold text-grey-11 mb-4">
         {icon}{children}
       </h3>
       <div className="border-t-2 border-grey-11" />
@@ -49,8 +49,8 @@ function Cover() {
     <div className="flex flex-col h-full">
       {/* 헤더 */}
       <div className="flex justify-between items-center px-8 py-3.5 border-b border-bluegrey-2 shrink-0">
-        <span className="text-[13px] text-grey-6">{cover.issueNumber}</span>
-        <span className="text-[14px] font-semibold text-grey-9">{cover.date}</span>
+        <span className="text-caption text-grey-6">{cover.issueNumber}</span>
+        <span className="text-body-3 font-semibold text-grey-9">{cover.date}</span>
       </div>
 
       {/* 표어 + 교회 사진 */}
@@ -62,12 +62,12 @@ function Cover() {
           <h2 className="text-[26px] font-bold leading-[1.35] text-grey-12">
             {mainVerse.replace(/^"|"$/g, "")}
           </h2>
-          <p className="text-[13px] text-grey-6">{mainTitle}</p>
+          <p className="text-caption text-grey-6">{mainTitle}</p>
         </div>
         <div className="flex-1 relative overflow-hidden bg-grey-3">
           {churchPhoto
             ? <img src={churchPhoto} alt="교회 건물" className="w-full h-full object-cover" />
-            : <div className="w-full h-full bg-gradient-to-br from-blue-2 to-blue-3 flex items-center justify-center text-grey-5 text-[13px]">교회 사진</div>
+            : <div className="w-full h-full bg-gradient-to-br from-blue-2 to-blue-3 flex items-center justify-center text-grey-5 text-caption">교회 사진</div>
           }
           <div className="absolute top-4 left-4 px-3 py-2">
             <img src={LogoIcon} className="h-12 w-auto object-contain" alt={church.name} />
@@ -89,14 +89,14 @@ function Cover() {
           <p className="text-[11px] font-semibold text-blue-3 tracking-widest">[3대 실천사항]</p>
           <div className="flex flex-col items-center gap-1.5">
             {items.map(({ label }) => (
-              <p key={label} className="text-[20px] font-bold text-white">{label}</p>
+              <p key={label} className="text-sub-tit-3 font-bold text-white">{label}</p>
             ))}
           </div>
         </div>
         <div className="flex-1 overflow-hidden bg-grey-3">
           {groupPhoto
             ? <img src={groupPhoto} alt="공동체 단체 사진" className="w-full h-full object-cover" />
-            : <div className="w-full h-full bg-gradient-to-br from-grey-3 to-grey-4 flex items-center justify-center text-grey-5 text-[13px]">공동체 사진</div>
+            : <div className="w-full h-full bg-gradient-to-br from-grey-3 to-grey-4 flex items-center justify-center text-grey-5 text-caption">공동체 사진</div>
           }
         </div>
       </div>
@@ -133,7 +133,7 @@ function Worship() {
               {isFirst && <div className="h-px bg-bluegrey-2 mx-3 my-1.5" />}
               <button
                 onClick={() => setSelected(label)}
-                className={`w-full text-left px-3 py-1.5 text-[13px] transition-colors ${
+                className={`w-full text-left px-3 py-1.5 text-caption transition-colors ${
                   selected === label ? "bg-primary text-white font-semibold" : "text-grey-9 hover:bg-bluegrey-2"
                 }`}
               >
@@ -147,10 +147,10 @@ function Worship() {
       {/* 순서 */}
       <div className="flex-1 p-5 overflow-auto">
         <div className="mb-4">
-          <h3 className="text-[16px] font-bold text-grey-11">예배 순서</h3>
-          <p className="text-[12px] text-grey-6 mt-0.5">{selected} · 주일 오전 예배 (09:00 ~ 11:00)</p>
+          <h3 className="text-body-2 font-bold text-grey-11">예배 순서</h3>
+          <p className="text-body-5 text-grey-6 mt-0.5">{selected} · 주일 오전 예배 (09:00 ~ 11:00)</p>
         </div>
-        <table className="w-full text-[13px]">
+        <table className="w-full text-caption">
           <thead>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
               <th className="text-left py-2 px-3 text-grey-7 font-semibold w-1/4">순서</th>
@@ -172,7 +172,7 @@ function Worship() {
 
       {/* 모임 안내 */}
       <div className="w-40 shrink-0 border-l border-bluegrey-2 p-4">
-        <h4 className="text-[13px] font-bold text-grey-10 mb-3">예배 및 모임 안내</h4>
+        <h4 className="text-caption font-bold text-grey-10 mb-3">예배 및 모임 안내</h4>
         {worshipScheduleSummary.map(({ label, time }) => (
           <div key={label} className="flex justify-between items-start py-2 border-b border-grey-3">
             <span className="text-[11px] text-grey-8 leading-tight">{label}</span>
@@ -194,7 +194,7 @@ function News() {
           <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v8a2 2 0 0 1-2 2z" /><path d="M17 20v-8H7v8M7 4v4h8" />
         </svg>
       }>교회 소식</SectionTitle>
-      <table className="w-full text-[13px] mt-1">
+      <table className="w-full text-caption mt-1">
         {news.map((section, i) => (
           <tbody key={i}>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
@@ -224,7 +224,7 @@ function Service() {
           <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
       }>다음 주 봉사 안내</SectionTitle>
-      <table className="w-full text-[13px] mt-1">
+      <table className="w-full text-caption mt-1">
         <thead>
           <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
             <th className="text-left py-2 px-4 text-grey-7 font-semibold">구분</th>
@@ -256,7 +256,7 @@ function Offering() {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       }>향기로운 예물</SectionTitle>
-      <table className="w-full text-[13px] mt-1">
+      <table className="w-full text-caption mt-1">
         {offering.map(({ title, items }) => (
           <tbody key={title}>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
@@ -284,7 +284,7 @@ function Support() {
           <circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
         </svg>
       }>우리 교회가 돕고 있는 곳</SectionTitle>
-      <table className="w-full text-[13px] mt-1">
+      <table className="w-full text-caption mt-1">
         <thead>
           <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
             <th className="py-2 px-4 text-grey-7 font-semibold text-center">기관</th>
@@ -316,7 +316,7 @@ function District() {
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       }>구역 모임</SectionTitle>
-      <table className="w-full text-[13px] mt-1">
+      <table className="w-full text-caption mt-1">
         <thead>
           <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
             <th className="py-2 px-4 text-grey-7 font-semibold text-center">구역</th>
@@ -354,7 +354,7 @@ function Ministers() {
       <div className="mt-5 flex flex-col gap-6">
         {ministers.map(({ title, items }) => (
           <div key={title}>
-            <p className="text-[13px] font-bold text-grey-9 mb-2 px-1">{title}</p>
+            <p className="text-caption font-bold text-grey-9 mb-2 px-1">{title}</p>
             <div className="grid grid-cols-3 gap-2.5">
               {items.map((item) => {
                 const [role, name] = item.split("|").map((s) => s.trim());
@@ -371,7 +371,7 @@ function Ministers() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] text-grey-6 truncate mb-1">{role}</p>
-                      <p className="text-[13px] font-semibold text-grey-10 group-hover:text-primary transition-colors truncate">{name || role}</p>
+                      <p className="text-caption font-semibold text-grey-10 group-hover:text-primary transition-colors truncate">{name || role}</p>
                     </div>
                     <svg className="w-3.5 h-3.5 text-grey-4 group-hover:text-primary ml-auto shrink-0 transition-colors print:hidden" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path d="M9 18l6-6-6-6" />
@@ -401,7 +401,7 @@ function Direction() {
           className="w-full rounded-xl overflow-hidden mb-3"
           style={{ height: 320 }}
         />
-        <p className="text-[13px] text-grey-7">{church.address}</p>
+        <p className="text-caption text-grey-7">{church.address}</p>
       </div>
       <div>
         <SectionTitle icon={
@@ -409,7 +409,7 @@ function Direction() {
             <rect x="1" y="3" width="15" height="13" rx="2" /><path d="M16 8h4l3 3v5h-7V8zM5 19a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm12 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
           </svg>
         }>셔틀 안내</SectionTitle>
-        <table className="w-full text-[13px] mt-1">
+        <table className="w-full text-caption mt-1">
           <thead>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
               <th className="text-left py-2 px-4 text-grey-7 font-semibold">운행 코스</th>

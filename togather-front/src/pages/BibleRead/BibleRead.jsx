@@ -201,9 +201,9 @@ export default function BibleRead() {
                     <p className="text-body-3 font-semibold text-grey-10 mb-4">글씨 크기</p>
                     <div className="flex gap-3">
                       {[
-                        { key: "small", label: "작게", gaSize: "text-[13px]" },
-                        { key: "medium", label: "보통", gaSize: "text-[18px]" },
-                        { key: "large", label: "크게", gaSize: "text-[24px]" },
+                        { key: "small", label: "작게", gaSize: "text-caption" },
+                        { key: "medium", label: "보통", gaSize: "text-body-1" },
+                        { key: "large", label: "크게", gaSize: "text-sub-tit-2" },
                       ].map(({ key, label, gaSize }) => (
                         <button
                           key={key}

@@ -115,7 +115,7 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-[13px] text-grey-6 ${className}`}>
+      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-caption text-grey-6 ${className}`}>
         {error}
       </div>
     );

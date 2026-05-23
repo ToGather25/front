@@ -92,6 +92,9 @@
   --text-headline-2: 3rem;         /* 48px */
   --text-headline-2--line-height: 3.25rem;     /* 52px */
 
+  --text-section-title: 2.75rem;   /* 44px — 홈 섹션 대제목 */
+  --text-section-title--line-height: 3.25rem;  /* 52px */
+
   --text-headline-3: 2.25rem;      /* 36px */
   --text-headline-3--line-height: 2.75rem;     /* 44px */
 
@@ -132,6 +135,9 @@
 
   --text-body-5: 0.75rem;          /* 12px */
   --text-body-5--line-height: 1.125rem;        /* 18px */
+
+  --text-caption: 0.8125rem;       /* 13px — 소형 레이블·캡션 */
+  --text-caption--line-height: 1.25rem;        /* 20px */
 
   /* Button / Link */
   --text-btn-large: 1.125rem;      /* 18px */
