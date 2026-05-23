@@ -42,9 +42,14 @@ export default function DirectionsSection() {
 
   return (
     <Section className="py-[120px] bg-bluegrey-1">
-      <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0 mb-8">
-        찾아오시는 길
-      </h3>
+      <div className="mb-8">
+        <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
+          DIRECTIONS
+        </p>
+        <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0 mb-8">
+          찾아오시는 길
+        </h3>
+      </div>
 
       <div className="grid gap-8 items-stretch" style={{ gridTemplateColumns: "1fr 540px" }}>
         {/* Map — 16:9 비율로 높이 결정 */}
@@ -67,7 +72,7 @@ export default function DirectionsSection() {
                   {row.icon}
                 </div>
                 <div className="pt-1">
-                  <span className="text-[13px] font-bold text-grey-7 uppercase tracking-[0.06em]">
+                  <span className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
                     {row.label}
                   </span>
                   <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">
@@ -88,7 +93,7 @@ export default function DirectionsSection() {
               <Link
                 key={label}
                 to={to}
-                className="flex-1 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-[16px] hover:bg-blue-8 active:scale-[0.99] transition-all"
+                className="flex-1 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

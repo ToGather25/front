@@ -56,13 +56,13 @@ const MENU_ITEMS = [
 export default function SubMenu() {
   return (
     <section className="w-full bg-bluegrey-1 py-[100px]">
-      <div className="max-w-[1576px] mx-auto px-4">
+      <div className="max-w-[1576px] mx-auto px-[clamp(1.5rem,5vw,6rem)]">
         {/* Section head */}
         <div className="mb-8">
-          <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
+          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
             SHORTCUTS
           </p>
-          <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0">
+          <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
             바로가기 메뉴
           </h3>
         </div>
@@ -73,7 +73,7 @@ export default function SubMenu() {
             <Link
               key={item.id}
               to={item.to}
-              className="group bg-white rounded-[20px] border border-bluegrey-2 p-7 flex items-center gap-5 hover:-translate-y-1 hover:border-blue-3 transition-all duration-200"
+              className="group bg-white rounded-xl border border-bluegrey-2 p-7 flex items-center gap-5 hover:-translate-y-1 hover:border-blue-5 transition-all duration-200"
               style={{ boxShadow: "0 6px 6px 0 rgba(0,0,0,.06)" }}
             >
               {/* Icon */}
@@ -86,16 +86,16 @@ export default function SubMenu() {
 
               {/* Text */}
               <div className="flex-1 min-w-0">
-                <p className="text-[18px] font-bold text-grey-12 tracking-[-0.4px] m-0 leading-tight">
+                <p className="text-sub-tit-4 font-bold text-grey-12 tracking-[-0.4px] m-0 leading-tight">
                   {item.label}
                 </p>
-                <p className="text-[13px] text-grey-6 mt-1.5 m-0 leading-snug">
+                <p className="text-caption text-grey-6 mt-1.5 m-0 leading-snug">
                   {item.sub}
                 </p>
               </div>
 
               {/* Arrow */}
-              <svg
+              {/* <svg
                 className="w-5 h-5 text-grey-4 shrink-0 group-hover:text-blue-6 group-hover:translate-x-0.5 transition-all"
                 fill="none"
                 stroke="currentColor"
@@ -103,7 +103,7 @@ export default function SubMenu() {
                 viewBox="0 0 24 24"
               >
                 <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
+              </svg> */}
             </Link>
           ))}
         </div>

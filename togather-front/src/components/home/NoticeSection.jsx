@@ -36,14 +36,31 @@ export default function NoticeSection() {
       <div className="grid gap-10 items-start" style={{ gridTemplateColumns: "1fr 460px" }}>
         {/* Left: notices */}
         <div>
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
-                UPDATES
-              </p>
-              <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0">
-                공지 ∙ 소식
-              </h3>
+          <div className="mb-8">
+            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
+              UPDATES
+            </p>
+            <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
+              공지 ∙ 소식
+            </h3>
+          </div>
+
+          {/* Tabs + 전체보기 */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex gap-2">
+              {TABS.map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`px-[18px] py-2.5 rounded-full text-[15px] font-semibold transition-all ${
+                    t === tab
+                      ? "bg-blue-8 text-white"
+                      : "bg-transparent text-grey-9 hover:bg-bluegrey-1"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
             <button className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors">
               전체보기
@@ -51,23 +68,6 @@ export default function NoticeSection() {
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </button>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mb-4">
-            {TABS.map(t => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`px-[18px] py-2.5 rounded-full text-[15px] font-semibold transition-all ${
-                  t === tab
-                    ? "bg-blue-8 text-white"
-                    : "bg-transparent text-grey-9 hover:bg-bluegrey-1"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
           </div>
 
           {/* Notice list */}
@@ -85,12 +85,12 @@ export default function NoticeSection() {
                     } ${n.featured ? "bg-blue-1/40" : ""}`}
                   >
                     <span
-                      className="text-[12px] font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
+                      className="text-body-5 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
                       style={tagStyle}
                     >
                       {n.type}
                     </span>
-                    <span className={`flex-1 text-[18px] leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}>
+                    <span className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}>
                       {n.featured && (
                         <span className="inline-flex items-center mr-2 px-1.5 py-0.5 rounded text-[11px] font-bold bg-blue-6 text-white align-middle">
                           고정
@@ -98,7 +98,7 @@ export default function NoticeSection() {
                       )}
                       {n.title}
                     </span>
-                    <span className="text-[14px] text-grey-6 shrink-0 tracking-[0.02em]">
+                    <span className="text-body-3 text-grey-6 shrink-0 tracking-[0.02em]">
                       {n.date}
                     </span>
                   </div>
@@ -111,10 +111,10 @@ export default function NoticeSection() {
         {/* Right: upcoming events */}
         <aside>
           <div className="mb-8">
-            <p className="text-[13px] font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
+            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
               CALENDAR
             </p>
-            <h3 className="text-[44px] font-bold tracking-[-1.2px] text-grey-12 m-0">
+            <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
               다가오는 일정
             </h3>
           </div>
@@ -127,11 +127,11 @@ export default function NoticeSection() {
               >
                 <div className="shrink-0 text-center min-w-[52px]">
                   <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{e.d}</div>
-                  <div className="text-[12px] font-medium text-grey-6 mt-0.5">{e.w}요일</div>
+                  <div className="text-body-5 font-medium text-grey-6 mt-0.5">{e.w}요일</div>
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[16px] font-semibold text-grey-12 leading-snug">{e.title}</div>
-                  <div className="text-[13px] text-grey-6 mt-1">{e.time}</div>
+                  <div className="text-body-2 font-semibold text-grey-12 leading-snug">{e.title}</div>
+                  <div className="text-caption text-grey-6 mt-1">{e.time}</div>
                 </div>
               </li>
             ))}
