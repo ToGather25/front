@@ -1,5 +1,11 @@
-import { Outlet, Link, NavLink } from "react-router";
-import { useState } from "react";
+import { Outlet, Link, NavLink, useLocation } from "react-router";
+import { useState, useEffect } from "react";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
@@ -259,6 +265,7 @@ function Footer() {
 export default function RootLayout() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">

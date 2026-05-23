@@ -3,6 +3,9 @@ import { Link } from "react-router";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import bibleData from "@/data/bible.json";
 import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
+import BibleRankingView from "@/components/bible/BibleRankingView";
+import BibleVersesView from "@/components/bible/BibleVersesView";
+import BibleStatusView from "@/components/bible/BibleStatusView";
 
 // ── 유틸 ───────────────────────────────────────────────
 function getChapters(bookAbbr) {
@@ -67,91 +70,33 @@ function BookModal({ current, onSelect, onClose }) {
   );
 }
 
-// ── 랭킹 ───────────────────────────────────────────────
-const MOCK_RANKING = [
+// ── 랭킹 데이터 ─────────────────────────────────────────
+const MY_WRITE_RANK = { rank: 6, name: "나", count: 93, trend: 0 };
+const WRITE_NEIGHBORS = [
+  { rank: 7, name: "강민서", count: 71, trend: -1 },
+  MY_WRITE_RANK,
+  { rank: 5, name: "최유진", count: 154, trend: 1 },
+];
+const WRITE_MONTHLY = [
   { rank: 1, name: "박지호", count: 312 },
   { rank: 2, name: "김민준", count: 278 },
   { rank: 3, name: "이서연", count: 241 },
   { rank: 4, name: "정도현", count: 189 },
   { rank: 5, name: "최유진", count: 154 },
-  { rank: 6, name: "나", count: 93, isMe: true },
+  { rank: 6, name: "나", count: 93 },
   { rank: 7, name: "강민서", count: 71 },
-  { rank: 8, name: "오준혁", count: 52 },
-  { rank: 9, name: "한지수", count: 38 },
-  { rank: 10, name: "임채원", count: 19 },
 ];
-const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
+const WRITE_TOTAL = [
+  { rank: 1, name: "박지호", count: 2841 },
+  { rank: 2, name: "이서연", count: 2234 },
+  { rank: 3, name: "김민준", count: 1987 },
+  { rank: 4, name: "정도현", count: 1542 },
+  { rank: 5, name: "최유진", count: 1103 },
+  { rank: 6, name: "나", count: 934 },
+  { rank: 7, name: "강민서", count: 712 },
+];
 
-function RankingView() {
-  return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 max-w-xl w-full mx-auto">
-      <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">성경 필사 랭킹</h2>
-      <div className="flex flex-col gap-2">
-        {MOCK_RANKING.map(({ rank, name, count, isMe }) => (
-          <div
-            key={rank}
-            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border transition-colors ${
-              isMe ? "bg-blue-1 border-blue-3" : "bg-white border-bluegrey-2"
-            }`}
-          >
-            <span className="w-8 text-center text-body-3 font-bold text-grey-7">
-              {MEDAL[rank] ?? rank}
-            </span>
-            <div className="w-9 h-9 rounded-full bg-blue-2 flex items-center justify-center shrink-0">
-              <span className="text-body-4 font-semibold text-blue-8">{name[0]}</span>
-            </div>
-            <span className={`flex-1 text-body-3 font-medium ${isMe ? "text-blue-8 font-semibold" : "text-grey-10"}`}>
-              {name}{isMe && " (나)"}
-            </span>
-            <div className="flex flex-col items-end gap-0.5">
-              <span className="text-body-4 font-bold text-grey-10">{count.toLocaleString()}</span>
-              <span className="text-body-5 text-grey-5">구절</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── 내 구절 ─────────────────────────────────────────────
-function MyVersesView({ completed }) {
-  return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 max-w-2xl w-full mx-auto">
-      <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-2">내 구절</h2>
-      <p className="text-body-4 text-grey-5 mb-6">총 {completed.length}개의 구절을 필사했습니다.</p>
-      {completed.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <svg className="w-12 h-12 text-grey-4 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-          </svg>
-          <p className="text-body-3 text-grey-6">필사한 구절이 없습니다.</p>
-          <p className="text-body-4 text-grey-4 mt-1">성경 쓰기에서 구절을 완성하면 자동으로 저장됩니다.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {completed.map((v) => (
-            <div key={v.key} className="bg-white border border-bluegrey-2 rounded-2xl px-6 py-5">
-              <p className="text-body-5 text-blue-6 font-semibold mb-2">
-                {v.bookName} {v.chapter}장 {v.verse}절
-              </p>
-              <p className="text-body-2 text-grey-9">{v.text}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── 내 현황 ─────────────────────────────────────────────
-function progressStyle(pct) {
-  if (pct <= 25) return { bg: "bg-blue-2", text: "text-blue-9", sub: "text-blue-6", circle: "border-blue-4" };
-  if (pct <= 50) return { bg: "bg-blue-3", text: "text-blue-9", sub: "text-blue-7", circle: "border-blue-5" };
-  if (pct <= 75) return { bg: "bg-blue-5", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
-  return               { bg: "bg-blue-7", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
-}
-
+// ── 내 현황 데이터 ───────────────────────────────────────
 const BOOK_PROGRESS_WRITE = {
   창: 100, 출: 100, 레: 73, 민: 100, 신: 73, 수: 17, 삿: 21, 룻: 0,
   삼상: 0, 삼하: 0, 왕상: 0, 왕하: 0, 대상: 0, 대하: 0, 스: 0, 느: 0, 에: 0,
@@ -162,128 +107,20 @@ const BOOK_PROGRESS_WRITE = {
   약: 0, 벧전: 0, 벧후: 0, 요일: 0, 요이: 0, 요삼: 0, 유: 0, 계: 0,
 };
 
-function MyStatusView() {
-  const [bookTab, setBookTab] = useState("OT");
-  const [calDate, setCalDate] = useState(new Date());
-
-  const allBooks = [...OT, ...NT];
-  const totalPct = Math.round(allBooks.reduce((s, a) => s + (BOOK_PROGRESS_WRITE[a] ?? 0), 0) / allBooks.length);
-  const listBooks = bookTab === "OT" ? OT : bookTab === "NT" ? NT
-    : allBooks.filter(a => (BOOK_PROGRESS_WRITE[a] ?? 0) > 0 && (BOOK_PROGRESS_WRITE[a] ?? 0) < 100);
-
-  const yr = calDate.getFullYear(), mo = calDate.getMonth();
-  const offset = (() => { const d = new Date(yr, mo, 1).getDay(); return d === 0 ? 6 : d - 1; })();
-  const dim = new Date(yr, mo + 1, 0).getDate();
-  const cells = [...Array(offset).fill(null), ...Array.from({ length: dim }, (_, i) => i + 1)];
-  const weeks = Array.from({ length: Math.ceil(cells.length / 7) }, (_, i) => cells.slice(i * 7, i * 7 + 7));
-  const today = new Date();
-  const isThisMonth = yr === today.getFullYear() && mo === today.getMonth();
-  const todayWd = today.getDay() === 0 ? 6 : today.getDay() - 1;
-  const wStart = today.getDate() - todayWd, wEnd = wStart + 6;
-  const inWeek = (d) => isThisMonth && d >= wStart && d <= wEnd;
-
-  return (
-    <div className="flex-1 overflow-y-auto px-8 py-6">
-      <div className="mb-8">
-        <p className="text-body-3 font-bold text-grey-11 mb-2">{totalPct}% 완료</p>
-        <div className="relative h-px bg-grey-2">
-          <div className="absolute left-0 top-0 h-full bg-grey-11" style={{ width: `${totalPct}%` }} />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-10">
-        {/* 왼쪽 */}
-        <div className="flex flex-col gap-6">
-          <div>
-            <p className="text-body-3 font-bold text-grey-11 mb-3">필사 전체 현황</p>
-            <div className="border border-bluegrey-2 rounded-2xl p-5 flex flex-col gap-3">
-              <p className="text-body-3 text-grey-8">작성한 구절 수 총합 : <span className="font-semibold text-grey-11">240,021 절</span></p>
-              <p className="text-body-3 text-grey-8">방문한 횟수: <span className="font-semibold text-grey-11">320 일</span></p>
-              <p className="text-body-3 text-grey-8">완독 횟수: <span className="font-semibold text-grey-11">1번</span></p>
-            </div>
-          </div>
-          <p>
-            <span className="text-[28px] font-bold text-grey-11">7 일</span>
-            <span className="text-body-2 text-grey-8 ml-2">연속 필사중!</span>
-          </p>
-          <div className="flex gap-4">
-            <div className="flex flex-col gap-3">
-              <div className="border border-bluegrey-2 rounded-xl px-4 py-3">
-                <p className="text-sub-tit-4 font-bold text-grey-11">8일</p>
-                <p className="text-body-5 text-grey-5">이번달 필사 횟수</p>
-              </div>
-              <div className="border border-bluegrey-2 rounded-xl px-4 py-3">
-                <p className="text-sub-tit-4 font-bold text-grey-11">360절</p>
-                <p className="text-body-5 text-grey-5">이번달 필사 구절수</p>
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-body-4 font-semibold text-grey-10">{yr}년 {mo + 1}월</p>
-                <div className="flex">
-                  <button onClick={() => setCalDate(new Date(yr, mo - 1, 1))} className="px-1 text-grey-5 hover:text-grey-9">‹</button>
-                  <button onClick={() => setCalDate(new Date(yr, mo + 1, 1))} className="px-1 text-grey-5 hover:text-grey-9">›</button>
-                </div>
-              </div>
-              <div className="grid grid-cols-7 text-center mb-1">
-                {["월","화","수","목","금","토","일"].map(d => <span key={d} className="text-[10px] text-grey-5">{d}</span>)}
-              </div>
-              {weeks.map((week, wi) => (
-                <div key={wi} className={`grid grid-cols-7 text-center rounded-full mb-0.5 ${week.some(d => d && inWeek(d)) ? "bg-grey-2" : ""}`}>
-                  {[...Array(7)].map((_, di) => (
-                    <span key={di} className={`py-1 text-[11px] ${week[di] ? "text-grey-9" : ""}`}>{week[di] ?? ""}</span>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        {/* 오른쪽 */}
-        <div className="flex flex-col min-h-0">
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <p className="text-body-3 font-bold text-grey-11">필사 현황</p>
-            <div className="flex gap-1.5">
-              {[["OT","구약"],["NT","신약"],["exclude","완료 제외"]].map(([key, label]) => (
-                <button key={key} onClick={() => setBookTab(key)}
-                  className={`px-3 py-1 rounded-lg text-body-5 border transition-colors ${bookTab === key ? "border-grey-9 text-grey-9 font-semibold" : "border-bluegrey-2 text-grey-6 hover:border-grey-6"}`}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 overflow-y-auto">
-            {listBooks.map(abbr => {
-              const pct = BOOK_PROGRESS_WRITE[abbr] ?? 0;
-              const done = pct === 100;
-              const inProgress = pct > 0 && pct < 100;
-              const s = inProgress ? progressStyle(pct) : null;
-              return (
-                <div
-                  key={abbr}
-                  className={`flex items-center px-4 py-3 rounded-xl ${
-                    done ? "bg-grey-2" : inProgress ? s.bg : "bg-white border border-bluegrey-2"
-                  }`}
-                >
-                  <span className={`text-body-3 font-medium ${done ? "text-grey-6" : inProgress ? s.text : "text-grey-5"}`}>
-                    {BOOK_MAP[abbr]}
-                  </span>
-                  <span className={`ml-auto mr-3 text-body-4 ${done ? "text-grey-5" : inProgress ? s.sub : "text-grey-4"}`}>
-                    {pct > 0 ? `${pct}%` : ""}
-                  </span>
-                  {done
-                    ? <svg className="w-5 h-5 text-grey-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
-                    : inProgress
-                      ? <div className={`w-5 h-5 rounded-full border-2 ${s.circle} shrink-0`} />
-                      : <div className="w-5 h-5 rounded-full border-2 border-bluegrey-2 shrink-0" />
-                  }
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const WRITE_STATUS_CONFIG = {
+  sectionTitle: "필사 전체 현황",
+  totalLabel: "작성한 구절 수 총합",
+  totalValue: "240,021 절",
+  visitCount: "320 일",
+  completeCount: "1번",
+  streakDays: 7,
+  streakLabel: "연속 필사중!",
+  monthCount: "8일",
+  monthCountLabel: "이번달 필사 횟수",
+  monthVerse: "360절",
+  monthVerseLabel: "이번달 필사 구절수",
+  bookStatusTitle: "필사 현황",
+};
 
 // ── 사이드바 메뉴 아이콘 ────────────────────────────────
 const MENU_ICON = {
@@ -611,9 +448,23 @@ export default function BibleWrite() {
           );
         })()}
 
-        {activeMenu === "랭킹" && <RankingView />}
-        {activeMenu === "내 구절" && <MyVersesView completed={completedVerses} />}
-        {activeMenu === "내 현황" && <MyStatusView />}
+        {activeMenu === "랭킹" && (
+          <BibleRankingView
+            neighbors={WRITE_NEIGHBORS}
+            monthly={WRITE_MONTHLY}
+            total={WRITE_TOTAL}
+            unit="구절"
+          />
+        )}
+        {activeMenu === "내 구절" && (
+          <BibleVersesView
+            mode="write"
+            items={completedVerses}
+          />
+        )}
+        {activeMenu === "내 현황" && (
+          <BibleStatusView bookProgress={BOOK_PROGRESS_WRITE} config={WRITE_STATUS_CONFIG} />
+        )}
       </div>
 
       {bookModalOpen && (

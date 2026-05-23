@@ -9,9 +9,10 @@ import DefaultBanner from "@/assets/default_banner.png";
 const TABS = ["표지", "예배", "소식", "봉사", "예물", "후원", "구역", "섬기는 분들", "오시는 길"];
 
 // A4 page wrapper — screen: 794×1123px / print: 210×297mm
-function JuboPage({ children, noPadding = false }) {
+function JuboPage({ children, noPadding = false, ref }) {
   return (
     <div
+      ref={ref}
       className="jubo-page mx-auto bg-white border border-bluegrey-2 shadow-lg overflow-y-auto"
       style={{ width: 1100, height: 1300 }}
     >
@@ -68,8 +69,8 @@ function Cover() {
             ? <img src={churchPhoto} alt="교회 건물" className="w-full h-full object-cover" />
             : <div className="w-full h-full bg-gradient-to-br from-blue-2 to-blue-3 flex items-center justify-center text-grey-5 text-[13px]">교회 사진</div>
           }
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-sm">
-            <img src={LogoIcon} className="h-6 w-auto object-contain" alt={church.name} />
+          <div className="absolute top-4 left-4 px-3 py-2">
+            <img src={LogoIcon} className="h-12 w-auto object-contain" alt={church.name} />
           </div>
         </div>
       </div>
@@ -369,7 +370,7 @@ function Ministers() {
                       </svg>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] text-grey-6 truncate">{role}</p>
+                      <p className="text-[10px] text-grey-6 truncate mb-1">{role}</p>
                       <p className="text-[13px] font-semibold text-grey-10 group-hover:text-primary transition-colors truncate">{name || role}</p>
                     </div>
                     <svg className="w-3.5 h-3.5 text-grey-4 group-hover:text-primary ml-auto shrink-0 transition-colors print:hidden" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -453,19 +454,25 @@ export default function Jubo() {
     <>
       <style>{`
         @media print {
-          header, footer, .jubo-no-print { display: none !important; }
+          header, footer, .jubo-no-print, .jubo-single-tab { display: none !important; }
           body { margin: 0; background: white; }
           @page { size: A4; margin: 0; }
+
+          .jubo-print-all { display: block !important; }
+
           .jubo-page {
             width: 210mm !important;
-            min-height: 297mm !important;
+            height: 297mm !important;
+            overflow: hidden !important;
             border: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             margin: 0 !important;
+            page-break-after: always;
+            break-after: page;
           }
           .jubo-page > div {
-            height: auto !important;
+            height: 100% !important;
           }
         }
       `}</style>
@@ -492,7 +499,7 @@ export default function Jubo() {
               ))}
             </div>
 
-            {/* 프린트 버튼 */}
+            {/* 인쇄 / PDF 저장 버튼 */}
             <button
               onClick={() => window.print()}
               title="인쇄 / PDF 저장"
@@ -505,8 +512,23 @@ export default function Jubo() {
           </div>
         </div>
 
-        {/* A4 페이지 콘텐츠 */}
-        {renderTab(activeTab)}
+        {/* 화면: 현재 탭만 표시 */}
+        <div className="jubo-single-tab">
+          {renderTab(activeTab)}
+        </div>
+
+        {/* 인쇄 전용: 모든 탭을 순서대로 렌더 (화면에서는 숨김) */}
+        <div className="jubo-print-all" style={{ display: "none" }}>
+          <JuboPage noPadding><Cover /></JuboPage>
+          <JuboPage><Worship /></JuboPage>
+          <JuboPage><News /></JuboPage>
+          <JuboPage><Service /></JuboPage>
+          <JuboPage><Offering /></JuboPage>
+          <JuboPage><Support /></JuboPage>
+          <JuboPage><District /></JuboPage>
+          <JuboPage><Ministers /></JuboPage>
+          <JuboPage><Direction /></JuboPage>
+        </div>
       </div>
     </>
   );
