@@ -101,6 +101,7 @@ const churchConfig = {
     {
       label: "교회소식",
       children: [
+        { label: "공지사항",    to: "/공지사항" },
         { label: "스마트 주보", to: "/주보" },
         { label: "교회행사",   to: "/교회행사" },
         { label: "갤러리",     to: "/갤러리" },

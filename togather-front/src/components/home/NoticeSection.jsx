@@ -29,7 +29,7 @@ export default function NoticeSection() {
   );
   const [tab, setTab] = useState("전체");
 
-  const rows = tab === "전체" ? notices : notices.filter(n => n.type === tab);
+  const rows = (tab === "전체" ? notices : notices.filter(n => n.type === tab)).slice(0, 5);
 
   return (
     <Section className="py-[100px] bg-white">
@@ -62,12 +62,12 @@ export default function NoticeSection() {
                 </button>
               ))}
             </div>
-            <button className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors">
+            <Link to="/공지사항" className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors">
               전체보기
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
-            </button>
+            </Link>
           </div>
 
           {/* Notice list */}
@@ -78,9 +78,10 @@ export default function NoticeSection() {
               rows.map((n, i) => {
                 const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
                 return (
-                  <div
+                  <Link
                     key={n.id ?? i}
-                    className={`flex items-center gap-5 px-7 py-[22px] cursor-pointer hover:bg-bluegrey-1 transition-colors ${
+                    to={`/공지사항?id=${n.id}`}
+                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors ${
                       i < rows.length - 1 ? "border-b border-bluegrey-2" : ""
                     } ${n.featured ? "bg-blue-1/40" : ""}`}
                   >
@@ -92,8 +93,11 @@ export default function NoticeSection() {
                     </span>
                     <span className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}>
                       {n.featured && (
-                        <span className="inline-flex items-center mr-2 px-1.5 py-0.5 rounded text-[11px] font-bold bg-blue-6 text-white align-middle">
-                          고정
+                        <span className="inline-flex items-center justify-center shrink-0 mr-3 align-middle rounded-[5px] w-[22px] h-[22px] bg-blue-7">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="17" x2="12" y2="22" />
+                            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+                          </svg>
                         </span>
                       )}
                       {n.title}
@@ -101,7 +105,7 @@ export default function NoticeSection() {
                     <span className="text-body-3 text-grey-6 shrink-0 tracking-[0.02em]">
                       {n.date}
                     </span>
-                  </div>
+                  </Link>
                 );
               })
             )}
@@ -125,7 +129,7 @@ export default function NoticeSection() {
                 key={i}
                 className="flex items-start gap-4 p-5 bg-bluegrey-1 rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all cursor-pointer"
               >
-                <div className="shrink-0 text-center min-w-[52px]">
+                <div className="shrink-0 text-center min-w-[52px] mt-[2px]">
                   <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{e.d}</div>
                   <div className="text-body-5 font-medium text-grey-6 mt-0.5">{e.w}요일</div>
                 </div>
