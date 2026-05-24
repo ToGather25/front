@@ -345,7 +345,7 @@ function FloorGuide() {
       <style>{`@keyframes floorFadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* 좌: 표 */}
-      <table className="flex-1 text-body-4 border-t border-bluegrey-3">
+      <table className="flex-1 text-body-4 border-t border-bluegrey-3 mt-10">
         <tbody>
           {church.floorGuide.map(({ floor, rooms }, i) => (
             <tr
@@ -468,7 +468,7 @@ function TransportGuide() {
           address={church.address}
           level={church.location?.level ?? 5}
           routes={routes}
-          className="w-full h-[420px] rounded-2xl overflow-hidden"
+          className="w-full h-[300px] rounded-2xl overflow-hidden"
         />
         {hasAnyRoute && (
           <div className="mt-3 flex flex-wrap gap-3">

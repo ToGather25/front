@@ -31,7 +31,7 @@ export default function ServiceBand() {
 
       {/* Service strip */}
       <div
-        className="grid border-t-2 border-grey-12"
+        className="grid border-t-2 border-blue-6"
         style={{ gridTemplateColumns: `repeat(${Math.min(services.length, 5)}, 1fr)` }}
       >
         {services.slice(0, 5).map((s, i) => (
@@ -40,7 +40,7 @@ export default function ServiceBand() {
             className={`pt-7 pb-4 pr-10 ${i > 0 ? "pl-10 border-l border-grey-4" : ""}`}
           >
             <p className="text-caption text-grey-6 mb-4 tracking-[0.04em]">{s.name}</p>
-            <p className="text-[22px] font-bold text-primary tracking-[-0.5px] leading-none mb-2">
+            <p className="text-headline-4 font-bold text-primary tracking-[-0.5px] leading-none mb-2">
               {s.time}
             </p>
             {s.location && (

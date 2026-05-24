@@ -3,7 +3,7 @@ const MEMBERS = [
     id: "m01", name: "김민수", nameRoman: "Minsoo Kim", avatarTone: 1,
     gender: "남", birth: "1972.04.18", age: 53, phone: "010-2341-7782",
     email: "minsoo.kim@example.com",
-    address: "경기도 부천시 양지로 166번길 34, 101동 1502호",
+    address: "서울특별시 영등포구",
     region: "1구역", regionLeader: "박정애 권사",
     role: "장로", department: "남선교회 1지회", smallGroup: "에벤에셀 다락방",
     baptism: "2002.05.19", registered: "2014.03.09",
@@ -24,7 +24,7 @@ const MEMBERS = [
   {
     id: "m02", name: "이수진", avatarTone: 2, gender: "여", birth: "1975.09.02", age: 50,
     phone: "010-5532-1109", email: "sjlee@example.com",
-    address: "경기도 부천시 양지로 166번길 34, 101동 1502호",
+    address: "서울특별시 영등포구",
     region: "1구역", regionLeader: "박정애 권사", role: "권사",
     department: "여전도회 1지회", smallGroup: "에벤에셀 다락방",
     baptism: "2003.04.13", registered: "2014.03.09",
@@ -40,7 +40,7 @@ const MEMBERS = [
   {
     id: "m03", name: "김하은", avatarTone: 3, gender: "여", birth: "2003.11.27", age: 22,
     phone: "010-9082-5511", email: "haeun.k@example.com",
-    address: "경기도 부천시 양지로 166번길 34, 101동 1502호",
+    address: "서울특별시 영등포구",
     region: "1구역", regionLeader: "박정애 권사", role: "청년",
     department: "청년부 2부", smallGroup: "호산나 셀",
     baptism: "2018.04.01", registered: "2014.03.09",
@@ -56,7 +56,7 @@ const MEMBERS = [
   {
     id: "m04", name: "김도현", avatarTone: 4, gender: "남", birth: "2007.02.14", age: 18,
     phone: "010-7741-3320",
-    address: "경기도 부천시 양지로 166번길 34, 101동 1502호",
+    address: "서울특별시 영등포구",
     region: "1구역", regionLeader: "박정애 권사", role: "고등부",
     department: "고등부", smallGroup: "디모데 셀",
     baptism: "2021.04.04", registered: "2014.03.09",
