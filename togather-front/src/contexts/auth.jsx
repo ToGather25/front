@@ -15,6 +15,13 @@ const DUMMY_USER = {
   community: "청년부",
 };
 
+const DUMMY_ADMIN = {
+  email: "admin@togather.com",
+  password: "admin1234",
+  name: "알곡관리자",
+  isAdmin: true,
+};
+
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem("user")));
   const navigate = useNavigate();
@@ -24,6 +31,13 @@ export function AuthProvider({ children }) {
   }, [currentUser]);
 
   async function login({ email, password }) {
+    if (email === DUMMY_ADMIN.email && password === DUMMY_ADMIN.password) {
+      const user = { email: DUMMY_ADMIN.email, name: DUMMY_ADMIN.name, isAdmin: true };
+      setCurrentUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/admin");
+      return;
+    }
     if (email === DUMMY_USER.email && password === DUMMY_USER.password) {
       const user = { email: DUMMY_USER.email, name: DUMMY_USER.name, community: DUMMY_USER.community };
       setCurrentUser(user);

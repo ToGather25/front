@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import RootLayout from "@/layouts/RootLayout";
+import AdminLayout from "@/layouts/AdminLayout";
 import Home from "@/pages/Home/Home";
 import Jubo from "@/pages/Jubo/Jubo";
 import Church from "@/pages/Church/Church";
@@ -20,7 +21,15 @@ import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
 import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordPraise from "@/pages/WordPraise/WordPraise";
 import Contact from "@/pages/Contact/Contact";
+import Notice from "@/pages/Notice/Notice";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
+import Dashboard from "@/pages/admin/Dashboard";
+import MainManage from "@/pages/admin/MainManage";
+import WorshipManage from "@/pages/admin/WorshipManage";
+import NoticesManage from "@/pages/admin/NoticesManage";
+import MembersManage from "@/pages/admin/MembersManage";
+import JuboManage from "@/pages/admin/JuboManage";
+import AdminSettings from "@/pages/admin/Settings";
 
 const router = createBrowserRouter([
   { path: "말씀/필사", element: <BibleWrite /> },
@@ -54,8 +63,22 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
       { path: "mypage", element: <MyPage /> },
       { path: "교적부", element: <Gyojeokbu /> },
+      { path: "공지사항", element: <Notice /> },
       { path: "문의하기", element: <Contact /> },
       { path: "*", element: <PageNotFound /> },
+    ],
+  },
+  {
+    path: "admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "main", element: <MainManage /> },
+      { path: "worship", element: <WorshipManage /> },
+      { path: "notices", element: <NoticesManage /> },
+      { path: "members", element: <MembersManage /> },
+      { path: "jubo", element: <JuboManage /> },
+      { path: "settings", element: <AdminSettings /> },
     ],
   },
 ]);
