@@ -163,6 +163,7 @@ export default function Notice() {
       ) : (
         /* 목록 */
         <>
+          <div className="flex flex-col min-h-[700px]">
           <div className="border border-grey-3 rounded-2xl overflow-hidden">
             {/* 테이블 헤더 */}
             <div className="grid grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-6 py-3 text-body-5 font-semibold text-grey-7">
@@ -211,12 +212,14 @@ export default function Notice() {
             )}
           </div>
 
+          <div className="flex-1" />
           <Pagination
             total={filtered.length}
             perPage={PAGE_SIZE}
             current={page}
             onChange={setPage}
           />
+          </div>
         </>
       )}
     </div>
