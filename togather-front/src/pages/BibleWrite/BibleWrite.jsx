@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import bibleData from "@/data/bible.json";
 import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
@@ -131,9 +131,10 @@ const MENU_ICON = {
 };
 
 export default function BibleWrite() {
+  const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경쓰기");
   const [bookModalOpen, setBookModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState("창");
+  const [selectedBook, setSelectedBook] = useState(state?.book ?? "창");
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [selectedVerse, setSelectedVerse] = useState(1);
   const [typed, setTyped] = useState("");
@@ -145,10 +146,36 @@ export default function BibleWrite() {
   const [chapterOpen, setChapterOpen] = useState(false);
   const [verseOpen, setVerseOpen] = useState(false);
 
+  useEffect(() => {
+    if (state?.book) {
+      setSelectedBook(state.book);
+      setActiveMenu("성경쓰기");
+      setSelectedChapter(1);
+      setSelectedVerse(1);
+    }
+  }, [state]);
+
   const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
   const verses = useMemo(() => getVerses(selectedBook, selectedChapter), [selectedBook, selectedChapter]);
   const currentVerse = verses.find((v) => v.verse === selectedVerse);
   const targetText = currentVerse?.text ?? "";
+
+  const currentVerseIdx = verses.findIndex((v) => v.verse === selectedVerse);
+  const prevVerses = verses.slice(Math.max(0, currentVerseIdx - 3), currentVerseIdx);
+  const nextVerses = verses.slice(currentVerseIdx + 1, currentVerseIdx + 6);
+  const nextVerse = nextVerses[0] ?? null;
+  const isLastVerse = currentVerseIdx === verses.length - 1;
+
+  const goNextChapter = () => {
+    const nextChapterIdx = chapters.indexOf(selectedChapter) + 1;
+    if (nextChapterIdx < chapters.length) {
+      setSelectedChapter(chapters[nextChapterIdx]);
+    } else {
+      const allBooks = [...OT, ...NT];
+      const nextBookIdx = allBooks.indexOf(selectedBook) + 1;
+      if (nextBookIdx < allBooks.length) setSelectedBook(allBooks[nextBookIdx]);
+    }
+  };
 
   const textareaRef = useRef(null);
 
@@ -169,6 +196,14 @@ export default function BibleWrite() {
     setTyped("");
     setIsCorrect(null);
   }, [selectedVerse]);
+
+  useEffect(() => {
+    if (isCorrect !== true || isLastVerse) return;
+    const t = setTimeout(() => {
+      setSelectedVerse(nextVerse.verse);
+    }, 700);
+    return () => clearTimeout(t);
+  }, [isCorrect, isLastVerse, nextVerse]);
 
   const handleTyping = (e) => {
     const val = e.target.value;
@@ -365,50 +400,88 @@ export default function BibleWrite() {
 
         {/* 콘텐츠 분기 */}
         {activeMenu === "성경쓰기" && (() => {
-          const progress = targetText.length > 0 ? Math.min((typed.length / targetText.length) * 100, 100) : 0;
           const fontSizeClass = fontSize === "large" ? "text-[22px]" : fontSize === "small" ? "text-body-2" : "text-body-1";
+          const chapterDone = completedVerses.filter(v => v.bookAbbr === selectedBook && v.chapter === selectedChapter).length;
+          const chapterProgress = verses.length > 0 ? (chapterDone / verses.length) * 100 : 0;
           return (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <div
-                className="flex-1 overflow-y-auto px-10 py-8 cursor-text"
-                onClick={() => !isDone && textareaRef.current?.focus()}
-              >
-                {/* 제목 + 하트 */}
-                <div className="flex items-center gap-2 mb-4">
-                  <h2 className="text-sub-tit-4 font-bold text-grey-11">
-                    {BOOK_MAP[selectedBook]} {selectedChapter}{BOOK_MAP[selectedBook] === "시편" ? "편" : "장"} {selectedVerse}절
-                  </h2>
-                  <svg className="w-5 h-5 text-grey-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                  </svg>
-                </div>
+            <div className="flex-1 flex flex-col overflow-hidden relative">
+              <style>{`
+                @keyframes verseSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+              `}</style>
 
-                {/* 진행률 바 */}
-                <div className="relative w-full h-0.5 bg-grey-2 mb-8">
-                  <div className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-150" style={{ width: `${progress}%` }} />
+              {/* 장 전체 진행률 바 */}
+              <div className="shrink-0 px-10 pt-4 pb-2 flex items-center gap-3">
+                <div className="flex-1 relative h-1.5 bg-grey-2 rounded-full">
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm transition-all duration-150"
-                    style={{ left: `clamp(0px, calc(${progress}% - 6px), calc(100% - 12px))` }}
+                    className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-500"
+                    style={{ width: `${chapterProgress}%` }}
                   />
                 </div>
+                <span className="text-caption text-grey-5 shrink-0">{chapterDone} / {verses.length}절</span>
+              </div>
 
-                {/* 오버레이 타이핑 */}
+              {/* 이전 절들 */}
+              <div className="flex-[1] relative flex flex-col justify-end pb-6 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-3/4 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
+                <div className="flex flex-col gap-4 px-16">
+                  {prevVerses.map((v, i) => {
+                    const opacity = 0.2 + (i / Math.max(prevVerses.length, 1)) * 0.45;
+                    return (
+                      <div key={v.verse} className="flex items-start gap-3 select-none" style={{ opacity }}>
+                        <svg className="w-3.5 h-3.5 text-blue-4 shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                        </svg>
+                        <p className="text-body-4 text-grey-6 leading-relaxed line-clamp-2">
+                          <span className="text-grey-4 text-caption mr-1">{v.verse}</span>{v.text}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 구분선 */}
+              <div className="shrink-0 mx-16 h-px bg-grey-2" />
+
+              {/* 현재 절 */}
+              <div
+                key={`${selectedChapter}-${selectedVerse}`}
+                className="shrink-0 px-16 py-10 cursor-text"
+                style={{ animation: "verseSlideUp 0.35s ease-out both" }}
+                onClick={() => !isDone && textareaRef.current?.focus()}
+              >
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="text-caption font-semibold text-primary tracking-wide">
+                    {BOOK_MAP[selectedBook]} {selectedChapter}{BOOK_MAP[selectedBook] === "시편" ? "편" : "장"} {selectedVerse}절
+                  </span>
+                  {isDone && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-grey-3 inline-block" />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setTyped(""); setIsCorrect(null); textareaRef.current?.focus(); }}
+                        className="text-caption text-grey-4 hover:text-grey-7 transition-colors"
+                      >
+                        다시 쓰기
+                      </button>
+                    </>
+                  )}
+                </div>
+
                 <div className="relative">
                   <div className={`${fontSizeClass} whitespace-pre-wrap tracking-wide select-none leading-relaxed`}>
                     {targetText.split("").map((char, i) => {
                       if (i < typed.length) {
-                        const correct = typed[i] === char;
-                        return <span key={i} className={correct ? "text-grey-9" : "text-red-500"}>{typed[i]}</span>;
+                        return <span key={i} className={typed[i] === char ? "text-grey-11" : "text-red-400"}>{typed[i]}</span>;
                       }
-                      if (i === typed.length) {
+                      if (i === typed.length && !isDone) {
                         return (
                           <span key={i} className="relative">
-                            <span className="absolute -left-px top-0 bottom-0 w-0.5 bg-blue-6 animate-pulse" />
+                            <span className="absolute -left-px top-0 bottom-0 w-0.5 bg-primary animate-pulse" />
                             <span className="text-grey-3">{char}</span>
                           </span>
                         );
                       }
-                      return <span key={i} className="text-grey-3">{char}</span>;
+                      return <span key={i} className={isDone ? "text-grey-11" : "text-grey-3"}>{char}</span>;
                     })}
                   </div>
                   {!isDone && (
@@ -416,34 +489,50 @@ export default function BibleWrite() {
                       ref={textareaRef}
                       value={typed}
                       onChange={handleTyping}
+                      onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
                       autoFocus
                       rows={1}
                       className="absolute inset-0 w-full h-full opacity-0 resize-none cursor-text"
                     />
                   )}
                 </div>
-
-                {/* 완료 메시지 */}
-                {isDone && (
-                  <div className="flex items-center gap-3 bg-blue-1 border border-blue-3 rounded-2xl px-6 py-4 mt-8">
-                    <svg className="w-5 h-5 text-blue-7 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <p className="text-body-3 text-blue-8 font-semibold">정확히 완료했습니다!</p>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setTyped(""); setIsCorrect(null); textareaRef.current?.focus(); }}
-                      className="ml-auto text-body-4 text-blue-7 underline hover:no-underline"
-                    >
-                      다시 쓰기
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {/* 하단 오늘 쓴 절수 */}
-              <div className="border-t border-bluegrey-2 h-20 flex items-center px-10 bg-white">
+              {/* 구분선 */}
+              <div className="shrink-0 mx-16 h-px bg-grey-2" />
+
+              {/* 다음 절들 */}
+              <div className="flex-[2] relative flex flex-col justify-start pt-6 overflow-hidden">
+                <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-white to-transparent pointer-events-none z-10" />
+                <div className="flex flex-col gap-4 px-16">
+                  {nextVerses.map((v, i) => {
+                    const opacity = 0.5 - (i / Math.max(nextVerses.length, 1)) * 0.35;
+                    return (
+                      <p key={v.verse} className="text-body-4 text-grey-5 leading-relaxed line-clamp-2 select-none" style={{ opacity }}>
+                        <span className="text-grey-3 text-caption mr-1.5">{v.verse}</span>{v.text}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 하단 바 */}
+              <div className="shrink-0 border-t border-bluegrey-2 h-20 flex items-center px-10 bg-white">
                 <p className="text-body-4 text-grey-8 font-medium">오늘 쓴 절 수 : {completedVerses.length}절</p>
               </div>
+
+              {/* 다음 장으로 버튼 */}
+              {isDone && isLastVerse && (
+                <button
+                  onClick={goNextChapter}
+                  className="absolute bottom-20 right-8 flex items-center gap-2 px-5 py-3 bg-primary text-white text-body-3 font-semibold rounded-2xl shadow-lg hover:bg-blue-8 transition-colors"
+                >
+                  다음 장으로
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
             </div>
           );
         })()}
@@ -463,7 +552,7 @@ export default function BibleWrite() {
           />
         )}
         {activeMenu === "내 현황" && (
-          <BibleStatusView bookProgress={BOOK_PROGRESS_WRITE} config={WRITE_STATUS_CONFIG} />
+          <BibleStatusView bookProgress={BOOK_PROGRESS_WRITE} config={WRITE_STATUS_CONFIG} mode="write" />
         )}
       </div>
 
