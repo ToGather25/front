@@ -345,26 +345,29 @@ function FloorGuide() {
       <style>{`@keyframes floorFadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* 좌: 표 */}
-      <table className="flex-1 text-body-4 border-t border-bluegrey-3 mt-10">
-        <tbody>
-          {church.floorGuide.map(({ floor, rooms }, i) => (
-            <tr
-              key={floor}
-              onClick={() => setSelectedIdx(i)}
-              className={`border-b border-grey-3 cursor-pointer transition-colors ${
-                i === selectedIdx ? "bg-blue-1" : "hover:bg-grey-1"
-              }`}
-            >
-              <td className={`py-3.5 pl-2 w-28 font-semibold ${i === selectedIdx ? "text-primary" : "text-grey-8"}`}>
-                {floor}
-              </td>
-              <td className={`py-3.5 ${i === selectedIdx ? "text-grey-9" : "text-grey-7"}`}>
-                {rooms}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sub-tit-4 font-semibold text-grey-11 mb-4">층별 안내</h3>
+        <table className="w-full text-body-4 border-t border-bluegrey-3">
+          <tbody>
+            {church.floorGuide.map(({ floor, rooms }, i) =>성 (
+              <tr
+                key={floor}
+                onClick={() => setSelectedIdx(i)}
+                className={`border-b border-gre일y-3 cursor-pointer transition-colors ${
+                  i === selectedIdx ? "bg-blue-1" : "hover:bg-grey-1"
+                }`}
+              >
+                <td className={`py-3.5 pl-2 w-28 font-semibold ${i === selectedIdx ? "text-primary" : "text-grey-8"}`}>
+                  {floor}
+                </td>
+                <td className={`py-3.5 ${i === selectedIdx ? "text-grey-9" : "text-grey-7"}`}>
+                  {rooms}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* 우: 사진 */}
       <div className="w-[420px] shrink-0">
