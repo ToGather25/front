@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 import RootLayout from "@/layouts/RootLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import Home from "@/pages/Home/Home";
@@ -7,7 +7,6 @@ import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
 import Gallery from "@/pages/Gallery/Gallery";
-import Bible from "@/pages/Bible/Bible";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
 import Login from "@/pages/Login/Login";
@@ -45,7 +44,7 @@ const router = createBrowserRouter([
       { path: "교회행사/:id", element: <EventDetail /> },
       { path: "갤러리", element: <Gallery /> },
       // 말씀·찬양
-      { path: "말씀", element: <Bible /> },
+      { path: "말씀", element: <Navigate to="/양육훈련" replace /> },
       { path: "말씀/방송", element: <WordBroadcast /> },
       { path: "말씀/설교", element: <WordSermon /> },
       { path: "말씀/찬양", element: <WordPraise /> },
