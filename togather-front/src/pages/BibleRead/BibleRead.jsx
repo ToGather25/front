@@ -170,7 +170,7 @@ export default function BibleRead() {
     <div className="flex h-screen">
       {/* Sidebar */}
       <div className={`bg-grey-1 border-r border-bluegrey-2 flex flex-col transition-all duration-300 overflow-hidden ${sidebarOpen ? "w-56" : "w-14"}`}>
-        <div className={`flex items-center py-3 border-b border-bluegrey-2 ${sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"}`}>
+        <div className={`flex items-center h-[60px] shrink-0 border-b border-bluegrey-2 ${sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"}`}>
           {sidebarOpen && <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />}
           <button
             onClick={() => setSidebarOpen((v) => !v)}
@@ -199,7 +199,7 @@ export default function BibleRead() {
         </nav>
         <div className="mt-auto border-t border-bluegrey-2 h-20 flex items-center gap-2 px-2">
           <Link
-            to="/말씀"
+            to="/"
             className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors ${sidebarOpen ? "flex-1" : "w-full"}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
@@ -221,7 +221,7 @@ export default function BibleRead() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar — 성경읽기 메뉴에서만 표시 */}
         {activeMenu === "성경읽기" && (
-          <div className="flex items-center gap-3 px-6 py-3 border-b border-bluegrey-2 bg-white">
+          <div className="h-[60px] shrink-0 flex items-center gap-3 px-6 border-b border-bluegrey-2 bg-white">
             {/* 글씨 크기 */}
             <div className="relative">
               <button
