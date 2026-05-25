@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { OT, NT, BOOK_MAP } from "@/config/bible.config";
 
 function progressStyle(pct) {
@@ -8,7 +9,8 @@ function progressStyle(pct) {
   return               { bg: "bg-blue-7", text: "text-white",  sub: "text-blue-2", circle: "border-white/70" };
 }
 
-export default function BibleStatusView({ bookProgress = {}, config = {} }) {
+export default function BibleStatusView({ bookProgress = {}, config = {}, mode = "read" }) {
+  const navigate = useNavigate();
   const [bookTab, setBookTab] = useState("OT");
   const [calDate, setCalDate] = useState(new Date());
   const [bookStartIdx, setBookStartIdx] = useState(0);
@@ -36,7 +38,8 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
 
   useEffect(() => { setBookStartIdx(0); }, [bookTab]);
 
-  const VISIBLE_BOOKS = 10;
+  const VISIBLE_BOOKS = 14;
+  const STEP = 3;
   const canBooksUp   = bookStartIdx > 0;
   const canBooksDown = bookStartIdx + VISIBLE_BOOKS < listBooks.length;
   const visibleBooks = listBooks.slice(bookStartIdx, bookStartIdx + VISIBLE_BOOKS);
@@ -51,7 +54,7 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
   const offset = (() => { const d = new Date(yr, mo, 1).getDay(); return d === 0 ? 6 : d - 1; })();
   const dim = new Date(yr, mo + 1, 0).getDate();
   const cells = [...Array(offset).fill(null), ...Array.from({ length: dim }, (_, i) => i + 1)];
-  const weeks = Array.from({ length: Math.ceil(cells.length / 7) }, (_, i) => cells.slice(i * 7, i * 7 + 7));
+  const weeks = Array.from({ length: 6 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
   const today = new Date();
   const isThisMonth = yr === today.getFullYear() && mo === today.getMonth();
   const todayWd = today.getDay() === 0 ? 6 : today.getDay() - 1;
@@ -59,21 +62,26 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
   const inWeek = (d) => isThisMonth && d >= wStart && d <= wEnd;
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 py-6">
+    <div className="flex-1 flex flex-col overflow-hidden px-8 py-6">
       <style>{`
         @keyframes booksfadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes booksfadeOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(-10px); } }
       `}</style>
-      <div className="mb-8">
+
+      {/* 상단 진행률 */}
+      <div className="mb-6 shrink-0">
         <p className="text-body-3 font-bold text-grey-11 mb-2">{totalPct}% 완료</p>
         <div className="relative h-px bg-grey-2">
           <div className="absolute left-0 top-0 h-full bg-grey-11" style={{ width: `${totalPct}%` }} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-10">
+
+      {/* 메인 그리드 */}
+      <div className="flex-1 min-h-0 grid grid-cols-2 gap-10">
+
         {/* 왼쪽 */}
-        <div className="flex flex-col gap-6">
-          <div>
+        <div className="flex flex-col gap-5 min-h-0">
+          <div className="shrink-0">
             <p className="text-body-3 font-bold text-grey-11 mb-3">{sectionTitle}</p>
             <div className="border border-bluegrey-2 rounded-2xl p-5 flex flex-col gap-3">
               <p className="text-body-3 text-grey-8">{totalLabel} : <span className="font-semibold text-grey-11">{totalValue}</span></p>
@@ -81,10 +89,12 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
               <p className="text-body-3 text-grey-8">완독 횟수: <span className="font-semibold text-grey-11">{completeCount}</span></p>
             </div>
           </div>
-          <p>
+          <p className="shrink-0">
             <span className="text-sub-tit-1 font-bold text-grey-11">{streakDays} 일</span>
             <span className="text-body-2 text-grey-8 ml-2">{streakLabel}</span>
           </p>
+
+          {/* 통계 카드 + 캘린더 */}
           <div className="flex gap-4">
             <div className="flex flex-col gap-3 shrink-0">
               <div className="border border-bluegrey-2 rounded-xl px-4 py-3">
@@ -96,11 +106,17 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
                 <p className="text-body-5 text-grey-5">{monthVerseLabel}</p>
               </div>
             </div>
+
             {/* 캘린더 */}
             <div className="flex-1 min-w-0 border border-bluegrey-2 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-body-3 font-semibold text-grey-10">{yr}년 {mo + 1}월</p>
-                <div className="flex gap-1">
+                <div className="flex items-center gap-1">
+                  {!isThisMonth && (
+                    <button onClick={() => setCalDate(new Date())} className="px-2 py-0.5 text-caption text-blue-7 border border-blue-4 rounded-full hover:bg-blue-1 transition-colors">
+                      오늘
+                    </button>
+                  )}
                   <button onClick={() => setCalDate(new Date(yr, mo - 1, 1))} className="w-6 h-6 flex items-center justify-center text-grey-5 hover:text-grey-9 rounded">‹</button>
                   <button onClick={() => setCalDate(new Date(yr, mo + 1, 1))} className="w-6 h-6 flex items-center justify-center text-grey-5 hover:text-grey-9 rounded">›</button>
                 </div>
@@ -108,19 +124,24 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
               <div className="grid grid-cols-7 text-center mb-2">
                 {["월","화","수","목","금","토","일"].map(d => <span key={d} className="text-body-5 text-grey-5 font-medium">{d}</span>)}
               </div>
-              {weeks.map((week, wi) => (
-                <div key={wi} className={`grid grid-cols-7 text-center rounded-lg mb-0.5 ${week.some(d => d && inWeek(d)) ? "bg-grey-2" : ""}`}>
-                  {[...Array(7)].map((_, di) => (
-                    <span key={di} className={`py-3.5 text-caption ${week[di] ? "text-grey-9" : ""}`}>{week[di] ?? ""}</span>
-                  ))}
-                </div>
-              ))}
+              <div className="flex flex-col gap-0.5">
+                {weeks.map((week, wi) => (
+                  <div key={wi} className={`h-19 grid grid-cols-7 text-center rounded-lg ${week.some(d => d && inWeek(d)) ? "bg-grey-2" : ""}`}>
+                    {[...Array(7)].map((_, di) => (
+                      <span key={di} className={`flex items-center justify-center text-caption ${week[di] ? "text-grey-9" : ""}`}>
+                        {week[di] ?? ""}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
         {/* 오른쪽 */}
         <div className="flex flex-col min-h-0">
-          <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+          <div className="flex items-center justify-between gap-2 mb-4 shrink-0 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-body-3 font-bold text-grey-11">{bookStatusTitle}</p>
               <div className="flex gap-1.5">
@@ -134,17 +155,18 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
             </div>
             {(canBooksUp || canBooksDown) && (
               <div className="flex gap-1.5">
-                <button onClick={() => goBooks(-1)} disabled={!canBooksUp || bookFading}
+                <button onClick={() => goBooks(-STEP)} disabled={!canBooksUp || bookFading}
                   className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${canBooksUp && !bookFading ? "border-blue-7 text-blue-7 hover:bg-blue-1" : "border-grey-3 text-grey-4 cursor-not-allowed"}`}>
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
                 </button>
-                <button onClick={() => goBooks(1)} disabled={!canBooksDown || bookFading}
+                <button onClick={() => goBooks(STEP)} disabled={!canBooksDown || bookFading}
                   className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${canBooksDown && !bookFading ? "border-blue-7 text-blue-7 hover:bg-blue-1" : "border-grey-3 text-grey-4 cursor-not-allowed"}`}>
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                 </button>
               </div>
             )}
           </div>
+
           <div
             key={`${bookTab}-${bookStartIdx}`}
             className="flex flex-col gap-2"
@@ -158,8 +180,12 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
               return (
                 <div
                   key={abbr}
-                  className={`flex items-center px-4 py-3 rounded-xl ${
-                    done ? "bg-grey-2" : inProgress ? s.bg : "bg-white border border-bluegrey-2"
+                  onClick={() => navigate(
+                    mode === "write" ? "/말씀/필사" : "/말씀/읽기",
+                    { state: { book: mode === "write" ? abbr : BOOK_MAP[abbr] } }
+                  )}
+                  className={`flex items-center px-4 py-3 rounded-xl cursor-pointer ${
+                    done ? "bg-grey-2 hover:bg-grey-3" : inProgress ? s.bg : "bg-white border border-bluegrey-2 hover:border-blue-4"
                   }`}
                 >
                   <span className={`text-body-3 font-medium ${done ? "text-grey-6" : inProgress ? s.text : "text-grey-5"}`}>
@@ -179,6 +205,7 @@ export default function BibleStatusView({ bookProgress = {}, config = {} }) {
             })}
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import bibleData from "@/data/bible.json";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/config/bible.config";
@@ -100,8 +100,9 @@ const MENU_ICON = {
 };
 
 export default function BibleRead() {
+  const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경읽기");
-  const [selectedBook, setSelectedBook] = useState("창세기");
+  const [selectedBook, setSelectedBook] = useState(state?.book ?? "창세기");
   const [chapter, setChapter] = useState(1);
   const [checkedVerses, setCheckedVerses] = useState({});
   const [savedVerses, setSavedVerses] = useState({});
@@ -112,11 +113,47 @@ export default function BibleRead() {
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  useEffect(() => {
+    if (state?.book) {
+      setSelectedBook(state.book);
+      setActiveMenu("성경읽기");
+      setChapter(1);
+      setCheckedVerses({});
+    }
+  }, [state]);
+
   const verses = getVerses(selectedBook, chapter);
   const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
 
+  const allChecked = verses.length > 0 && verses.every((_, idx) => !!checkedVerses[idx]);
+
   const toggleVerse = (idx) =>
     setCheckedVerses((prev) => ({ ...prev, [idx]: !prev[idx] }));
+
+  const toggleCheckAll = () => {
+    if (allChecked) {
+      setCheckedVerses({});
+    } else {
+      const all = {};
+      verses.forEach((_, idx) => { all[idx] = true; });
+      setCheckedVerses(all);
+    }
+  };
+
+  const goNextChapter = () => {
+    const nextIdx = chapters.indexOf(chapter) + 1;
+    if (nextIdx < chapters.length) {
+      setChapter(chapters[nextIdx]);
+    } else {
+      const allBooks = [...OT, ...NT].map(a => BOOK_MAP[a]);
+      const nextBookIdx = allBooks.indexOf(selectedBook) + 1;
+      if (nextBookIdx < allBooks.length) {
+        setSelectedBook(allBooks[nextBookIdx]);
+        setChapter(1);
+      }
+    }
+    setCheckedVerses({});
+  };
 
   const toggleSave = (verse) => {
     const key = `${selectedBook}-${chapter}-${verse.num}`;
@@ -189,7 +226,7 @@ export default function BibleRead() {
             <div className="relative">
               <button
                 onClick={() => { setFontSizeOpen((v) => !v); setBookOpen(false); setChapterOpen(false); }}
-                className="px-4 py-2 rounded-full bg-grey-2 hover:bg-grey-3 transition-colors"
+                className="h-9 px-4 rounded-full bg-grey-2 hover:bg-grey-3 transition-colors"
               >
                 <span className="text-[15px] font-medium text-grey-8">가</span>
                 <span className="text-[11px] font-medium text-grey-8">가</span>
@@ -223,6 +260,34 @@ export default function BibleRead() {
                 </>
               )}
             </div>
+
+            {/* 전체 선택 */}
+            <button
+              onClick={toggleCheckAll}
+              className={`h-9 flex items-center gap-1.5 px-4 rounded-full text-body-4 border transition-colors ${
+                allChecked
+                  ? "bg-primary border-primary text-white"
+                  : "border-bluegrey-2 text-grey-7 hover:border-blue-5"
+              }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {allChecked ? "전체 해제" : "전체 선택"}
+            </button>
+
+            {/* 다음 장으로 */}
+            {allChecked && (
+              <button
+                onClick={goNextChapter}
+                className="h-9 flex items-center gap-1.5 px-4 rounded-full bg-blue-7 text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
+              >
+                다음 장으로
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
 
             <div className="flex-1" />
 
@@ -378,7 +443,7 @@ export default function BibleRead() {
           />
         )}
         {activeMenu === "내 현황" && (
-          <BibleStatusView bookProgress={BOOK_PROGRESS_READ} config={READ_STATUS_CONFIG} />
+          <BibleStatusView bookProgress={BOOK_PROGRESS_READ} config={READ_STATUS_CONFIG} mode="read" />
         )}
       </div>
     </div>
