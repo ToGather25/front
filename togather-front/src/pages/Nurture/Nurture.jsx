@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
 
 const SECTION_TAB_MAP = {
@@ -96,7 +96,11 @@ const CATEGORY_COLORS = {
 
 export default function Nurture() {
   const { section } = useParams();
-  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "구역모임");
+  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
+
+  useEffect(() => {
+    setActiveTab(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
+  }, [section]);
 
   return (
     <div>
@@ -298,39 +302,28 @@ export default function Nurture() {
 
         {/* 성경읽기/쓰기 */}
         {activeTab === "성경읽기/쓰기" && (
-          <div>
-            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">성경읽기/쓰기</h2>
-            <p className="text-body-2 text-grey-7 mb-8">
-              매일 말씀을 읽고 필사하며 하나님과 더 깊이 만나세요.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
-              <Link
-                to="/말씀/읽기"
-                className="group border border-bluegrey-2 rounded-2xl p-8 flex flex-col items-center gap-4 hover:border-primary hover:shadow-md transition-all"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-blue-1 flex items-center justify-center group-hover:bg-primary transition-colors">
-                  <svg className="w-8 h-8 text-blue-7 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                  </svg>
-                </div>
-                <div className="text-center">
-                  <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-1">성경 읽기</h3>
-                  <p className="text-body-4 text-grey-6">말씀을 읽고 구절을 체크하며 성경을 통독합니다</p>
-                </div>
-              </Link>
+          <div className="flex flex-col items-center py-10">
+            <h2 className="text-sub-tit-1 font-bold text-grey-12 mb-16 text-center">
+              오늘 하실 신앙 생활은 무엇인가요?
+            </h2>
+            <div className="flex gap-6">
               <Link
                 to="/말씀/필사"
-                className="group border border-bluegrey-2 rounded-2xl p-8 flex flex-col items-center gap-4 hover:border-primary hover:shadow-md transition-all"
+                className="w-72 h-80 bg-blue-8 rounded-2xl flex flex-col items-center justify-center gap-6 text-white hover:bg-blue-9 transition-colors"
               >
-                <div className="w-16 h-16 rounded-2xl bg-blue-1 flex items-center justify-center group-hover:bg-primary transition-colors">
-                  <svg className="w-8 h-8 text-blue-7 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </div>
-                <div className="text-center">
-                  <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-1">성경 필사</h3>
-                  <p className="text-body-4 text-grey-6">말씀을 한 글자씩 따라 쓰며 마음에 새깁니다</p>
-                </div>
+                <span className="text-sub-tit-3 font-semibold">성경 쓰기</span>
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+              </Link>
+              <Link
+                to="/말씀/읽기"
+                className="w-72 h-80 bg-white border-2 border-blue-3 rounded-2xl flex flex-col items-center justify-center gap-6 text-grey-11 hover:bg-blue-1 transition-colors"
+              >
+                <span className="text-sub-tit-3 font-semibold">성경 읽기</span>
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
               </Link>
             </div>
           </div>
