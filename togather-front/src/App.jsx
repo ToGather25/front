@@ -21,6 +21,8 @@ import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordPraise from "@/pages/WordPraise/WordPraise";
 import Contact from "@/pages/Contact/Contact";
 import Notice from "@/pages/Notice/Notice";
+import Privacy from "@/pages/Privacy/Privacy";
+import Terms from "@/pages/Terms/Terms";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 import Dashboard from "@/pages/admin/Dashboard";
 import MainManage from "@/pages/admin/MainManage";
@@ -64,6 +66,8 @@ const router = createBrowserRouter([
       { path: "교적부", element: <Gyojeokbu /> },
       { path: "공지사항", element: <Notice /> },
       { path: "문의하기", element: <Contact /> },
+      { path: "privacy", element: <Privacy /> },
+      { path: "terms", element: <Terms /> },
       { path: "*", element: <PageNotFound /> },
     ],
   },
