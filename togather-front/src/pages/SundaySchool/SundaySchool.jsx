@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router";
 
 const DEPT_PARAM_MAP = {
   유치부: "유치부",
@@ -18,7 +18,7 @@ const DEPARTMENTS = [
     description:
       "유치부는 만 4세~7세 어린이들이 처음으로 하나님을 만나는 소중한 공간입니다.\n말씀과 찬양, 놀이를 통해 하나님의 사랑을 배우고 신앙의 첫 걸음을 내딛습니다.",
     activities: ["주일 예배", "VBS (여름성경학교)", "어린이 찬양대", "성탄절 발표회"],
-    color: "point-4",
+    bgImage: null,
   },
   {
     key: "초등부",
@@ -29,7 +29,7 @@ const DEPARTMENTS = [
     description:
       "초등부는 초등학교 1~6학년 어린이들이 함께하는 공동체입니다.\n성경 말씀을 체계적으로 배우며 또래와 신앙 안에서 건강하게 성장합니다.",
     activities: ["주일 예배", "성경퀴즈대회", "제자훈련", "수련회"],
-    color: "blue-5",
+    bgImage: null,
   },
   {
     key: "중·고등부",
@@ -40,7 +40,7 @@ const DEPARTMENTS = [
     description:
       "중·고등부는 중·고등학생들이 신앙과 삶의 질문을 함께 나누는 공동체입니다.\n말씀 묵상과 소그룹 활동을 통해 하나님 안에서 정체성을 세워갑니다.",
     activities: ["주일 예배", "소그룹 모임", "청소년 수련회", "봉사활동"],
-    color: "blue-7",
+    bgImage: null,
   },
   {
     key: "대학·청년부",
@@ -51,31 +51,27 @@ const DEPARTMENTS = [
     description:
       "대학·청년부는 대학생부터 30대까지 함께하는 신앙 공동체입니다.\n예배와 소그룹, 캠퍼스 전도와 단기선교를 통해 하나님의 부르심을 발견하고 삶에서 실천합니다.",
     activities: ["주일 예배", "소그룹 (셀)", "성경 공부", "단기선교", "지역사회 봉사"],
-    color: "primary",
+    bgImage: null,
   },
 ];
 
 function DeptContent({ dept }) {
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       {/* 소개 */}
-      <div className="flex gap-10 items-start">
-        <div className="flex-1">
-          <div className="inline-block px-3 py-1 bg-blue-1 text-blue-7 text-body-5 font-semibold rounded-full mb-3">
-            {dept.ageRange}
-          </div>
-          <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">{dept.key}</h2>
-          <p className="text-body-2 text-blue-6 font-medium mb-5">"{dept.vision}"</p>
-          <div className="text-body-3 text-grey-7 whitespace-pre-line leading-relaxed">
-            {dept.description}
-          </div>
+      <div>
+        <div className="inline-block px-3 py-1 bg-blue-1 text-blue-7 text-body-5 font-semibold rounded-full mb-4">
+          {dept.ageRange}
         </div>
-        <div className="w-52 h-52 rounded-2xl bg-grey-2 shrink-0 flex items-center justify-center text-grey-5 text-body-4">
-          부서 사진
+        <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">{dept.key}</h2>
+        <p className="text-body-2 text-blue-6 font-medium mb-4">"{dept.vision}"</p>
+        <div className="text-body-3 text-grey-7 whitespace-pre-line leading-relaxed max-w-2xl">
+          {dept.description}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 카드 3열 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* 예배 안내 */}
         <div className="border border-bluegrey-2 rounded-2xl p-6">
           <h3 className="text-sub-tit-5 font-semibold text-grey-10 mb-4 flex items-center gap-2">
@@ -135,13 +131,34 @@ export default function SundaySchool() {
   const [activeTab, setActiveTab] = useState(DEPT_PARAM_MAP[deptParam] ?? DEPARTMENTS[0].key);
   const dept = DEPARTMENTS.find((d) => d.key === activeTab);
 
+  useEffect(() => {
+    setActiveTab(DEPT_PARAM_MAP[deptParam] ?? DEPARTMENTS[0].key);
+  }, [deptParam]);
+
   return (
     <div>
       {/* Hero Banner */}
-      <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
+      <div
+        className="relative h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
+        style={dept.bgImage ? { backgroundImage: `url(${dept.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
-          <h1 className="text-headline-4 font-bold text-white">주일학교</h1>
+        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full flex items-end justify-between">
+          <div>
+            <p className="text-body-4 text-white/70 font-medium mb-1">주일학교</p>
+            <h1 className="text-headline-3 font-bold text-white">{dept.key}</h1>
+          </div>
+          <Link
+            to="#"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-body-4 font-medium transition-colors border border-white/30 backdrop-blur-sm"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            부서 사진 보러가기
+          </Link>
         </div>
       </div>
 
