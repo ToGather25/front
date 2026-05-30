@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
 const SECTION_TAB_MAP = {
@@ -79,6 +79,11 @@ export default function Mission() {
   const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "전도회 소개");
   const [missionType, setMissionType] = useState(section === "해외" ? "해외" : "국내");
 
+  useEffect(() => {
+    setActiveTab(SECTION_TAB_MAP[section] ?? "전도회 소개");
+    if (section === "국내" || section === "해외") setMissionType(section);
+  }, [section]);
+
   return (
     <div>
       {/* Hero Banner */}
@@ -146,7 +151,7 @@ export default function Mission() {
             </div>
 
             <h3 className="text-sub-tit-4 font-semibold text-grey-10 mb-4">주요 사역</h3>
-            <div className="grid grid-cols-1 gap-4 max-w-2xl">
+            <div className="grid grid-cols-2 gap-4">
               {EVANGELISM_INFO.activities.map(({ name, schedule, location }) => (
                 <div key={name} className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6">
                   <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
