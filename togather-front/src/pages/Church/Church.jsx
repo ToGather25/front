@@ -139,95 +139,152 @@ function WorshipInfo() {
 }
 
 // ── 섬기는 사람들 ──────────────────────────────────────
+const STAFF_CHIPS = ["교역자", "시무장로", "협동·사역장로", "은퇴장로", "파송선교사"];
+
+const MicIcon = () => (
+  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+  </svg>
+);
+
+function PersonCard({ name, tel, email, role, showSermon = false }) {
+  return (
+    <div className="border border-bluegrey-2 rounded-2xl p-5 shadow-sm">
+      <div className="flex gap-3">
+        <div className="w-11 h-11 rounded-full bg-grey-3 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-0.5">
+            <p className="text-body-3 font-semibold text-grey-11 truncate">{name}</p>
+            {showSermon && (
+              <button className="flex items-center gap-1 text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full shrink-0">
+                <MicIcon />설교방송
+              </button>
+            )}
+          </div>
+          <p className="text-body-5 text-grey-6">{tel}</p>
+          <p className="text-body-5 text-grey-6">{email}</p>
+          <p className="text-body-5 text-grey-7 mt-1">{role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Staff() {
   const { church } = useChurch();
-  const { filterTags, headPastor, clergy } = church.staff;
+  const { headPastor, clergy, elders, associateElders, retiredElders, missionaries } = church.staff;
+  const [activeChip, setActiveChip] = useState("교역자");
 
   return (
     <div>
-      {/* 검색 — 중앙 정렬 */}
-      <div className="bg-blue-1 rounded-2xl p-12 text-center mb-10">
-        <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-4">교역자 검색</h2>
-        <div className="flex items-center gap-2 border border-bluegrey-2 rounded-full px-5 py-3 max-w-lg mx-auto mb-4 bg-white">
-          <svg className="w-4 h-4 text-grey-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5" placeholder="검색" />
-        </div>
-        <div className="flex justify-center gap-2">
-          {filterTags.map((tag) => (
-            <span key={tag} className="px-3 py-1 bg-grey-2 text-body-5 text-grey-7 rounded-full">{tag}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* 담임목사 */}
-      <h3 className="text-sub-tit-4 font-semibold text-grey-11 mb-4">담임목사</h3>
-      <div className="grid grid-cols-2 gap-4 mb-10">
-        {/* 프로필 카드 */}
-        <div className="border border-bluegrey-2 rounded-2xl p-6 shadow-sm">
-          <div className="flex gap-4">
-            <div className="w-16 h-16 rounded-full bg-grey-3 shrink-0" />
-            <div className="flex-1">
-              <div className="flex justify-between mb-1">
-                <p className="text-body-3 font-semibold text-grey-11">{headPastor.name}</p>
-                <button className="text-body-5 text-blue-7 border border-blue-7 px-3 py-0.5 rounded-full">설교방송</button>
-              </div>
-              <p className="text-body-5 text-grey-6">{headPastor.tel}</p>
-              <p className="text-body-5 text-grey-6">{headPastor.email}</p>
-              <p className="text-body-4 text-grey-7 mt-2">{headPastor.role}</p>
-            </div>
-          </div>
-        </div>
-        {/* 학력·약력 카드 */}
-        <div className="border border-bluegrey-2 rounded-2xl p-6 flex items-center shadow-sm">
-          <div className="grid grid-cols-2 gap-6 text-body-5 text-grey-7 w-full">
-            <div>
-              <p className="font-semibold text-grey-9 mb-2">[학력]</p>
-              <ul className="flex flex-col gap-1">
-                {headPastor.education.map((item, i) => (
-                  <li key={i} className="flex items-start gap-1.5">
-                    <span className="text-grey-5 shrink-0 mt-0.5">-</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="font-semibold text-grey-9 mb-2">[약력]</p>
-              <ul className="flex flex-col gap-1">
-                {headPastor.career.map((item, i) => (
-                  <li key={i} className="flex items-start gap-1.5">
-                    <span className="text-grey-5 shrink-0 mt-0.5">-</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+      {/* 칩 필터 */}
+      <div className="flex flex-wrap gap-2 mb-10">
+        {STAFF_CHIPS.map((chip) => (
+          <button
+            key={chip}
+            onClick={() => setActiveChip(chip)}
+            className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
+              activeChip === chip
+                ? "bg-primary text-white"
+                : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
+            }`}
+          >
+            {chip}
+          </button>
+        ))}
       </div>
 
       {/* 교역자 */}
-      <h3 className="text-sub-tit-4 font-semibold text-grey-11 mb-4">교역자</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {clergy.map(({ name, tel, email, role }) => (
-          <div key={name} className="border border-bluegrey-2 rounded-2xl p-6 shadow-sm">
-            <div className="flex gap-3">
-              <div className="w-12 h-12 rounded-full bg-grey-3 shrink-0" />
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <p className="text-body-4 font-semibold text-grey-11">{name}</p>
-                  <button className="text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full">설교방송</button>
+      {activeChip === "교역자" && (
+        <div>
+          {/* 담임목사 — 와이드 카드 */}
+          <div className="border border-primary/20 bg-blue-1/30 rounded-2xl p-7 mb-6 flex gap-8">
+            <div className="w-24 h-24 rounded-2xl bg-grey-3 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <span className="text-caption font-bold text-primary uppercase tracking-widest">담임목사</span>
+                  <h3 className="text-sub-tit-3 font-bold text-grey-12 mt-0.5">{headPastor.name}</h3>
                 </div>
-                <p className="text-body-5 text-grey-6">{tel}</p>
-                <p className="text-body-5 text-grey-6">{email}</p>
-                <p className="text-body-5 text-grey-7 mt-1">{role}</p>
+                <button className="flex items-center gap-1.5 text-body-4 text-blue-7 border border-blue-7 px-4 py-1.5 rounded-full shrink-0">
+                  <MicIcon />설교방송
+                </button>
+              </div>
+              <p className="text-body-4 text-grey-6 mb-4">{headPastor.tel} · {headPastor.email}</p>
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-bluegrey-2">
+                <div>
+                  <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">학력</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {headPastor.education.map((item, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
+                        <span className="text-primary shrink-0 mt-1">·</span>{item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">약력</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {headPastor.career.map((item, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
+                        <span className="text-primary shrink-0 mt-1">·</span>{item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+          {/* 교역자 그리드 */}
+          <div className="grid grid-cols-2 gap-4">
+            {clergy.map((p) => <PersonCard key={p.name} {...p} showSermon />)}
+          </div>
+        </div>
+      )}
+
+      {/* 시무장로 */}
+      {activeChip === "시무장로" && (
+        <div className="grid grid-cols-2 gap-4">
+          {elders.map((p) => <PersonCard key={p.name} {...p} />)}
+        </div>
+      )}
+
+      {/* 협동·사역장로 */}
+      {activeChip === "협동·사역장로" && (
+        <div className="grid grid-cols-2 gap-4">
+          {associateElders.map((p) => <PersonCard key={p.name} {...p} />)}
+        </div>
+      )}
+
+      {/* 은퇴장로 */}
+      {activeChip === "은퇴장로" && (
+        <div className="grid grid-cols-2 gap-4">
+          {retiredElders.map((p) => <PersonCard key={p.name} {...p} />)}
+        </div>
+      )}
+
+      {/* 파송선교사 */}
+      {activeChip === "파송선교사" && (
+        <div className="grid grid-cols-2 gap-4">
+          {missionaries.map((p) => (
+            <div key={p.name} className="border border-bluegrey-2 rounded-2xl p-5 shadow-sm">
+              <div className="flex gap-3">
+                <div className="w-11 h-11 rounded-full bg-grey-3 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-body-3 font-semibold text-grey-11">{p.name}</p>
+                    <span className="px-2 py-0.5 rounded-full bg-point-1 text-point-7 text-body-5 font-semibold shrink-0">{p.location}</span>
+                  </div>
+                  <p className="text-body-5 text-grey-6">{p.tel}</p>
+                  <p className="text-body-5 text-grey-6">{p.email}</p>
+                  <p className="text-body-5 text-grey-7 mt-1">{p.role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -349,11 +406,11 @@ function FloorGuide() {
         <h3 className="text-sub-tit-4 font-semibold text-grey-11 mb-4">층별 안내</h3>
         <table className="w-full text-body-4 border-t border-bluegrey-3">
           <tbody>
-            {church.floorGuide.map(({ floor, rooms }, i) =>성 (
+            {church.floorGuide.map(({ floor, rooms }, i) => (
               <tr
                 key={floor}
                 onClick={() => setSelectedIdx(i)}
-                className={`border-b border-gre일y-3 cursor-pointer transition-colors ${
+                className={`border-b border-grey-3 cursor-pointer transition-colors ${
                   i === selectedIdx ? "bg-blue-1" : "hover:bg-grey-1"
                 }`}
               >

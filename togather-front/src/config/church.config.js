@@ -175,7 +175,7 @@ const churchConfig = {
 
   // ── 섬기는 사람들 ─────────────────────────────────────
   staff: {
-    filterTags: ["#담임목사", "#간사", "#협동장로", "#부목사"],
+    filterTags: ["# 담임목사", "# 간사", "# 협동장로", "# 부목사"],
     headPastor: {
       name: "김함께 목사",
       tel: "02-1234-5678",
@@ -197,6 +197,26 @@ const churchConfig = {
       { name: "김모두 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
       { name: "임축복 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
       { name: "이행복 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
+    ],
+    elders: [
+      { name: "홍길동 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
+      { name: "박성실 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
+      { name: "최믿음 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
+      { name: "정소망 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
+    ],
+    associateElders: [
+      { name: "김사랑 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로" },
+      { name: "이은혜 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "사역장로" },
+      { name: "박기쁨 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로" },
+    ],
+    retiredElders: [
+      { name: "윤경건 원로장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로" },
+      { name: "강진리 은퇴장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로" },
+    ],
+    missionaries: [
+      { name: "오복음 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "태국 방콕 파송", location: "태국" },
+      { name: "서열방 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "캄보디아 프놈펜 파송", location: "캄보디아" },
+      { name: "문선교 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "몽골 울란바토르 파송", location: "몽골" },
     ],
   },
 
