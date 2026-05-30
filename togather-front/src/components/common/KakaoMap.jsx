@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
  * @param {boolean} draggable - false이면 드래그/스크롤/더블클릭 비활성화 (기본 true)
  * @param {string}  className - 컨테이너 클래스
  */
-export default function KakaoMap({ address, level = 4, draggable = true, className = "" }) {
+export default function KakaoMap({ address, level = 4, draggable = true, className = "", style }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
 
@@ -73,11 +73,11 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-4 text-grey-6 ${className}`}>
+      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-4 text-grey-6 ${className}`} style={style}>
         {error}
       </div>
     );
   }
 
-  return <div ref={containerRef} className={className} />;
+  return <div ref={containerRef} className={className} style={style} />;
 }

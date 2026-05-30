@@ -14,7 +14,7 @@ function JuboPage({ children, noPadding = false, ref }) {
     <div
       ref={ref}
       className="jubo-page mx-auto bg-white border border-bluegrey-2 shadow-lg overflow-y-auto"
-      style={{ width: 1100, height: 1300 }}
+      style={{ width: 1200, height: 1300 }}
     >
       <div className={noPadding ? "h-full" : "p-10 h-full"}>
         {children}
@@ -401,7 +401,7 @@ function Direction() {
           className="w-full rounded-xl overflow-hidden mb-3"
           style={{ height: 320 }}
         />
-        <p className="text-caption text-grey-7">{church.address}</p>
+        <p className="text-right text-caption text-grey-7">{church.address}</p>
       </div>
       <div>
         <SectionTitle icon={
@@ -477,7 +477,7 @@ export default function Jubo() {
         }
       `}</style>
 
-      <div className="max-w-[1576px] mx-auto px-8 py-10">
+      <div className="max-w-7xl mx-auto px-8 py-10">
         {/* 헤더 — 프린트 시 숨김 */}
         <div className="jubo-no-print">
           <h1 className="text-sub-tit-1 font-bold text-grey-12 mb-6">스마트 주보</h1>
