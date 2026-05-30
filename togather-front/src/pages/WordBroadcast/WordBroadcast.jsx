@@ -1,4 +1,5 @@
 import { useChurch } from "@/contexts/ChurchContext";
+import WordTabBar from "@/components/word/WordTabBar";
 
 const PAST_BROADCASTS = [
   { id: 1, title: "주일 2부 예배 (2026.05.04)", date: "2026.05.04", views: "1,204", thumb: null },
@@ -20,16 +21,11 @@ export default function WordBroadcast() {
       <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/90 text-white text-xs font-bold tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              ON-AIR
-            </span>
-          </div>
-          <h1 className="text-headline-4 font-bold text-white">실시간 방송</h1>
+          <h1 className="text-headline-4 font-bold text-white">말씀·찬양</h1>
         </div>
       </div>
 
+      <WordTabBar />
       <div className="max-w-[1576px] mx-auto px-8 py-14">
         {/* Live Player */}
         <section className="mb-16">
