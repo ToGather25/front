@@ -10,8 +10,8 @@ export default function DirectionsSection() {
     {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-          <path d="M12 2c4 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2-7 6-11z" />
-          <circle cx="12" cy="12" r="2.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z" />
         </svg>
       ),
       label: "주소",
@@ -41,7 +41,7 @@ export default function DirectionsSection() {
   ];
 
   return (
-    <Section className="py-[120px] bg-bluegrey-1">
+    <Section className="py-[120px] bg-white">
       <div className="mb-8">
         <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
           DIRECTIONS
@@ -52,8 +52,8 @@ export default function DirectionsSection() {
       </div>
 
       <div className="grid gap-8 items-stretch" style={{ gridTemplateColumns: "1fr 540px" }}>
-        {/* Map — 16:9 비율로 높이 결정 */}
-        <div className="rounded-[20px] overflow-hidden bg-bluegrey-2" style={{ aspectRatio: "16/9" }}>
+        {/* Map */}
+        <div className="rounded-[20px] overflow-hidden bg-bluegrey-2">
           <KakaoMap
             level={church.location?.level ?? 3}
             address={church.address}
@@ -83,8 +83,8 @@ export default function DirectionsSection() {
             ))}
           </div>
 
-          {/* Action buttons — 남은 공간 균등 분배 */}
-          <div className="flex flex-col gap-3 mt-6 flex-1 min-h-0">
+          {/* Action buttons */}
+          <div className="flex flex-col gap-3 mt-6">
             {[
               { label: "주차 안내", to: "/교회소개?tab=오시는 길" },
               { label: "셔틀 안내", to: "/교회소개?tab=차량운행 안내" },
@@ -93,7 +93,7 @@ export default function DirectionsSection() {
               <Link
                 key={label}
                 to={to}
-                className="flex-1 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
+                className="h-18 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

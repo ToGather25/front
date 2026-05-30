@@ -93,7 +93,7 @@ export default function WorshipSection() {
   };
 
   return (
-    <Section className="py-[120px] bg-white">
+    <Section className="pt-[120px] pb-[100px] bg-white">
       <div className="grid gap-14 items-center" style={{ gridTemplateColumns: "560px 1fr" }}>
         {/* Sermon info */}
         <div className="py-2">

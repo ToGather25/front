@@ -191,7 +191,7 @@ function Footer() {
           <div className="flex items-center gap-2.5 h-[52px]">
             <img
               src={church.logoUrl ?? LogoIcon}
-              className="h-22 w-22 object-contain"
+              className="w-30 object-contain"
               alt={`${church.name} 로고`}
             />
           </div>
@@ -199,7 +199,7 @@ function Footer() {
           {/* Info */}
           <div className="flex flex-col gap-5 py-2">
             {/* Links */}
-            <div className="flex items-center gap-10 text-body-3 font-bold text-grey-10">
+            <div className="flex items-center gap-10 text-body-2 font-bold text-grey-10">
               <Link to="/privacy" className="hover:text-blue-7 transition-colors">개인정보취급방침</Link>
               <Link to="/terms" className="hover:text-blue-7 transition-colors">이용 약관</Link>
             </div>

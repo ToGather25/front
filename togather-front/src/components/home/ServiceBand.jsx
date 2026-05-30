@@ -7,7 +7,7 @@ export default function ServiceBand() {
   const services = church.worshipSchedule?.regular ?? [];
 
   return (
-    <Section className="py-[100px] bg-bluegrey-1">
+    <Section className="pb-[120px] bg-white">
       {/* Header */}
       <div className="flex items-end justify-between mb-12">
         <div>

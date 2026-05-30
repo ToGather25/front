@@ -32,10 +32,10 @@ export default function NoticeSection() {
   const rows = (tab === "전체" ? notices : notices.filter(n => n.type === tab)).slice(0, 5);
 
   return (
-    <Section className="py-[100px] bg-white">
-      <div className="grid gap-10 items-start" style={{ gridTemplateColumns: "1fr 460px" }}>
+    <Section className="py-[100px] bg-bluegrey-1">
+      <div className="grid gap-10" style={{ gridTemplateColumns: "1fr 460px" }}>
         {/* Left: notices */}
-        <div>
+        <div className="flex flex-col">
           <div className="mb-8">
             <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
               UPDATES
@@ -55,7 +55,7 @@ export default function NoticeSection() {
                   className={`px-[18px] py-2.5 rounded-full text-[15px] font-semibold transition-all ${
                     t === tab
                       ? "bg-blue-8 text-white"
-                      : "bg-transparent text-grey-9 hover:bg-bluegrey-1"
+                      : "bg-transparent text-grey-9 hover:bg-bluegrey-2"
                   }`}
                 >
                   {t}
@@ -71,7 +71,7 @@ export default function NoticeSection() {
           </div>
 
           {/* Notice list */}
-          <div className="bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
+          <div className="flex-1 flex flex-col bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
             {rows.length === 0 ? (
               <div className="py-16 text-center text-grey-5 text-[15px]">공지사항이 없습니다.</div>
             ) : (
@@ -81,12 +81,10 @@ export default function NoticeSection() {
                   <Link
                     key={n.id ?? i}
                     to={`/공지사항?id=${n.id}`}
-                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors ${
-                      i < rows.length - 1 ? "border-b border-bluegrey-2" : ""
-                    } ${n.featured ? "bg-blue-1/40" : ""}`}
+                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2`}
                   >
                     <span
-                      className="text-body-5 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
+                      className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
                       style={tagStyle}
                     >
                       {n.type}
@@ -113,7 +111,7 @@ export default function NoticeSection() {
         </div>
 
         {/* Right: upcoming events */}
-        <aside>
+        <aside className="flex flex-col">
           <div className="mb-8">
             <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
               CALENDAR
@@ -123,13 +121,13 @@ export default function NoticeSection() {
             </h3>
           </div>
 
-          <ul className="flex flex-col gap-3 list-none m-0 p-0">
+          <ul className="flex-1 flex flex-col gap-3 list-none m-0 p-0">
             {UPCOMING_EVENTS.map((e, i) => (
               <li
                 key={i}
-                className="flex items-start gap-4 p-5 bg-bluegrey-1 rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all cursor-pointer"
+                className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all cursor-pointer"
               >
-                <div className="shrink-0 text-center min-w-[52px] mt-[2px]">
+                <div className="shrink-0 min-w-[52px] mt-[2px]">
                   <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{e.d}</div>
                   <div className="text-body-5 font-medium text-grey-6 mt-0.5">{e.w}요일</div>
                 </div>
@@ -143,7 +141,7 @@ export default function NoticeSection() {
 
           <Link
             to="/교회행사"
-            className="mt-4 w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-bluegrey-2 text-[15px] font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-6 transition-colors"
+            className="mt-4 w-full flex items-center justify-center gap-2 py-4 bg-white rounded-2xl border border-bluegrey-2 text-[15px] font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-6 transition-colors"
           >
             캘린더로 보기
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

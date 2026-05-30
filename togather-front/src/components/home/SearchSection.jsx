@@ -63,14 +63,13 @@ export default function SearchSection() {
 
       {/* Quick suggestions */}
       <div className="flex items-center gap-2.5 mt-6 flex-wrap justify-center">
-        <span className="text-sm font-medium text-grey-7 mr-1">자주 찾는 항목</span>
         {SUGGESTIONS.map(s => (
           <button
             key={s}
             onClick={() => setOpen(true)}
             className="px-4 py-2 rounded-full border border-bluegrey-2 bg-white text-sm font-medium text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
           >
-            {s}
+            # {s}
           </button>
         ))}
       </div>
