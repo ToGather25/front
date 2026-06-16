@@ -685,14 +685,14 @@ export default function MyPage() {
 
             {/* 기도/상담 */}
             {activeTab === "prayer" && (
-              <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
+              <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col">
                 <div className="flex items-center justify-between mb-5">
                   <h2 className="text-sub-tit-4 font-bold text-grey-11">기도 / 상담 내역</h2>
                   <button
                     onClick={() => setModal("add-prayer")}
                     className="bg-primary text-white text-body-5 rounded-full px-5 py-2 hover:bg-blue-8 transition-colors"
                   >
-                    + 기도 신청하기
+                    + 신청하기
                   </button>
                 </div>
                 <div className="flex gap-2 mb-5">
@@ -739,7 +739,6 @@ export default function MyPage() {
                     </div>
                   ))}
                 </div>
-                <div className="flex-1" />
                 <Pagination
                   total={filteredPrayers.length}
                   perPage={PRAYER_PAGE_SIZE}
@@ -751,7 +750,7 @@ export default function MyPage() {
 
             {/* 문의하기 */}
             {activeTab === "inquiry" && (
-              <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
+              <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col">
                 {!inquiryWriteMode ? (
                   <>
                     <div className="flex items-center justify-between mb-6">
@@ -763,7 +762,7 @@ export default function MyPage() {
                         + 문의하기
                       </button>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {pagedInquiries.map(item => (
                         <div key={item.id} className="border border-grey-3 rounded-xl p-5">
                           <div className="flex items-center justify-between gap-4">
@@ -782,7 +781,6 @@ export default function MyPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex-1" />
                     <Pagination
                       total={inquiries.length}
                       perPage={PAGE_SIZE}
@@ -966,7 +964,7 @@ export default function MyPage() {
 
       {modal === "add-prayer" && (
         <ModalOverlay onClose={() => setModal(null)}>
-          <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">기도 신청</h3>
+          <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">기도 / 상담 신청하기</h3>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <InputField

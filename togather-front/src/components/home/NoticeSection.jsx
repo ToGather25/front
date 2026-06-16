@@ -81,7 +81,7 @@ export default function NoticeSection() {
                   <Link
                     key={n.id ?? i}
                     to={`/공지사항?id=${n.id}`}
-                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2`}
+                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2 last:border-b-0`}
                   >
                     <span
                       className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"

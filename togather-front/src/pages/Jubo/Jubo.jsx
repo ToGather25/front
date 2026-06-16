@@ -8,15 +8,11 @@ import DefaultBanner from "@/assets/default_banner.png";
 
 const TABS = ["표지", "예배", "소식", "봉사", "예물", "후원", "구역", "섬기는 분들", "오시는 길"];
 
-// A4 page wrapper — screen: 794×1123px / print: 210×297mm
-function JuboPage({ children, noPadding = false, ref }) {
+// 주보 컨텐츠 래퍼 — 화면: 반응형 / 인쇄: A4
+function JuboPage({ children, noPadding = false }) {
   return (
-    <div
-      ref={ref}
-      className="jubo-page mx-auto bg-white border border-bluegrey-2 shadow-lg overflow-y-auto"
-      style={{ width: 1200, height: 1300 }}
-    >
-      <div className={noPadding ? "h-full" : "p-10 h-full"}>
+    <div className="jubo-page w-full mx-auto bg-white border border-bluegrey-2 shadow-md rounded-2xl overflow-hidden">
+      <div className={noPadding ? "" : "p-8 md:p-10"}>
         {children}
       </div>
     </div>
@@ -46,45 +42,45 @@ function Cover() {
   const groupPhoto    = cover.photos?.group;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col gap-2 p-2">
       {/* 헤더 */}
-      <div className="flex justify-between items-center px-8 py-3.5 border-b border-bluegrey-2 shrink-0">
+      <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-2">
         <span className="text-caption text-grey-6">{cover.issueNumber}</span>
         <span className="text-body-3 font-semibold text-grey-9">{cover.date}</span>
       </div>
 
       {/* 표어 + 교회 사진 */}
-      <div className="flex shrink-0" style={{ height: 310 }}>
-        <div className="flex flex-col justify-center gap-4 px-10 py-8" style={{ width: "40%" }}>
+      <div className="flex rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 260 }}>
+        <div className="flex flex-col justify-center gap-4 px-10 py-8 w-[38%] shrink-0 bg-white">
           <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
             {year}년 표어
           </span>
-          <h2 className="text-[26px] font-bold leading-[1.35] text-grey-12">
+          <h2 className="text-[22px] md:text-[26px] font-bold leading-[1.35] text-grey-12">
             {mainVerse.replace(/^"|"$/g, "")}
           </h2>
           <p className="text-caption text-grey-6">{mainTitle}</p>
         </div>
-        <div className="flex-1 relative overflow-hidden bg-grey-3">
+        <div className="flex-1 relative overflow-hidden bg-grey-3 min-h-[220px]">
           {churchPhoto
             ? <img src={churchPhoto} alt="교회 건물" className="w-full h-full object-cover" />
             : <div className="w-full h-full bg-gradient-to-br from-blue-2 to-blue-3 flex items-center justify-center text-grey-5 text-caption">교회 사진</div>
           }
-          <div className="absolute top-4 left-4 px-3 py-2">
-            <img src={LogoIcon} className="h-12 w-auto object-contain" alt={church.name} />
+          <div className="absolute top-4 left-4">
+            <img src={LogoIcon} className="h-10 w-auto object-contain" alt={church.name} />
           </div>
         </div>
       </div>
 
-      {/* 파노라마 사진 (전체 너비) */}
-      <div className="w-full shrink-0 overflow-hidden" style={{ height: 380 }}>
+      {/* 파노라마 사진 */}
+      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2" style={{ height: 280 }}>
         <img src={panoramaPhoto} alt="예배 전경" className="w-full h-full object-cover" />
       </div>
 
       {/* 3대 실천사항 + 단체 사진 */}
-      <div className="flex flex-1">
+      <div className="flex rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 220 }}>
         <div
-          className="flex flex-col items-center justify-center gap-3 px-8 shrink-0"
-          style={{ width: "40%", background: "var(--color-primary)" }}
+          className="flex flex-col items-center justify-center gap-3 px-8 w-[38%] shrink-0"
+          style={{ background: "var(--color-primary)" }}
         >
           <p className="text-[11px] font-semibold text-blue-3 tracking-widest">[3대 실천사항]</p>
           <div className="flex flex-col items-center gap-1.5">
@@ -106,25 +102,26 @@ function Cover() {
 
 // ── 예배 ───────────────────────────────────────────────
 const SIDEBAR_SERVICES = [
-  { label: "전체",      group: "main" },
-  { label: "주일오전예배", group: "main" },
-  { label: "새벽기도회",  group: "main" },
-  { label: "수요기도회",  group: "main" },
-  { label: "금요기도회",  group: "main" },
-  { label: "유치부",    group: "sub" },
-  { label: "초등부",    group: "sub" },
-  { label: "중고등부",   group: "sub" },
-  { label: "대학청년부",  group: "sub" },
+  { label: "전체",       group: "main" },
+  { label: "주일 오전예배", group: "main" },
+  { label: "주일 오후예배", group: "main" },
+  { label: "새벽기도회",   group: "main" },
+  { label: "수요예배",    group: "main" },
+  { label: "금요기도회",   group: "main" },
+  { label: "유치부",     group: "sub" },
+  { label: "초등부",     group: "sub" },
+  { label: "중고등부",    group: "sub" },
+  { label: "대학청년부",   group: "sub" },
 ];
 
 function Worship() {
   const { worshipOrder, worshipScheduleSummary } = juboConfig;
-  const [selected, setSelected] = useState("주일오전예배");
+  const [selected, setSelected] = useState("주일 오전예배");
 
   return (
-    <div className="flex gap-0 border border-bluegrey-2 rounded-xl overflow-hidden h-full">
+    <div className="flex border border-bluegrey-2 rounded-xl overflow-hidden min-h-[480px]">
       {/* 사이드바 */}
-      <div className="w-32 shrink-0 border-r border-bluegrey-2 bg-bluegrey-1 py-3">
+      <div className="w-36 shrink-0 border-r border-bluegrey-2 bg-bluegrey-1 py-3">
         <p className="text-[10px] font-bold text-grey-6 uppercase tracking-wider px-3 mb-2">기관</p>
         {SIDEBAR_SERVICES.map(({ label, group }, i) => {
           const isFirst = group === "sub" && SIDEBAR_SERVICES[i - 1]?.group === "main";
@@ -133,8 +130,10 @@ function Worship() {
               {isFirst && <div className="h-px bg-bluegrey-2 mx-3 my-1.5" />}
               <button
                 onClick={() => setSelected(label)}
-                className={`w-full text-left px-3 py-1.5 text-caption transition-colors ${
-                  selected === label ? "bg-primary text-white font-semibold" : "text-grey-9 hover:bg-bluegrey-2"
+                className={`w-full text-left px-3 py-2 text-caption transition-colors ${
+                  selected === label
+                    ? "bg-primary text-white font-semibold"
+                    : "text-grey-9 hover:bg-bluegrey-2 font-medium"
                 }`}
               >
                 {label}
@@ -144,39 +143,46 @@ function Worship() {
         })}
       </div>
 
-      {/* 순서 */}
-      <div className="flex-1 p-5 overflow-auto">
-        <div className="mb-4">
+      {/* 예배 순서 */}
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="flex items-baseline gap-2 mb-5">
           <h3 className="text-body-2 font-bold text-grey-11">예배 순서</h3>
-          <p className="text-body-5 text-grey-6 mt-0.5">{selected} · 주일 오전 예배 (09:00 ~ 11:00)</p>
+          <p className="text-body-5 text-grey-6">
+            {selected === "주일 오전예배" && "주일 오전 예배 (1부 - 오전 09:00, 2부 - 오전 11:00)"}
+            {selected === "주일 오후예배" && "주일 오후 예배 (오후 2:00)"}
+            {selected === "새벽기도회"   && "새벽기도회 (오전 5:30)"}
+            {selected === "수요예배"     && "수요 예배 (오전 11:00)"}
+            {selected === "금요기도회"   && "금요기도회 (오후 8:00)"}
+          </p>
         </div>
+        <div className="border-t border-grey-11 mb-1" />
         <table className="w-full text-caption">
           <thead>
-            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-              <th className="text-left py-2 px-3 text-grey-7 font-semibold w-1/4">순서</th>
-              <th className="py-2 px-3 text-grey-7 font-semibold text-center">1부</th>
-              <th className="py-2 px-3 text-grey-7 font-semibold text-center">2부</th>
+            <tr className="border-b border-bluegrey-2">
+              <th className="text-left py-2.5 px-3 text-grey-7 font-semibold w-1/4" />
+              <th className="py-2.5 px-3 text-grey-7 font-semibold text-center">1부</th>
+              <th className="py-2.5 px-3 text-grey-7 font-semibold text-center">2부</th>
             </tr>
           </thead>
           <tbody>
             {worshipOrder.map(({ order, part1, part2 }, i) => (
               <tr key={i} className="border-b border-grey-3">
-                <td className="py-2.5 px-3 text-grey-9 font-medium">{order}</td>
-                <td className="py-2.5 px-3 text-grey-7 text-center whitespace-pre-line">{part1}</td>
-                <td className="py-2.5 px-3 text-grey-7 text-center whitespace-pre-line">{part2}</td>
+                <td className="py-3 px-3 text-grey-9 font-medium tracking-widest">{order}</td>
+                <td className="py-3 px-3 text-grey-7 text-center whitespace-pre-line">{part1}</td>
+                <td className="py-3 px-3 text-grey-7 text-center whitespace-pre-line">{part2}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* 모임 안내 */}
-      <div className="w-40 shrink-0 border-l border-bluegrey-2 p-4">
-        <h4 className="text-caption font-bold text-grey-10 mb-3">예배 및 모임 안내</h4>
+      {/* 예배 및 모임 안내 */}
+      <div className="w-44 shrink-0 border-l border-bluegrey-2 p-5">
+        <h4 className="text-body-5 font-bold text-grey-10 mb-4">예배 및 모임 안내</h4>
         {worshipScheduleSummary.map(({ label, time }) => (
-          <div key={label} className="flex justify-between items-start py-2 border-b border-grey-3">
-            <span className="text-[11px] text-grey-8 leading-tight">{label}</span>
-            <span className="text-[11px] text-grey-10 font-semibold text-right leading-tight">{time}</span>
+          <div key={label} className="flex justify-between items-start py-2.5 border-b border-grey-3 last:border-0">
+            <span className="text-caption text-grey-8 leading-snug">{label}</span>
+            <span className="text-caption text-grey-10 font-semibold text-right leading-snug">{time}</span>
           </div>
         ))}
       </div>
@@ -284,20 +290,20 @@ function Support() {
           <circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
         </svg>
       }>우리 교회가 돕고 있는 곳</SectionTitle>
-      <table className="w-full text-caption mt-1">
+      <table className="w-full text-body-4 mt-1 border-collapse">
         <thead>
           <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-            <th className="py-2 px-4 text-grey-7 font-semibold text-center">기관</th>
-            <th className="py-2 px-4 text-grey-7 font-semibold text-center">대상</th>
-            <th className="py-2 px-4 text-grey-7 font-semibold text-center">후원구역</th>
+            <th className="py-3 px-6 text-grey-7 font-semibold text-center">기관</th>
+            <th className="py-3 px-6 text-grey-7 font-semibold text-center">대상</th>
+            <th className="py-3 px-6 text-grey-7 font-semibold text-center">후원구역</th>
           </tr>
         </thead>
         <tbody>
           {support.map(({ organization, target, region }, i) => (
-            <tr key={i} className="border-b border-grey-3">
-              <td className="py-3.5 px-4 text-grey-9 text-center">{organization}</td>
-              <td className="py-3.5 px-4 text-grey-7 text-center">{target}</td>
-              <td className="py-3.5 px-4 text-grey-7 text-center">{region}</td>
+            <tr key={i} className="border-b border-grey-3 last:border-b-0">
+              <td className="py-5 px-6 text-grey-9 text-center">{organization}</td>
+              <td className="py-5 px-6 text-grey-7 text-center">{target}</td>
+              <td className="py-5 px-6 text-grey-7 text-center">{region}</td>
             </tr>
           ))}
         </tbody>

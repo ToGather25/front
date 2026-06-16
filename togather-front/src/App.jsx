@@ -11,6 +11,7 @@ import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
 import Login from "@/pages/Login/Login";
 import Register from "@/pages/Register/Register";
+import SignupNext from "@/pages/Register/SignupNext";
 import MyPage from "@/pages/MyPage/MyPage";
 import Mission from "@/pages/Mission/Mission";
 import Nurture from "@/pages/Nurture/Nurture";
@@ -18,6 +19,7 @@ import SundaySchool from "@/pages/SundaySchool/SundaySchool";
 import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
 import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
 import WordSermon from "@/pages/WordSermon/WordSermon";
+import WordSermonDetail from "@/pages/WordSermon/WordSermonDetail";
 import WordPraise from "@/pages/WordPraise/WordPraise";
 import Contact from "@/pages/Contact/Contact";
 import Notice from "@/pages/Notice/Notice";
@@ -49,6 +51,7 @@ const router = createBrowserRouter([
       { path: "말씀", element: <Navigate to="/양육훈련" replace /> },
       { path: "말씀/방송", element: <WordBroadcast /> },
       { path: "말씀/설교", element: <WordSermon /> },
+      { path: "말씀/설교/:id", element: <WordSermonDetail /> },
       { path: "말씀/찬양", element: <WordPraise /> },
       // 주일학교
       { path: "주일학교", element: <SundaySchool /> },
@@ -62,6 +65,7 @@ const router = createBrowserRouter([
       // 기타
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "register/next", element: <SignupNext /> },
       { path: "mypage", element: <MyPage /> },
       { path: "교적부", element: <Gyojeokbu /> },
       { path: "공지사항", element: <Notice /> },

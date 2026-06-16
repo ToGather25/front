@@ -1,9 +1,18 @@
 import { useParams, Link } from "react-router";
 import { SAMPLE_EVENTS, DEFAULT_EVENT } from "@/config/events.config";
 
+// "YYYY/MM/DD" 또는 "YYYY.MM.DD" 형식의 날짜가 오늘보다 이전인지 확인
+function isEventEnded(dateStr) {
+  if (!dateStr) return false;
+  const normalized = dateStr.replace(/\./g, "/");
+  const eventDate = new Date(normalized);
+  return eventDate < new Date(new Date().toDateString()); // 자정 기준
+}
+
 export default function EventDetail() {
   const { id } = useParams();
   const event = SAMPLE_EVENTS[id] ?? { id, ...DEFAULT_EVENT };
+  const ended = isEventEnded(event.date);
 
   return (
     <div className="max-w-2xl mx-auto px-8 py-10">
@@ -30,12 +39,22 @@ export default function EventDetail() {
         {event.description}
       </p>
 
-      {/* CTA */}
+      {/* 신청 버튼 — canApply일 때 항상 표시, 종료 시 disabled */}
       {event.canApply && (
-        <div className="flex justify-center">
-          <button className="px-16 py-3 bg-blue-8 text-white rounded-full text-btn-normal font-semibold hover:bg-blue-9 transition-colors">
-            신청하기
+        <div className="flex flex-col items-center gap-2">
+          <button
+            disabled={ended}
+            className={`px-16 py-3 rounded-full text-btn-normal font-semibold transition-colors ${
+              ended
+                ? "bg-grey-3 text-grey-5 cursor-not-allowed"
+                : "bg-blue-8 text-white hover:bg-blue-9"
+            }`}
+          >
+            {ended ? "신청 마감" : "신청하기"}
           </button>
+          {ended && (
+            <p className="text-body-5 text-grey-5">행사가 종료되어 신청이 마감되었습니다.</p>
+          )}
         </div>
       )}
 

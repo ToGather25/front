@@ -1,11 +1,36 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import bibleData from "@/data/bible.json";
+import BibleSidebar from "@/components/bible/BibleSidebar";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/config/bible.config";
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
+
+// 성경 전체 검색 (키워드 → [{book, chapter, num, text}])
+function searchBible(query) {
+  if (!query.trim()) return [];
+  const q = query.trim().toLowerCase();
+  return Object.entries(bibleData)
+    .filter(([, text]) => text.toLowerCase().includes(q))
+    .slice(0, 30)
+    .map(([key, text]) => {
+      const [ref, num] = key.split(":");
+      const abbr = ref.replace(/\d+$/, "");
+      const ch = parseInt(ref.replace(abbr, ""));
+      return { abbr, book: BOOK_MAP[abbr] ?? abbr, chapter: ch, num: parseInt(num), text: text.trim() };
+    });
+}
+
+function highlight(text, query) {
+  if (!query.trim()) return text;
+  const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+  return parts.map((p, i) =>
+    p.toLowerCase() === query.toLowerCase()
+      ? <mark key={i} className="bg-yellow-200 text-grey-11 rounded-sm px-px">{p}</mark>
+      : p
+  );
+}
 
 function getVerses(book, chapter) {
   const abbrev = BOOK_ABBREV[book];
@@ -112,6 +137,10 @@ export default function BibleRead() {
   const [fontSize, setFontSize] = useState("medium");
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [lastChapterModal, setLastChapterModal] = useState(false);
+  const clickTimers = useRef({});
 
   useEffect(() => {
     if (state?.book) {
@@ -150,10 +179,49 @@ export default function BibleRead() {
       if (nextBookIdx < allBooks.length) {
         setSelectedBook(allBooks[nextBookIdx]);
         setChapter(1);
+      } else {
+        setLastChapterModal(true);
+        return;
       }
     }
     setCheckedVerses({});
   };
+
+  const goPrevChapter = () => {
+    const prevIdx = chapters.indexOf(chapter) - 1;
+    if (prevIdx >= 0) {
+      setChapter(chapters[prevIdx]);
+    } else {
+      const allBooks = [...OT, ...NT].map(a => BOOK_MAP[a]);
+      const prevBookIdx = allBooks.indexOf(selectedBook) - 1;
+      if (prevBookIdx >= 0) {
+        const prevBook = allBooks[prevBookIdx];
+        setSelectedBook(prevBook);
+        const prevChapters = getChapters(prevBook);
+        setChapter(prevChapters[prevChapters.length - 1] ?? 1);
+      }
+    }
+    setCheckedVerses({});
+  };
+
+  const searchResults = useMemo(() => searchBible(searchQuery), [searchQuery]);
+
+  // 더블클릭 좋아요: 구절을 빠르게 두 번 누르면 하트 토글
+  const handleVerseClick = useCallback((verse, idx) => {
+    const key = `${selectedBook}-${chapter}-${verse.num}`;
+    if (clickTimers.current[idx]) {
+      clearTimeout(clickTimers.current[idx]);
+      delete clickTimers.current[idx];
+      // 더블클릭
+      toggleSave(verse);
+    } else {
+      clickTimers.current[idx] = setTimeout(() => {
+        delete clickTimers.current[idx];
+        // 싱글클릭
+        toggleVerse(idx);
+      }, 220);
+    }
+  }, [selectedBook, chapter, savedVerses]); // eslint-disable-line
 
   const toggleSave = (verse) => {
     const key = `${selectedBook}-${chapter}-${verse.num}`;
@@ -167,55 +235,18 @@ export default function BibleRead() {
   };
 
   return (
+    <>
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className={`bg-grey-1 border-r border-bluegrey-2 flex flex-col transition-all duration-300 overflow-hidden ${sidebarOpen ? "w-56" : "w-14"}`}>
-        <div className={`flex items-center h-[60px] shrink-0 border-b border-bluegrey-2 ${sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"}`}>
-          {sidebarOpen && <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />}
-          <button
-            onClick={() => setSidebarOpen((v) => !v)}
-            className="w-8 h-8 flex flex-col items-center justify-center gap-[5px] shrink-0 text-grey-6 hover:text-grey-9"
-          >
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 origin-center ${sidebarOpen ? "w-5 rotate-45 translate-y-[7px]" : "w-5"}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${sidebarOpen ? "w-5 opacity-0" : "w-5 opacity-100"}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 origin-center ${sidebarOpen ? "w-5 -rotate-45 -translate-y-[7px]" : "w-5"}`} />
-          </button>
-        </div>
-        <nav className="flex flex-col py-2">
-          {BIBLE_READ_SIDEBAR_MENUS.map((menu) => (
-            <button
-              key={menu}
-              onClick={() => setActiveMenu(menu)}
-              className={`flex items-center py-3 text-body-3 transition-colors ${sidebarOpen ? "gap-3 px-4" : "justify-center px-0"} ${
-                activeMenu === menu
-                  ? "bg-grey-3 text-grey-11 font-semibold"
-                  : "text-grey-8 hover:bg-bluegrey-1"
-              }`}
-            >
-              {MENU_ICON[menu]}
-              {sidebarOpen && menu}
-            </button>
-          ))}
-        </nav>
-        <div className="mt-auto border-t border-bluegrey-2 h-20 flex items-center gap-2 px-2">
-          <Link
-            to="/"
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors ${sidebarOpen ? "flex-1" : "w-full"}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
-            {sidebarOpen && <span className="text-[10px] whitespace-nowrap">나가기</span>}
-          </Link>
-          {sidebarOpen && (
-            <Link
-              to="/말씀/필사"
-              className="flex-1 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-              <span className="text-[10px] whitespace-nowrap">성경쓰기로 전환</span>
-            </Link>
-          )}
-        </div>
-      </div>
+      {/* 공통 사이드바 */}
+      <BibleSidebar
+        sidebarOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen((v) => !v)}
+        menus={BIBLE_READ_SIDEBAR_MENUS}
+        menuIcons={MENU_ICON}
+        activeMenu={activeMenu}
+        onMenuChange={setActiveMenu}
+        switchTo={{ to: "/말씀/필사", label: "성경쓰기로 전환" }}
+      />
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -369,11 +400,32 @@ export default function BibleRead() {
               )}
             </div>
 
-            {/* 검색 */}
-            <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56">
-              <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              <input className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5 bg-transparent" placeholder="검색할 내용을 입력하세요." />
+            {/* 장 이동 < > */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={goPrevChapter}
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                title="이전 장"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button
+                onClick={goNextChapter}
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                title="다음 장"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              </button>
             </div>
+
+            {/* 검색 — 클릭 시 오른쪽 사이드 모달 오픈 */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 text-left hover:border-blue-4 transition-colors"
+            >
+              <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <span className="text-body-4 text-grey-5">검색할 내용을 입력하세요.</span>
+            </button>
           </div>
         )}
 
@@ -385,16 +437,19 @@ export default function BibleRead() {
                 const saveKey = `${selectedBook}-${chapter}-${num}`;
                 const isSaved = !!savedVerses[saveKey];
                 return (
-                  <label
+                  <div
                     key={idx}
-                    className={`flex items-start gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-grey-1 transition-colors ${
+                    onClick={() => handleVerseClick({ num, text }, idx)}
+                    className={`flex items-start gap-3 py-2 px-3 rounded-lg cursor-pointer select-none hover:bg-grey-1 transition-colors ${
                       checkedVerses[idx] ? "bg-blue-1" : ""
                     }`}
+                    title="한 번 클릭: 읽음 표시 | 두 번 클릭: 좋아요"
                   >
                     <input
                       type="checkbox"
                       checked={!!checkedVerses[idx]}
                       onChange={() => toggleVerse(idx)}
+                      onClick={(e) => e.stopPropagation()}
                       className="mt-1 shrink-0 accent-primary"
                     />
                     <span
@@ -404,22 +459,20 @@ export default function BibleRead() {
                     >
                       {num} {text}
                     </span>
-                    {checkedVerses[idx] && (
-                      <button
-                        onClick={(e) => { e.preventDefault(); toggleSave({ num, text }); }}
-                        className="ml-auto shrink-0 transition-colors"
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSave({ num, text }); }}
+                      className="ml-auto shrink-0 transition-colors"
+                    >
+                      <svg
+                        className={`w-4 h-4 transition-colors ${isSaved ? "text-red-400 fill-red-400" : "text-grey-5 hover:text-red-400"}`}
+                        fill={isSaved ? "currentColor" : "none"}
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          className={`w-4 h-4 transition-colors ${isSaved ? "text-red-400 fill-red-400" : "text-grey-4 hover:text-red-300"}`}
-                          fill={isSaved ? "currentColor" : "none"}
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                      </button>
-                    )}
-                  </label>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                      </svg>
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -447,5 +500,80 @@ export default function BibleRead() {
         )}
       </div>
     </div>
+
+    {/* ── 검색 사이드 모달 (우측에서 슬라이드인) ── */}
+    {searchOpen && (
+      <div
+        className="fixed inset-0 bg-black/30 z-40"
+        onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+      />
+    )}
+    <div
+      className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
+        searchOpen ? "translate-x-0" : "translate-x-full"
+      }`}
+    >
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-bluegrey-2">
+        <button onClick={() => { setSearchOpen(false); setSearchQuery(""); }} className="text-grey-5 hover:text-grey-9 text-lg leading-none shrink-0">✕</button>
+        <div className="flex-1 flex items-center gap-2 border border-bluegrey-2 rounded-xl px-3 py-1.5">
+          <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input
+            autoFocus={searchOpen}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="성경 구절 검색..."
+            className="flex-1 outline-none text-body-4 text-grey-9 placeholder:text-grey-5 bg-transparent"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="text-grey-4 hover:text-grey-7 text-sm leading-none">✕</button>
+          )}
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {!searchQuery.trim() && (
+          <p className="px-4 py-8 text-body-4 text-grey-5 text-center">찾고자 하는 성경 구절을 입력하세요.</p>
+        )}
+        {searchQuery.trim() && searchResults.length === 0 && (
+          <p className="px-4 py-8 text-body-4 text-grey-5 text-center">검색 결과가 없습니다.</p>
+        )}
+        {searchResults.map((r, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setSelectedBook(r.book);
+              setChapter(r.chapter);
+              setCheckedVerses({});
+              setSearchOpen(false);
+              setSearchQuery("");
+              setActiveMenu("성경읽기");
+            }}
+            className="w-full text-left px-4 py-3.5 border-b border-bluegrey-1 hover:bg-blue-1 transition-colors"
+          >
+            <p className="text-body-5 text-blue-6 font-medium mb-1">{r.book} {r.chapter}:{r.num}</p>
+            <p className="text-body-4 text-grey-8 leading-relaxed line-clamp-3">
+              {highlight(r.text, searchQuery)}
+            </p>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* ── 마지막 장 모달 ── */}
+    {lastChapterModal && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl px-8 py-8 text-center max-w-xs w-full mx-4">
+          <div className="text-4xl mb-4">🎉</div>
+          <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-2">마지막 장입니다!</h3>
+          <p className="text-body-4 text-grey-6 mb-6">성경의 마지막에 도달했습니다.</p>
+          <button
+            onClick={() => setLastChapterModal(false)}
+            className="w-full py-2.5 bg-blue-7 text-white rounded-xl text-body-3 font-semibold hover:bg-blue-8 transition-colors"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -1,9 +1,9 @@
 import { NavLink } from "react-router";
 
 const TABS = [
-  { label: "실시간 방송", to: "/말씀/방송" },
-  { label: "설교 소개", to: "/말씀/설교" },
-  { label: "찬양 플레이리스트", to: "/말씀/찬양" },
+  { label: "실시간 설교 보기", to: "/말씀/방송" },
+  { label: "설교 목록", to: "/말씀/설교" },
+  { label: "찬양 리스트", to: "/말씀/찬양" },
 ];
 
 export default function WordTabBar() {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import bibleData from "@/data/bible.json";
+import BibleSidebar from "@/components/bible/BibleSidebar";
 import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
@@ -233,54 +233,16 @@ export default function BibleWrite() {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className={`bg-grey-1 border-r border-bluegrey-2 flex flex-col transition-all duration-300 overflow-hidden ${sidebarOpen ? "w-56" : "w-14"}`}>
-        <div className={`flex items-center h-[60px] shrink-0 border-b border-bluegrey-2 ${sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"}`}>
-          {sidebarOpen && <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />}
-          <button
-            onClick={() => setSidebarOpen((v) => !v)}
-            className="w-8 h-8 flex flex-col items-center justify-center gap-[5px] shrink-0 text-grey-6 hover:text-grey-9"
-          >
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 origin-center ${sidebarOpen ? "w-5 rotate-45 translate-y-[7px]" : "w-5"}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${sidebarOpen ? "w-5 opacity-0" : "w-5 opacity-100"}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 origin-center ${sidebarOpen ? "w-5 -rotate-45 -translate-y-[7px]" : "w-5"}`} />
-          </button>
-        </div>
-        <nav className="flex flex-col py-2">
-          {BIBLE_WRITE_SIDEBAR_MENUS.map((menu) => (
-            <button
-              key={menu}
-              onClick={() => setActiveMenu(menu)}
-              className={`flex items-center py-4 text-body-3 transition-colors ${sidebarOpen ? "gap-3 px-4" : "justify-center px-0"} ${
-                activeMenu === menu
-                  ? "bg-grey-3 text-grey-11 font-semibold"
-                  : "text-grey-8 hover:bg-bluegrey-1"
-              }`}
-            >
-              {MENU_ICON[menu]}
-              {sidebarOpen && menu}
-            </button>
-          ))}
-        </nav>
-        <div className="mt-auto border-t border-bluegrey-2 h-20 flex items-center gap-2 px-2">
-          <Link
-            to="/"
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors ${sidebarOpen ? "flex-1" : "w-full"}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
-            {sidebarOpen && <span className="text-[10px] whitespace-nowrap">나가기</span>}
-          </Link>
-          {sidebarOpen && (
-            <Link
-              to="/말씀/읽기"
-              className="flex-1 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
-              <span className="text-[10px] whitespace-nowrap">성경읽기로 전환</span>
-            </Link>
-          )}
-        </div>
-      </div>
+      {/* 공통 사이드바 */}
+      <BibleSidebar
+        sidebarOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen((v) => !v)}
+        menus={BIBLE_WRITE_SIDEBAR_MENUS}
+        menuIcons={MENU_ICON}
+        activeMenu={activeMenu}
+        onMenuChange={setActiveMenu}
+        switchTo={{ to: "/말씀/읽기", label: "성경읽기로 전환" }}
+      />
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
