@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 
-const ADMIN_CONTACT = "010-0000-0000"; // TODO: church.config에서 관리팀 연락처 주입
+const ADMIN_CONTACT = "010-0000-0000";
 
 export default function Register() {
   const { church } = useChurch();
@@ -13,7 +13,7 @@ export default function Register() {
     isNewcomer: false,
     agreePrivacy: false,
   });
-  const [status, setStatus] = useState("idle"); // idle | submitting | duplicate | done
+  const [status, setStatus] = useState("idle");
   const [copied, setCopied] = useState(false);
 
   const handleChange = (e) => {
@@ -26,17 +26,15 @@ export default function Register() {
     e.preventDefault();
     setStatus("submitting");
     try {
-      // TODO: POST /api/register/request
       await new Promise((r) => setTimeout(r, 800));
-      // 이미 존재하거나 승인 대기 중이면 서버에서 409 반환
-      const isDuplicate = false; // 백엔드 연동 시 교체
+      const isDuplicate = false;
       if (isDuplicate) {
         setStatus("duplicate");
         return;
       }
       setStatus("done");
     } catch {
-      setStatus("duplicate"); // 실패 시 임시 처리
+      setStatus("duplicate");
     }
   };
 
@@ -52,121 +50,171 @@ export default function Register() {
 
   if (status === "done") {
     return (
-      <div className="max-w-md mx-auto my-16 p-10 bg-white rounded-2xl shadow-xl border border-bluegrey-2 text-center">
-        <div className="text-5xl mb-5">🎉</div>
-        <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-3">가입 신청이 완료되었습니다</h2>
-        <p className="text-body-3 text-grey-7 leading-relaxed">
-          관리팀의 승인 후 가입 링크를 보내드립니다.<br />
-          승인 완료까지 1~2 영업일이 소요될 수 있습니다.
-        </p>
-        <Link
-          to="/login"
-          className="mt-8 inline-block w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
-        >
-          로그인으로 돌아가기
-        </Link>
+      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center bg-grey-1 px-6">
+        <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-2 p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B5280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-3">가입 신청이 완료되었습니다</h2>
+          <p className="text-body-3 text-grey-7 leading-relaxed mb-8">
+            관리팀의 승인 후 가입 링크를 보내드립니다.<br />
+            승인 완료까지 1~2 영업일이 소요될 수 있습니다.
+          </p>
+          <Link
+            to="/login"
+            className="inline-block w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
+          >
+            로그인으로 돌아가기
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto my-10 p-8 bg-white rounded-2xl shadow-xl border border-bluegrey-2">
-      {/* 단계 표시 */}
-      <div className="flex items-center gap-2 mb-8">
-        <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">1</span>
-          <span className="text-body-4 font-semibold text-blue-7">정보 입력</span>
+    <div className="min-h-[calc(100vh-72px)] flex">
+      {/* 왼쪽 브랜드 패널 */}
+      <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
+        <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
+        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
+        <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
+
+        <div className="relative">
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <h1 className="text-headline-4 font-bold text-white mb-3">{church?.name ?? "ToGather"}</h1>
+          <p className="text-body-2 text-white/70 leading-relaxed">
+            교회 성도님들을 위한<br />커뮤니티 서비스 회원가입
+          </p>
         </div>
-        <div className="flex-1 h-px bg-bluegrey-2 mx-1" />
-        <div className="flex items-center gap-2 opacity-40">
-          <span className="w-6 h-6 rounded-full bg-bluegrey-3 text-white text-body-5 font-bold flex items-center justify-center">2</span>
-          <span className="text-body-4 text-grey-6">계정 생성</span>
+
+        <div className="relative">
+          <div className="border-t border-white/20 pt-8">
+            <p className="text-body-4 text-white/50 mb-5">가입 절차</p>
+            <ol className="flex flex-col gap-4">
+              {[
+                { step: "01", text: "정보 입력 및 가입 신청" },
+                { step: "02", text: "관리팀 승인 (1~2 영업일)" },
+                { step: "03", text: "가입 링크 수령 후 계정 생성" },
+              ].map(({ step, text }) => (
+                <li key={step} className="flex items-center gap-3">
+                  <span className="text-body-5 font-bold text-blue-4 w-8 shrink-0">{step}</span>
+                  <span className="text-body-4 text-white/80">{text}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
 
-      <h1 className="text-sub-tit-2 font-bold text-grey-11 text-center mb-2">회원가입</h1>
-      <p className="text-body-4 text-grey-6 text-center mb-8">
-        {church?.name ?? "교회"} 성도이신가요? 먼저 정보를 입력해 주세요.
-      </p>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div>
-          <label className="block text-body-4 font-semibold text-grey-8 mb-1">이름 <span className="text-red-400">*</span></label>
-          <input name="name" type="text" required value={form.name} onChange={handleChange}
-            placeholder="홍길동" className={inputCls} />
-        </div>
-
-        <div>
-          <label className="block text-body-4 font-semibold text-grey-8 mb-1">생년월일 <span className="text-red-400">*</span></label>
-          <input name="birthdate" type="date" required value={form.birthdate} onChange={handleChange}
-            className={inputCls} />
-        </div>
-
-        <div>
-          <label className="block text-body-4 font-semibold text-grey-8 mb-1">휴대폰 번호 <span className="text-red-400">*</span></label>
-          <input name="phone" type="tel" required value={form.phone} onChange={handleChange}
-            placeholder="010-0000-0000" className={inputCls} />
-        </div>
-
-        <div className="flex items-center gap-3 py-3 px-4 bg-blue-1 rounded-xl border border-blue-2">
-          <input
-            id="isNewcomer"
-            name="isNewcomer"
-            type="checkbox"
-            checked={form.isNewcomer}
-            onChange={handleChange}
-            className="w-4 h-4 accent-blue-7 shrink-0"
-          />
-          <label htmlFor="isNewcomer" className="text-body-3 text-blue-8 cursor-pointer select-none">
-            새신자입니다
-          </label>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <input
-            id="agreePrivacy"
-            name="agreePrivacy"
-            type="checkbox"
-            required
-            checked={form.agreePrivacy}
-            onChange={handleChange}
-            className="w-4 h-4 mt-0.5 accent-blue-7 shrink-0"
-          />
-          <label htmlFor="agreePrivacy" className="text-body-4 text-grey-7 cursor-pointer select-none leading-relaxed">
-            <span className="text-red-400">*</span> 개인정보 수집·이용에 동의합니다.
-            수집된 정보는 교회 구성원 관리 목적으로만 사용됩니다.
-          </label>
-        </div>
-
-        {/* 중복/승인 대기 에러 */}
-        {status === "duplicate" && (
-          <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-body-4 text-red-700 leading-relaxed">
-            이미 존재하거나 승인 처리 중인 계정입니다.{" "}
-            <button
-              type="button"
-              onClick={copyContact}
-              className="font-semibold underline hover:text-red-900 transition-colors"
-            >
-              관리팀
-            </button>
-            에 요청하세요.
-            {copied && <span className="ml-2 text-green-600">✓ 연락처가 복사되었습니다</span>}
+      {/* 오른쪽 폼 영역 */}
+      <div className="flex-1 flex items-center justify-center bg-white px-8 py-12 overflow-y-auto">
+        <div className="w-full max-w-md">
+          {/* 단계 표시 */}
+          <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">1</span>
+              <span className="text-body-4 font-semibold text-blue-7">정보 입력</span>
+            </div>
+            <div className="flex-1 h-px bg-bluegrey-2 mx-1" />
+            <div className="flex items-center gap-2 opacity-40">
+              <span className="w-6 h-6 rounded-full bg-bluegrey-3 text-white text-body-5 font-bold flex items-center justify-center">2</span>
+              <span className="text-body-4 text-grey-6">계정 생성</span>
+            </div>
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={status === "submitting" || !form.agreePrivacy}
-          className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors mt-1"
-        >
-          {status === "submitting" ? "신청 중..." : "가입 신청하기"}
-        </button>
-      </form>
+          <div className="mb-8">
+            <h2 className="text-headline-5 font-bold text-grey-11 mb-2">회원가입</h2>
+            <p className="text-body-3 text-grey-6">
+              {church?.name ?? "교회"} 성도이신가요? 먼저 정보를 입력해 주세요.
+            </p>
+          </div>
 
-      <p className="text-center text-body-4 text-grey-6 mt-6">
-        이미 계정이 있으신가요?{" "}
-        <Link to="/login" className="text-blue-7 hover:underline font-semibold">로그인</Link>
-      </p>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div>
+              <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                이름 <span className="text-red-400">*</span>
+              </label>
+              <input name="name" type="text" required value={form.name} onChange={handleChange}
+                placeholder="홍길동" className={inputCls} />
+            </div>
+
+            <div>
+              <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                생년월일 <span className="text-red-400">*</span>
+              </label>
+              <input name="birthdate" type="date" required value={form.birthdate} onChange={handleChange}
+                className={inputCls} />
+            </div>
+
+            <div>
+              <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                휴대폰 번호 <span className="text-red-400">*</span>
+              </label>
+              <input name="phone" type="tel" required value={form.phone} onChange={handleChange}
+                placeholder="010-0000-0000" className={inputCls} />
+            </div>
+
+            <div className="flex items-center gap-3 py-3 px-4 bg-blue-1 rounded-xl border border-blue-2">
+              <input
+                id="isNewcomer" name="isNewcomer" type="checkbox"
+                checked={form.isNewcomer} onChange={handleChange}
+                className="w-4 h-4 accent-blue-7 shrink-0"
+              />
+              <label htmlFor="isNewcomer" className="text-body-3 text-blue-8 cursor-pointer select-none">
+                새신자입니다
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3 py-1">
+              <input
+                id="agreePrivacy" name="agreePrivacy" type="checkbox" required
+                checked={form.agreePrivacy} onChange={handleChange}
+                className="w-4 h-4 mt-0.5 accent-blue-7 shrink-0"
+              />
+              <label htmlFor="agreePrivacy" className="text-body-4 text-grey-7 cursor-pointer select-none leading-relaxed">
+                <span className="text-red-400">*</span> 개인정보 수집·이용에 동의합니다.
+                수집된 정보는 교회 구성원 관리 목적으로만 사용됩니다.{" "}
+                <Link to="/privacy" className="text-blue-6 hover:underline">개인정보처리방침</Link>
+              </label>
+            </div>
+
+            {status === "duplicate" && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-body-4 text-red-700 leading-relaxed">
+                이미 존재하거나 승인 처리 중인 계정입니다.{" "}
+                <button type="button" onClick={copyContact}
+                  className="font-semibold underline hover:text-red-900 transition-colors">
+                  관리팀
+                </button>
+                에 요청하세요.
+                {copied && <span className="ml-2 text-green-600">✓ 연락처가 복사되었습니다</span>}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={status === "submitting" || !form.agreePrivacy}
+              className="w-full py-3.5 mt-1 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors"
+            >
+              {status === "submitting" ? "신청 중..." : "가입 신청하기"}
+            </button>
+          </form>
+
+          <p className="text-center text-body-4 text-grey-6 mt-8 border-t border-grey-2 pt-6">
+            이미 계정이 있으신가요?{" "}
+            <Link to="/login" className="text-blue-7 hover:underline font-semibold">로그인</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
