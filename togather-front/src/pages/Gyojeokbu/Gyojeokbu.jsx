@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import MEMBERS from "@/config/members.config";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 /* ── Avatar ── */
 const AVATAR_COLORS = [
@@ -381,9 +382,7 @@ export default function Gyojeokbu() {
         <div className="bg-white rounded-2xl border border-bluegrey-2 px-6 py-4 flex items-center gap-4 mb-4 flex-wrap">
           {/* Search */}
           <div className="flex items-center gap-3 h-11 px-4 bg-bluegrey-1 rounded-full border border-transparent focus-within:border-blue-6 focus-within:bg-white transition-all w-full md:w-[360px]">
-            <svg className="w-[18px] h-[18px] text-grey-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
-            </svg>
+            <img src={IcoSearch} className="w-[18px] h-[18px] shrink-0" alt="" />
             <input
               type="text"
               placeholder="이름 또는 휴대폰 번호로 검색"

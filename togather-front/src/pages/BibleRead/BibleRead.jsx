@@ -6,6 +6,7 @@ import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/confi
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 // 성경 전체 검색 (키워드 → [{book, chapter, num, text}])
 function searchBible(query) {
@@ -428,7 +429,7 @@ export default function BibleRead() {
               onClick={() => setSearchOpen(true)}
               className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 text-left hover:border-blue-4 transition-colors"
             >
-              <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
               <span className="text-body-4 text-grey-5">검색할 내용을 입력하세요.</span>
             </button>
           </div>
@@ -521,7 +522,7 @@ export default function BibleRead() {
       <div className="flex items-center gap-2 px-4 py-3 border-b border-bluegrey-2">
         <button onClick={() => { setSearchOpen(false); setSearchQuery(""); }} className="text-grey-5 hover:text-grey-9 text-lg leading-none shrink-0">✕</button>
         <div className="flex-1 flex items-center gap-2 border border-bluegrey-2 rounded-xl px-3 py-1.5">
-          <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
           <input
             autoFocus={searchOpen}
             value={searchQuery}

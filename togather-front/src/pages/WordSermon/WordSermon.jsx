@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import WordTabBar from "@/components/word/WordTabBar";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const ALL_SERMONS = [
   { id: 1,  date: "2026.05.04", service: "주일 2부 예배", title: "부활의 능력으로 살아가라",     verse: "빌립보서 3:10–11",     speaker: "김함께 목사" },
@@ -71,9 +72,7 @@ export default function WordSermon() {
         {/* 검색바 */}
         <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-xl">
           <div className="relative flex-1">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-grey-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
             <input
               type="text"
               value={inputVal}

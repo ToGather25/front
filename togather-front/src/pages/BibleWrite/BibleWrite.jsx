@@ -6,6 +6,7 @@ import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.conf
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 // ── 유틸 ───────────────────────────────────────────────
 function getChapters(bookAbbr) {
@@ -354,7 +355,7 @@ export default function BibleWrite() {
 
             {/* 검색 */}
             <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56">
-              <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
               <input className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5 bg-transparent" placeholder="검색할 내용을 입력하세요." />
             </div>
           </div>

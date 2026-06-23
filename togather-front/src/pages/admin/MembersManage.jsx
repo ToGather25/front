@@ -1,4 +1,5 @@
 import { useState } from "react";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const DEPARTMENTS = ["전체", "청년부", "장년부", "유치부", "초등부", "중고등부", "노년부"];
 const POSITIONS = ["전체", "집사", "권사", "장로", "목사", "전도사", "성도"];
@@ -73,9 +74,7 @@ export default function MembersManage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-5" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+          <img src={IcoSearch} className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px]" alt="" />
         </div>
         <span className="text-body-5 text-grey-5">총 {filtered.length}명</span>
       </div>

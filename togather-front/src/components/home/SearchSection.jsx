@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearch } from "@/contexts/SearchContext";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const SUGGESTIONS = ["주일 예배", "성경 타자", "오시는 길", "구역모임", "헌금 안내"];
 
@@ -38,10 +39,7 @@ export default function SearchSection() {
         }}
         onClick={() => setOpen(true)}
       >
-        <svg className="w-[26px] h-[26px] text-grey-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
+        <img src={IcoSearch} className="w-[26px] h-[26px] shrink-0" alt="" />
         <input
           type="text"
           placeholder="예배, 주보, 성경, 오시는 길…"

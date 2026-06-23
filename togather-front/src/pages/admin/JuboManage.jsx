@@ -1,4 +1,5 @@
 import { useState } from "react";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const EDITIONS = [
   "2026년 5월 25일 (21주차)",
@@ -67,9 +68,7 @@ export default function JuboManage() {
         <h1 className="text-headline-5 font-bold text-grey-11">스마트 주보 관리</h1>
         <div className="flex gap-3">
           <button className="px-4 py-2.5 rounded-xl border border-grey-3 text-body-4 font-medium text-grey-7 hover:border-primary hover:text-primary transition-colors flex items-center gap-2">
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
+            <img src={IcoSearch} className="w-[15px] h-[15px]" alt="" />
             미리보기
           </button>
           <button onClick={handleSave} className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors">

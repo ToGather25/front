@@ -1,4 +1,18 @@
 import { useState, useRef } from "react";
+import UserBlue from "@/assets/icon-svg/mypage-user-blue.svg";
+import UserWhite from "@/assets/icon-svg/mypage-user-white.svg";
+import UserBlack from "@/assets/icon-svg/mypage-user-black.svg";
+import ChurchIcon from "@/assets/icon-svg/mypage-church.svg";
+import CalBlue from "@/assets/icon-svg/mypage-calendar-blue.svg";
+import CalWhite from "@/assets/icon-svg/mypage-calendar-white.svg";
+import HeartHandBlue from "@/assets/icon-svg/mypage-heart-hand-blue.svg";
+import HeartHandWhite from "@/assets/icon-svg/mypage-heart-hand-white.svg";
+import ChatBlue from "@/assets/icon-svg/mypage-chat-blue.svg";
+import ChatWhite from "@/assets/icon-svg/mypage-chat-white.svg";
+import ArrowBack from "@/assets/icon-svg/mypage-arrow-back.svg";
+import ImgUpload from "@/assets/icon-svg/mypage-img-upload.svg";
+import MailIcon from "@/assets/icon-svg/mypage-mail.svg";
+import PopupClose from "@/assets/icon-svg/popup-close.svg";
 
 const MOCK_USER = {
   name: "김민수",
@@ -101,81 +115,20 @@ const INITIAL_INQUIRIES = [
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────
-function IconPerson() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-  );
-}
-function IconBuilding() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
-    </svg>
-  );
-}
-function IconCalendar() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-    </svg>
-  );
-}
-function IconHands() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8" />
-      <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-    </svg>
-  );
-}
-function IconMessage() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
 function IconClose() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
-  );
+  return <img src={PopupClose} className="w-5 h-5" alt="" />;
 }
 function IconBack() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M19 12H5M12 19l-7-7 7-7" />
-    </svg>
-  );
+  return <img src={ArrowBack} className="w-[18px] h-[18px]" alt="" />;
 }
 function IconUpload() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-    </svg>
-  );
+  return <img src={ImgUpload} className="w-4 h-4" alt="" />;
 }
-function IconHome() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b8b8b8" strokeWidth="2">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
+function IconChurch() {
+  return <img src={ChurchIcon} className="w-4 h-4" alt="" />;
 }
 function IconMail() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b8b8b8" strokeWidth="2">
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  );
+  return <img src={MailIcon} className="w-[13px] h-[13px]" alt="" />;
 }
 
 // ── Shared UI ─────────────────────────────────────────────────────────
@@ -281,11 +234,11 @@ function Pagination({ total, perPage, current, onChange }) {
 }
 
 const TABS = [
-  { key: "info",     label: "내 정보",     icon: <IconPerson /> },
-  { key: "dept",     label: "부서 / 직책", icon: <IconBuilding /> },
-  { key: "schedule", label: "일정",         icon: <IconCalendar /> },
-  { key: "prayer",   label: "기도 / 상담", icon: <IconHands /> },
-  { key: "inquiry",  label: "문의하기",     icon: <IconMessage /> },
+  { key: "info",     label: "내 정보",     iconActive: UserWhite,      iconInactive: UserBlue },
+  { key: "dept",     label: "부서 / 직책", iconActive: ChurchIcon,     iconInactive: ChurchIcon },
+  { key: "schedule", label: "일정",         iconActive: CalWhite,       iconInactive: CalBlue },
+  { key: "prayer",   label: "기도 / 상담", iconActive: HeartHandWhite, iconInactive: HeartHandBlue },
+  { key: "inquiry",  label: "문의하기",     iconActive: ChatWhite,      iconInactive: ChatBlue },
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────
@@ -412,9 +365,11 @@ export default function MyPage() {
                       : "text-grey-8 hover:bg-grey-2"
                   }`}
                 >
-                  <span className={activeTab === tab.key ? "text-white" : "text-grey-5"}>
-                    {tab.icon}
-                  </span>
+                  <img
+                    src={activeTab === tab.key ? tab.iconActive : tab.iconInactive}
+                    className="w-4 h-4 shrink-0"
+                    alt=""
+                  />
                   {tab.label}
                 </button>
               ))}
@@ -628,7 +583,7 @@ export default function MyPage() {
                       {MOCK_GROUPS.map(g => (
                         <div key={g.id} className="border border-grey-3 rounded-xl p-4 flex items-start gap-3">
                           <div className="w-8 h-8 rounded-lg bg-grey-2 flex items-center justify-center shrink-0">
-                            <IconPerson />
+                            <img src={UserBlack} className="w-4 h-4" alt="" />
                           </div>
                           <div className="min-w-0">
                             <p className="text-body-4 font-semibold text-grey-10">{g.name}</p>
@@ -732,7 +687,7 @@ export default function MyPage() {
                       <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
                       {item.reply && (
                         <div className="mt-3 pl-4 border-l-2 border-grey-3 flex items-start gap-1.5">
-                          <span className="mt-0.5 shrink-0"><IconHome /></span>
+                          <span className="mt-0.5 shrink-0"><IconChurch /></span>
                           <p className="text-body-5 text-grey-6">{item.reply}</p>
                         </div>
                       )}

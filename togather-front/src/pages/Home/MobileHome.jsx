@@ -4,6 +4,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import defaultBanner from "@/assets/default_banner.png";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 function MobileSearchBar() {
   const { setOpen } = useSearch();
@@ -13,10 +14,7 @@ function MobileSearchBar() {
         onClick={() => setOpen(true)}
         className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-bluegrey-1 border border-bluegrey-2 text-left"
       >
-        <svg className="w-4 h-4 text-grey-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
+        <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
         <span className="text-[14px] text-grey-5 flex-1">검색어를 입력하세요.</span>
       </button>
     </div>

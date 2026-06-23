@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
+import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
 export default function Contact() {
   const { church } = useChurch();
@@ -137,10 +138,8 @@ export default function Contact() {
 
               <div className="flex flex-col gap-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                      <path d="M4 6c0-1 1-2 2-2h2l2 5-2 2a12 12 0 0 0 5 5l2-2 5 2v2c0 1-1 2-2 2A18 18 0 0 1 4 6z" />
-                    </svg>
+                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center shrink-0">
+                    <img src={IcoPhone} className="w-5 h-5" alt="" />
                   </div>
                   <div className="pt-1">
                     <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">전화</p>

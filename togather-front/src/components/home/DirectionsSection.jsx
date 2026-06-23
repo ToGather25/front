@@ -2,39 +2,27 @@ import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import KakaoMap from "@/components/common/KakaoMap";
+import IcoLocation from "@/assets/icon-svg/main-location.svg";
+import IcoPhone from "@/assets/icon-svg/main-phone.svg";
+import IcoBus from "@/assets/icon-svg/main-bus.svg";
+import IcoEnter from "@/assets/icon-svg/main-enter.svg";
 
 export default function DirectionsSection() {
   const { church } = useChurch();
 
   const infoRows = [
     {
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z" />
-        </svg>
-      ),
+      icon: <img src={IcoLocation} className="w-5 h-5" alt="" />,
       label: "주소",
       content: church.address,
     },
     {
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-          <path d="M4 6c0-1 1-2 2-2h2l2 5-2 2a12 12 0 0 0 5 5l2-2 5 2v2c0 1-1 2-2 2A18 18 0 0 1 4 6z" />
-        </svg>
-      ),
+      icon: <img src={IcoPhone} className="w-5 h-5" alt="" />,
       label: "전화",
       content: `TEL ${church.tel}${church.fax ? ` · FAX ${church.fax}` : ""}`,
     },
     {
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-          <rect x="4" y="4" width="16" height="14" rx="2" />
-          <path d="M4 11h16M7 18v2M17 18v2" />
-          <circle cx="8" cy="15" r="1" />
-          <circle cx="16" cy="15" r="1" />
-        </svg>
-      ),
+      icon: <img src={IcoBus} className="w-5 h-5" alt="" />,
       label: "대중교통",
       content: "지하철 7호선 까치울역 2번 출구 · 버스 56, 74, 88번",
     },
@@ -96,9 +84,7 @@ export default function DirectionsSection() {
                 className="h-18 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
-                <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
+                <img src={IcoEnter} className="w-5 h-5 opacity-70" alt="" />
               </Link>
             ))}
           </div>
