@@ -647,7 +647,7 @@ export default function MyPage() {
                     onClick={() => setModal("add-prayer")}
                     className="bg-primary text-white text-body-5 rounded-full px-5 py-2 hover:bg-blue-8 transition-colors"
                   >
-                    + 신청하기
+                    신청하기
                   </button>
                 </div>
                 <div className="flex gap-2 mb-5">
@@ -714,7 +714,7 @@ export default function MyPage() {
                         onClick={() => { setInquiryWriteMode(true); setInquiryForm({ title: "", content: "" }); }}
                         className="bg-primary text-white text-body-5 rounded-full px-5 py-2 hover:bg-blue-8 transition-colors"
                       >
-                        + 문의하기
+                        문의하기
                       </button>
                     </div>
                     <div className="space-y-3">

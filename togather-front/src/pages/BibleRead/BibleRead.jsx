@@ -251,7 +251,7 @@ export default function BibleRead() {
         menuIcons={MENU_ICON}
         activeMenu={activeMenu}
         onMenuChange={setActiveMenu}
-        switchTo={{ to: "/말씀/필사", label: "성경쓰기로 전환" }}
+        switchTo={{ to: "/말씀/필사", label: "쓰기로 전환" }}
       />
 
       {/* Main */}

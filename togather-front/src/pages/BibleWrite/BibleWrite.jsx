@@ -242,7 +242,7 @@ export default function BibleWrite() {
         menuIcons={MENU_ICON}
         activeMenu={activeMenu}
         onMenuChange={setActiveMenu}
-        switchTo={{ to: "/말씀/읽기", label: "성경읽기로 전환" }}
+        switchTo={{ to: "/말씀/읽기", label: "읽기로 전환" }}
       />
 
       {/* Main */}
@@ -480,7 +480,7 @@ export default function BibleWrite() {
               </div>
 
               {/* 하단 바 */}
-              <div className="shrink-0 border-t border-bluegrey-2 h-20 flex items-center px-10 bg-white">
+              <div className="shrink-0 border-t border-bluegrey-2 h-25 flex items-center px-10 bg-white">
                 <p className="text-body-4 text-grey-8 font-medium">오늘 쓴 절 수 : {completedVerses.length}절</p>
               </div>
 

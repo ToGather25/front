@@ -79,28 +79,20 @@ export default function BibleSidebar({
       </nav>
 
       {/* 하단 — 나가기 + 전환 버튼 */}
-      <div className="mt-auto border-t border-bluegrey-2 h-20 flex items-center gap-2 px-2">
+      <div className="mt-auto flex flex-col py-3 px-3 gap-2">
         <Link
           to="/"
-          className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors ${
-            sidebarOpen ? "flex-1" : "w-full"
-          }`}
+          className="w-full flex items-center justify-center py-3 rounded-lg bg-grey-2 text-grey-7 hover:bg-grey-3 hover:text-grey-10 transition-colors font-medium text-[14px] whitespace-nowrap overflow-hidden"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-          </svg>
-          {sidebarOpen && <span className="text-[10px] whitespace-nowrap">나가기</span>}
+          {sidebarOpen ? "나가기" : "←"}
         </Link>
 
-        {sidebarOpen && switchTo && (
+        {switchTo && (
           <Link
             to={switchTo.to}
-            className="flex-1 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-grey-6 hover:text-grey-9 hover:bg-bluegrey-1 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-white hover:bg-blue-9 transition-colors font-medium text-[14px] whitespace-nowrap overflow-hidden"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-            </svg>
-            <span className="text-[10px] whitespace-nowrap">{switchTo.label}</span>
+            {sidebarOpen ? switchTo.label : "⇄"}
           </Link>
         )}
       </div>
