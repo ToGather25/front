@@ -35,8 +35,8 @@ import JuboManage from "@/pages/admin/JuboManage";
 import AdminSettings from "@/pages/admin/Settings";
 
 const router = createBrowserRouter([
-  { path: "말씀/필사", element: <BibleWrite /> },
   { path: "말씀/읽기", element: <BibleRead /> },
+  { path: "말씀/필사", element: <BibleWrite /> },
   {
     path: "/",
     element: <RootLayout />,
