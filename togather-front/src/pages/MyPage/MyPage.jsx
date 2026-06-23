@@ -378,12 +378,12 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-8 py-10">
+      <div className="max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-10">
         <h1 className="text-headline-4 font-bold text-grey-11 mb-8">마이페이지</h1>
 
-        <div className="flex gap-6 items-start">
+        <div className="flex flex-col md:flex-row md:gap-6 md:items-start">
           {/* ── Sidebar ── */}
-          <aside className="w-60 shrink-0 space-y-3">
+          <aside className="md:w-60 md:shrink-0 space-y-3">
             <div className="bg-grey-1 border border-grey-3 rounded-2xl p-5">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-grey-5 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
@@ -401,12 +401,12 @@ export default function MyPage() {
               </div>
             </div>
 
-            <div className="bg-grey-1 border border-grey-3 rounded-2xl p-2">
+            <div className="bg-grey-1 border border-grey-3 rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto">
               {TABS.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setDeptChangeMode(false); setInquiryWriteMode(false); }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-body-4 transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-body-4 transition-colors shrink-0 md:w-full whitespace-nowrap ${
                     activeTab === tab.key
                       ? "bg-primary text-white font-semibold"
                       : "text-grey-8 hover:bg-grey-2"
@@ -463,7 +463,7 @@ export default function MyPage() {
                 <section className="bg-white border border-grey-3 rounded-2xl p-8">
                   <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">기본 정보</h2>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <InputField
                         label="이름"
                         value={userForm.name}
@@ -475,7 +475,7 @@ export default function MyPage() {
                         note="생년월일은 문의로 변경 가능합니다."
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <InputField
                         label="휴대폰"
                         value={userForm.phone}
@@ -499,7 +499,7 @@ export default function MyPage() {
                 <section className="bg-white border border-grey-3 rounded-2xl p-8">
                   <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">교적 정보</h2>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <ReadonlyField label="등록일" value={MOCK_USER.registeredDate} />
                       <ReadonlyField label="세례일" value={MOCK_USER.baptismDate} />
                     </div>
@@ -519,7 +519,7 @@ export default function MyPage() {
                 {/* 보안 */}
                 <section className="bg-white border border-grey-3 rounded-2xl p-8">
                   <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">보안</h2>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <InputField
                       label="현재 비밀번호"
                       type="password"
@@ -567,15 +567,15 @@ export default function MyPage() {
                         </button>
                       </div>
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="직분" value={MOCK_DEPT.position} note="사무국 문의로 변경 가능합니다." />
                           <ReadonlyField label="소속 부서" value={MOCK_DEPT.department} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
                           <ReadonlyField label="구역" value={MOCK_DEPT.district} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="소그룹 / 셀" value={MOCK_DEPT.group} />
                           <ReadonlyField label="임직일" value={MOCK_DEPT.ordainedDate} />
                         </div>
@@ -594,11 +594,11 @@ export default function MyPage() {
                       </div>
                       <div className="space-y-4">
                         <ReadonlyField label="직분" value={MOCK_DEPT.position} note="사무국 문의로 변경 가능합니다." />
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
                           <ReadonlyField label="구역" value={MOCK_DEPT.district} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="소그룹 / 셀" value={MOCK_DEPT.group} />
                           <ReadonlyField label="임직일" value={MOCK_DEPT.ordainedDate} />
                         </div>
@@ -624,7 +624,7 @@ export default function MyPage() {
                 {!deptChangeMode && (
                   <section className="bg-white border border-grey-3 rounded-2xl p-8">
                     <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">참여 중인 부서 / 모임</h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {MOCK_GROUPS.map(g => (
                         <div key={g.id} className="border border-grey-3 rounded-xl p-4 flex items-start gap-3">
                           <div className="w-8 h-8 rounded-lg bg-grey-2 flex items-center justify-center shrink-0">
@@ -800,7 +800,7 @@ export default function MyPage() {
                       <h2 className="text-sub-tit-4 font-bold text-grey-11">문의하기</h2>
                     </div>
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <ReadonlyField label="이름" value={MOCK_USER.name} />
                         <ReadonlyField label="연락처" value={MOCK_USER.phone} />
                       </div>
@@ -918,7 +918,7 @@ export default function MyPage() {
         <ModalOverlay onClose={() => setModal(null)}>
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">일정 추가</h3>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="날짜 (MM.DD)"
                 value={scheduleForm.date}
@@ -966,7 +966,7 @@ export default function MyPage() {
         <ModalOverlay onClose={() => setModal(null)}>
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">기도 / 상담 신청하기</h3>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="날짜 (MM.DD)"
                 value={prayerForm.date}

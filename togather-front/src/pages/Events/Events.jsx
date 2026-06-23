@@ -56,7 +56,7 @@ export default function Events() {
     : "";
 
   return (
-    <div className="max-w-[1576px] mx-auto px-8 py-10">
+    <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-20 md:px-8 md:pt-10">
       {/* Header Row */}
       <div className="flex items-center gap-4 mb-6 flex-wrap">
         <div className="flex items-center gap-3">
@@ -72,34 +72,36 @@ export default function Events() {
             </svg>
           </button>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-bluegrey-3 rounded-full text-body-4 text-grey-8 hover:bg-bluegrey-1 transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          행사 검색
-        </button>
-        {EVENT_CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-            className={`px-4 py-1.5 border rounded-full text-body-4 transition-colors ${
-              activeCategory === cat
-                ? "bg-blue-8 text-white border-blue-10"
-                : "border-bluegrey-3 text-grey-8 hover:border-blue-5 hover:text-blue-5"
-            }`}
-          >
-            {cat}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 flex-1 min-w-0">
+          <button className="flex items-center gap-2 px-4 py-2 border border-bluegrey-3 rounded-full text-body-4 text-grey-8 hover:bg-bluegrey-1 transition-colors shrink-0">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            행사 검색
           </button>
-        ))}
+          {EVENT_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              className={`px-4 py-1.5 border rounded-full text-body-4 transition-colors shrink-0 ${
+                activeCategory === cat
+                  ? "bg-blue-8 text-white border-blue-10"
+                  : "border-bluegrey-3 text-grey-8 hover:border-blue-5 hover:text-blue-5"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Calendar */}
         <div className="flex-1 border border-bluegrey-2 rounded-xl overflow-hidden">
           {/* Day headers */}
           <div className="grid grid-cols-7 border-b border-bluegrey-2 bg-bluegrey-1">
             {["주일", "월", "화", "수", "목", "금", "토"].map((d) => (
-              <div key={d} className="py-3 text-center text-body-4 font-semibold text-bluegrey-7">
+              <div key={d} className="py-3 text-center text-[10px] md:text-body-4 font-semibold text-bluegrey-7">
                 {d}
               </div>
             ))}
@@ -107,7 +109,7 @@ export default function Events() {
           {/* Days grid */}
           <div className="grid grid-cols-7">
             {Array.from({ length: firstDay }).map((_, i) => (
-              <div key={`empty-${i}`} className="border-b border-r border-bluegrey-2 min-h-24 p-2" />
+              <div key={`empty-${i}`} className="border-b border-r border-bluegrey-2 min-h-14 md:min-h-24 p-2" />
             ))}
             {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
               const dateStr = formatDate(year, month, day);
@@ -121,7 +123,7 @@ export default function Events() {
                 <div
                   key={day}
                   onClick={() => setSelectedDate(dateStr)}
-                  className={`border-b border-r border-bluegrey-2 min-h-24 p-2 cursor-pointer transition-colors ${
+                  className={`border-b border-r border-bluegrey-2 min-h-14 md:min-h-24 p-2 cursor-pointer transition-colors ${
                     isSelected ? "bg-blue-1" : "hover:bg-bluegrey-1"
                   }`}
                 >
@@ -156,7 +158,7 @@ export default function Events() {
         </div>
 
         {/* Sidebar */}
-        <div className="w-[400px] shrink-0 border border-bluegrey-2 rounded-xl overflow-y-auto max-h-[calc(100vh-220px)]">
+        <div className="border border-bluegrey-2 rounded-xl overflow-y-auto md:w-[400px] md:shrink-0 md:max-h-[calc(100vh-220px)]">
           <div className="flex flex-col divide-y divide-bluegrey-2">
             {loading ? (
               <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">불러오는 중...</div>

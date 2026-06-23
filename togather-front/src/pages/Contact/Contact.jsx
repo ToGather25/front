@@ -28,8 +28,8 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="max-w-[1576px] mx-auto px-8 py-14">
-        <div className="grid gap-12" style={{ gridTemplateColumns: "1fr 400px" }}>
+      <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-14">
+        <div className="grid gap-12 grid-cols-1 md:grid-cols-[1fr_400px]">
 
           {/* 문의 양식 */}
           {submitted ? (
@@ -53,7 +53,7 @@ export default function Contact() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
                   <label className="text-body-4 font-semibold text-grey-9">이름 <span className="text-blue-7">*</span></label>
                   <input

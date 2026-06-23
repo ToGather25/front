@@ -15,7 +15,7 @@ function Greeting() {
   const { title, paragraphs, signature } = church.greeting;
 
   return (
-    <div className="flex gap-10 items-start">
+    <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-start">
       <div className="flex-1">
         <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-6">{title}</h2>
         <div className="flex flex-col gap-4 text-body-2 text-grey-8">
@@ -31,7 +31,7 @@ function Greeting() {
           </p>
         </div>
       </div>
-      <div className="w-48 h-64 bg-grey-3 rounded-2xl shrink-0 flex items-center justify-center text-grey-5 text-body-4">
+      <div className="w-full h-48 md:w-48 md:h-64 bg-grey-3 rounded-2xl shrink-0 flex items-center justify-center text-grey-5 text-body-4">
         목사님 사진
       </div>
     </div>
@@ -75,21 +75,23 @@ function Vision() {
         <div className="flex items-start gap-10">
           <p className="text-body-2 text-grey-7 text-right w-40 pt-70">{items[1].description}</p>
 
-          <div className="relative shrink-0" style={{ width: W, height: H }}>
-            {layout.map(({ item, left, top, z, delay }) => (
-              <div
-                key={item.label}
-                className="absolute rounded-full border-2 border-grey-9 bg-transparent flex items-center justify-center"
-                style={{
-                  width: D, height: D, left, top, zIndex: z,
-                  animation: `circleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay} both`,
-                }}
-              >
-                <span className="text-sub-tit-3 font-semibold text-grey-10 text-center px-8 leading-tight">
-                  {item.label}
-                </span>
-              </div>
-            ))}
+          <div className="overflow-x-auto w-full">
+            <div className="relative shrink-0" style={{ width: W, height: H }}>
+              {layout.map(({ item, left, top, z, delay }) => (
+                <div
+                  key={item.label}
+                  className="absolute rounded-full border-2 border-grey-9 bg-transparent flex items-center justify-center"
+                  style={{
+                    width: D, height: D, left, top, zIndex: z,
+                    animation: `circleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay} both`,
+                  }}
+                >
+                  <span className="text-sub-tit-3 font-semibold text-grey-10 text-center px-8 leading-tight">
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <p className="text-body-2 text-grey-7 text-left w-40 pt-70">{items[2].description}</p>
@@ -105,7 +107,7 @@ function WorshipInfo() {
   const { regular, departments } = church.worshipSchedule;
 
   return (
-    <div className="grid grid-cols-2 gap-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
       <div>
         <h3 className="text-sub-tit-4 font-semibold text-grey-11 mb-4">정기 예배</h3>
         <table className="w-full text-body-4 border-t border-bluegrey-3">
@@ -212,7 +214,7 @@ function Staff() {
                 </button>
               </div>
               <p className="text-body-4 text-grey-6 mb-4">{headPastor.tel} · {headPastor.email}</p>
-              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-bluegrey-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-bluegrey-2">
                 <div>
                   <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">학력</p>
                   <ul className="flex flex-col gap-1.5">
@@ -237,7 +239,7 @@ function Staff() {
             </div>
           </div>
           {/* 교역자 그리드 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {clergy.map((p) => <PersonCard key={p.name} {...p} showSermon />)}
           </div>
         </div>
@@ -245,28 +247,28 @@ function Staff() {
 
       {/* 시무장로 */}
       {activeChip === "시무장로" && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {elders.map((p) => <PersonCard key={p.name} {...p} />)}
         </div>
       )}
 
       {/* 협동·사역장로 */}
       {activeChip === "협동·사역장로" && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {associateElders.map((p) => <PersonCard key={p.name} {...p} />)}
         </div>
       )}
 
       {/* 은퇴장로 */}
       {activeChip === "은퇴장로" && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {retiredElders.map((p) => <PersonCard key={p.name} {...p} />)}
         </div>
       )}
 
       {/* 파송선교사 */}
       {activeChip === "파송선교사" && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {missionaries.map((p) => (
             <div key={p.name} className="border border-bluegrey-2 rounded-2xl p-5 shadow-sm">
               <div className="flex gap-3">
@@ -398,7 +400,7 @@ function FloorGuide() {
   const selected = church.floorGuide[selectedIdx];
 
   return (
-    <div className="flex gap-10 items-start">
+    <div className="flex flex-col md:flex-row md:gap-10 md:items-start">
       <style>{`@keyframes floorFadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* 좌: 표 */}
@@ -427,7 +429,7 @@ function FloorGuide() {
       </div>
 
       {/* 우: 사진 */}
-      <div className="w-[420px] shrink-0">
+      <div className="w-full md:w-[420px] md:shrink-0">
         <div
           key={selected.floor}
           className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-bluegrey-2"
@@ -458,7 +460,7 @@ function FloorGuide() {
 function Direction() {
   const { church } = useChurch();
   return (
-    <div className="flex gap-12 items-start">
+    <div className="flex flex-col md:flex-row md:gap-12 md:items-start">
       {/* 좌측: 주차 안내 */}
       <div className="flex-1">
         <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">주차 안내</h3>
@@ -475,7 +477,7 @@ function Direction() {
       </div>
 
       {/* 우측: 지도 */}
-      <div className="w-[480px] shrink-0">
+      <div className="w-full md:w-[480px] md:shrink-0">
         <KakaoMap
           level={church.location.level}
           address={church.address}
@@ -494,7 +496,7 @@ function TransportGuide() {
   const hasAnyRoute = routes.some((r) => r.waypoints?.length > 0);
 
   return (
-    <div className="flex gap-10 items-start">
+    <div className="flex flex-col md:flex-row md:gap-10 md:items-start">
       {/* 좌측: 운행 코스 */}
       <div className="flex-1">
         <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">코스 안내</h3>
@@ -523,7 +525,7 @@ function TransportGuide() {
       </div>
 
       {/* 우측: 경로 지도 */}
-      <div className="w-[480px] shrink-0">
+      <div className="w-full md:w-[480px] md:shrink-0">
         <KakaoMapRoute
           address={church.address}
           level={church.location?.level ?? 5}
@@ -571,7 +573,7 @@ export default function Church() {
       </div>
 
       {/* Sub-tab Navigation — Figma main_box_nav 스타일 */}
-      <div className="border-b border-bluegrey-2 bg-white sticky top-[72px] z-40">
+      <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
         <div className="max-w-[1576px] mx-auto px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
@@ -592,7 +594,7 @@ export default function Church() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1576px] mx-auto px-8 py-10">
+      <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
         {TAB_CONTENT[activeTab]}
       </div>
     </div>

@@ -139,14 +139,14 @@ export default function SundaySchool() {
     <div>
       {/* Hero Banner */}
       <div
-        className="relative h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
+        className="relative h-[200px] md:h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
         style={dept.bgImage ? { backgroundImage: `url(${dept.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full flex items-end justify-between">
+        <div className="relative max-w-[1576px] mx-auto px-4 md:px-8 pb-6 md:pb-8 w-full flex items-end justify-between gap-4">
           <div>
             <p className="text-body-4 text-white/70 font-medium mb-1">주일학교</p>
-            <h1 className="text-headline-3 font-bold text-white">{dept.key}</h1>
+            <h1 className="text-sub-tit-1 md:text-headline-3 font-bold text-white">{dept.key}</h1>
           </div>
           <Link
             to="#"
@@ -163,8 +163,8 @@ export default function SundaySchool() {
       </div>
 
       {/* Sub-tab Navigation */}
-      <div className="border-b border-bluegrey-2 bg-white sticky top-[72px] z-40">
-        <div className="max-w-[1576px] mx-auto px-8">
+      <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
+        <div className="max-w-[1576px] mx-auto px-4 md:px-8">
           <div className="flex overflow-x-auto">
             {DEPARTMENTS.map((d) => (
               <button
@@ -184,7 +184,7 @@ export default function SundaySchool() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1576px] mx-auto px-8 py-10">
+      <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
         <DeptContent dept={dept} />
       </div>
     </div>

@@ -72,7 +72,7 @@ function PhotoGrid({ church, community, onBack }) {
       ) : photos.length === 0 ? (
         <div className="text-center py-20 text-body-4 text-bluegrey-5">사진이 없습니다.</div>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {photos.map((photo, idx) => (
             <div
               key={photo.id}
@@ -109,7 +109,7 @@ export default function Gallery() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <div className="max-w-[1576px] mx-auto px-8 py-10">
+    <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
       {!selected ? (
         /* Community List */
         loading ? (

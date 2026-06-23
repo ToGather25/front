@@ -95,7 +95,7 @@ export default function Mission() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-bluegrey-2 bg-white sticky top-[72px] z-40">
+      <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
         <div className="max-w-[1576px] mx-auto px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
@@ -116,7 +116,7 @@ export default function Mission() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1576px] mx-auto px-8 py-10">
+      <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
 
         {/* 전도회 소개 */}
         {activeTab === "전도회 소개" && (
@@ -151,7 +151,7 @@ export default function Mission() {
             </div>
 
             <h3 className="text-sub-tit-4 font-semibold text-grey-10 mb-4">주요 사역</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {EVANGELISM_INFO.activities.map(({ name, schedule, location }) => (
                 <div key={name} className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6">
                   <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">

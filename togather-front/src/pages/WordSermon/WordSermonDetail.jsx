@@ -61,7 +61,7 @@ export default function WordSermonDetail() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-8 py-12">
+      <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-12">
         {/* 영상 플레이어 */}
         <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-8" style={{ aspectRatio: "16/9" }}>
           {sermon.videoId ? (

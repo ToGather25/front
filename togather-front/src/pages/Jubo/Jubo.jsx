@@ -12,7 +12,7 @@ const TABS = ["표지", "예배", "소식", "봉사", "예물", "후원", "구�
 function JuboPage({ children, noPadding = false }) {
   return (
     <div className="jubo-page w-full mx-auto bg-white border border-bluegrey-2 shadow-md rounded-2xl overflow-hidden">
-      <div className={noPadding ? "" : "p-8 md:p-10"}>
+      <div className={noPadding ? "" : "p-4 md:p-8 lg:p-10"}>
         {children}
       </div>
     </div>
@@ -50,8 +50,8 @@ function Cover() {
       </div>
 
       {/* 표어 + 교회 사진 */}
-      <div className="flex rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 260 }}>
-        <div className="flex flex-col justify-center gap-4 px-10 py-8 w-[38%] shrink-0 bg-white">
+      <div className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 260 }}>
+        <div className="flex flex-col justify-center gap-4 px-6 py-6 sm:w-[38%] sm:shrink-0 bg-white">
           <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
             {year}년 표어
           </span>
@@ -72,14 +72,14 @@ function Cover() {
       </div>
 
       {/* 파노라마 사진 */}
-      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2" style={{ height: 280 }}>
+      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2 h-48 sm:h-[280px]">
         <img src={panoramaPhoto} alt="예배 전경" className="w-full h-full object-cover" />
       </div>
 
       {/* 3대 실천사항 + 단체 사진 */}
-      <div className="flex rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 220 }}>
+      <div className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2" style={{ minHeight: 220 }}>
         <div
-          className="flex flex-col items-center justify-center gap-3 px-8 w-[38%] shrink-0"
+          className="flex flex-col items-center justify-center gap-3 px-8 py-6 sm:w-[38%] sm:shrink-0"
           style={{ background: "var(--color-primary)" }}
         >
           <p className="text-[11px] font-semibold text-blue-3 tracking-widest">[3대 실천사항]</p>
@@ -119,15 +119,15 @@ function Worship() {
   const [selected, setSelected] = useState("주일 오전예배");
 
   return (
-    <div className="flex border border-bluegrey-2 rounded-xl overflow-hidden min-h-[480px]">
+    <div className="flex flex-col md:flex-row border border-bluegrey-2 rounded-xl overflow-hidden">
       {/* 사이드바 */}
-      <div className="w-36 shrink-0 border-r border-bluegrey-2 bg-bluegrey-1 py-3">
-        <p className="text-[10px] font-bold text-grey-6 uppercase tracking-wider px-3 mb-2">기관</p>
+      <div className="md:w-36 md:shrink-0 border-b md:border-b-0 md:border-r border-bluegrey-2 bg-bluegrey-1 py-3 flex md:flex-col overflow-x-auto">
+        <p className="text-[10px] font-bold text-grey-6 uppercase tracking-wider px-3 mb-2 md:block hidden">기관</p>
         {SIDEBAR_SERVICES.map(({ label, group }, i) => {
           const isFirst = group === "sub" && SIDEBAR_SERVICES[i - 1]?.group === "main";
           return (
-            <div key={label}>
-              {isFirst && <div className="h-px bg-bluegrey-2 mx-3 my-1.5" />}
+            <div key={label} className="shrink-0">
+              {isFirst && <div className="h-px bg-bluegrey-2 mx-3 my-1.5 md:block hidden" />}
               <button
                 onClick={() => setSelected(label)}
                 className={`w-full text-left px-3 py-2 text-caption transition-colors ${
@@ -144,7 +144,7 @@ function Worship() {
       </div>
 
       {/* 예배 순서 */}
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 p-4 md:p-6 overflow-auto">
         <div className="flex items-baseline gap-2 mb-5">
           <h3 className="text-body-2 font-bold text-grey-11">예배 순서</h3>
           <p className="text-body-5 text-grey-6">
@@ -177,7 +177,7 @@ function Worship() {
       </div>
 
       {/* 예배 및 모임 안내 */}
-      <div className="w-44 shrink-0 border-l border-bluegrey-2 p-5">
+      <div className="md:w-44 md:shrink-0 border-t md:border-t-0 md:border-l border-bluegrey-2 p-4 md:p-5">
         <h4 className="text-body-5 font-bold text-grey-10 mb-4">예배 및 모임 안내</h4>
         {worshipScheduleSummary.map(({ label, time }) => (
           <div key={label} className="flex justify-between items-start py-2.5 border-b border-grey-3 last:border-0">
@@ -361,7 +361,7 @@ function Ministers() {
         {ministers.map(({ title, items }) => (
           <div key={title}>
             <p className="text-caption font-bold text-grey-9 mb-2 px-1">{title}</p>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
               {items.map((item) => {
                 const [role, name] = item.split("|").map((s) => s.trim());
                 return (
@@ -483,18 +483,18 @@ export default function Jubo() {
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:px-8 md:py-10">
         {/* 헤더 — 프린트 시 숨김 */}
         <div className="jubo-no-print">
           <h1 className="text-sub-tit-1 font-bold text-grey-12 mb-6">스마트 주보</h1>
 
           <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-2 rounded-full text-body-3 border transition-colors font-medium ${
+                  className={`shrink-0 px-5 py-2 rounded-full text-body-3 border transition-colors font-medium ${
                     activeTab === tab
                       ? "bg-primary border-primary text-white font-semibold"
                       : "bg-white border-bluegrey-3 text-grey-8 hover:border-primary hover:text-primary"

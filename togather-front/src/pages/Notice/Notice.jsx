@@ -98,7 +98,7 @@ export default function Notice() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
       {/* 헤더 */}
       <div className="mb-8">
         <p className="text-body-5 text-grey-6 mb-1">교회소식</p>
@@ -166,11 +166,11 @@ export default function Notice() {
           <div className="flex flex-col min-h-[700px]">
           <div className="border border-grey-3 rounded-2xl overflow-hidden">
             {/* 테이블 헤더 */}
-            <div className="grid grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-3 py-3 text-body-5 font-semibold text-grey-7">
+            <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-3 py-3 text-body-5 font-semibold text-grey-7">
               <span className="text-center">구분</span>
               <span className="pl-4">제목</span>
-              <span className="text-center">작성자</span>
-              <span className="text-center">날짜</span>
+              <span className="hidden md:block text-center">작성자</span>
+              <span className="hidden md:block text-center">날짜</span>
             </div>
 
             {paged.length === 0 ? (
@@ -184,7 +184,7 @@ export default function Notice() {
                   <button
                     key={n.id}
                     onClick={() => { setSelected(n); setSearchParams({ id: n.id }); }}
-                    className={`w-full grid grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
+                    className={`w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
                       i < paged.length - 1 ? "border-b border-grey-3" : ""
                     } ${n.featured ? "bg-blue-1/30" : ""}`}
                   >
@@ -204,8 +204,8 @@ export default function Notice() {
                         {n.title}
                       </span>
                     </span>
-                    <span className="text-center text-body-5 text-grey-6">{n.author}</span>
-                    <span className="text-center text-body-5 text-grey-6">{formatDate(n.date)}</span>
+                    <span className="hidden md:block text-center text-body-5 text-grey-6">{n.author}</span>
+                    <span className="hidden md:block text-center text-body-5 text-grey-6">{formatDate(n.date)}</span>
                   </button>
                 );
               })

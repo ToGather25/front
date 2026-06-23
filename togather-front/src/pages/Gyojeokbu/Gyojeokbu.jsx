@@ -330,9 +330,9 @@ export default function Gyojeokbu() {
 
   return (
     <div className="min-h-screen bg-bluegrey-1 relative">
-      <div className="max-w-[1576px] mx-auto px-8 py-14">
+      <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-14">
         {/* Page header */}
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-6 md:mb-8">
           <div>
             <div className="flex items-center gap-2 text-body-3 text-grey-6 mb-3">
               <Link to="/" className="hover:text-blue-6 transition-colors">홈</Link>
@@ -358,7 +358,7 @@ export default function Gyojeokbu() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-7">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5 md:mb-7">
           {[
             { label: "전체 교인", val: stats.total, unit: "명", sub: "↑ 4명 (지난달 대비)", color: "text-blue-8" },
             { label: "직분자",   val: stats.officers, unit: "명", sub: "장로 · 권사 · 집사", color: "text-blue-8" },
@@ -380,7 +380,7 @@ export default function Gyojeokbu() {
         {/* Toolbar */}
         <div className="bg-white rounded-2xl border border-bluegrey-2 px-6 py-4 flex items-center gap-4 mb-4 flex-wrap">
           {/* Search */}
-          <div className="flex items-center gap-3 h-11 px-4 bg-bluegrey-1 rounded-full border border-transparent focus-within:border-blue-6 focus-within:bg-white transition-all w-[360px]">
+          <div className="flex items-center gap-3 h-11 px-4 bg-bluegrey-1 rounded-full border border-transparent focus-within:border-blue-6 focus-within:bg-white transition-all w-full md:w-[360px]">
             <svg className="w-[18px] h-[18px] text-grey-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
             </svg>
@@ -428,8 +428,9 @@ export default function Gyojeokbu() {
         {/* Table */}
         <div
           className="bg-white rounded-2xl border border-bluegrey-2 overflow-hidden transition-all duration-200"
-          style={{ marginRight: member ? "536px" : "0" }}
+          style={{ marginRight: member ? "clamp(0px, 536px, calc(100vw - 320px))" : "0" }}
         >
+          <div className="overflow-x-auto">
           {matches.length === 0 ? (
             <div className="py-24 text-center">
               <div className="w-[72px] h-[72px] rounded-[18px] bg-blue-1 flex items-center justify-center mx-auto mb-5">
@@ -468,12 +469,13 @@ export default function Gyojeokbu() {
               </tbody>
             </table>
           )}
+          </div>
         </div>
       </div>
 
       {/* Side drawer */}
       <aside
-        className="fixed top-[72px] right-0 bottom-0 w-[520px] bg-white border-l border-bluegrey-2 z-40 flex flex-col overflow-hidden transition-transform duration-200"
+        className="fixed top-14 md:top-[72px] right-0 bottom-0 w-full md:w-[520px] bg-white border-l border-bluegrey-2 z-40 flex flex-col overflow-hidden transition-transform duration-200"
         style={{
           transform: member ? "translateX(0)" : "translateX(520px)",
           boxShadow: member ? "-16px 0 40px -20px rgba(0,0,0,.15)" : "none",
