@@ -26,7 +26,7 @@ export async function getEvents(churchId, params = {}) {
  * @returns {Promise<Event>}
  */
 export async function getEventById(churchId, eventId) {
-  if (USE_DUMMY) return DUMMY_EVENT_DETAIL;
+  if (USE_DUMMY) return DUMMY_EVENTS.find((e) => e.id === eventId) ?? DUMMY_EVENTS[0];
   const res = await api.get(`/churches/${churchId}/events/${eventId}`);
   return res.data.data;
 }

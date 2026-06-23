@@ -1,21 +1,35 @@
 import { useParams, Link } from "react-router";
-import { SAMPLE_EVENTS, DEFAULT_EVENT } from "@/config/events.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getEventById } from "@/services/eventsService";
 
-// "YYYY/MM/DD" 또는 "YYYY.MM.DD" 형식의 날짜가 오늘보다 이전인지 확인
 function isEventEnded(dateStr) {
   if (!dateStr) return false;
-  const normalized = dateStr.replace(/\./g, "/");
-  const eventDate = new Date(normalized);
-  return eventDate < new Date(new Date().toDateString()); // 자정 기준
+  const eventDate = new Date(dateStr);
+  return eventDate < new Date(new Date().toDateString());
 }
 
 export default function EventDetail() {
   const { id } = useParams();
-  const event = SAMPLE_EVENTS[id] ?? { id, ...DEFAULT_EVENT };
+  const { church } = useChurch();
+  const { data: event, loading } = useFetch(
+    () => getEventById(church.id, Number(id)),
+    [church.id, id],
+    null
+  );
+
+  if (loading || !event) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-6 md:px-8 md:py-10 text-body-3 text-grey-5">
+        불러오는 중...
+      </div>
+    );
+  }
+
   const ended = isEventEnded(event.date);
 
   return (
-    <div className="max-w-2xl mx-auto px-8 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-6 md:px-8 md:py-10">
       <h1 className="text-sub-tit-1 font-bold text-grey-11 mb-4">행사 안내</h1>
       <hr className="border-bluegrey-2 mb-6" />
 
@@ -39,24 +53,19 @@ export default function EventDetail() {
         {event.description}
       </p>
 
-      {/* 신청 버튼 — canApply일 때 항상 표시, 종료 시 disabled */}
-      {event.canApply && (
-        <div className="flex flex-col items-center gap-2">
-          <button
-            disabled={ended}
-            className={`px-16 py-3 rounded-full text-btn-normal font-semibold transition-colors ${
-              ended
-                ? "bg-grey-3 text-grey-5 cursor-not-allowed"
-                : "bg-blue-8 text-white hover:bg-blue-9"
-            }`}
-          >
-            {ended ? "신청 마감" : "신청하기"}
-          </button>
-          {ended && (
-            <p className="text-body-5 text-grey-5">행사가 종료되어 신청이 마감되었습니다.</p>
-          )}
-        </div>
-      )}
+      {/* 신청 버튼 — 항상 표시, 종료 시 disabled */}
+      <div className="flex flex-col items-center gap-2">
+        <button
+          disabled={ended}
+          className={`px-16 py-3 rounded-full text-btn-normal font-semibold transition-colors ${
+            ended
+              ? "bg-grey-3 text-grey-5 cursor-not-allowed"
+              : "bg-blue-8 text-white hover:bg-blue-9"
+          }`}
+        >
+          {ended ? "신청 마감" : "신청하기"}
+        </button>
+      </div>
 
       <div className="mt-8">
         <Link to="/교회행사" className="text-body-4 text-grey-6 hover:text-blue-7 transition-colors">
