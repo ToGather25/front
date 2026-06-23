@@ -113,7 +113,7 @@ export default function Nurture() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-bluegrey-2 bg-white sticky top-[72px] z-40">
+      <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
         <div className="max-w-[1576px] mx-auto px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
@@ -134,7 +134,7 @@ export default function Nurture() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1576px] mx-auto px-8 py-10">
+      <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
 
         {/* 구역모임 */}
         {activeTab === "구역모임" && (
@@ -277,23 +277,23 @@ export default function Nurture() {
             </p>
             <div className="border border-bluegrey-2 rounded-2xl overflow-hidden max-w-4xl">
               {/* 헤더 */}
-              <div className="grid grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
+              <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
                 <span>분류</span>
                 <span>제목</span>
-                <span className="text-center">작성자</span>
-                <span className="text-center">날짜</span>
+                <span className="hidden md:block text-center">작성자</span>
+                <span className="hidden md:block text-center">날짜</span>
               </div>
               {BOARD_POSTS.map((post) => (
                 <div
                   key={post.id}
-                  className="grid grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors cursor-pointer items-center"
+                  className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors cursor-pointer items-center"
                 >
                   <span className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}>
                     {post.category}
                   </span>
                   <span className="text-body-3 text-grey-10 px-3 truncate">{post.title}</span>
-                  <span className="text-body-5 text-grey-6 text-center">{post.author}</span>
-                  <span className="text-body-5 text-grey-5 text-center">{post.date}</span>
+                  <span className="hidden md:block text-body-5 text-grey-6 text-center">{post.author}</span>
+                  <span className="hidden md:block text-body-5 text-grey-5 text-center">{post.date}</span>
                 </div>
               ))}
             </div>
@@ -306,10 +306,10 @@ export default function Nurture() {
             <h2 className="text-sub-tit-1 font-bold text-grey-12 mb-16 text-center">
               오늘 하실 신앙 생활은 무엇인가요?
             </h2>
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
               <Link
                 to="/말씀/필사"
-                className="w-72 h-80 bg-blue-8 rounded-2xl flex flex-col items-center justify-center gap-6 text-white hover:bg-blue-9 transition-colors"
+                className="w-72 max-w-[90vw] h-80 bg-blue-8 rounded-2xl flex flex-col items-center justify-center gap-6 text-white hover:bg-blue-9 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 쓰기</span>
                 <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -318,7 +318,7 @@ export default function Nurture() {
               </Link>
               <Link
                 to="/말씀/읽기"
-                className="w-72 h-80 bg-white border-2 border-blue-3 rounded-2xl flex flex-col items-center justify-center gap-6 text-grey-11 hover:bg-blue-1 transition-colors"
+                className="w-72 max-w-[90vw] h-80 bg-white border-2 border-blue-3 rounded-2xl flex flex-col items-center justify-center gap-6 text-grey-11 hover:bg-blue-1 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 읽기</span>
                 <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
