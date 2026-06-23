@@ -16,21 +16,32 @@ function TrendIcon({ trend }) {
 
 function RankTable({ title, rows, unit }) {
   return (
-    <div className="flex-1 min-w-0">
-      <div className="bg-grey-2 rounded-t-xl px-4 py-2.5 text-center">
+    <div className="flex-1 min-w-0 flex flex-col">
+      <div className="bg-grey-2 rounded-t-xl px-4 py-2.5 text-center shrink-0">
         <span className="text-body-3 font-semibold text-grey-10">{title}</span>
       </div>
-      <div className="border border-t-0 border-bluegrey-2 rounded-b-xl overflow-hidden">
-        {rows.map(({ rank, name, count, trend }, i) => (
-          <div key={rank} className={`flex items-center px-4 py-3 gap-3 ${i < rows.length - 1 ? "border-b border-bluegrey-2" : ""}`}>
-            <span className="w-5 text-body-4 text-grey-7 font-medium shrink-0 text-center">{rank}</span>
-            <span className="flex-1 text-body-3 text-grey-10 truncate">{name}</span>
-            <span className="text-body-4 text-grey-6 shrink-0">{formatKorean(count)}{unit}</span>
-            {trend !== undefined && (
-              <span className="w-9 text-right shrink-0"><TrendIcon trend={trend} /></span>
-            )}
+      <div className="border border-t-0 border-bluegrey-2 rounded-b-xl overflow-hidden flex flex-col flex-1">
+        {rows.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 py-10 text-grey-4">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5l7-7 4 4 7-7M3 19h18" />
+            </svg>
+            <p className="text-body-5">아직 기록이 없습니다</p>
           </div>
-        ))}
+        ) : (
+          <div className="overflow-y-auto max-h-[340px]">
+            {rows.map(({ rank, name, count, trend }, i) => (
+              <div key={rank} className={`flex items-center px-4 py-3 gap-3 ${i < rows.length - 1 ? "border-b border-bluegrey-2" : ""}`}>
+                <span className="w-5 text-body-4 text-grey-7 font-medium shrink-0 text-center">{rank}</span>
+                <span className="flex-1 text-body-3 text-grey-10 truncate">{name}</span>
+                <span className="text-body-4 text-grey-6 shrink-0">{formatKorean(count)}{unit}</span>
+                {trend !== undefined && (
+                  <span className="w-9 text-right shrink-0"><TrendIcon trend={trend} /></span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

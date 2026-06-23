@@ -61,23 +61,28 @@ const READ_NEIGHBORS = [
   MY_RANK,
   { rank: MY_RANK.rank - 1, name: "임예빈", count: 21511, trend: 1 },
 ];
-const READ_MONTHLY = [
-  { rank: 1, name: "요한", count: 12345566 },
-  { rank: 2, name: "베드로", count: 12344433 },
-  { rank: 3, name: "김미정", count: 3342343 },
-  { rank: 4, name: "김수빈", count: 5638383 },
-  { rank: 5, name: "이미자", count: 234324 },
-  { rank: 6, name: "박은진", count: 123455 },
-  { rank: 7, name: "미수리", count: 122222 },
-];
+const READ_MONTHLY = [];
 const READ_TOTAL = [
-  { rank: 1, name: "요한", count: 12345566 },
-  { rank: 2, name: "베드로", count: 12344433 },
-  { rank: 3, name: "김미정", count: 3342343 },
-  { rank: 4, name: "김수빈", count: 5638383 },
-  { rank: 5, name: "이미자", count: 234324 },
-  { rank: 6, name: "박은진", count: 123455 },
-  { rank: 7, name: "미수리", count: 122222 },
+  { rank: 1,  name: "요한",   count: 12345566, trend:  0 },
+  { rank: 2,  name: "베드로", count: 12344433, trend:  1 },
+  { rank: 3,  name: "김미정", count: 3342343,  trend: -1 },
+  { rank: 4,  name: "김수빈", count: 5638383,  trend:  2 },
+  { rank: 5,  name: "이미자", count: 234324,   trend:  0 },
+  { rank: 6,  name: "박은진", count: 123455,   trend: -2 },
+  { rank: 7,  name: "미수리", count: 122222,   trend:  1 },
+  { rank: 8,  name: "정다은", count: 98000,    trend:  3 },
+  { rank: 9,  name: "최성훈", count: 87650,    trend: -1 },
+  { rank: 10, name: "윤지현", count: 76500,    trend:  0 },
+  { rank: 11, name: "한승민", count: 65430,    trend:  2 },
+  { rank: 12, name: "오수연", count: 54320,    trend: -3 },
+  { rank: 13, name: "장민준", count: 43210,    trend:  1 },
+  { rank: 14, name: "신예린", count: 32100,    trend:  0 },
+  { rank: 15, name: "임태양", count: 21000,    trend: -1 },
+  { rank: 16, name: "강지우", count: 18900,    trend:  4 },
+  { rank: 17, name: "조현아", count: 15600,    trend: -2 },
+  { rank: 18, name: "배준서", count: 12300,    trend:  0 },
+  { rank: 19, name: "서은채", count: 9800,     trend:  1 },
+  { rank: 20, name: "문도현", count: 7600,     trend: -1 },
 ];
 
 // ── 내 구절 목업 ─────────────────────────────────────────

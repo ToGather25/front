@@ -283,7 +283,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
   const [viewMode, setViewMode] = useState("list");
   const [startIdx, setStartIdx] = useState(0);
 
-  const PAGE = viewMode === "grid" ? 20 : 10;
+  const PAGE = viewMode === "grid" ? 39 : 10;
   const allBooks = [...OT, ...NT];
   const listBooks = bookTab === "OT" ? OT
     : bookTab === "NT" ? NT
@@ -362,17 +362,17 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
           })}
         </div>
       ) : (
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-7 gap-1.5">
           {visibleBooks.map(abbr => {
             const pct = bookProgress[abbr] ?? 0;
             const done = pct === 100;
             return (
               <button key={abbr}
                 onClick={() => navigate(mode === "write" ? "/말씀/필사" : "/말씀/읽기", { state: { book: BOOK_MAP[abbr] } })}
-                className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border-2 transition-all hover:shadow-md ${
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 border transition-all hover:shadow-md ${
                   done ? "bg-blue-7 border-blue-7 text-white" : pct > 0 ? "bg-blue-1 border-blue-3 text-blue-8" : "bg-white border-bluegrey-2 text-grey-7 hover:border-blue-3"
                 }`}>
-                <span className="text-body-4 font-bold leading-none">{abbr}</span>
+                <span className="text-body-5 font-bold leading-none">{abbr}</span>
                 {pct > 0 && <span className="text-caption leading-none opacity-70">{pct}%</span>}
               </button>
             );
