@@ -1,8 +1,15 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { useSearch } from "@/contexts/SearchContext";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
-const SUGGESTIONS = ["주일 예배", "성경 타자", "오시는 길", "구역모임", "헌금 안내"];
+const SUGGESTIONS = [
+  { label: "주일 예배",  to: "/말씀/방송" },
+  { label: "성경 타자",  to: "/말씀/필사" },
+  { label: "오시는 길",  to: "/교회소개?tab=오시는 길" },
+  { label: "구역모임",   to: "/양육훈련/구역" },
+  { label: "헌금 안내",  to: "/주보?tab=예물" },
+];
 
 export default function SearchSection() {
   const { setOpen } = useSearch();
@@ -44,10 +51,9 @@ export default function SearchSection() {
           type="text"
           placeholder="예배, 주보, 성경, 오시는 길…"
           value={value}
+          onFocus={() => setOpen(true)}
           onChange={e => setValue(e.target.value)}
-          onClick={() => setOpen(true)}
           className="flex-1 bg-transparent border-0 outline-none text-sub-tit-3 text-grey-11 placeholder:text-grey-5"
-          readOnly
         />
         {value && (
           <button
@@ -62,13 +68,13 @@ export default function SearchSection() {
       {/* Quick suggestions */}
       <div className="flex items-center gap-2.5 mt-6 flex-wrap justify-center">
         {SUGGESTIONS.map(s => (
-          <button
-            key={s}
-            onClick={() => setOpen(true)}
+          <Link
+            key={s.label}
+            to={s.to}
             className="px-4 py-2 rounded-full border border-bluegrey-2 bg-white text-sm font-medium text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
           >
-            # {s}
-          </button>
+            # {s.label}
+          </Link>
         ))}
       </div>
     </section>
