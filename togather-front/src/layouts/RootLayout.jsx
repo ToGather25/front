@@ -6,6 +6,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import FooterLocation from "@/assets/icon-svg/footer-location.svg";
 import FooterPhone from "@/assets/icon-svg/footer-phone.svg";
 import FooterEmail from "@/assets/icon-svg/footer-email.svg";
+import SearchOverlay from "@/components/common/SearchOverlay";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,6 +22,7 @@ function DesktopHeader() {
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
   const [openMenu, setOpenMenu] = useState(null);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
 
   return (
     <header
@@ -102,6 +104,13 @@ function DesktopHeader() {
             </>
           ) : (
             <>
+              <button
+                onClick={() => setShowLoginRequired(true)}
+                className="px-4 py-2 rounded-full bg-grey-4 text-grey-6 text-body-3 font-semibold cursor-default whitespace-nowrap"
+              >
+                교적부
+              </button>
+              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
               <Link
                 to="/register"
                 className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
@@ -117,6 +126,44 @@ function DesktopHeader() {
             </>
           )}
         </div>
+
+        {/* 로그인 필요 모달 */}
+        {showLoginRequired && (
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40"
+            onClick={() => setShowLoginRequired(false)}
+          >
+            <div
+              className="bg-white rounded-2xl shadow-2xl w-[320px] px-8 py-8 flex flex-col items-center gap-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-14 h-14 rounded-full bg-blue-1 flex items-center justify-center">
+                <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <p className="text-sub-tit-4 font-bold text-grey-12 mb-2">로그인이 필요한 서비스입니다</p>
+                <p className="text-body-4 text-grey-6">교적부를 이용하려면 로그인해 주세요.</p>
+              </div>
+              <div className="flex gap-2 w-full">
+                <button
+                  onClick={() => setShowLoginRequired(false)}
+                  className="flex-1 py-2.5 rounded-full border border-bluegrey-2 text-body-4 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"
+                >
+                  취소
+                </button>
+                <Link
+                  to="/login"
+                  onClick={() => setShowLoginRequired(false)}
+                  className="flex-1 py-2.5 rounded-full bg-primary text-white text-body-4 font-semibold text-center hover:bg-blue-8 transition-colors"
+                >
+                  로그인
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {openMenu && (
@@ -193,7 +240,7 @@ function DesktopFooter() {
           </div>
           <div className="flex flex-col gap-5 py-2">
             <div className="flex items-center gap-10 text-body-2 font-bold text-grey-10">
-              <Link to="/privacy" className="hover:text-blue-7 transition-colors">개인정보취급방침</Link>
+              <Link to="/privacy" className="font-extrabold hover:text-blue-7 transition-colors">개인정보취급방침</Link>
               <Link to="/terms" className="hover:text-blue-7 transition-colors">이용 약관</Link>
             </div>
             <div className="flex flex-col gap-2.5">
@@ -222,25 +269,84 @@ function DesktopFooter() {
         </div>
 
         <div className="flex items-center gap-4 pb-1">
-          <a href={church.social?.youtube ?? "#"} aria-label="YouTube"
+          <a href={church.social?.youtube ?? "#"} aria-label="YouTube" target="_blank" rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
           </a>
-          <a href={church.social?.instagram ?? "#"} aria-label="Instagram"
+          <a href={church.social?.instagram ?? "#"} aria-label="Instagram" target="_blank" rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
             </svg>
           </a>
-          <a href={church.social?.facebook ?? "#"} aria-label="Facebook"
+          <a href={church.social?.facebook ?? "#"} aria-label="Facebook" target="_blank" rel="noopener noreferrer"
             className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
           </a>
         </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// Mobile Footer (md 미만에서만 표시)
+// ─────────────────────────────────────────────────────
+function MobileFooter() {
+  const { church } = useChurch();
+  return (
+    <footer className="bg-bluegrey-1 border-t border-bluegrey-2 md:hidden pb-[calc(64px+env(safe-area-inset-bottom))]">
+      <div className="flex flex-col items-center gap-5 px-6 py-8">
+        {/* 로고 */}
+        <Link to="/">
+          <img
+            src={church.logoUrl ?? LogoIcon}
+            className="h-10 w-auto object-contain"
+            alt={`${church.name} 로고`}
+          />
+        </Link>
+
+        {/* 약관 */}
+        <div className="flex items-center gap-5 text-[13px] font-medium text-grey-7">
+          <Link to="/privacy" className="font-bold text-grey-9 hover:text-primary transition-colors">개인정보취급방침</Link>
+          <span className="w-px h-3 bg-bluegrey-3" />
+          <Link to="/terms" className="hover:text-primary transition-colors">이용 약관</Link>
+        </div>
+
+        {/* 교회 정보 */}
+        <div className="flex flex-col items-center gap-1.5 text-[12px] text-grey-6 text-center">
+          <span>{church.address}</span>
+          <span>TEL {church.tel}{church.fax ? ` · FAX ${church.fax}` : ""}</span>
+          {church.email && <span>{church.email}</span>}
+        </div>
+
+        {/* SNS 아이콘 */}
+        <div className="flex items-center gap-3">
+          <a href={church.social?.youtube ?? "#"} aria-label="YouTube" target="_blank" rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+          </a>
+          <a href={church.social?.instagram ?? "#"} aria-label="Instagram" target="_blank" rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+            </svg>
+          </a>
+          <a href={church.social?.facebook ?? "#"} aria-label="Facebook" target="_blank" rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+          </a>
+        </div>
+
+        <p className="text-[11px] text-grey-5">© {church.name}. All rights reserved.</p>
       </div>
     </footer>
   );
@@ -531,8 +637,14 @@ function Layout() {
       {/* 데스크탑 푸터 (bible 전체화면 페이지 제외) */}
       {!isBiblePage && <DesktopFooter />}
 
+      {/* 모바일 푸터 (bible 전체화면 페이지 제외) */}
+      {!isBiblePage && <MobileFooter />}
+
       {/* 모바일 바텀 네비 */}
       <BottomNav />
+
+      {/* 검색 오버레이 */}
+      <SearchOverlay />
     </div>
   );
 }
