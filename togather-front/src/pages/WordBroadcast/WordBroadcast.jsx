@@ -33,15 +33,31 @@ function YouTubeIcon({ className }) {
   );
 }
 
-function SermonInfoBlock({ sermon }) {
+function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
   return (
-    <div className="mt-5 space-y-2">
-      <div className="flex items-center gap-2">
-        <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">{sermon.service}</span>
+    <div className="mt-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-2 mb-2.5">
+          {isLive && (
+            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-body-5 font-bold rounded-full animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-white" />
+              LIVE
+            </span>
+          )}
+          <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">{sermon.service}</span>
+        </div>
+        <h2 className="text-sub-tit-3 font-bold text-grey-11 leading-snug mb-2">{sermon.title}</h2>
+        <div className="flex items-center gap-2 text-body-4 text-grey-6">
+          <span className="text-primary font-medium">{sermon.scripture}</span>
+          <span className="text-grey-4">·</span>
+          <span>{sermon.speaker}</span>
+        </div>
       </div>
-      <h2 className="text-sub-tit-2 font-bold text-grey-11">{sermon.title}</h2>
-      <p className="text-body-3 text-primary font-medium">{sermon.scripture}</p>
-      <p className="text-body-4 text-grey-6">{sermon.speaker}</p>
+      {juboOnClick && (
+        <div className="shrink-0 pt-0.5">
+          <SmartJuboButton onClick={juboOnClick} />
+        </div>
+      )}
     </div>
   );
 }
@@ -58,7 +74,7 @@ export default function WordBroadcast() {
       <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1576px] mx-auto px-4 pb-6 md:px-8 md:pb-8 w-full">
-          <h1 className="text-headline-4 font-bold text-white">말씀·찬양</h1>
+          <h1 className="text-headline-4 font-bold text-white">예배·방송</h1>
         </div>
       </div>
 
@@ -68,15 +84,9 @@ export default function WordBroadcast() {
 
         {/* ── 실시간 중 ── */}
         {TODAY_STATUS === "live" && (
-          <section className="mb-12">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-red-500 text-white text-body-5 font-bold rounded-full animate-pulse">
-                <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                LIVE
-              </span>
-              <span className="text-body-3 text-grey-7">지금 예배가 진행중입니다</span>
-            </div>
-            <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl" style={{ aspectRatio: "16/9", maxWidth: 900 }}>
+          <section className="mb-14 max-w-3xl mx-auto">
+            <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
+            <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
               {channelId ? (
                 <iframe
                   src={`https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1`}
@@ -89,28 +99,26 @@ export default function WordBroadcast() {
                 <LivePlaceholder channelUrl={channelUrl} />
               )}
             </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} />
-            <SmartJuboButton onClick={() => setJuboOpen(true)} />
+            <SermonInfoBlock sermon={TODAY_SERMON} isLive juboOnClick={() => setJuboOpen(true)} />
           </section>
         )}
 
         {/* ── 오늘 예배 예정 (아직 시작 전) ── */}
         {TODAY_STATUS === "scheduled" && (
-          <section className="mb-12">
-            <div className="w-full rounded-2xl bg-blue-1 border border-blue-2 flex flex-col items-center justify-center py-16 gap-4" style={{ maxWidth: 900 }}>
+          <section className="mb-14 max-w-6xl mx-auto">
+            <div className="w-full rounded-2xl bg-blue-1 border border-blue-2 flex flex-col items-center justify-center py-20 gap-4">
               <div className="text-4xl">⏰</div>
               <p className="text-sub-tit-4 font-bold text-blue-8">잠시 뒤 예배가 시작됩니다</p>
               <p className="text-body-3 text-blue-6">예정 시간: {TODAY_SERMON.scheduledAt}</p>
             </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} />
-            <SmartJuboButton onClick={() => setJuboOpen(true)} />
+            <SermonInfoBlock sermon={TODAY_SERMON} juboOnClick={() => setJuboOpen(true)} />
           </section>
         )}
 
         {/* ── 오늘 예배가 끝난 경우 ── */}
         {TODAY_STATUS === "ended" && (
-          <section className="mb-12">
-            <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl" style={{ aspectRatio: "16/9", maxWidth: 900 }}>
+          <section className="mb-14 max-w-6xl mx-auto">
+            <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
               {TODAY_SERMON.videoId ? (
                 <iframe
                   src={`https://www.youtube.com/embed/${TODAY_SERMON.videoId}`}
@@ -122,15 +130,14 @@ export default function WordBroadcast() {
                 <LivePlaceholder channelUrl={channelUrl} />
               )}
             </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} />
-            <SmartJuboButton onClick={() => setJuboOpen(true)} />
+            <SermonInfoBlock sermon={TODAY_SERMON} juboOnClick={() => setJuboOpen(true)} />
           </section>
         )}
 
         {/* ── 오늘 예배 없음 ── */}
         {TODAY_STATUS === "none" && (
-          <section className="mb-12">
-            <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-16 gap-3" style={{ maxWidth: 900 }}>
+          <section className="mb-14 max-w-3xl mx-auto">
+            <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
               <div className="text-4xl">📭</div>
               <p className="text-sub-tit-4 font-semibold text-grey-7">오늘 예정된 예배가 없습니다</p>
             </div>
@@ -138,7 +145,7 @@ export default function WordBroadcast() {
         )}
 
         {/* ── 지난 설교 가로 스크롤 ── */}
-        <section>
+        <section className="max-w-6xl mx-auto">
           <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
             {PAST_SERMONS.map((s) => (

@@ -55,9 +55,9 @@ export default function WordSermonDetail() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            설교 목록
+            예배 다시보기
           </button>
-          <h1 className="text-headline-4 font-bold text-white">말씀·찬양</h1>
+          <h1 className="text-headline-4 font-bold text-white">예배·방송</h1>
         </div>
       </div>
 

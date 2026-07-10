@@ -39,7 +39,7 @@ export default function DirectionsSection() {
         </h3>
       </div>
 
-      <div className="grid gap-8 items-stretch" style={{ gridTemplateColumns: "1fr 540px" }}>
+      <div className="grid gap-8 items-stretch grid-cols-1 lg:grid-cols-[1fr_540px]">
         {/* Map */}
         <div className="rounded-[20px] overflow-hidden bg-bluegrey-2">
           <KakaoMap
@@ -81,7 +81,7 @@ export default function DirectionsSection() {
               <Link
                 key={label}
                 to={to}
-                className="h-18 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
+                className="h-18 flex items-center justify-between px-6 rounded-xl bg-primary text-white font-bold text-body-2 hover:brightness-110 active:scale-[0.99] transition-all"
               >
                 <span>{label}</span>
                 <img src={IcoEnter} className="w-5 h-5 opacity-70" alt="" />
