@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 import juboConfig from "@/config/jubo.config";
@@ -454,7 +454,8 @@ function renderTab(tab) {
 
 // ── 메인 ───────────────────────────────────────────────
 export default function Jubo() {
-  const [activeTab, setActiveTab] = useState("표지");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "표지";
 
   return (
     <>
@@ -493,7 +494,7 @@ export default function Jubo() {
               {TABS.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => setSearchParams({ tab })}
                   className={`shrink-0 px-5 py-2 rounded-full text-body-3 border transition-colors font-medium ${
                     activeTab === tab
                       ? "bg-primary border-primary text-white font-semibold"
