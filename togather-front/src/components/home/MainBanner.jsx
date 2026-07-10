@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import defaultBanner from "@/assets/default_banner.png";
 
@@ -79,13 +80,17 @@ export default function MainBanner() {
 
         {/* CTA buttons */}
         <div className="flex gap-3.5 mt-10">
-          <button className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full bg-white text-blue-10 font-semibold text-[17px] tracking-[-0.3px] hover:bg-blue-4 hover:text-white hover:-translate-y-0.5 transition-all duration-200">
+          <Link
+            to="/말씀/방송"
+            className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full bg-white text-blue-10 font-semibold text-[17px] tracking-[-0.3px] hover:bg-blue-4 hover:text-white hover:-translate-y-0.5 transition-all duration-200"
+          >
             <span>이번 주 예배 보기</span>
             <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 4l14 8-14 8z" />
             </svg>
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/교회소개?tab=예배 안내"
             className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full font-semibold text-[17px] tracking-[-0.3px] text-white hover:-translate-y-0.5 transition-all duration-200"
             style={{ background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.4)" }}
             onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,.18)")}
@@ -95,7 +100,7 @@ export default function MainBanner() {
             <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
-          </button>
+          </Link>
         </div>
       </div>
 

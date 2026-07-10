@@ -13,12 +13,30 @@ const TAG_STYLES = {
   소식: { bg: "rgba(32,152,243,.14)", color: "#1a7bc0" },
 };
 
+const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
 const UPCOMING_EVENTS = [
-  { d: "03.22", w: "토", title: "구역장 모임",        time: "14:00 본당" },
-  { d: "03.24", w: "주", title: "새 가족 환영회",      time: "예배 후 친교실" },
-  { d: "03.29", w: "금", title: "성가대 부활절 연습",  time: "20:00 4층" },
-  { d: "04.05", w: "주", title: "부활주일 연합 예배",  time: "11:00 본당" },
+  { id: 1,  dateISO: "2026-07-12", title: "구역장 모임",          time: "14:00 본당" },
+  { id: 2,  dateISO: "2026-07-19", title: "새 가족 환영회",        time: "예배 후 친교실" },
+  { id: 3,  dateISO: "2026-07-26", title: "성가대 여름 특별 연습", time: "20:00 4층" },
+  { id: 4,  dateISO: "2026-08-02", title: "여름 연합 예배",        time: "11:00 본당" },
+  { id: 5,  dateISO: "2026-08-15", title: "광복절 특별 예배",      time: "10:30 본당" },
 ];
+
+function formatEventDate(dateISO) {
+  const d = new Date(dateISO + "T00:00:00");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return { d: `${mm}.${dd}`, w: WEEK_LABELS[d.getDay()] };
+}
+
+function getUpcomingEvents() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return UPCOMING_EVENTS
+    .filter(e => new Date(e.dateISO + "T00:00:00") >= today)
+    .slice(0, 4);
+}
 
 export default function NoticeSection() {
   const { church } = useChurch();
@@ -30,10 +48,11 @@ export default function NoticeSection() {
   const [tab, setTab] = useState("전체");
 
   const rows = (tab === "전체" ? notices : notices.filter(n => n.type === tab)).slice(0, 5);
+  const upcomingEvents = getUpcomingEvents();
 
   return (
     <Section className="py-[100px] bg-bluegrey-1">
-      <div className="grid gap-10" style={{ gridTemplateColumns: "1fr 460px" }}>
+      <div className="grid gap-10 grid-cols-1 lg:grid-cols-[1fr_460px]">
         {/* Left: notices */}
         <div className="flex flex-col">
           <div className="mb-8">
@@ -122,21 +141,29 @@ export default function NoticeSection() {
           </div>
 
           <ul className="flex-1 flex flex-col gap-3 list-none m-0 p-0">
-            {UPCOMING_EVENTS.map((e, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all cursor-pointer"
-              >
-                <div className="shrink-0 min-w-[52px] mt-[2px]">
-                  <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{e.d}</div>
-                  <div className="text-body-5 font-medium text-grey-6 mt-0.5">{e.w}요일</div>
-                </div>
-                <div className="min-w-0">
-                  <div className="text-body-2 font-semibold text-grey-12 leading-snug">{e.title}</div>
-                  <div className="text-caption text-grey-6 mt-1">{e.time}</div>
-                </div>
-              </li>
-            ))}
+            {upcomingEvents.length === 0 ? (
+              <li className="py-16 text-center text-grey-5 text-[15px]">예정된 일정이 없습니다.</li>
+            ) : (
+              upcomingEvents.map((e) => {
+                const { d, w } = formatEventDate(e.dateISO);
+                return (
+                  <Link
+                    key={e.id}
+                    to={`/교회행사/${e.id}`}
+                    className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all"
+                  >
+                    <div className="shrink-0 min-w-[52px] mt-[2px]">
+                      <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{d}</div>
+                      <div className="text-body-5 font-medium text-grey-6 mt-0.5">{w}요일</div>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">{e.title}</div>
+                      <div className="text-caption text-grey-6 mt-1">{e.time}</div>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
           </ul>
 
           <Link

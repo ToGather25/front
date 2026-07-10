@@ -1,60 +1,14 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import defaultBanner from "@/assets/default_banner.png";
 
-function VideoThumb({ channelId, apiKey }) {
-  const [videoId, setVideoId] = useState(null);
-  const [isLive, setIsLive] = useState(false);
-  const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    if (!channelId || !apiKey) return;
-    const fetchVideo = async () => {
-      try {
-        const liveRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`
-        );
-        const liveData = await liveRes.json();
-        if (liveData.items?.length > 0) {
-          setVideoId(liveData.items[0].id.videoId);
-          setIsLive(true);
-        } else {
-          const recentRes = await fetch(
-            `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=1&key=${apiKey}`
-          );
-          const recentData = await recentRes.json();
-          if (recentData.items?.length > 0) {
-            setVideoId(recentData.items[0].id.videoId);
-          }
-        }
-      } catch {
-        setVideoId(null);
-      }
-    };
-    fetchVideo();
-    const interval = setInterval(fetchVideo, 60_000);
-    return () => clearInterval(interval);
-  }, [channelId, apiKey]);
-
-  if (playing && videoId) {
-    return (
-      <div className="relative w-full aspect-video rounded-2xl overflow-hidden">
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1${isLive ? "&mute=1" : ""}`}
-          title="예배 영상"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
-  }
-
+function VideoThumb({ isLive, onClick }) {
   return (
     <div
       className="relative w-full aspect-video rounded-2xl overflow-hidden bg-grey-11 cursor-pointer group"
-      onClick={() => videoId && setPlaying(true)}
+      onClick={onClick}
       role="button"
       tabIndex={0}
     >
@@ -83,8 +37,28 @@ function VideoThumb({ channelId, apiKey }) {
 
 export default function WorshipSection() {
   const { church } = useChurch();
+  const navigate = useNavigate();
   const channelId = church.social?.youtubeChannelId;
   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    if (!channelId || !apiKey) return;
+    const fetchLiveStatus = async () => {
+      try {
+        const res = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`
+        );
+        const data = await res.json();
+        setIsLive((data.items?.length ?? 0) > 0);
+      } catch {
+        setIsLive(false);
+      }
+    };
+    fetchLiveStatus();
+    const interval = setInterval(fetchLiveStatus, 60_000);
+    return () => clearInterval(interval);
+  }, [channelId, apiKey]);
 
   const sermon = {
     date: "2026년 3월 17일 · 주일 1부 예배",
@@ -119,23 +93,20 @@ export default function WorshipSection() {
             {sermon.verse}
           </p>
           <div className="flex gap-3 mt-9">
-            <button className="inline-flex items-center gap-3 px-7 py-[16px] rounded-full bg-blue-8 text-white font-semibold text-[17px] hover:bg-blue-9 hover:-translate-y-0.5 transition-all">
-              <span>다시 보기</span>
+            <Link
+              to="/말씀/방송"
+              className="inline-flex items-center gap-3 px-7 py-[16px] rounded-full bg-blue-8 text-white font-semibold text-[17px] hover:bg-blue-9 hover:-translate-y-0.5 transition-all"
+            >
+              <span>{isLive ? "실시간 방송 보기" : "다시 보기"}</span>
               <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 4l14 8-14 8z" />
               </svg>
-            </button>
-            {/* <button className="inline-flex items-center gap-3 px-7 py-[16px] rounded-full bg-white text-grey-9 font-semibold text-[17px] border border-bluegrey-3 hover:bg-bluegrey-1 hover:border-blue-6 hover:text-blue-8 hover:-translate-y-0.5 transition-all">
-              <span>설교 노트</span>
-              <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-                <path d="M12 4v12M6 12l6 6 6-6M4 20h16" />
-              </svg>
-            </button> */}
+            </Link>
           </div>
         </div>
 
         {/* Video thumb */}
-        <VideoThumb channelId={channelId} apiKey={apiKey} />
+        <VideoThumb isLive={isLive} onClick={() => navigate("/말씀/방송")} />
       </div>
     </Section>
   );

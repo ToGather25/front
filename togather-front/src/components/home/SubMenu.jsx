@@ -42,7 +42,7 @@ const MENU_ITEMS = [
     id: "type",
     label: "성경 타자",
     sub: "필사 · 통독 · 랭킹",
-    to: "/양육훈련",
+    to: "/말씀/필사",
     accent: "#00ba34",
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">

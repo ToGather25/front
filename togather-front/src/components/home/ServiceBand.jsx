@@ -35,9 +35,10 @@ export default function ServiceBand() {
         style={{ gridTemplateColumns: `repeat(${Math.min(services.length, 5)}, 1fr)` }}
       >
         {services.slice(0, 5).map((s, i) => (
-          <div
+          <Link
             key={s.name}
-            className={`pt-7 pb-4 pr-10 ${i > 0 ? "pl-10 border-l border-grey-4" : ""}`}
+            to="/교회소개?tab=예배 안내"
+            className={`pt-7 pb-4 pr-10 hover:bg-blue-1 transition-colors cursor-pointer ${i > 0 ? "pl-10 border-l border-grey-4" : ""}`}
           >
             <p className="text-caption text-grey-6 mb-4 tracking-[0.04em]">{s.name}</p>
             <p className="text-headline-4 font-bold text-primary tracking-[-0.5px] leading-none mb-2">
@@ -46,7 +47,7 @@ export default function ServiceBand() {
             {s.location && (
               <p className="text-body-5 text-grey-5">{s.location}</p>
             )}
-          </div>
+          </Link>
         ))}
       </div>
     </Section>
