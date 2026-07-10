@@ -1,39 +1,73 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 
-const PW_RULE = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+const PW_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
 export default function SignupNext() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
+  const { login } = useAuth();
   const { church } = useChurch();
+
+  // TODO: 토큰으로 서버에서 이름 조회 후 대체
+  const memberName = searchParams.get("name") ?? null;
 
   const [form, setForm] = useState({ username: "", password: "", confirm: "" });
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | submitting | done | invalid
+  const [idChecked, setIdChecked] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | checking | submitting | done | invalid
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // token 없이 직접 URL 접근하면 잘못된 접근 처리
     if (!token) setStatus("invalid");
-    // TODO: 서버에서 token 유효성 검증
+    // TODO: GET /api/register/verify?token=... → 유효성 검증 + 이름 조회
   }, [token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (name === "username") setIdChecked(false);
+  };
+
+  const handleCheckId = async () => {
+    if (!form.username || form.username.length < 4) {
+      setErrors((prev) => ({ ...prev, username: "아이디는 4자 이상이어야 합니다." }));
+      return;
+    }
+    setStatus("checking");
+    try {
+      // TODO: GET /api/register/check-username?username=...
+      await new Promise((r) => setTimeout(r, 500));
+      const isDuplicate = false;
+      if (isDuplicate) {
+        setErrors((prev) => ({ ...prev, username: "이미 사용 중인 아이디입니다." }));
+        setIdChecked(false);
+      } else {
+        setErrors((prev) => ({ ...prev, username: "" }));
+        setIdChecked(true);
+      }
+    } finally {
+      setStatus("idle");
+    }
   };
 
   const validate = () => {
     const errs = {};
-    if (form.username.length < 4) errs.username = "아이디는 4자 이상이어야 합니다.";
-    if (!PW_RULE.test(form.password)) errs.password = "비밀번호는 영문+숫자 조합 8자 이상이어야 합니다.";
+    if (!idChecked) errs.username = "아이디 중복 확인을 해주세요.";
+    if (!PW_RULE.test(form.password)) errs.password = "영문·숫자·특수문자 조합 8자 이상이어야 합니다.";
     if (form.password !== form.confirm) errs.confirm = "비밀번호가 일치하지 않습니다.";
     return errs;
   };
+
+  const canSubmit =
+    idChecked &&
+    form.password.length >= 8 &&
+    form.password === form.confirm &&
+    status === "idle";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +76,7 @@ export default function SignupNext() {
 
     setStatus("submitting");
     try {
-      // TODO: POST /api/register/complete  { token, username, password }
+      // TODO: POST /api/register/complete { token, username, password }
       await new Promise((r) => setTimeout(r, 800));
       setStatus("done");
       setShowModal(true);
@@ -52,12 +86,18 @@ export default function SignupNext() {
     }
   };
 
+  const handleComplete = async () => {
+    setShowModal(false);
+    // TODO: POST /api/auth/login { username, password } → 자동 로그인
+    // await login({ username: form.username, password: form.password });
+    navigate("/");
+  };
+
   const inputCls = (field) =>
     `w-full px-4 py-3 border rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all ${
       errors[field] ? "border-red-400 bg-red-50" : "border-bluegrey-2"
     }`;
 
-  // 잘못된 접근
   if (status === "invalid") {
     return (
       <div className="max-w-md mx-auto my-16 p-10 bg-white rounded-2xl shadow-xl border border-bluegrey-2 text-center">
@@ -86,37 +126,74 @@ export default function SignupNext() {
           </div>
         </div>
 
-        <h1 className="text-sub-tit-2 font-bold text-grey-11 text-center mb-2">계정 만들기</h1>
-        <p className="text-body-4 text-grey-6 text-center mb-8">
-          사용할 아이디와 비밀번호를 설정해 주세요.
-        </p>
+        {/* 환영 문구 */}
+        {memberName ? (
+          <div className="bg-blue-1 border border-blue-2 rounded-xl px-5 py-4 mb-6">
+            <p className="text-body-3 font-semibold text-blue-8">
+              {memberName} 성도님, 환영합니다!
+            </p>
+            <p className="text-body-4 text-blue-6 mt-0.5">
+              로그인에 사용할 계정 정보를 설정해 주세요.
+            </p>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-sub-tit-2 font-bold text-grey-11 text-center mb-2">계정 만들기</h1>
+            <p className="text-body-4 text-grey-6 text-center mb-8">
+              사용할 아이디와 비밀번호를 설정해 주세요.
+            </p>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {/* 아이디 */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-body-4 font-semibold text-grey-8">아이디 <span className="text-red-400">*</span></label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-body-4 font-semibold text-grey-8">
+                아이디 <span className="text-red-400">*</span>
+              </label>
+              {idChecked && (
+                <span className="text-body-5 text-green-600 font-medium flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  사용 가능
+                </span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <input
+                name="username" type="text" required value={form.username} onChange={handleChange}
+                placeholder="4자 이상 영문/숫자"
+                className={inputCls("username")}
+              />
               <button
                 type="button"
-                className="text-body-5 text-blue-7 hover:underline"
-                onClick={() => {/* TODO: 중복 확인 API */}}
+                onClick={handleCheckId}
+                disabled={status === "checking"}
+                className="shrink-0 px-4 py-3 rounded-xl border border-blue-3 text-blue-7 text-body-4 font-medium hover:bg-blue-1 disabled:opacity-50 transition-colors whitespace-nowrap"
               >
-                중복 확인
+                {status === "checking" ? "확인 중" : "중복 확인"}
               </button>
             </div>
-            <input name="username" type="text" required value={form.username} onChange={handleChange}
-              placeholder="4자 이상 영문/숫자" className={inputCls("username")} />
             {errors.username && <p className="mt-1 text-body-5 text-red-500">{errors.username}</p>}
           </div>
 
+          {/* 비밀번호 */}
           <div>
-            <label className="block text-body-4 font-semibold text-grey-8 mb-1">비밀번호 <span className="text-red-400">*</span></label>
+            <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+              비밀번호 <span className="text-red-400">*</span>
+            </label>
             <input name="password" type="password" required value={form.password} onChange={handleChange}
-              placeholder="영문+숫자 조합 8자 이상" className={inputCls("password")} />
+              placeholder="영문·숫자·특수문자 조합 8자 이상" className={inputCls("password")} />
             {errors.password && <p className="mt-1 text-body-5 text-red-500">{errors.password}</p>}
           </div>
 
+          {/* 비밀번호 확인 */}
           <div>
-            <label className="block text-body-4 font-semibold text-grey-8 mb-1">비밀번호 확인 <span className="text-red-400">*</span></label>
+            <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+              비밀번호 확인 <span className="text-red-400">*</span>
+            </label>
             <input name="confirm" type="password" required value={form.confirm} onChange={handleChange}
               placeholder="비밀번호를 한 번 더 입력하세요" className={inputCls("confirm")} />
             {errors.confirm && <p className="mt-1 text-body-5 text-red-500">{errors.confirm}</p>}
@@ -128,8 +205,8 @@ export default function SignupNext() {
 
           <button
             type="submit"
-            disabled={status === "submitting"}
-            className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors mt-1"
+            disabled={!canSubmit}
+            className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 disabled:bg-blue-3 disabled:cursor-not-allowed transition-colors mt-1"
           >
             {status === "submitting" ? "처리 중..." : "가입하기"}
           </button>
@@ -142,16 +219,17 @@ export default function SignupNext() {
           <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-sm w-full text-center">
             <div className="text-6xl mb-5">🎊</div>
             <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-3">
-              {church?.name ?? "교회"}의 일원이 된 것을 축하합니다!
+              회원가입이 완료되었습니다!
             </h2>
             <p className="text-body-3 text-grey-7 mb-8">
+              {church?.name ?? "교회"}의 일원이 된 것을 환영합니다.<br />
               이제 모든 교회 서비스를 이용할 수 있습니다.
             </p>
             <button
-              onClick={() => { setShowModal(false); navigate("/login"); }}
+              onClick={handleComplete}
               className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
             >
-              로그인하러 가기
+              시작하기
             </button>
           </div>
         </div>
