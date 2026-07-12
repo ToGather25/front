@@ -10,6 +10,7 @@ import Gallery from "@/pages/Gallery/Gallery";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
 import Login from "@/pages/Login/Login";
+import FindPassword from "@/pages/FindPassword/FindPassword";
 import Register from "@/pages/Register/Register";
 import SignupNext from "@/pages/Register/SignupNext";
 import MyPage from "@/pages/MyPage/MyPage";
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
       { path: "양육훈련/:section", element: <Nurture /> },
       // 기타
       { path: "login", element: <Login /> },
+      { path: "find-password", element: <FindPassword /> },
       { path: "register", element: <Register /> },
       { path: "register/next", element: <SignupNext /> },
       { path: "mypage", element: <MyPage /> },

@@ -1,14 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
-const ADMIN_CONTACT = "010-0000-0000";
+const ADMIN_CONTACT = "02-2615-4067";
+
+// 중복 신청 모달 테스트용 — 승인 대기 중(아직 미승인)인 경우
+const PENDING_TEST_MEMBER = { name: "홍길동", birthYear: "1999", birthMonth: "1", birthDay: "1" };
+// 이미 승인은 됐지만 계정(아이디/비번)을 아직 만들지 않은 경우 — 계정 생성 화면으로 바로 이동
+const APPROVED_TEST_MEMBER = { name: "알곡교회", birthYear: "1999", birthMonth: "1", birthDay: "1" };
+
+const CURRENT_YEAR = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => CURRENT_YEAR - i);
+const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+function daysInMonth(year, month) {
+  if (!year || !month) return 31;
+  return new Date(Number(year), Number(month), 0).getDate();
+}
 
 export default function Register() {
   const { church } = useChurch();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
-    birthdate: "",
+    birthYear: "",
+    birthMonth: "",
+    birthDay: "",
     phone: "",
     isNewcomer: false,
     agreePrivacy: false,
@@ -21,13 +39,34 @@ export default function Register() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
+  const handleBirthSelectChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      const maxDay = daysInMonth(next.birthYear, next.birthMonth);
+      if (next.birthDay && Number(next.birthDay) > maxDay) next.birthDay = "";
+      return next;
+    });
+  };
+
+  const matchesTestMember = (member) =>
+    form.name.trim() === member.name &&
+    form.birthYear === member.birthYear &&
+    form.birthMonth === member.birthMonth &&
+    form.birthDay === member.birthDay;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
     try {
       await new Promise((r) => setTimeout(r, 800));
-      const isDuplicate = false; // TODO: API 연동 — 휴대폰 번호로 PENDING/ACTIVE 여부 확인
-      if (isDuplicate) {
+      // TODO: API 연동 — 휴대폰 번호로 회원 상태 확인 (PENDING/APPROVED/없음). 지금은 테스트용으로 이름+생년월일만 비교
+      if (matchesTestMember(APPROVED_TEST_MEMBER)) {
+        // 이미 승인된 성도 — 대기 없이 바로 계정 생성 화면으로 이동
+        navigate(`/register/next?token=test-token-approved&name=${encodeURIComponent(form.name)}`);
+        return;
+      }
+      if (matchesTestMember(PENDING_TEST_MEMBER)) {
         setStatus("idle");
         setShowDuplicateModal(true);
         return;
@@ -41,6 +80,8 @@ export default function Register() {
 
   const inputCls =
     "w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+  const birthSelectCls =
+    "px-3 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 bg-white focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
 
   if (status === "done") {
     return (
@@ -61,6 +102,12 @@ export default function Register() {
             className="inline-block w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
           >
             로그인으로 돌아가기
+          </Link>
+          <Link
+            to={`/register/next?token=test-token&name=${encodeURIComponent(form.name || "홍길동")}`}
+            className="block mt-4 text-body-4 text-grey-5 hover:text-grey-7 transition-colors"
+          >
+            테스트: 승인 후 계정 생성 화면 보기
           </Link>
         </div>
       </div>
@@ -147,8 +194,38 @@ export default function Register() {
                 <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
                   생년월일 <span className="text-red-400">*</span>
                 </label>
-                <input name="birthdate" type="date" required value={form.birthdate} onChange={handleChange}
-                  className={inputCls} />
+                <div className="flex items-center gap-2">
+                  <select
+                    name="birthYear" required
+                    value={form.birthYear} onChange={handleBirthSelectChange}
+                    className={`${birthSelectCls} flex-1`}
+                  >
+                    <option value="" disabled>년도</option>
+                    {YEAR_OPTIONS.map((y) => (
+                      <option key={y} value={y}>{y}년</option>
+                    ))}
+                  </select>
+                  <select
+                    name="birthMonth" required
+                    value={form.birthMonth} onChange={handleBirthSelectChange}
+                    className={`${birthSelectCls} flex-1`}
+                  >
+                    <option value="" disabled>월</option>
+                    {MONTH_OPTIONS.map((m) => (
+                      <option key={m} value={m}>{m}월</option>
+                    ))}
+                  </select>
+                  <select
+                    name="birthDay" required
+                    value={form.birthDay} onChange={handleChange}
+                    className={`${birthSelectCls} flex-1`}
+                  >
+                    <option value="" disabled>일</option>
+                    {Array.from({ length: daysInMonth(form.birthYear, form.birthMonth) }, (_, i) => i + 1).map((d) => (
+                      <option key={d} value={d}>{d}일</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -219,10 +296,13 @@ export default function Register() {
             </div>
             <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">신청을 확인해 주세요</h3>
             <p className="text-body-3 text-grey-7 leading-relaxed mb-6">
-              이미 등록되었거나 승인 대기 중인<br />휴대폰 번호입니다.<br />
+              이미 등록된 정보거나<br />승인 대기 중인 휴대폰 번호입니다.<br />
               교회 사무실로 문의해주세요.
             </p>
-            <p className="text-body-4 font-semibold text-primary mb-6">{ADMIN_CONTACT}</p>
+            <p className="flex items-center justify-center gap-1.5 text-body-4 text-grey-7 mb-6">
+              <img src={IcoPhone} className="w-4 h-4 opacity-80" alt="" />
+              {ADMIN_CONTACT}
+            </p>
             <button
               onClick={() => setShowDuplicateModal(false)}
               className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
