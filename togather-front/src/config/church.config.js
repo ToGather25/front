@@ -72,8 +72,8 @@ const churchConfig = {
     {
       label: "주일학교",
       children: [
-        { label: "초등부",      to: "/주일학교/초등부" },
         { label: "유치부",      to: "/주일학교/유치부" },
+        { label: "초등부",      to: "/주일학교/초등부" },
         { label: "중·고등부",   to: "/주일학교/중고등부" },
         { label: "대학·청년부", to: "/주일학교/청년부" },
       ],
@@ -140,6 +140,7 @@ const churchConfig = {
       church: "알곡교회",
       title: "담임목사",
       name: "김함께",
+      signatureImage: null,   // 직인/캘리그라피 서명 이미지 URL — 없으면 교회 로고로 대체
     },
   },
 
@@ -175,12 +176,13 @@ const churchConfig = {
 
   // ── 섬기는 사람들 ─────────────────────────────────────
   staff: {
-    filterTags: ["# 담임목사", "# 간사", "# 협동장로", "# 부목사"],
+    filterTags: ["#담임목사", "#간사", "#행정장로", "#부목사"],
     headPastor: {
       name: "김함께 목사",
       tel: "02-1234-5678",
       email: "gather@gmail.com",
       role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
+      image: null,
       education: [
         "OOO대학교 졸업",
         "OOO신대학원 졸업",
@@ -193,30 +195,30 @@ const churchConfig = {
       ],
     },
     clergy: [
-      { name: "김무리 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
-      { name: "김모두 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
-      { name: "임축복 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
-      { name: "이행복 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요." },
+      { name: "김무리 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
+      { name: "김모두 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
+      { name: "임축복 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
+      { name: "이행복 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
     ],
     elders: [
-      { name: "홍길동 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
-      { name: "박성실 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
-      { name: "최믿음 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
-      { name: "정소망 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로" },
+      { name: "홍길동 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
+      { name: "박성실 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
+      { name: "최믿음 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
+      { name: "정소망 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
     ],
     associateElders: [
-      { name: "김사랑 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로" },
-      { name: "이은혜 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "사역장로" },
-      { name: "박기쁨 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로" },
+      { name: "김사랑 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로", image: null },
+      { name: "이은혜 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "사역장로", image: null },
+      { name: "박기쁨 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로", image: null },
     ],
     retiredElders: [
-      { name: "윤경건 원로장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로" },
-      { name: "강진리 은퇴장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로" },
+      { name: "윤경건 원로장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로", image: null },
+      { name: "강진리 은퇴장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로", image: null },
     ],
     missionaries: [
-      { name: "오복음 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "태국 방콕 파송", location: "태국" },
-      { name: "서열방 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "캄보디아 프놈펜 파송", location: "캄보디아" },
-      { name: "문선교 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "몽골 울란바토르 파송", location: "몽골" },
+      { name: "오복음 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "태국 방콕 파송", location: "태국", image: null },
+      { name: "서열방 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "캄보디아 프놈펜 파송", location: "캄보디아", image: null },
+      { name: "문선교 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "몽골 울란바토르 파송", location: "몽골", image: null },
     ],
   },
 

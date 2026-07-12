@@ -1,18 +1,29 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 import KakaoMapRoute from "@/components/common/KakaoMapRoute";
+import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const TABS = [
   "인사말", "교회 비전", "교회 연혁", "예배 안내", "섬기는 사람들",
   "층별 안내", "오시는 길", "차량운행 안내",
 ];
 
+// ── 이미지 로딩 실패/미등록 시 대체 UI ──────────────────
+function FallbackImage({ src, alt, className, fallback }) {
+  const [error, setError] = useState(false);
+  if (!src || error) return fallback;
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+}
+
 // ── 인사말 ─────────────────────────────────────────────
 function Greeting() {
   const { church } = useChurch();
   const { title, paragraphs, signature } = church.greeting;
+  const { image: pastorImage } = church.staff.headPastor;
 
   return (
     <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-start">
@@ -26,14 +37,31 @@ function Greeting() {
               ))}
             </p>
           ))}
-          <p className="text-right text-body-3 text-grey-7 mt-4">
-            {signature.church} {signature.title} <strong>{signature.name}</strong>
-          </p>
+          <div className="flex items-center justify-end gap-3 mt-4">
+            <p className="text-body-3 text-grey-7">
+              {signature.church} {signature.title} <strong>{signature.name}</strong>
+            </p>
+            <FallbackImage
+              src={signature.signatureImage}
+              alt="서명"
+              className="h-10 w-auto object-contain"
+              fallback={
+                <img src={church.logoUrl ?? LogoIcon} alt="교회 로고" className="h-10 w-auto object-contain opacity-40" />
+              }
+            />
+          </div>
         </div>
       </div>
-      <div className="w-full h-48 md:w-48 md:h-64 bg-grey-3 rounded-2xl shrink-0 flex items-center justify-center text-grey-5 text-body-4">
-        목사님 사진
-      </div>
+      <FallbackImage
+        src={pastorImage}
+        alt="담임목사 사진"
+        className="w-full h-48 md:w-48 md:h-64 rounded-2xl shrink-0 object-cover"
+        fallback={
+          <div className="w-full h-48 md:w-48 md:h-64 bg-grey-3 rounded-2xl shrink-0 flex items-center justify-center">
+            <img src={AvatarIcon} alt="" className="w-12 h-12 opacity-60" />
+          </div>
+        }
+      />
     </div>
   );
 }
@@ -48,6 +76,11 @@ function Vision() {
   const TH   = Math.round(SIDE * Math.sqrt(3) / 2);
   const W    = SIDE + D;
   const H    = TH + D;
+
+  // 좌/우 설명 텍스트 칸 폭(w-40) · 원 그룹과의 간격(gap-10) — 아래 TOTAL_W 계산과 정렬에 사용
+  const SIDE_TEXT_W = 160;
+  const GAP = 40;
+  const TOTAL_W = SIDE_TEXT_W + GAP + W + GAP + SIDE_TEXT_W;
 
   const layout = [
     { item: items[0], left: Math.round((W - D) / 2), top: 0,  z: 3, delay: "0s"    },
@@ -64,19 +97,28 @@ function Vision() {
         }
       `}</style>
 
-      <div className="bg-blue-1 rounded-2xl px-12 py-20 text-center mb-10">
+      <div className="bg-blue-1 rounded-2xl px-12 py-20 text-center mb-20">
         <p className="text-sub-tit-4 font-semibold text-grey-9">{mainTitle}</p>
         <p className="text-body-2 text-grey-8 mt-1">{mainVerse}</p>
       </div>
 
-      <div className="flex flex-col items-center gap-4">
-        <p className="text-body-2 text-grey-7 text-center">{items[0].description}</p>
+      {/* 전체(위 설명 + 원 3개 + 좌우 설명)를 한 덩어리로 페이지 중앙에 배치 */}
+      <div className="overflow-x-auto">
+        <div className="mx-auto flex flex-col items-center gap-4" style={{ width: TOTAL_W, maxWidth: "100%" }}>
+          <p className="text-body-2 text-grey-7 text-center mb-2" style={{ width: W }}>
+            {items[0].description}
+          </p>
 
-        <div className="flex items-start gap-10">
-          <p className="text-body-2 text-grey-7 text-right w-40 pt-70">{items[1].description}</p>
+          <div className="flex items-start gap-10">
+            {/* 좌측 설명 — 좌하단 원의 세로 중심에 정확히 맞춤 */}
+            <div className="flex flex-col shrink-0" style={{ width: SIDE_TEXT_W, height: H }}>
+              <div style={{ height: TH }} />
+              <div className="flex-1 flex items-center">
+                <p className="text-body-2 text-grey-7 text-right w-full">{items[1].description}</p>
+              </div>
+            </div>
 
-          <div className="overflow-x-auto w-full">
-            <div className="relative shrink-0" style={{ width: W, height: H }}>
+            <div className="relative shrink-0 m-5" style={{ width: W, height: H }}>
               {layout.map(({ item, left, top, z, delay }) => (
                 <div
                   key={item.label}
@@ -92,9 +134,15 @@ function Vision() {
                 </div>
               ))}
             </div>
-          </div>
 
-          <p className="text-body-2 text-grey-7 text-left w-40 pt-70">{items[2].description}</p>
+            {/* 우측 설명 — 우하단 원의 세로 중심에 정확히 맞춤 */}
+            <div className="flex flex-col shrink-0" style={{ width: SIDE_TEXT_W, height: H }}>
+              <div style={{ height: TH }} />
+              <div className="flex-1 flex items-center">
+                <p className="text-body-2 text-grey-7 text-left w-full">{items[2].description}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -141,8 +189,6 @@ function WorshipInfo() {
 }
 
 // ── 섬기는 사람들 ──────────────────────────────────────
-const STAFF_CHIPS = ["교역자", "시무장로", "협동·사역장로", "은퇴장로", "파송선교사"];
-
 const MicIcon = () => (
   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
@@ -150,37 +196,111 @@ const MicIcon = () => (
   </svg>
 );
 
-function PersonCard({ name, tel, email, role, showSermon = false }) {
+const PhoneIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path d="M4 6c0-1 1-2 2-2h2l2 5-2 2a12 12 0 0 0 5 5l2-2 5 2v2c0 1-1 2-2 2A18 18 0 0 1 4 6z" />
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" />
+  </svg>
+);
+
+function ContactLinks({ tel, email }) {
+  const linkCls = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bluegrey-1 text-body-5 text-grey-7 hover:bg-blue-1 hover:text-blue-8 transition-colors";
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {tel && <a href={`tel:${tel}`} className={linkCls}><PhoneIcon />{tel}</a>}
+      {email && <a href={`mailto:${email}`} className={linkCls}><MailIcon />메일</a>}
+    </div>
+  );
+}
+
+function StaffAvatar({ image, name, className }) {
+  return (
+    <FallbackImage
+      src={image}
+      alt={name}
+      className={`${className} object-cover shrink-0`}
+      fallback={
+        <div className={`${className} bg-grey-3 shrink-0 flex items-center justify-center`}>
+          <img src={AvatarIcon} alt="" className="w-1/3 h-1/3 opacity-60" />
+        </div>
+      }
+    />
+  );
+}
+
+function PersonCard({ name, tel, email, role, image, location, showSermon = false }) {
   return (
     <div className="border border-bluegrey-2 rounded-2xl p-5 shadow-sm">
       <div className="flex gap-3">
-        <div className="w-11 h-11 rounded-full bg-grey-3 shrink-0" />
+        <StaffAvatar image={image} name={name} className="w-20 aspect-[1/1.2] rounded-xl" />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-0.5">
-            <p className="text-body-3 font-semibold text-grey-11 truncate">{name}</p>
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="text-body-3 font-semibold text-grey-11 truncate">{name}</p>
+              {location && (
+                <span className="px-2 py-0.5 rounded-full bg-point-1 text-point-7 text-body-5 font-semibold shrink-0">{location}</span>
+              )}
+            </div>
             {showSermon && (
-              <button className="flex items-center gap-1 text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full shrink-0">
-                <MicIcon />설교방송
-              </button>
+              <Link
+                to="/말씀/설교"
+                className="flex items-center gap-1 text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full shrink-0"
+              >
+                <MicIcon />설교영상
+              </Link>
             )}
           </div>
-          <p className="text-body-5 text-grey-6">{tel}</p>
-          <p className="text-body-5 text-grey-6">{email}</p>
-          <p className="text-body-5 text-grey-7 mt-1">{role}</p>
+          <div className="mb-1"><ContactLinks tel={tel} email={email} /></div>
+          <p className="text-body-5 text-grey-7">{role}</p>
         </div>
       </div>
     </div>
   );
 }
 
+const STAFF_CHIPS = ["교역자", "시무장로", "협동·사역장로", "은퇴장로", "파송선교사"];
+
 function Staff() {
   const { church } = useChurch();
   const { headPastor, clergy, elders, associateElders, retiredElders, missionaries } = church.staff;
   const [activeChip, setActiveChip] = useState("교역자");
+  const [query, setQuery] = useState("");
+
+  const GROUPS = {
+    "교역자": clergy,
+    "시무장로": elders,
+    "협동·사역장로": associateElders,
+    "은퇴장로": retiredElders,
+    "파송선교사": missionaries,
+  };
+
+  const q = query.trim().toLowerCase();
+  const matchesQuery = (name) => !q || name.toLowerCase().includes(q);
+
+  const filteredGroup = GROUPS[activeChip].filter((p) => matchesQuery(p.name));
+  const showHeadPastor = activeChip === "교역자" && matchesQuery(headPastor.name);
+  const isEmpty = filteredGroup.length === 0 && !showHeadPastor;
 
   return (
     <div>
-      {/* 칩 필터 */}
+      {/* 검색 */}
+      <div className="relative max-w-xs mb-4">
+        <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="이름으로 검색"
+          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
+        />
+      </div>
+
+      {/* 해시태그 필터 */}
       <div className="flex flex-wrap gap-2 mb-10">
         {STAFF_CHIPS.map((chip) => (
           <button
@@ -197,94 +317,61 @@ function Staff() {
         ))}
       </div>
 
-      {/* 교역자 */}
-      {activeChip === "교역자" && (
+      {isEmpty ? (
+        <p className="text-center text-body-3 text-grey-5 py-16">해당하는 교역자가 없습니다.</p>
+      ) : (
         <div>
-          {/* 담임목사 — 와이드 카드 */}
-          <div className="border border-primary/20 bg-blue-1/30 rounded-2xl p-7 mb-6 flex gap-8">
-            <div className="w-24 h-24 rounded-2xl bg-grey-3 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <span className="text-caption font-bold text-primary uppercase tracking-widest">담임목사</span>
-                  <h3 className="text-sub-tit-3 font-bold text-grey-12 mt-0.5">{headPastor.name}</h3>
-                </div>
-                <button className="flex items-center gap-1.5 text-body-4 text-blue-7 border border-blue-7 px-4 py-1.5 rounded-full shrink-0">
-                  <MicIcon />설교방송
-                </button>
-              </div>
-              <p className="text-body-4 text-grey-6 mb-4">{headPastor.tel} · {headPastor.email}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-bluegrey-2">
-                <div>
-                  <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">학력</p>
-                  <ul className="flex flex-col gap-1.5">
-                    {headPastor.education.map((item, i) => (
-                      <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
-                        <span className="text-primary shrink-0 mt-1">·</span>{item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">약력</p>
-                  <ul className="flex flex-col gap-1.5">
-                    {headPastor.career.map((item, i) => (
-                      <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
-                        <span className="text-primary shrink-0 mt-1">·</span>{item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* 교역자 그리드 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {clergy.map((p) => <PersonCard key={p.name} {...p} showSermon />)}
-          </div>
-        </div>
-      )}
-
-      {/* 시무장로 */}
-      {activeChip === "시무장로" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {elders.map((p) => <PersonCard key={p.name} {...p} />)}
-        </div>
-      )}
-
-      {/* 협동·사역장로 */}
-      {activeChip === "협동·사역장로" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {associateElders.map((p) => <PersonCard key={p.name} {...p} />)}
-        </div>
-      )}
-
-      {/* 은퇴장로 */}
-      {activeChip === "은퇴장로" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {retiredElders.map((p) => <PersonCard key={p.name} {...p} />)}
-        </div>
-      )}
-
-      {/* 파송선교사 */}
-      {activeChip === "파송선교사" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {missionaries.map((p) => (
-            <div key={p.name} className="border border-bluegrey-2 rounded-2xl p-5 shadow-sm">
-              <div className="flex gap-3">
-                <div className="w-11 h-11 rounded-full bg-grey-3 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-body-3 font-semibold text-grey-11">{p.name}</p>
-                    <span className="px-2 py-0.5 rounded-full bg-point-1 text-point-7 text-body-5 font-semibold shrink-0">{p.location}</span>
+          {/* 담임목사 — 와이드 카드 ("교역자" 칩에서만 노출) */}
+          {showHeadPastor && (
+            <div className="border border-primary/20 bg-blue-1/30 rounded-2xl p-7 mb-6 flex flex-col md:flex-row gap-6 md:gap-8">
+              <StaffAvatar image={headPastor.image} name={headPastor.name} className="w-44 aspect-[1/1.2] rounded-2xl" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <div>
+                    <span className="text-caption font-bold text-primary uppercase tracking-widest">담임목사</span>
+                    <h3 className="text-sub-tit-3 font-bold text-grey-12 mt-0.5">{headPastor.name}</h3>
                   </div>
-                  <p className="text-body-5 text-grey-6">{p.tel}</p>
-                  <p className="text-body-5 text-grey-6">{p.email}</p>
-                  <p className="text-body-5 text-grey-7 mt-1">{p.role}</p>
+                  <Link
+                    to="/말씀/설교"
+                    className="flex items-center gap-1.5 text-body-4 text-blue-7 border border-blue-7 px-4 py-1.5 rounded-full shrink-0"
+                  >
+                    <MicIcon />설교영상
+                  </Link>
+                </div>
+                <div className="mb-4"><ContactLinks tel={headPastor.tel} email={headPastor.email} /></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-bluegrey-2">
+                  <div>
+                    <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">학력</p>
+                    <ul className="flex flex-col gap-1.5">
+                      {headPastor.education.map((item, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
+                          <span className="text-primary shrink-0 mt-1">·</span>{item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">약력</p>
+                    <ul className="flex flex-col gap-1.5">
+                      {headPastor.career.map((item, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
+                          <span className="text-primary shrink-0 mt-1">·</span>{item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
+          )}
+
+          {filteredGroup.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {filteredGroup.map((p) => (
+                <PersonCard key={p.name} {...p} showSermon={activeChip === "교역자"} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
