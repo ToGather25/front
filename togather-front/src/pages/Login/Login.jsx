@@ -51,7 +51,7 @@ export default function LoginPage() {
           <div className="border-t border-white/20 pt-8">
             <p className="text-body-4 text-white/50 mb-4">서비스 안내</p>
             <ul className="flex flex-col gap-3">
-              {["주보 및 예배 안내", "공지사항 / 교회 소식", "성경 읽기 · 필사", "갤러리 · 교회 행사"].map((item) => (
+              {["스마트 주보 · 예배 안내", "성경 읽기 · 쓰기", "갤러리 · 교회 행사"].map((item) => (
                 <li key={item} className="flex items-center gap-2.5 text-body-4 text-white/80">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-4 shrink-0" />
                   {item}

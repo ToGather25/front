@@ -111,8 +111,8 @@ const BOOK_PROGRESS_WRITE = {
 const WRITE_STATUS_CONFIG = {
   sectionTitle: "필사 전체 현황",
   totalLabel: "작성한 구절 수 총합",
-  totalValue: "240,021 절",
-  visitCount: "320 일",
+  totalValue: "240,021절",
+  visitCount: "320일",
   completeCount: "1번",
   streakDays: 7,
   streakLabel: "연속 필사중!",
