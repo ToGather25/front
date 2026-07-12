@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import defaultBanner from "@/assets/default_banner.png";
+import { getLiveSermon } from "@/services/sermonService";
 
 function VideoThumb({ isLive, onClick }) {
   return (
@@ -39,30 +40,27 @@ export default function WorshipSection() {
   const { church } = useChurch();
   const navigate = useNavigate();
   const channelId = church.social?.youtubeChannelId;
-  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-  const [isLive, setIsLive] = useState(false);
+  const [liveSermon, setLiveSermon] = useState(null);
 
   useEffect(() => {
-    if (!channelId || !apiKey) return;
+    let cancelled = false;
     const fetchLiveStatus = async () => {
-      try {
-        const res = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`
-        );
-        const data = await res.json();
-        setIsLive((data.items?.length ?? 0) > 0);
-      } catch {
-        setIsLive(false);
-      }
+      const live = await getLiveSermon(channelId);
+      if (!cancelled) setLiveSermon(live);
     };
     fetchLiveStatus();
     const interval = setInterval(fetchLiveStatus, 60_000);
-    return () => clearInterval(interval);
-  }, [channelId, apiKey]);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [channelId]);
+
+  const isLive = !!liveSermon;
 
   const sermon = {
     date: "2026년 3월 17일 · 주일 1부 예배",
-    title: "사랑으로 부르신\n그 자리에서",
+    title: isLive ? liveSermon.title : "사랑으로 부르신\n그 자리에서",
     verse: `요한일서 4:7–12 · ${church.pastor || "담임목사"}`,
   };
 

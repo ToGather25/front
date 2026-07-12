@@ -1,44 +1,60 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
-
-const ALL_SERMONS = [
-  { id: 1,  date: "2026.05.04", service: "주일 2부 예배", title: "부활의 능력으로 살아가라",     verse: "빌립보서 3:10–11",     speaker: "김함께 목사" },
-  { id: 2,  date: "2026.04.27", service: "주일 2부 예배", title: "하나님의 선하심을 신뢰하라",   verse: "시편 23:1–6",          speaker: "김함께 목사" },
-  { id: 3,  date: "2026.04.20", service: "주일 2부 예배", title: "함께함의 능력",               verse: "전도서 4:9–12",        speaker: "김함께 목사" },
-  { id: 4,  date: "2026.04.13", service: "주일 2부 예배", title: "고난 너머의 영광",             verse: "로마서 8:18–25",       speaker: "김무리 목사" },
-  { id: 5,  date: "2026.04.06", service: "주일 2부 예배", title: "은혜로 충분하다",              verse: "고린도후서 12:9–10",   speaker: "임축복 목사" },
-  { id: 6,  date: "2026.03.30", service: "주일 2부 예배", title: "믿음으로 나아가라",            verse: "히브리서 11:1–6",      speaker: "김함께 목사" },
-  { id: 7,  date: "2026.03.23", service: "청년부 예배",   title: "십자가의 도",                 verse: "고린도전서 1:18–25",   speaker: "박은혜 목사" },
-  { id: 8,  date: "2026.03.16", service: "주일 2부 예배", title: "하나님이 하신다",              verse: "이사야 43:1–7",        speaker: "김함께 목사" },
-  { id: 9,  date: "2026.03.09", service: "주일 2부 예배", title: "새 힘을 얻으리",              verse: "이사야 40:28–31",      speaker: "김함께 목사" },
-  { id: 10, date: "2026.03.02", service: "청년부 예배",   title: "복음의 능력",                 verse: "로마서 1:16–17",       speaker: "박은혜 목사" },
-  { id: 11, date: "2026.02.23", service: "주일 2부 예배", title: "사랑의 빚",                   verse: "로마서 13:8–10",       speaker: "김함께 목사" },
-  { id: 12, date: "2026.02.16", service: "주일 2부 예배", title: "성령의 열매",                 verse: "갈라디아서 5:22–23",   speaker: "임축복 목사" },
-  { id: 13, date: "2026.02.09", service: "주일 2부 예배", title: "기도의 능력",                 verse: "야고보서 5:13–18",     speaker: "김함께 목사" },
-  { id: 14, date: "2026.02.02", service: "청년부 예배",   title: "그리스도 안에서",             verse: "에베소서 1:3–14",      speaker: "박은혜 목사" },
-];
+import { getPastSermons } from "@/services/sermonService";
 
 const PAGE_SIZE = 12;
+const SERVICE_TYPES = ["주일예배", "새벽기도회", "수요기도회", "금요기도회"];
+
+function SermonThumb({ thumbnail, title }) {
+  return (
+    <div className="w-full bg-grey-2 flex items-center justify-center overflow-hidden" style={{ aspectRatio: "16/9" }}>
+      {thumbnail ? (
+        <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
+      ) : (
+        <svg className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+        </svg>
+      )}
+    </div>
+  );
+}
 
 export default function WordSermon() {
   const navigate = useNavigate();
+  const { church } = useChurch();
+  const channelId = church.social?.youtubeChannelId;
+  const [sermons, setSermons] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [inputVal, setInputVal] = useState("");
+  const [serviceType, setServiceType] = useState("");
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    let cancelled = false;
+    getPastSermons(channelId, 50).then((data) => {
+      if (!cancelled) {
+        setSermons(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [channelId]);
+
   const filtered = useMemo(() => {
-    if (!query.trim()) return ALL_SERMONS;
-    const q = query.trim().toLowerCase();
-    return ALL_SERMONS.filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        s.verse.toLowerCase().includes(q) ||
-        s.speaker.toLowerCase().includes(q) ||
-        s.service.toLowerCase().includes(q)
-    );
-  }, [query]);
+    let list = sermons;
+    if (serviceType) list = list.filter((s) => s.title.includes(serviceType));
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      list = list.filter((s) => s.title.toLowerCase().includes(q));
+    }
+    return list;
+  }, [sermons, query, serviceType]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -70,14 +86,14 @@ export default function WordSermon() {
 
       <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-12">
         {/* 검색바 */}
-        <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-xl">
+        <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-2xl">
           <div className="relative flex-1">
             <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
             <input
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder="설교 제목, 본문 말씀, 목사님, 예배 종류 검색"
+              placeholder="설교 제목 검색"
               className="w-full pl-10 pr-10 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
             />
             {inputVal && (
@@ -87,21 +103,49 @@ export default function WordSermon() {
               </button>
             )}
           </div>
+          <select
+            value={serviceType}
+            onChange={(e) => {
+              setServiceType(e.target.value);
+              setPage(1);
+            }}
+            className="px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all shrink-0"
+          >
+            <option value="">예배 전체</option>
+            {SERVICE_TYPES.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
           <button type="submit"
             className="px-5 py-3 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0">
             검색
           </button>
         </form>
 
+        {/* 로딩 중 */}
+        {loading && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
+            {Array.from({ length: PAGE_SIZE }, (_, i) => (
+              <div key={i} className="rounded-2xl border border-bluegrey-2 overflow-hidden animate-pulse">
+                <div className="w-full bg-grey-2" style={{ aspectRatio: "16/9" }} />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-grey-2 rounded w-4/5" />
+                  <div className="h-3 bg-grey-2 rounded w-2/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* 결과 없음 */}
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div className="py-24 text-center text-grey-6 text-body-2">
             검색 결과가 없습니다. 다른 검색어를 입력해 주세요.
           </div>
         )}
 
         {/* 4×3 그리드 */}
-        {filtered.length > 0 && (
+        {!loading && filtered.length > 0 && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
               {pageItems.map((s) => (
@@ -110,24 +154,13 @@ export default function WordSermon() {
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
                   className="group text-left rounded-2xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-lg transition-all"
                 >
-                  {/* 썸네일 */}
-                  <div className="w-full bg-grey-2 flex items-center justify-center" style={{ aspectRatio: "16/9" }}>
-                    <svg className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                    </svg>
-                  </div>
+                  <SermonThumb thumbnail={s.thumbnail} title={s.title} />
                   {/* 정보 */}
                   <div className="p-4">
-                    <span className="inline-block px-2 py-0.5 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full mb-2">
-                      {s.service}
-                    </span>
                     <h3 className="text-body-3 font-semibold text-grey-11 group-hover:text-primary transition-colors line-clamp-2 mb-1.5">
                       {s.title}
                     </h3>
-                    <p className="text-body-4 text-primary font-medium mb-1">{s.verse}</p>
                     <div className="flex items-center gap-2 text-body-5 text-grey-6">
-                      <span>{s.speaker}</span>
-                      <span>·</span>
                       <span>{s.date}</span>
                     </div>
                   </div>

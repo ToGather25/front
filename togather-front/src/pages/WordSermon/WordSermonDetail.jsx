@@ -1,29 +1,38 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-
-// WordSermon과 동일한 데이터 — 백엔드 연동 시 API로 교체
-const ALL_SERMONS = [
-  { id: 1,  date: "2026.05.04", service: "주일 2부 예배", title: "부활의 능력으로 살아가라",     verse: "빌립보서 3:10–11",     speaker: "김함께 목사",  summary: "부활하신 그리스도의 능력이 우리의 일상 안에서 어떻게 역사하는지 말씀을 통해 나눕니다.", videoId: null },
-  { id: 2,  date: "2026.04.27", service: "주일 2부 예배", title: "하나님의 선하심을 신뢰하라",   verse: "시편 23:1–6",          speaker: "김함께 목사",  summary: "목자 되신 하나님의 인도하심을 믿고 삶의 어둠 속에서도 담대히 나아가는 신앙을 살펴봅니다.", videoId: null },
-  { id: 3,  date: "2026.04.20", service: "주일 2부 예배", title: "함께함의 능력",               verse: "전도서 4:9–12",        speaker: "김함께 목사",  summary: "공동체가 함께할 때 나타나는 하나님의 역사와 그 아름다움에 대해 말씀드립니다.", videoId: null },
-  { id: 4,  date: "2026.04.13", service: "주일 2부 예배", title: "고난 너머의 영광",             verse: "로마서 8:18–25",       speaker: "김무리 목사",  summary: "현재의 고난이 장차 올 영광과 비교할 수 없음을 말씀 안에서 함께 묵상합니다.", videoId: null },
-  { id: 5,  date: "2026.04.06", service: "주일 2부 예배", title: "은혜로 충분하다",              verse: "고린도후서 12:9–10",   speaker: "임축복 목사",  summary: "내 약함 속에서 온전히 나타나는 하나님의 은혜에 대한 깊은 묵상을 나눕니다.", videoId: null },
-  { id: 6,  date: "2026.03.30", service: "주일 2부 예배", title: "믿음으로 나아가라",            verse: "히브리서 11:1–6",      speaker: "김함께 목사",  summary: "믿음의 선진들이 보여 준 삶을 거울 삼아 우리의 신앙 여정을 돌아봅니다.", videoId: null },
-  { id: 7,  date: "2026.03.23", service: "청년부 예배",   title: "십자가의 도",                 verse: "고린도전서 1:18–25",   speaker: "박은혜 목사",  summary: "세상이 어리석다 하는 십자가의 도가 왜 구원받는 우리에게 하나님의 능력인지를 묵상합니다.", videoId: null },
-  { id: 8,  date: "2026.03.16", service: "주일 2부 예배", title: "하나님이 하신다",              verse: "이사야 43:1–7",        speaker: "김함께 목사",  summary: "물과 불을 지날 때에도 함께하시는 하나님의 약속을 붙잡는 신앙에 대해 나눕니다.", videoId: null },
-  { id: 9,  date: "2026.03.09", service: "주일 2부 예배", title: "새 힘을 얻으리",              verse: "이사야 40:28–31",      speaker: "김함께 목사",  summary: "지치고 힘든 때에 독수리같이 날게 하시는 하나님의 약속을 함께 묵상합니다.", videoId: null },
-  { id: 10, date: "2026.03.02", service: "청년부 예배",   title: "복음의 능력",                 verse: "로마서 1:16–17",       speaker: "박은혜 목사",  summary: "복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력임을 함께 선포합니다.", videoId: null },
-  { id: 11, date: "2026.02.23", service: "주일 2부 예배", title: "사랑의 빚",                   verse: "로마서 13:8–10",       speaker: "김함께 목사",  summary: "서로 사랑하는 것 외에는 아무에게든지 아무 빚도 지지 말라는 말씀을 묵상합니다.", videoId: null },
-  { id: 12, date: "2026.02.16", service: "주일 2부 예배", title: "성령의 열매",                 verse: "갈라디아서 5:22–23",   speaker: "임축복 목사",  summary: "성령의 아홉 가지 열매가 우리의 삶 속에서 어떻게 맺히는지를 살펴봅니다.", videoId: null },
-  { id: 13, date: "2026.02.09", service: "주일 2부 예배", title: "기도의 능력",                 verse: "야고보서 5:13–18",     speaker: "김함께 목사",  summary: "의인의 간구는 역사하는 힘이 큼을 믿고 담대히 기도로 나아가기를 권면합니다.", videoId: null },
-  { id: 14, date: "2026.02.02", service: "청년부 예배",   title: "그리스도 안에서",             verse: "에베소서 1:3–14",      speaker: "박은혜 목사",  summary: "그리스도 안에서 우리에게 허락된 신령한 복이 무엇인지 함께 살펴봅니다.", videoId: null },
-];
+import { getPastSermons } from "@/services/sermonService";
 
 export default function WordSermonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { church } = useChurch();
-  const sermon = ALL_SERMONS.find((s) => s.id === Number(id));
+  const channelId = church.social?.youtubeChannelId;
+  const [sermons, setSermons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPastSermons(channelId, 50).then((data) => {
+      if (!cancelled) {
+        setSermons(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [channelId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-24 md:px-8">
+        <div className="w-full rounded-2xl bg-grey-2 animate-pulse" style={{ aspectRatio: "16/9" }} />
+      </div>
+    );
+  }
+
+  const sermon = sermons.find((s) => s.id === id);
 
   if (!sermon) {
     return (
@@ -37,10 +46,10 @@ export default function WordSermonDetail() {
     );
   }
 
-  // 이전/다음 설교 (id 기준)
-  const currentIdx = ALL_SERMONS.findIndex((s) => s.id === sermon.id);
-  const prev = ALL_SERMONS[currentIdx + 1] ?? null;
-  const next = ALL_SERMONS[currentIdx - 1] ?? null;
+  // 이전/다음 설교 (목록 순서 기준 — 최신순으로 조회되므로 다음 인덱스가 더 과거)
+  const currentIdx = sermons.findIndex((s) => s.id === sermon.id);
+  const prev = sermons[currentIdx + 1] ?? null;
+  const next = sermons[currentIdx - 1] ?? null;
 
   return (
     <div>
@@ -87,19 +96,8 @@ export default function WordSermonDetail() {
         </div>
 
         {/* 설교 정보 */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-4 font-medium rounded-full">{sermon.service}</span>
-          <span className="text-body-4 text-grey-5">{sermon.date}</span>
-        </div>
-        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-3">{sermon.title}</h2>
-        <p className="text-body-2 text-primary font-semibold mb-2">{sermon.verse}</p>
-        <div className="flex items-center gap-2 text-body-3 text-grey-7 mb-6">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <span>{sermon.speaker}</span>
-        </div>
-        <p className="text-body-2 text-grey-8 leading-relaxed border-t border-bluegrey-2 pt-6">{sermon.summary}</p>
+        <p className="text-body-4 text-grey-5 mb-3">{sermon.date}</p>
+        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-6">{sermon.title}</h2>
 
         {/* 이전/다음 네비게이션 */}
         <div className="flex gap-4 mt-12 pt-8 border-t border-bluegrey-2">

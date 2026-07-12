@@ -1,29 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
-
-// ── 오늘 예배 상태 목업 ──────────────────────────────────
-// "live" | "scheduled" | "ended" | "none"
-// 백엔드 연동 시 API로 교체
-const TODAY_STATUS = "ended"; // 테스트용: 여기서 변경해서 확인
-
-const TODAY_SERMON = {
-  title: "부활의 능력으로 살아가라",
-  scripture: "빌립보서 3:10–11",
-  speaker: "김함께 목사",
-  service: "주일 2부 예배",
-  scheduledAt: "오전 11:00",
-  videoId: null,
-};
-
-const PAST_SERMONS = [
-  { id: 1, title: "하나님의 선하심을 신뢰하라", date: "2026.04.27", service: "주일 2부", videoId: null },
-  { id: 2, title: "함께함의 능력", date: "2026.04.20", service: "주일 2부", videoId: null },
-  { id: 3, title: "고난 너머의 영광", date: "2026.04.13", service: "주일 2부", videoId: null },
-  { id: 4, title: "은혜로 충분하다", date: "2026.04.06", service: "주일 2부", videoId: null },
-  { id: 5, title: "믿음으로 나아가라", date: "2026.03.30", service: "주일 2부", videoId: null },
-  { id: 6, title: "십자가의 도", date: "2026.03.23", service: "주일 2부", videoId: null },
-];
+import { getLiveSermon, getPastSermons } from "@/services/sermonService";
 
 function YouTubeIcon({ className }) {
   return (
@@ -44,14 +22,19 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
               LIVE
             </span>
           )}
-          <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">{sermon.service}</span>
+          {sermon.service && (
+            <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">{sermon.service}</span>
+          )}
+          {sermon.date && <span className="text-body-5 text-grey-5">{sermon.date}</span>}
         </div>
         <h2 className="text-sub-tit-3 font-bold text-grey-11 leading-snug mb-2">{sermon.title}</h2>
-        <div className="flex items-center gap-2 text-body-4 text-grey-6">
-          <span className="text-primary font-medium">{sermon.scripture}</span>
-          <span className="text-grey-4">·</span>
-          <span>{sermon.speaker}</span>
-        </div>
+        {(sermon.scripture || sermon.speaker) && (
+          <div className="flex items-center gap-2 text-body-4 text-grey-6">
+            {sermon.scripture && <span className="text-primary font-medium">{sermon.scripture}</span>}
+            {sermon.scripture && sermon.speaker && <span className="text-grey-4">·</span>}
+            {sermon.speaker && <span>{sermon.speaker}</span>}
+          </div>
+        )}
       </div>
       {juboOnClick && (
         <div className="shrink-0 pt-0.5">
@@ -67,6 +50,36 @@ export default function WordBroadcast() {
   const channelId = church.social?.youtubeChannelId;
   const channelUrl = church.social?.youtube;
   const [juboOpen, setJuboOpen] = useState(false);
+  const [liveSermon, setLiveSermon] = useState(null);
+  const [pastSermons, setPastSermons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAll() {
+      const [live, past] = await Promise.all([getLiveSermon(channelId), getPastSermons(channelId)]);
+      if (cancelled) return;
+      setLiveSermon(live);
+      setPastSermons(past);
+      setLoading(false);
+    }
+    loadAll();
+
+    const interval = setInterval(async () => {
+      const live = await getLiveSermon(channelId);
+      if (!cancelled) setLiveSermon(live);
+    }, 60_000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [channelId]);
+
+  const status = loading ? "loading" : liveSermon ? "live" : pastSermons[0] ? "ended" : "none";
+  const heroSermon = liveSermon ?? pastSermons[0] ?? null;
+  const listedPastSermons = status === "ended" ? pastSermons.slice(1) : pastSermons;
 
   return (
     <div>
@@ -82,47 +95,38 @@ export default function WordBroadcast() {
 
       <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-12">
 
+        {/* ── 로딩 중 ── */}
+        {status === "loading" && (
+          <section className="mb-14 max-w-6xl mx-auto">
+            <div className="w-full rounded-2xl overflow-hidden bg-grey-2 animate-pulse aspect-video" />
+          </section>
+        )}
+
         {/* ── 실시간 중 ── */}
-        {TODAY_STATUS === "live" && (
+        {status === "live" && (
           <section className="mb-14 max-w-3xl mx-auto">
             <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
             <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
-              {channelId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1`}
-                  title="실시간 예배 방송"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; encrypted-media"
-                  allowFullScreen
-                />
-              ) : (
-                <LivePlaceholder channelUrl={channelUrl} />
-              )}
+              <iframe
+                src={`https://www.youtube.com/embed/${liveSermon.videoId}?autoplay=1`}
+                title="실시간 예배 방송"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; encrypted-media"
+                allowFullScreen
+              />
             </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} isLive juboOnClick={() => setJuboOpen(true)} />
+            <SermonInfoBlock sermon={heroSermon} isLive juboOnClick={() => setJuboOpen(true)} />
           </section>
         )}
 
-        {/* ── 오늘 예배 예정 (아직 시작 전) ── */}
-        {TODAY_STATUS === "scheduled" && (
-          <section className="mb-14 max-w-6xl mx-auto">
-            <div className="w-full rounded-2xl bg-blue-1 border border-blue-2 flex flex-col items-center justify-center py-20 gap-4">
-              <div className="text-4xl">⏰</div>
-              <p className="text-sub-tit-4 font-bold text-blue-8">잠시 뒤 예배가 시작됩니다</p>
-              <p className="text-body-3 text-blue-6">예정 시간: {TODAY_SERMON.scheduledAt}</p>
-            </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} juboOnClick={() => setJuboOpen(true)} />
-          </section>
-        )}
-
-        {/* ── 오늘 예배가 끝난 경우 ── */}
-        {TODAY_STATUS === "ended" && (
+        {/* ── 오늘 예배가 끝난 경우(가장 최근 업로드) ── */}
+        {status === "ended" && (
           <section className="mb-14 max-w-6xl mx-auto">
             <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
-              {TODAY_SERMON.videoId ? (
+              {heroSermon.videoId ? (
                 <iframe
-                  src={`https://www.youtube.com/embed/${TODAY_SERMON.videoId}`}
-                  title={TODAY_SERMON.title}
+                  src={`https://www.youtube.com/embed/${heroSermon.videoId}`}
+                  title={heroSermon.title}
                   className="w-full h-full"
                   allowFullScreen
                 />
@@ -130,12 +134,12 @@ export default function WordBroadcast() {
                 <LivePlaceholder channelUrl={channelUrl} />
               )}
             </div>
-            <SermonInfoBlock sermon={TODAY_SERMON} juboOnClick={() => setJuboOpen(true)} />
+            <SermonInfoBlock sermon={heroSermon} juboOnClick={() => setJuboOpen(true)} />
           </section>
         )}
 
         {/* ── 오늘 예배 없음 ── */}
-        {TODAY_STATUS === "none" && (
+        {status === "none" && (
           <section className="mb-14 max-w-3xl mx-auto">
             <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
               <div className="text-4xl">📭</div>
@@ -148,24 +152,32 @@ export default function WordBroadcast() {
         <section className="max-w-6xl mx-auto">
           <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
-            {PAST_SERMONS.map((s) => (
+            {listedPastSermons.map((s) => (
               <a
                 key={s.id}
-                href={channelUrl ?? "#"}
+                href={s.videoId ? `https://www.youtube.com/watch?v=${s.videoId}` : channelUrl ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group shrink-0 w-52 rounded-xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-md transition-all"
               >
-                <div className="w-full bg-grey-2 flex items-center justify-center" style={{ aspectRatio: "16/9" }}>
-                  <YouTubeIcon className="w-8 h-8 text-grey-4 group-hover:text-primary transition-colors" />
+                <div className="w-full bg-grey-2 flex items-center justify-center overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                  {s.thumbnail ? (
+                    <img src={s.thumbnail} alt={s.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <YouTubeIcon className="w-8 h-8 text-grey-4 group-hover:text-primary transition-colors" />
+                  )}
                 </div>
                 <div className="p-3">
                   <p className="text-body-4 font-medium text-grey-10 group-hover:text-primary transition-colors line-clamp-2 mb-1">
                     {s.title}
                   </p>
                   <div className="flex items-center gap-1.5 text-body-5 text-grey-5">
-                    <span>{s.service}</span>
-                    <span>·</span>
+                    {s.service && (
+                      <>
+                        <span>{s.service}</span>
+                        <span>·</span>
+                      </>
+                    )}
                     <span>{s.date}</span>
                   </div>
                 </div>
