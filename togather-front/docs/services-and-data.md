@@ -73,12 +73,16 @@ const { data: events = [], loading } = useFetch(
 | 함수 | 설명 |
 |------|------|
 | `getEvents(churchId, { year, month })` | 월별 행사 목록 |
-| `getEventById(churchId, id)` | 행사 상세 |
-| `registerForEvent(churchId, id)` | 행사 신청 |
+| `searchEvents(churchId, { q, sort })` | 행사 검색 (정렬: 일정 빠른순/등록일 순) |
+| `getRecentEvents(churchId, limit)` | 최근 등록된 행사 (검색결과 없음 상태용) |
+| `getEventById(churchId, id)` | 행사 상세 (없으면 `null`) |
+| `registerForEvent(churchId, id, payload)` | 행사 신청 |
+| `createEvent(churchId, payload)` | 행사 등록 (관리자) |
+| `updateEvent(churchId, id, payload)` | 행사 수정 (관리자) |
+| `deleteEvent(churchId, id)` | 행사 삭제 (관리자) |
 
 **더미 데이터**: `src/data/dummy/events.js`
-- `DUMMY_EVENTS` — 5개 행사 (날짜, 제목, 부서, 장소, 설명, 신청 가능 여부)
-- `DUMMY_EVENT_DETAIL` — 행사 상세 (단일 객체)
+- `DUMMY_EVENTS` — 19개 행사 (오늘 기준 상대 날짜로 생성. 날짜/제목/부서/장소/설명/신청기간/정원/등록일 등)
 
 ---
 
