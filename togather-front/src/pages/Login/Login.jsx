@@ -2,6 +2,15 @@ import { useState, useTransition } from "react";
 import { Link } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
+import googleIcon from "@/assets/oAuth/google.png";
+import kakaoIcon from "@/assets/oAuth/kakao.png";
+import naverIcon from "@/assets/oAuth/naver.png";
+
+const OAUTH_PROVIDERS = [
+  { key: "kakao", name: "카카오", icon: kakaoIcon },
+  { key: "google", name: "구글", icon: googleIcon },
+  { key: "naver", name: "네이버", icon: naverIcon },
+];
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -124,6 +133,19 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-grey-2" />
             <span className="text-body-5 text-grey-5">또는</span>
             <div className="flex-1 h-px bg-grey-2" />
+          </div>
+
+          <div className="flex justify-center items-center gap-4 mt-6">
+            {OAUTH_PROVIDERS.map((provider) => (
+              <button
+                key={provider.key}
+                type="button"
+                aria-label={`${provider.name}로 로그인`}
+                className="w-12 h-12 rounded-full border border-grey-2 flex items-center justify-center overflow-hidden hover:brightness-95 active:scale-95 transition-all"
+              >
+                <img src={provider.icon} alt={provider.name} className="w-full h-full object-cover" />
+              </button>
+            ))}
           </div>
 
           <div className="flex justify-center items-center gap-4 mt-6 text-body-4 text-grey-7">
