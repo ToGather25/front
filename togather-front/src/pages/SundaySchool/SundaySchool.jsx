@@ -8,6 +8,11 @@ const DEPT_PARAM_MAP = {
   청년부: "대학·청년부",
 };
 
+// 주일학교 부서명 -> 갤러리 공동체명 (갤러리 쪽 명칭이 다른 경우만 매핑)
+const GALLERY_COMMUNITY_MAP = {
+  "대학·청년부": "청년부",
+};
+
 const DEPARTMENTS = [
   {
     key: "유치부",
@@ -149,7 +154,7 @@ export default function SundaySchool() {
             <h1 className="text-sub-tit-1 md:text-headline-3 font-bold text-white">{dept.key}</h1>
           </div>
           <Link
-            to="#"
+            to={`/갤러리?community=${encodeURIComponent(GALLERY_COMMUNITY_MAP[dept.key] ?? dept.key)}`}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-body-4 font-medium transition-colors border border-white/30 backdrop-blur-sm"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

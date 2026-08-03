@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getCommunities, getPhotos } from "@/services/galleryService";
@@ -99,6 +100,71 @@ function PhotoGrid({ church, community, onBack }) {
   );
 }
 
+function CommunityCard({ community, onSelect }) {
+  return (
+    <button
+      onClick={onSelect}
+      className="group flex flex-col rounded-2xl border border-grey-3 overflow-hidden hover:border-blue-6 transition-colors text-left"
+    >
+      <div className="aspect-square w-full bg-grey-4 group-hover:bg-grey-5 transition-colors flex items-center justify-center">
+        <span className="text-grey-6 text-body-4">사진</span>
+      </div>
+      <div className="p-4">
+        <p className="text-sub-tit-5 font-semibold text-grey-11 truncate">{community.name}</p>
+        <p className="text-body-5 text-grey-6 mt-0.5 truncate">{community.desc}</p>
+      </div>
+    </button>
+  );
+}
+
+function CommunityListRow({ community, onSelect }) {
+  return (
+    <button
+      onClick={onSelect}
+      className="w-full flex items-center justify-between gap-4 py-4 border-b border-grey-3 hover:bg-grey-1 transition-colors text-left"
+    >
+      <div className="min-w-0">
+        <p className="text-body-2 font-semibold text-grey-11 truncate">{community.name}</p>
+        <p className="text-body-5 text-grey-6 mt-0.5 truncate">{community.desc}</p>
+      </div>
+      <svg
+        className="w-4 h-4 text-grey-5 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <path d="M9 6l6 6-6 6" />
+      </svg>
+    </button>
+  );
+}
+
+function ViewToggle({ viewMode, onChange }) {
+  return (
+    <div className="inline-flex rounded-full border border-grey-3 p-1 self-end">
+      {[
+        { value: "card", label: "카드보기" },
+        { value: "list", label: "리스트보기" },
+      ].map((opt) => (
+        <button
+          key={opt.value}
+          onClick={() => onChange(opt.value)}
+          className={`px-4 py-1.5 rounded-full text-body-5 font-medium transition-colors ${
+            viewMode === opt.value
+              ? "bg-primary text-white"
+              : "text-grey-6 hover:text-grey-9"
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function Gallery() {
   const { church } = useChurch();
   const { data: communities = [], loading } = useFetch(
@@ -107,6 +173,15 @@ export default function Gallery() {
     []
   );
   const [selected, setSelected] = useState(null);
+  const [viewMode, setViewMode] = useState("card");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const communityName = searchParams.get("community");
+    if (!communityName || communities.length === 0) return;
+    const matched = communities.find((c) => c.name === communityName);
+    if (matched) setSelected(matched);
+  }, [searchParams, communities]);
 
   return (
     <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
@@ -115,27 +190,32 @@ export default function Gallery() {
         loading ? (
           <div className="text-center py-20 text-body-4 text-bluegrey-5">불러오는 중...</div>
         ) : (
-          <div className="max-w-xl mx-auto flex flex-col gap-4">
-            {communities.map((community, i) => (
-              <div
-                key={community.id}
-                className={`flex items-center gap-4 p-5 rounded-2xl border transition-colors ${
-                  i === 0 ? "bg-grey-2 border-grey-3" : "border-grey-3 hover:bg-grey-1"
-                }`}
-              >
-                <div className="w-16 h-16 rounded-full bg-grey-4 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sub-tit-5 font-semibold text-grey-11">{community.name}</p>
-                  <p className="text-body-4 text-grey-6 mt-0.5">{community.desc}</p>
-                </div>
-                <button
-                  onClick={() => setSelected(community)}
-                  className="px-4 py-2 bg-grey-3 text-body-4 text-grey-8 rounded-full hover:bg-grey-4 transition-colors shrink-0"
-                >
-                  사진보기
-                </button>
+          <div className="flex flex-col gap-6">
+            <div className="flex justify-end">
+              <ViewToggle viewMode={viewMode} onChange={setViewMode} />
+            </div>
+
+            {viewMode === "card" ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+                {communities.map((community) => (
+                  <CommunityCard
+                    key={community.id}
+                    community={community}
+                    onSelect={() => setSelected(community)}
+                  />
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="max-w-2xl mx-auto w-full">
+                {communities.map((community) => (
+                  <CommunityListRow
+                    key={community.id}
+                    community={community}
+                    onSelect={() => setSelected(community)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )
       ) : (
