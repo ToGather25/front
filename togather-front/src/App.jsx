@@ -6,6 +6,8 @@ import Jubo from "@/pages/Jubo/Jubo";
 import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
+import EventSearch from "@/pages/Events/EventSearch";
+import EventApply from "@/pages/Events/EventApply";
 import Gallery from "@/pages/Gallery/Gallery";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
@@ -31,6 +33,7 @@ import Dashboard from "@/pages/admin/Dashboard";
 import MainManage from "@/pages/admin/MainManage";
 import WorshipManage from "@/pages/admin/WorshipManage";
 import NoticesManage from "@/pages/admin/NoticesManage";
+import EventsManage from "@/pages/admin/EventsManage";
 import MembersManage from "@/pages/admin/MembersManage";
 import JuboManage from "@/pages/admin/JuboManage";
 import AdminSettings from "@/pages/admin/Settings";
@@ -46,7 +49,9 @@ const router = createBrowserRouter([
       { path: "주보", element: <Jubo /> },
       { path: "교회소개", element: <Church /> },
       { path: "교회행사", element: <Events /> },
+      { path: "교회행사/검색", element: <EventSearch /> },
       { path: "교회행사/:id", element: <EventDetail /> },
+      { path: "교회행사/:id/신청", element: <EventApply /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송
       { path: "말씀", element: <Navigate to="/양육훈련" replace /> },
@@ -85,6 +90,7 @@ const router = createBrowserRouter([
       { path: "main", element: <MainManage /> },
       { path: "worship", element: <WorshipManage /> },
       { path: "notices", element: <NoticesManage /> },
+      { path: "events", element: <EventsManage /> },
       { path: "members", element: <MembersManage /> },
       { path: "jubo", element: <JuboManage /> },
       { path: "settings", element: <AdminSettings /> },

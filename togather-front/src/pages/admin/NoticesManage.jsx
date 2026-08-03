@@ -91,7 +91,7 @@ export default function NoticesManage() {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-headline-5 font-bold text-grey-11">공지/행사 관리</h1>
+        <h1 className="text-headline-5 font-bold text-grey-11">공지사항 관리</h1>
         <button onClick={() => setModal("new")} className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors flex items-center gap-2">
           <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
