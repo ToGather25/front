@@ -180,32 +180,30 @@ function DesktopHeader() {
               to   { opacity: 1; transform: translateY(0); }
             }
           `}</style>
-          <div className="max-w-[1920px] mx-auto px-8 py-6 grid grid-cols-6">
-            {NAV_ITEMS.map((item, idx) => {
-              const isActive = openMenu === item.label;
+          <div className="max-w-[1920px] mx-auto px-8 py-8">
+            {(() => {
+              const item = NAV_ITEMS.find((n) => n.label === openMenu);
+              if (!item) return null;
+              const count = item.children?.length ?? 0;
+              const columnsClass = count > 6 ? "columns-3" : count > 3 ? "columns-2" : "columns-1";
               return (
-                <div
-                  key={item.label}
-                  className={`px-5 py-1 ${idx < NAV_ITEMS.length - 1 ? "border-r border-bluegrey-2" : ""}`}
-                >
-                  <div className={`mb-3 pb-2.5 border-b-2 ${isActive ? "border-primary" : "border-transparent"}`}>
+                <div className="flex gap-12">
+                  <div className="w-[160px] shrink-0 border-r border-bluegrey-2 pr-8 flex flex-col justify-center">
                     <Link
                       to={item.to ?? item.children[0].to}
                       onClick={() => setOpenMenu(null)}
-                      className={`text-body-2 font-bold transition-colors whitespace-nowrap ${
-                        isActive ? "text-primary" : "text-grey-10 hover:text-primary"
-                      }`}
+                      className="text-sub-tit-4 font-bold text-primary transition-colors"
                     >
                       {item.label}
                     </Link>
                   </div>
-                  <div className="flex flex-col gap-0.5">
+                  <div className={`flex-1 ${columnsClass} gap-x-10`}>
                     {item.children?.map((child) => (
                       <Link
                         key={child.label}
                         to={child.to}
                         onClick={() => setOpenMenu(null)}
-                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap"
+                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap break-inside-avoid"
                       >
                         <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
                         {child.label}
@@ -214,7 +212,7 @@ function DesktopHeader() {
                   </div>
                 </div>
               );
-            })}
+            })()}
           </div>
         </div>
       )}
