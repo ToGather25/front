@@ -2,10 +2,14 @@
 export const DUMMY_COMMUNITIES = [
   { id: 1, name: "알곡교회", desc: "교회 전체 사진을 볼 수 있습니다" },
   { id: 2, name: "청년부",   desc: "젊은 에너지로 하나님을 찾는" },
-  { id: 3, name: "투게더",   desc: "ToFather 하나님 아버지께로" },
-  { id: 4, name: "유치부",   desc: "어린아이의 순수함으로" },
-  { id: 5, name: "초등부",   desc: "하나님의 말씀을 배우는 초등부" },
-  { id: 6, name: "중·고등부", desc: "믿음으로 자라나는 다음 세대" },
+  { id: 3, name: "유치부",   desc: "어린아이의 순수함으로" },
+  { id: 4, name: "초등부",   desc: "하나님의 말씀을 배우는 초등부" },
+  { id: 5, name: "중·고등부", desc: "믿음으로 자라나는 다음 세대" },
+  { id: 6, name: "새가족부", desc: "처음 만나는 반가운 얼굴들" },
+  { id: 7, name: "전도회",   desc: "복음을 이웃에게 전하는 발걸음" },
+  { id: 8, name: "남선교회", desc: "섬김으로 하나 되는 남성 성도들" },
+  { id: 9, name: "여전도회", desc: "기도와 섬김으로 세워가는" },
+  { id: 10, name: "권사회",  desc: "기도로 교회를 든든히 세우는" },
 ];
 
 /** @type {import('@/services/galleryService').Photo[]} */
@@ -37,14 +41,6 @@ export const DUMMY_PHOTOS = [
   {
     id: 4,
     communityId: 3,
-    title: "투게더 수련회",
-    date: "2025년 7월 20일",
-    desc: "공동체 함께 하는 수련회.",
-    imageUrl: null,
-  },
-  {
-    id: 5,
-    communityId: 4,
     title: "유치부 성탄 발표회",
     date: "2024년 12월 22일",
     desc: "사랑스러운 유치부 어린이들의 성탄 발표회.",
