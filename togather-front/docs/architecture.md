@@ -2,14 +2,14 @@
 
 ## 기술 스택
 
-| 항목 | 버전 | 비고 |
-|------|------|------|
-| React | 19 | |
-| Vite | 7 | 빌드 도구 + 개발 서버 |
-| Tailwind CSS | v4 | CSS-first 설정 (`tailwind.config.js` 없음) |
-| React Router | v7 | `createBrowserRouter` 사용, `react-router`에서 import |
-| Axios | 1.x | HTTP 클라이언트 |
-| vite-plugin-pwa | — | PWA 지원 |
+| 항목            | 버전 | 비고                                                  |
+| --------------- | ---- | ----------------------------------------------------- |
+| React           | 19   |                                                       |
+| Vite            | 7    | 빌드 도구 + 개발 서버                                 |
+| Tailwind CSS    | v4   | CSS-first 설정 (`tailwind.config.js` 없음)            |
+| React Router    | v7   | `createBrowserRouter` 사용, `react-router`에서 import |
+| Axios           | 1.x  | HTTP 클라이언트                                       |
+| vite-plugin-pwa | —    | PWA 지원                                              |
 
 ## 디렉토리 구조
 
@@ -75,7 +75,7 @@ main.jsx
 ```js
 // 올바른 import 예시
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch }  from "@/hooks/useFetch";
+import { useFetch } from "@/hooks/useFetch";
 ```
 
 ## 주요 컨벤션

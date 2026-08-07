@@ -8,21 +8,21 @@
 
 ## 라우트 목록
 
-| 경로 | 파일 | 설명 |
-|------|------|------|
-| `/` | `pages/Home/Home.jsx` | 메인 홈 |
-| `/주보` | `pages/Jubo/Jubo.jsx` | 스마트 주보 |
-| `/교회소개` | `pages/Church/Church.jsx` | 교회 소개 |
-| `/교회행사` | `pages/Events/Events.jsx` | 행사 캘린더 |
-| `/교회행사/:id` | `pages/Events/EventDetail.jsx` | 행사 상세 |
-| `/갤러리` | `pages/Gallery/Gallery.jsx` | 공동체 갤러리 |
-| `/말씀` | `pages/Bible/Bible.jsx` | 성경 읽기/필사 선택 |
-| `/말씀/읽기` | `pages/BibleRead/BibleRead.jsx` | 성경 읽기 |
-| `/말씀/필사` | `pages/BibleWrite/BibleWrite.jsx` | 성경 필사 |
-| `/login` | `pages/Login/Login.jsx` | 로그인 |
-| `/register` | `pages/Register/Register.jsx` | 회원가입 |
-| `/mypage` | `pages/MyPage/MyPage.jsx` | 마이페이지 |
-| `/*` | `pages/PageNotFound/PageNotFound.jsx` | 404 |
+| 경로            | 파일                                  | 설명                |
+| --------------- | ------------------------------------- | ------------------- |
+| `/`             | `pages/Home/Home.jsx`                 | 메인 홈             |
+| `/주보`         | `pages/Jubo/Jubo.jsx`                 | 스마트 주보         |
+| `/교회소개`     | `pages/Church/Church.jsx`             | 교회 소개           |
+| `/교회행사`     | `pages/Events/Events.jsx`             | 행사 캘린더         |
+| `/교회행사/:id` | `pages/Events/EventDetail.jsx`        | 행사 상세           |
+| `/갤러리`       | `pages/Gallery/Gallery.jsx`           | 공동체 갤러리       |
+| `/말씀`         | `pages/Bible/Bible.jsx`               | 성경 읽기/필사 선택 |
+| `/말씀/읽기`    | `pages/BibleRead/BibleRead.jsx`       | 성경 읽기           |
+| `/말씀/필사`    | `pages/BibleWrite/BibleWrite.jsx`     | 성경 필사           |
+| `/login`        | `pages/Login/Login.jsx`               | 로그인              |
+| `/register`     | `pages/Register/Register.jsx`         | 회원가입            |
+| `/mypage`       | `pages/MyPage/MyPage.jsx`             | 마이페이지          |
+| `/*`            | `pages/PageNotFound/PageNotFound.jsx` | 404                 |
 
 ---
 
@@ -122,11 +122,11 @@
 
 ## 미구현 / 남은 작업
 
-| 항목 | 상태 |
-|------|------|
-| 오시는길 지도 연동 (카카오맵/구글맵) | 미구현 |
-| 성경 API 연동 | 미구현 |
-| 헤더 로그인 상태 반영 | 미구현 |
-| 기능 플래그 기반 라우트 가드 | 미구현 |
-| 실제 API 연동 (모든 서비스) | 서버 준비 후 |
-| 전도·선교 / 양육·훈련 페이지 | 미구현 |
+| 항목                                 | 상태         |
+| ------------------------------------ | ------------ |
+| 오시는길 지도 연동 (카카오맵/구글맵) | 미구현       |
+| 성경 API 연동                        | 미구현       |
+| 헤더 로그인 상태 반영                | 미구현       |
+| 기능 플래그 기반 라우트 가드         | 미구현       |
+| 실제 API 연동 (모든 서비스)          | 서버 준비 후 |
+| 전도·선교 / 양육·훈련 페이지         | 미구현       |

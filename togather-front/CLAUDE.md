@@ -6,14 +6,14 @@
 
 ## 기술 스택
 
-| 항목 | 버전 |
-|------|------|
-| React | 19 |
-| Vite | 7 |
-| Tailwind CSS | v4 (CSS-first config) |
+| 항목         | 버전                                         |
+| ------------ | -------------------------------------------- |
+| React        | 19                                           |
+| Vite         | 8 (Vite+ 툴체인, pnpm)                       |
+| Tailwind CSS | v4 (CSS-first config)                        |
 | React Router | v7 (파일 기반 X, `createBrowserRouter` 사용) |
-| Axios | 1.x |
-| PWA | vite-plugin-pwa |
+| Axios        | 1.x                                          |
+| PWA          | vite-plugin-pwa                              |
 
 ## 디렉토리 구조
 
@@ -51,16 +51,19 @@ togather-front/
 ## 디자인 시스템
 
 피그마 기반 디자인 시스템. 상세 내용은 아래 파일에 정의:
+
 - **`src/styles/tokens.css`** — Tailwind `@theme` 블록으로 색상/타이포그래피 CSS 변수 정의
 - **폰트**: Pretendard (Google Fonts CDN, index.html 또는 index.css에서 import)
 
 ### Figma 파일
+
 - **디자인 시스템**: https://www.figma.com/design/2KLWYlKyG81yEqobYDFyZc/ToGather_ver2.?node-id=5-722&p=f&t=PrPIWoIc6Nejspnd-0
   - fileKey: `2KLWYlKyG81yEqobYDFyZc`, nodeId: `5:722`
 - **디자인 (화면)**: https://www.figma.com/design/cjB2vAxWxHDuRIQbIPgDdy/ToGather_Design?node-id=0-1&p=f&t=ktuDp2EHgJIWFimO-0
   - fileKey: `cjB2vAxWxHDuRIQbIPgDdy`, nodeId: `0:1`
 
 ### 색상 네이밍
+
 ```
 blue-1 ~ blue-10   : 주요 파란 계열 (연 → 진)
 point-1 ~ point-10 : 포인트 브라운 계열
@@ -70,11 +73,13 @@ pale               : #B8C4D8 (연한 블루그레이)
 ```
 
 ### 타이포그래피 클래스
+
 Tailwind 커스텀 유틸리티로 `text-headline-1`, `text-body-2` 등 사용.
 
 ## 주요 주의사항
 
 1. **React Router v7**: `react-router-dom`이 아닌 `react-router`에서 훅을 import
+
    ```js
    // ✅ 올바름
    import { useNavigate } from "react-router";
@@ -88,12 +93,17 @@ Tailwind 커스텀 유틸리티로 `text-headline-1`, `text-body-2` 등 사용.
 
 4. **PageNotFound**: `App.jsx` 라우터에 `errorElement` 또는 `*` 경로 추가 필요.
 
+5. **패키지 매니저**: `pnpm` 사용 (npm/yarn 아님). `packageManager` 필드로 pnpm 11.20.0 고정.
+
+6. **Vite+**: `vp` 전역 CLI(`curl -fsSL https://vite.plus | bash`로 설치)가 pnpm과 vite/vitest를 감싸는 구조. `vite`/`vitest`는 `pnpm-workspace.yaml`의 `catalog`를 통해 `@voidzero-dev/vite-plus-core`로 오버라이드됨. lint는 ESLint가 아닌 Oxlint(`vite.config.js`의 `lint` 블록에서 설정)이며, `oxlint-disable-line`/`oxlint-disable-next-line` 주석을 사용.
+
 ## 개발 명령어
 
 ```bash
 cd togather-front
-npm run dev      # 개발 서버
-npm run build    # 프로덕션 빌드
-npm run preview  # 빌드 결과 미리보기
-npm run lint     # ESLint
+pnpm run dev      # 개발 서버 (vp dev)
+pnpm run build    # 프로덕션 빌드 (vp build)
+pnpm run preview  # 빌드 결과 미리보기 (vp preview)
+pnpm run lint     # Oxlint (vp lint .)
+vp check          # 포맷 + lint + 타입 체크 한 번에
 ```

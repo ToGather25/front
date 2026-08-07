@@ -2,16 +2,16 @@
 
 ## 기술 스택
 
-| 항목 | 버전 | 비고 |
-|------|------|------|
-| Runtime | Node.js 22 LTS | |
-| Framework | Fastify v5 | 고성능 REST API |
-| ORM | Prisma 5 | 타입 안전 쿼리 |
-| DB | PostgreSQL 16 | 멀티테넌트 Row-level 격리 |
-| Cache | Redis 7 | 세션·피드 캐싱 |
-| Storage | AWS S3 | 이미지·파일 업로드 |
-| Auth | JWT RS256 | Access 15분 / Refresh 7일 |
-| 이메일 | AWS SES | 비밀번호 재설정·알림 |
+| 항목      | 버전           | 비고                      |
+| --------- | -------------- | ------------------------- |
+| Runtime   | Node.js 22 LTS |                           |
+| Framework | Fastify v5     | 고성능 REST API           |
+| ORM       | Prisma 5       | 타입 안전 쿼리            |
+| DB        | PostgreSQL 16  | 멀티테넌트 Row-level 격리 |
+| Cache     | Redis 7        | 세션·피드 캐싱            |
+| Storage   | AWS S3         | 이미지·파일 업로드        |
+| Auth      | JWT RS256      | Access 15분 / Refresh 7일 |
+| 이메일    | AWS SES        | 비밀번호 재설정·알림      |
 
 ---
 
@@ -26,13 +26,13 @@
 
 ## RBAC (5단계 권한)
 
-| Role | 설명 |
-|------|------|
-| `SUPER_ADMIN` | 플랫폼 운영자 (Anthropic 측) |
+| Role           | 설명                                 |
+| -------------- | ------------------------------------ |
+| `SUPER_ADMIN`  | 플랫폼 운영자 (Anthropic 측)         |
 | `CHURCH_ADMIN` | 교회 대표 관리자 (담임목사·행정간사) |
-| `PASTOR` | 부교역자·전도사 |
-| `LEADER` | 구역장·셀리더·부서장 |
-| `MEMBER` | 일반 교인 |
+| `PASTOR`       | 부교역자·전도사                      |
+| `LEADER`       | 구역장·셀리더·부서장                 |
+| `MEMBER`       | 일반 교인                            |
 
 ---
 
@@ -326,6 +326,7 @@ church_history                       -- 연혁
 ## API 엔드포인트 목록
 
 ### Auth
+
 ```
 POST   /api/auth/register
 POST   /api/auth/login
@@ -336,6 +337,7 @@ POST   /api/auth/password-reset/confirm
 ```
 
 ### Churches
+
 ```
 GET    /api/churches/:slug           -- 퍼블릭 교회 정보
 PUT    /api/churches/:id             -- CHURCH_ADMIN 이상
@@ -344,6 +346,7 @@ PUT    /api/churches/:id/worship-schedules
 ```
 
 ### Jubo
+
 ```
 GET    /api/jubo                     -- 목록 (최신순)
 GET    /api/jubo/:id
@@ -354,6 +357,7 @@ POST   /api/jubo/:id/publish
 ```
 
 ### Members (교적부)
+
 ```
 GET    /api/members                  -- LEADER 이상
 GET    /api/members/:id
@@ -369,6 +373,7 @@ POST   /api/small-groups
 ```
 
 ### Notices
+
 ```
 GET    /api/notices
 GET    /api/notices/:id
@@ -378,6 +383,7 @@ DELETE /api/notices/:id
 ```
 
 ### Events
+
 ```
 GET    /api/events
 GET    /api/events/:id
@@ -389,6 +395,7 @@ DELETE /api/events/:id/register
 ```
 
 ### Gallery
+
 ```
 GET    /api/gallery/communities
 GET    /api/gallery/albums
@@ -399,6 +406,7 @@ DELETE /api/gallery/photos/:id
 ```
 
 ### Bible
+
 ```
 GET    /api/bible/read-logs
 POST   /api/bible/read-logs
@@ -410,6 +418,7 @@ DELETE /api/bible/favorites/:id
 ```
 
 ### Upload
+
 ```
 POST   /api/upload/presign            -- S3 presigned URL 발급
 ```
@@ -431,9 +440,9 @@ Refresh 재사용 감지 → family 전체 revoke (계정 탈취 방어)
 
 ## 구현 단계
 
-| Phase | 범위 |
-|-------|------|
-| 1 MVP | Auth + Church + Jubo + Notices |
-| 2 목양 | Members + Attendance + Districts |
-| 3 콘텐츠 | Events + Gallery + Bible |
-| 4 SaaS | 플랜 관리 + 온보딩 + 관리자 대시보드 |
+| Phase    | 범위                                 |
+| -------- | ------------------------------------ |
+| 1 MVP    | Auth + Church + Jubo + Notices       |
+| 2 목양   | Members + Attendance + Districts     |
+| 3 콘텐츠 | Events + Gallery + Bible             |
+| 4 SaaS   | 플랜 관리 + 온보딩 + 관리자 대시보드 |

@@ -82,7 +82,7 @@ const churchConfig = {
 // main.jsx — 앱 최상단에서 제공
 <ChurchProvider>
   <App />
-</ChurchProvider>
+</ChurchProvider>;
 
 // 컴포넌트에서 사용
 const { church, loading } = useChurch();
@@ -131,10 +131,10 @@ nav: [
     label: "교회소식",
     children: [
       { label: "스마트 주보", to: "/주보" },
-      { label: "교회행사",   to: "/교회행사" },
+      { label: "교회행사", to: "/교회행사" },
     ],
   },
-]
+];
 ```
 
 - `children`이 있으면 드롭다운 메뉴로 렌더링
@@ -165,7 +165,7 @@ setChurch(config) → 전체 앱에 반영
 
 ```js
 // 올바른 패턴
-getEvents(church.id, { year, month })
-getNotices(church.id)
-getCommunities(church.id)
+getEvents(church.id, { year, month });
+getNotices(church.id);
+getCommunities(church.id);
 ```

@@ -49,18 +49,18 @@ export const USE_DUMMY = import.meta.env.VITE_USE_DUMMY !== "false";
 const { data, loading, error, refetch } = useFetch(fetchFn, deps, initialData);
 ```
 
-| 파라미터 | 설명 |
-|---------|------|
-| `fetchFn` | 서비스 함수 (Promise 반환) |
-| `deps` | 의존성 배열 — 변경 시 재요청 |
-| `initialData` | 로딩 중 표시할 기본값 |
+| 파라미터      | 설명                         |
+| ------------- | ---------------------------- |
+| `fetchFn`     | 서비스 함수 (Promise 반환)   |
+| `deps`        | 의존성 배열 — 변경 시 재요청 |
+| `initialData` | 로딩 중 표시할 기본값        |
 
 ```jsx
 // 사용 예시
 const { data: events = [], loading } = useFetch(
   () => getEvents(church.id, { year, month }),
   [church.id, year, month],
-  []
+  [],
 );
 ```
 
@@ -70,29 +70,31 @@ const { data: events = [], loading } = useFetch(
 
 ### eventsService (`src/services/eventsService.js`)
 
-| 함수 | 설명 |
-|------|------|
-| `getEvents(churchId, { year, month })` | 월별 행사 목록 |
-| `searchEvents(churchId, { q, sort })` | 행사 검색 (정렬: 일정 빠른순/등록일 순) |
-| `getRecentEvents(churchId, limit)` | 최근 등록된 행사 (검색결과 없음 상태용) |
-| `getEventById(churchId, id)` | 행사 상세 (없으면 `null`) |
-| `registerForEvent(churchId, id, payload)` | 행사 신청 |
-| `createEvent(churchId, payload)` | 행사 등록 (관리자) |
-| `updateEvent(churchId, id, payload)` | 행사 수정 (관리자) |
-| `deleteEvent(churchId, id)` | 행사 삭제 (관리자) |
+| 함수                                      | 설명                                    |
+| ----------------------------------------- | --------------------------------------- |
+| `getEvents(churchId, { year, month })`    | 월별 행사 목록                          |
+| `searchEvents(churchId, { q, sort })`     | 행사 검색 (정렬: 일정 빠른순/등록일 순) |
+| `getRecentEvents(churchId, limit)`        | 최근 등록된 행사 (검색결과 없음 상태용) |
+| `getEventById(churchId, id)`              | 행사 상세 (없으면 `null`)               |
+| `registerForEvent(churchId, id, payload)` | 행사 신청                               |
+| `createEvent(churchId, payload)`          | 행사 등록 (관리자)                      |
+| `updateEvent(churchId, id, payload)`      | 행사 수정 (관리자)                      |
+| `deleteEvent(churchId, id)`               | 행사 삭제 (관리자)                      |
 
 **더미 데이터**: `src/data/dummy/events.js`
+
 - `DUMMY_EVENTS` — 19개 행사 (오늘 기준 상대 날짜로 생성. 날짜/제목/부서/장소/설명/신청기간/정원/등록일 등)
 
 ---
 
 ### noticeService (`src/services/noticeService.js`)
 
-| 함수 | 설명 |
-|------|------|
+| 함수                           | 설명           |
+| ------------------------------ | -------------- |
 | `getNotices(churchId, params)` | 공지/소식 목록 |
 
 **더미 데이터**: `src/data/dummy/notices.js`
+
 - `DUMMY_NOTICES` — 5개 공지 (`featured` 플래그 포함)
 
 홈 화면에서 `featured: true`인 항목은 메인 카드로, 나머지는 사이드 카드 목록으로 표시.
@@ -101,14 +103,15 @@ const { data: events = [], loading } = useFetch(
 
 ### galleryService (`src/services/galleryService.js`)
 
-| 함수 | 설명 |
-|------|------|
-| `getCommunities(churchId)` | 공동체 목록 (갤러리 그룹) |
-| `getPhotos(churchId, { communityId })` | 공동체별 사진 목록 |
+| 함수                                   | 설명                      |
+| -------------------------------------- | ------------------------- |
+| `getCommunities(churchId)`             | 공동체 목록 (갤러리 그룹) |
+| `getPhotos(churchId, { communityId })` | 공동체별 사진 목록        |
 
 더미 모드에서 `getPhotos`는 `communityId`로 클라이언트 사이드 필터링.
 
 **더미 데이터**: `src/data/dummy/gallery.js`
+
 - `DUMMY_COMMUNITIES` — 6개 공동체
 - `DUMMY_PHOTOS` — 5개 사진
 
@@ -116,16 +119,16 @@ const { data: events = [], loading } = useFetch(
 
 ### juboService (`src/services/juboService.js`)
 
-| 함수 | 설명 |
-|------|------|
-| `getJuboInfo(churchId)` | 주보 메타 (호수, 날짜) |
-| `getWorshipServices(churchId)` | 예배 종류 목록 |
-| `getWorshipOrder(churchId, serviceType)` | 예배 순서 |
-| `getVolunteer(churchId)` | 봉사자 목록 |
-| `getOffering(churchId)` | 헌금 내역 |
-| `getSupport(churchId)` | 후원 현황 |
-| `getDistricts(churchId)` | 구역 목록 |
-| `getMinisters(churchId)` | 섬기는 분들 |
+| 함수                                     | 설명                   |
+| ---------------------------------------- | ---------------------- |
+| `getJuboInfo(churchId)`                  | 주보 메타 (호수, 날짜) |
+| `getWorshipServices(churchId)`           | 예배 종류 목록         |
+| `getWorshipOrder(churchId, serviceType)` | 예배 순서              |
+| `getVolunteer(churchId)`                 | 봉사자 목록            |
+| `getOffering(churchId)`                  | 헌금 내역              |
+| `getSupport(churchId)`                   | 후원 현황              |
+| `getDistricts(churchId)`                 | 구역 목록              |
+| `getMinisters(churchId)`                 | 섬기는 분들            |
 
 **더미 데이터**: `src/data/dummy/jubo.js`
 
