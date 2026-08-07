@@ -23,14 +23,18 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
             </span>
           )}
           {sermon.service && (
-            <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">{sermon.service}</span>
+            <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">
+              {sermon.service}
+            </span>
           )}
           {sermon.date && <span className="text-body-5 text-grey-5">{sermon.date}</span>}
         </div>
         <h2 className="text-sub-tit-3 font-bold text-grey-11 leading-snug mb-2">{sermon.title}</h2>
         {(sermon.scripture || sermon.speaker) && (
           <div className="flex items-center gap-2 text-body-4 text-grey-6">
-            {sermon.scripture && <span className="text-primary font-medium">{sermon.scripture}</span>}
+            {sermon.scripture && (
+              <span className="text-primary font-medium">{sermon.scripture}</span>
+            )}
             {sermon.scripture && sermon.speaker && <span className="text-grey-4">·</span>}
             {sermon.speaker && <span>{sermon.speaker}</span>}
           </div>
@@ -58,17 +62,29 @@ export default function WordBroadcast() {
     let cancelled = false;
 
     async function loadAll() {
-      const [live, past] = await Promise.all([getLiveSermon(channelId), getPastSermons(channelId)]);
-      if (cancelled) return;
-      setLiveSermon(live);
-      setPastSermons(past);
-      setLoading(false);
+      try {
+        const [live, past] = await Promise.all([
+          getLiveSermon(channelId),
+          getPastSermons(channelId),
+        ]);
+        if (cancelled) return;
+        setLiveSermon(live);
+        setPastSermons(past);
+        setLoading(false);
+      } catch (err) {
+        if (!cancelled) setLoading(false);
+        console.error("[WordBroadcast] 설교 목록 조회 실패:", err);
+      }
     }
-    loadAll();
+    void loadAll();
 
     const interval = setInterval(async () => {
-      const live = await getLiveSermon(channelId);
-      if (!cancelled) setLiveSermon(live);
+      try {
+        const live = await getLiveSermon(channelId);
+        if (!cancelled) setLiveSermon(live);
+      } catch (err) {
+        console.error("[WordBroadcast] 라이브 예배 상태 조회 실패:", err);
+      }
     }, 60_000);
 
     return () => {
@@ -94,7 +110,6 @@ export default function WordBroadcast() {
       <WordTabBar />
 
       <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-12">
-
         {/* ── 로딩 중 ── */}
         {status === "loading" && (
           <section className="mb-14 max-w-6xl mx-auto">
@@ -143,7 +158,9 @@ export default function WordBroadcast() {
           <section className="mb-14 max-w-3xl mx-auto">
             <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
               <div className="text-4xl">📭</div>
-              <p className="text-sub-tit-4 font-semibold text-grey-7">오늘 예정된 예배가 없습니다</p>
+              <p className="text-sub-tit-4 font-semibold text-grey-7">
+                오늘 예정된 예배가 없습니다
+              </p>
             </div>
           </section>
         )}
@@ -155,12 +172,17 @@ export default function WordBroadcast() {
             {listedPastSermons.map((s) => (
               <a
                 key={s.id}
-                href={s.videoId ? `https://www.youtube.com/watch?v=${s.videoId}` : channelUrl ?? "#"}
+                href={
+                  s.videoId ? `https://www.youtube.com/watch?v=${s.videoId}` : (channelUrl ?? "#")
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group shrink-0 w-52 rounded-xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-md transition-all"
               >
-                <div className="w-full bg-grey-2 flex items-center justify-center overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                <div
+                  className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
+                  style={{ aspectRatio: "16/9" }}
+                >
                   {s.thumbnail ? (
                     <img src={s.thumbnail} alt={s.title} className="w-full h-full object-cover" />
                   ) : (
@@ -187,7 +209,12 @@ export default function WordBroadcast() {
           {channelUrl && (
             <p className="mt-4 text-body-4 text-grey-6">
               더 많은 설교는{" "}
-              <a href={channelUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+              <a
+                href={channelUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline font-medium"
+              >
                 유튜브 채널
               </a>
               에서 확인하세요.
@@ -208,7 +235,12 @@ export default function WordBroadcast() {
           >
             <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-bluegrey-2">
               <h3 className="text-sub-tit-4 font-bold text-grey-11">이번 주 주보</h3>
-              <button onClick={() => setJuboOpen(false)} className="text-grey-5 hover:text-grey-9 text-xl leading-none">✕</button>
+              <button
+                onClick={() => setJuboOpen(false)}
+                className="text-grey-5 hover:text-grey-9 text-xl leading-none"
+              >
+                ✕
+              </button>
             </div>
             <div className="px-6 py-8 text-center text-grey-6 text-body-3">
               {/* TODO: 주보 컨텐츠 연동 */}
@@ -227,8 +259,18 @@ function SmartJuboButton({ onClick }) {
       onClick={onClick}
       className="mt-4 flex items-center gap-2 px-5 py-2.5 border border-blue-3 text-blue-7 text-body-3 font-medium rounded-full hover:bg-blue-1 transition-colors"
     >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+        />
       </svg>
       스마트 주보 보기
     </button>

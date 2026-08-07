@@ -1,58 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearch } from "@/contexts/SearchContext";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
 
 const ALL_KEYWORDS = [
-  { label: "주일 예배",       to: "/말씀/방송",                    category: "예배" },
-  { label: "주일 2부 예배",   to: "/말씀/방송",                    category: "예배" },
-  { label: "새벽 예배",       to: "/말씀/방송",                    category: "예배" },
-  { label: "수요 예배",       to: "/말씀/방송",                    category: "예배" },
-  { label: "금요 예배",       to: "/말씀/방송",                    category: "예배" },
-  { label: "실시간 방송",     to: "/말씀/방송",                    category: "예배" },
-  { label: "성경 타자",       to: "/말씀/필사",                    category: "말씀" },
-  { label: "성경 필사",       to: "/말씀/필사",                    category: "말씀" },
-  { label: "성경 읽기",       to: "/말씀/읽기",                    category: "말씀" },
-  { label: "스마트 주보",     to: "/주보",                         category: "주보" },
-  { label: "헌금 안내",       to: "/주보?tab=예물",                category: "주보" },
-  { label: "봉사 안내",       to: "/주보?tab=봉사",                category: "주보" },
-  { label: "구역모임",        to: "/양육훈련/구역",                category: "양육" },
-  { label: "제자훈련",        to: "/양육훈련/제자",                category: "양육" },
-  { label: "소그룹",          to: "/양육훈련",                     category: "양육" },
-  { label: "교회 소개",       to: "/교회소개",                     category: "교회" },
-  { label: "예배 안내",       to: "/교회소개?tab=예배 안내",       category: "교회" },
-  { label: "오시는 길",       to: "/교회소개?tab=오시는 길",       category: "교회" },
-  { label: "셔틀 안내",       to: "/교회소개?tab=차량운행 안내",   category: "교회" },
-  { label: "주차 안내",       to: "/교회소개?tab=오시는 길",       category: "교회" },
-  { label: "교회 행사",       to: "/교회행사",                     category: "행사" },
-  { label: "갤러리",          to: "/갤러리",                       category: "행사" },
-  { label: "공지사항",        to: "/교회소개",                     category: "소식" },
-  { label: "새 가족 등록",    to: "/register",                     category: "등록" },
-  { label: "마이페이지",      to: "/mypage",                       category: "내 정보" },
+  { label: "주일 예배", to: "/말씀/방송", category: "예배" },
+  { label: "주일 2부 예배", to: "/말씀/방송", category: "예배" },
+  { label: "새벽 예배", to: "/말씀/방송", category: "예배" },
+  { label: "수요 예배", to: "/말씀/방송", category: "예배" },
+  { label: "금요 예배", to: "/말씀/방송", category: "예배" },
+  { label: "실시간 방송", to: "/말씀/방송", category: "예배" },
+  { label: "성경 타자", to: "/말씀/필사", category: "말씀" },
+  { label: "성경 필사", to: "/말씀/필사", category: "말씀" },
+  { label: "성경 읽기", to: "/말씀/읽기", category: "말씀" },
+  { label: "스마트 주보", to: "/주보", category: "주보" },
+  { label: "헌금 안내", to: "/주보?tab=예물", category: "주보" },
+  { label: "봉사 안내", to: "/주보?tab=봉사", category: "주보" },
+  { label: "구역모임", to: "/양육훈련/구역", category: "양육" },
+  { label: "제자훈련", to: "/양육훈련/제자", category: "양육" },
+  { label: "소그룹", to: "/양육훈련", category: "양육" },
+  { label: "교회 소개", to: "/교회소개", category: "교회" },
+  { label: "예배 안내", to: "/교회소개?tab=예배 안내", category: "교회" },
+  { label: "오시는 길", to: "/교회소개?tab=오시는 길", category: "교회" },
+  { label: "셔틀 안내", to: "/교회소개?tab=차량운행 안내", category: "교회" },
+  { label: "주차 안내", to: "/교회소개?tab=오시는 길", category: "교회" },
+  { label: "교회 행사", to: "/교회행사", category: "행사" },
+  { label: "갤러리", to: "/갤러리", category: "행사" },
+  { label: "공지사항", to: "/교회소개", category: "소식" },
+  { label: "새 가족 등록", to: "/register", category: "등록" },
+  { label: "마이페이지", to: "/mypage", category: "내 정보" },
 ];
 
 const QUICK_SUGGESTIONS = [
-  { label: "주일 예배",  to: "/말씀/방송" },
-  { label: "성경 타자",  to: "/말씀/필사" },
-  { label: "오시는 길",  to: "/교회소개?tab=오시는 길" },
-  { label: "구역모임",   to: "/양육훈련/구역" },
-  { label: "헌금 안내",  to: "/주보?tab=예물" },
+  { label: "주일 예배", to: "/말씀/방송" },
+  { label: "성경 타자", to: "/말씀/필사" },
+  { label: "오시는 길", to: "/교회소개?tab=오시는 길" },
+  { label: "구역모임", to: "/양육훈련/구역" },
+  { label: "헌금 안내", to: "/주보?tab=예물" },
 ];
 
 const RECENT_KEY = "togather_recent_searches";
 
 function getRecent() {
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]"); }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
 }
 
 function saveRecent(label, to) {
-  const prev = getRecent().filter(r => r.label !== label);
+  const prev = getRecent().filter((r) => r.label !== label);
   localStorage.setItem(RECENT_KEY, JSON.stringify([{ label, to }, ...prev].slice(0, 8)));
 }
 
 function deleteRecent(label) {
-  localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter(r => r.label !== label)));
+  localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter((r) => r.label !== label)));
 }
 
 export default function SearchOverlay() {
@@ -77,31 +80,35 @@ export default function SearchOverlay() {
     }
   }, [open]);
 
+  const close = useCallback(() => {
+    setActive(false);
+    setTimeout(() => setOpen(false), 200);
+  }, [setOpen]);
+
   // ESC 닫기
   useEffect(() => {
     if (!open) return;
-    const handler = (e) => { if (e.key === "Escape") close(); };
+    const handler = (e) => {
+      if (e.key === "Escape") close();
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open]);
+  }, [open, close]);
 
   // 스크롤 막기
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
-
-  function close() {
-    setActive(false);
-    setTimeout(() => setOpen(false), 200);
-  }
 
   function go(label, to) {
     saveRecent(label, to);
     setOpen(false);
     setActive(false);
-    navigate(to);
+    void navigate(to);
   }
 
   function removeRecentItem(e, label) {
@@ -111,9 +118,10 @@ export default function SearchOverlay() {
   }
 
   const filtered = query.trim()
-    ? ALL_KEYWORDS.filter(k =>
-        k.label.replace(/\s/g, "").includes(query.replace(/\s/g, "")) ||
-        k.label.toLowerCase().includes(query.toLowerCase())
+    ? ALL_KEYWORDS.filter(
+        (k) =>
+          k.label.replace(/\s/g, "").includes(query.replace(/\s/g, "")) ||
+          k.label.toLowerCase().includes(query.toLowerCase()),
       ).slice(0, 10)
     : [];
 
@@ -171,8 +179,8 @@ export default function SearchOverlay() {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => {
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === "Enter" && query.trim()) {
                   if (filtered.length > 0) go(filtered[0].label, filtered[0].to);
                 }
@@ -208,7 +216,10 @@ export default function SearchOverlay() {
                   <div className="flex items-center justify-between mb-2 px-1">
                     <span className="text-[13px] font-bold text-grey-7">최근 검색어</span>
                     <button
-                      onClick={() => { localStorage.removeItem(RECENT_KEY); setRecent([]); }}
+                      onClick={() => {
+                        localStorage.removeItem(RECENT_KEY);
+                        setRecent([]);
+                      }}
                       className="text-[12px] text-grey-5 hover:text-grey-8 transition-colors"
                     >
                       전체 삭제
@@ -221,8 +232,17 @@ export default function SearchOverlay() {
                         onClick={() => go(r.label, r.to)}
                         className="group flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full border border-bluegrey-2 bg-white text-[14px] text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
                       >
-                        <svg className="w-3.5 h-3.5 text-grey-5 group-hover:text-primary transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-3.5 h-3.5 text-grey-5 group-hover:text-primary transition-colors shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                         {r.label}
                         <span
@@ -274,7 +294,8 @@ export default function SearchOverlay() {
           ) : (
             /* ── 결과 없음 ── */
             <div className="py-8 text-center text-[14px] text-grey-5">
-              <span className="font-semibold text-grey-8">"{query}"</span>에 대한 검색 결과가 없습니다.
+              <span className="font-semibold text-grey-8">"{query}"</span>에 대한 검색 결과가
+              없습니다.
             </div>
           )}
         </div>

@@ -30,7 +30,7 @@ export default function EventSearchBar({
     e.preventDefault();
     const trimmed = q.trim();
     if (onSubmit) onSubmit(trimmed);
-    else navigate(`/교회행사/검색?q=${encodeURIComponent(trimmed)}`);
+    else void navigate(`/교회행사/검색?q=${encodeURIComponent(trimmed)}`);
   };
 
   return (

@@ -31,7 +31,7 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
 
           const churchCoords = new window.kakao.maps.LatLng(
             parseFloat(result[0].y),
-            parseFloat(result[0].x)
+            parseFloat(result[0].x),
           );
 
           const map = new window.kakao.maps.Map(containerRef.current, {
@@ -39,7 +39,10 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
             level,
           });
 
-          map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
+          map.addControl(
+            new window.kakao.maps.ZoomControl(),
+            window.kakao.maps.ControlPosition.RIGHT,
+          );
 
           // 교회 목적지 마커
           new window.kakao.maps.Marker({
@@ -56,7 +59,7 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
           bounds.extend(churchCoords);
           let hasAnyRoute = false;
 
-          routes.forEach(({ name, color, waypoints }) => {
+          routes.forEach(({ color, waypoints }) => {
             if (!waypoints || waypoints.length === 0) return;
             hasAnyRoute = true;
 
@@ -85,10 +88,10 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
                   `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="34" viewBox="0 0 28 34">
                     <path fill="${color}" d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 20 14 20S28 23.625 28 14C28 6.268 21.732 0 14 0z"/>
                     <text x="14" y="18" text-anchor="middle" fill="white" font-size="11" font-family="Pretendard,sans-serif" font-weight="700">${i + 1}</text>
-                  </svg>`
+                  </svg>`,
                 )}`,
                 new window.kakao.maps.Size(28, 34),
-                { offset: new window.kakao.maps.Point(14, 34) }
+                { offset: new window.kakao.maps.Point(14, 34) },
               );
 
               const marker = new window.kakao.maps.Marker({ map, position: pos, image: markerImg });
@@ -115,7 +118,9 @@ export default function KakaoMapRoute({ address, level = 5, routes = [], classNa
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-caption text-grey-6 ${className}`}>
+      <div
+        className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-caption text-grey-6 ${className}`}
+      >
         {error}
       </div>
     );

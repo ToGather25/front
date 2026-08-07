@@ -45,10 +45,14 @@ export default function WorshipSection() {
   useEffect(() => {
     let cancelled = false;
     const fetchLiveStatus = async () => {
-      const live = await getLiveSermon(channelId);
-      if (!cancelled) setLiveSermon(live);
+      try {
+        const live = await getLiveSermon(channelId);
+        if (!cancelled) setLiveSermon(live);
+      } catch (err) {
+        console.error("[WorshipSection] 라이브 예배 상태 조회 실패:", err);
+      }
     };
-    fetchLiveStatus();
+    void fetchLiveStatus();
     const interval = setInterval(fetchLiveStatus, 60_000);
     return () => {
       cancelled = true;

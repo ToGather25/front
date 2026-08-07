@@ -10,7 +10,7 @@ const DEPT_PARAM_MAP = {
 
 // 주일학교 부서명 -> 갤러리 공동체명 (갤러리 쪽 명칭이 다른 경우만 매핑)
 const GALLERY_COMMUNITY_MAP = {
-  "대학·청년부": "청년부",
+  대학·청년부: "청년부",
 };
 
 const DEPARTMENTS = [
@@ -145,7 +145,16 @@ export default function SundaySchool() {
       {/* Hero Banner */}
       <div
         className="relative h-[200px] md:h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
-        style={dept.bgImage ? { backgroundImage: `url(${dept.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+        style={
+          dept.bgImage
+            ? {
+                // oxlint-disable-next-line typescript/restrict-template-expressions -- bgImage는 현재 목업 데이터가 모두 null이라 발생하는 오탐, 추후 이미지 연동 시 string이 됨
+                backgroundImage: `url(${dept.bgImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : undefined
+        }
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1576px] mx-auto px-4 md:px-8 pb-6 md:pb-8 w-full flex items-end justify-between gap-4">
@@ -157,7 +166,16 @@ export default function SundaySchool() {
             to={`/갤러리?community=${encodeURIComponent(GALLERY_COMMUNITY_MAP[dept.key] ?? dept.key)}`}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-body-4 font-medium transition-colors border border-white/30 backdrop-blur-sm"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
               <circle cx="8.5" cy="8.5" r="1.5" />
               <polyline points="21 15 16 10 5 21" />

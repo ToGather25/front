@@ -55,13 +55,13 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
           // 지도 타입 컨트롤
           map.addControl(
             new window.kakao.maps.MapTypeControl(),
-            window.kakao.maps.ControlPosition.TOPRIGHT
+            window.kakao.maps.ControlPosition.TOPRIGHT,
           );
 
           // 확대/축소 컨트롤
           map.addControl(
             new window.kakao.maps.ZoomControl(),
-            window.kakao.maps.ControlPosition.RIGHT
+            window.kakao.maps.ControlPosition.RIGHT,
           );
         });
       } catch (e) {
@@ -69,11 +69,14 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
         console.error("[KakaoMap]", e);
       }
     });
-  }, [address, level]);
+  }, [address, level, draggable]);
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-4 text-grey-6 ${className}`} style={style}>
+      <div
+        className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-4 text-grey-6 ${className}`}
+        style={style}
+      >
         {error}
       </div>
     );

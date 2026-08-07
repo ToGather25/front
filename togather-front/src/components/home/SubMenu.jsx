@@ -8,7 +8,13 @@ const MENU_ITEMS = [
     to: "/교회소개",
     accent: "#3d5588",
     icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+      <svg
+        className="w-7 h-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        viewBox="0 0 24 24"
+      >
         <path d="M12 2v4M10 4h4M3 22V9l9-4 9 4v13M9 22v-7h6v7" />
       </svg>
     ),
@@ -20,7 +26,13 @@ const MENU_ITEMS = [
     to: "/교회행사",
     accent: "#ff961b",
     icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+      <svg
+        className="w-7 h-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        viewBox="0 0 24 24"
+      >
         <path d="M3 10v4h4l10 5V5L7 10H3zM18 8a4 4 0 0 1 0 8" />
       </svg>
     ),
@@ -32,7 +44,13 @@ const MENU_ITEMS = [
     to: "/주보",
     accent: "#2098f3",
     icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+      <svg
+        className="w-7 h-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        viewBox="0 0 24 24"
+      >
         <path d="M6 3h9l4 4v14H6z" />
         <path d="M15 3v5h4M9 12h7M9 16h7M9 8h3" />
       </svg>
@@ -45,7 +63,13 @@ const MENU_ITEMS = [
     to: "/말씀/필사",
     accent: "#00ba34",
     icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+      <svg
+        className="w-7 h-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        viewBox="0 0 24 24"
+      >
         <rect x="2" y="6" width="20" height="12" rx="2" />
         <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12" />
       </svg>
@@ -69,7 +93,7 @@ export default function SubMenu() {
 
         {/* Grid */}
         <div className="grid grid-cols-4 gap-6">
-          {MENU_ITEMS.map((item, i) => (
+          {MENU_ITEMS.map((item) => (
             <Link
               key={item.id}
               to={item.to}
@@ -89,9 +113,7 @@ export default function SubMenu() {
                 <p className="text-sub-tit-4 font-bold text-grey-12 tracking-[-0.4px] m-0 leading-tight">
                   {item.label}
                 </p>
-                <p className="text-caption text-grey-6 mt-1.5 m-0 leading-snug">
-                  {item.sub}
-                </p>
+                <p className="text-caption text-grey-6 mt-1.5 m-0 leading-snug">{item.sub}</p>
               </div>
 
               {/* Arrow */}

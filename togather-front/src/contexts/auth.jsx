@@ -35,33 +35,37 @@ export function AuthProvider({ children }) {
       const user = { email: DUMMY_ADMIN.email, name: DUMMY_ADMIN.name, isAdmin: true };
       setCurrentUser(user);
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/admin");
+      void navigate("/admin");
       return;
     }
     if (email === DUMMY_USER.email && password === DUMMY_USER.password) {
-      const user = { email: DUMMY_USER.email, name: DUMMY_USER.name, community: DUMMY_USER.community };
+      const user = {
+        email: DUMMY_USER.email,
+        name: DUMMY_USER.name,
+        community: DUMMY_USER.community,
+      };
       setCurrentUser(user);
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/");
+      void navigate("/");
       return;
     }
     const res = await axios.post("/auth/login", { email, password });
     setCurrentUser(res.data.data);
     localStorage.setItem("token", res.data.token);
-    navigate("/");
+    void navigate("/");
   }
 
   async function register(user) {
     const res = await axios.post("/auth/register", user);
     setCurrentUser(res.data.data);
     localStorage.setItem("token", res.data.token);
-    navigate("/");
+    void navigate("/");
   }
 
   function logout() {
     setCurrentUser(null);
     localStorage.clear();
-    navigate("/");
+    void navigate("/");
   }
 
   return (

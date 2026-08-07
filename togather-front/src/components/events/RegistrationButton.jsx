@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router";
-import { getRegistrationState, getRegistrationMessage, REG_BTN_TONE, REG_STATUS } from "@/utils/eventStatus";
+import {
+  getRegistrationState,
+  getRegistrationMessage,
+  REG_BTN_TONE,
+  REG_STATUS,
+} from "@/utils/eventStatus";
 
 /**
  * 행사 신청 3-state 버튼. canRegister:false인 행사는 아무것도 렌더링하지 않는다.
@@ -11,7 +16,13 @@ import { getRegistrationState, getRegistrationMessage, REG_BTN_TONE, REG_STATUS 
  *   onApply?: () => void,    // 미지정 시 /교회행사/:id/신청 으로 이동
  * }} props
  */
-export default function RegistrationButton({ event, size = "lg", className = "", showRemaining = false, onApply }) {
+export default function RegistrationButton({
+  event,
+  size = "lg",
+  className = "",
+  showRemaining = false,
+  onApply,
+}) {
   const navigate = useNavigate();
   const state = getRegistrationState(event);
 
@@ -20,7 +31,7 @@ export default function RegistrationButton({ event, size = "lg", className = "",
   const handleClick = () => {
     if (state.disabled) return;
     if (onApply) onApply();
-    else navigate(`/교회행사/${event.id}/신청`);
+    else void navigate(`/교회행사/${event.id}/신청`);
   };
 
   if (size === "sm") {

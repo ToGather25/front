@@ -15,9 +15,9 @@ import { useState, useEffect, useCallback } from "react";
  * );
  */
 export function useFetch(fetchFn, deps = [], initialData = null) {
-  const [data, setData]       = useState(initialData);
+  const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -31,10 +31,10 @@ export function useFetch(fetchFn, deps = [], initialData = null) {
     } finally {
       setLoading(false);
     }
-  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+  }, deps); // oxlint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
 
   return { data, loading, error, refetch: load };

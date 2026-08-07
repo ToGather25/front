@@ -13,7 +13,7 @@ const ChurchContext = createContext(null);
  * 교체 시 fetchChurchConfig() 내부만 수정하면 됩니다.
  */
 export function ChurchProvider({ children }) {
-  const [church, setChurch] = useState(defaultConfig);
+  const [church, setChurch] = useState(defaultConfig); // oxlint-disable-line no-unused-vars -- TODO 구현 시 사용
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -23,11 +23,7 @@ export function ChurchProvider({ children }) {
     setLoading(false);
   }, []);
 
-  return (
-    <ChurchContext.Provider value={{ church, loading }}>
-      {children}
-    </ChurchContext.Provider>
-  );
+  return <ChurchContext.Provider value={{ church, loading }}>{children}</ChurchContext.Provider>;
 }
 
 export function useChurch() {

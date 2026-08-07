@@ -38,8 +38,10 @@ export default function SignupNext() {
     if (name === "password") {
       setErrors((prev) => ({
         ...prev,
-        password: value && !PW_RULE.test(value) ? "영문·숫자·특수문자 조합 8자 이상이어야 합니다." : "",
-        confirm: nextForm.confirm && nextForm.confirm !== value ? "비밀번호가 일치하지 않습니다." : "",
+        password:
+          value && !PW_RULE.test(value) ? "영문·숫자·특수문자 조합 8자 이상이어야 합니다." : "",
+        confirm:
+          nextForm.confirm && nextForm.confirm !== value ? "비밀번호가 일치하지 않습니다." : "",
       }));
       return;
     }
@@ -77,21 +79,22 @@ export default function SignupNext() {
   const validate = () => {
     const errs = {};
     if (!idChecked) errs.username = "아이디 중복 확인을 해주세요.";
-    if (!PW_RULE.test(form.password)) errs.password = "영문·숫자·특수문자 조합 8자 이상이어야 합니다.";
+    if (!PW_RULE.test(form.password))
+      errs.password = "영문·숫자·특수문자 조합 8자 이상이어야 합니다.";
     if (form.password !== form.confirm) errs.confirm = "비밀번호가 일치하지 않습니다.";
     return errs;
   };
 
   const canSubmit =
-    idChecked &&
-    form.password.length >= 8 &&
-    form.password === form.confirm &&
-    status === "idle";
+    idChecked && form.password.length >= 8 && form.password === form.confirm && status === "idle";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
 
     setStatus("submitting");
     try {
@@ -109,7 +112,7 @@ export default function SignupNext() {
     setShowModal(false);
     // TODO: POST /api/auth/login { username, password } → 자동 로그인
     // await login({ username: form.username, password: form.password });
-    navigate("/");
+    void navigate("/");
   };
 
   const inputCls = (field) =>
@@ -122,7 +125,16 @@ export default function SignupNext() {
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center bg-grey-1 px-6">
         <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-2 p-12 text-center">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -155,16 +167,29 @@ export default function SignupNext() {
 
           <div className="relative">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <h1 className="text-headline-4 font-bold text-white mb-3">{church?.name ?? "ToGather"}</h1>
+            <h1 className="text-headline-4 font-bold text-white mb-3">
+              {church?.name ?? "ToGather"}
+            </h1>
             <p className="text-body-2 text-white/70 leading-relaxed">
-              교회 성도님들을 위한<br />커뮤니티 서비스 회원가입
+              교회 성도님들을 위한
+              <br />
+              커뮤니티 서비스 회원가입
             </p>
           </div>
 
@@ -194,7 +219,16 @@ export default function SignupNext() {
             <div className="flex items-center gap-2 mb-8">
               <div className="flex items-center gap-2 opacity-40">
                 <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </span>
@@ -202,7 +236,9 @@ export default function SignupNext() {
               </div>
               <div className="flex-1 h-px bg-blue-7 mx-1" />
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">2</span>
+                <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">
+                  2
+                </span>
                 <span className="text-body-4 font-semibold text-blue-7">계정 생성</span>
               </div>
             </div>
@@ -211,7 +247,8 @@ export default function SignupNext() {
               <h2 className="text-headline-5 font-bold text-grey-11 mb-2">계정 만들기</h2>
               {memberName ? (
                 <p className="text-body-3 text-grey-6">
-                  <span className="font-semibold text-blue-7">{memberName}</span> 성도님, 환영합니다! 로그인에 사용할 계정 정보를 설정해 주세요.
+                  <span className="font-semibold text-blue-7">{memberName}</span> 성도님,
+                  환영합니다! 로그인에 사용할 계정 정보를 설정해 주세요.
                 </p>
               ) : (
                 <p className="text-body-3 text-grey-6">사용할 아이디와 비밀번호를 설정해 주세요.</p>
@@ -227,7 +264,16 @@ export default function SignupNext() {
                   </label>
                   {idChecked && (
                     <span className="text-body-5 text-green-600 font-medium flex items-center gap-1">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                       사용 가능
@@ -236,7 +282,11 @@ export default function SignupNext() {
                 </div>
                 <div className="flex gap-2">
                   <input
-                    name="username" type="text" required value={form.username} onChange={handleChange}
+                    name="username"
+                    type="text"
+                    required
+                    value={form.username}
+                    onChange={handleChange}
                     placeholder="4자 이상 영문/숫자"
                     className={inputCls("username")}
                   />
@@ -257,8 +307,15 @@ export default function SignupNext() {
                 <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
                   비밀번호 <span className="text-red-400">*</span>
                 </label>
-                <input name="password" type="password" required value={form.password} onChange={handleChange}
-                  placeholder="영문·숫자·특수문자 조합 8자 이상" className={inputCls("password")} />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="영문·숫자·특수문자 조합 8자 이상"
+                  className={inputCls("password")}
+                />
                 <p className="mt-1 h-[18px] text-body-5 text-red-500">{errors.password}</p>
               </div>
 
@@ -267,13 +324,22 @@ export default function SignupNext() {
                 <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
                   비밀번호 확인 <span className="text-red-400">*</span>
                 </label>
-                <input name="confirm" type="password" required value={form.confirm} onChange={handleChange}
-                  placeholder="비밀번호를 한 번 더 입력하세요" className={inputCls("confirm")} />
+                <input
+                  name="confirm"
+                  type="password"
+                  required
+                  value={form.confirm}
+                  onChange={handleChange}
+                  placeholder="비밀번호를 한 번 더 입력하세요"
+                  className={inputCls("confirm")}
+                />
                 <p className="mt-1 h-[18px] text-body-5 text-red-500">{errors.confirm}</p>
               </div>
 
               {errors.submit && (
-                <p className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3">{errors.submit}</p>
+                <p className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3">
+                  {errors.submit}
+                </p>
               )}
 
               <button
@@ -293,13 +359,25 @@ export default function SignupNext() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
             <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B5280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3B5280"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">회원가입이 완료되었습니다!</h2>
+            <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">
+              회원가입이 완료되었습니다!
+            </h2>
             <p className="text-body-3 text-grey-7 leading-relaxed mb-8">
-              {church?.name ?? "교회"}의 일원이 된 것을 환영합니다.<br />
+              {church?.name ?? "교회"}의 일원이 된 것을 환영합니다.
+              <br />
               이제 모든 교회 서비스를 이용할 수 있습니다.
             </p>
             <button
