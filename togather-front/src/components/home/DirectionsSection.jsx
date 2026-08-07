@@ -63,9 +63,7 @@ export default function DirectionsSection() {
                   <span className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
                     {row.label}
                   </span>
-                  <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">
-                    {row.content}
-                  </p>
+                  <p className="text-[15px] text-grey-9 leading-[1.6] mt-0.5 m-0">{row.content}</p>
                 </div>
               </div>
             ))}

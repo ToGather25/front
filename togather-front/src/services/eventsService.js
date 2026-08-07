@@ -30,7 +30,9 @@ const normalize = (s) => (s ?? "").replace(/\s/g, "").toLowerCase();
 function sortEvents(list, sort) {
   const arr = [...list];
   if (sort === "createdAt") {
-    arr.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : a.date < b.date ? -1 : 1));
+    arr.sort((a, b) =>
+      a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : a.date < b.date ? -1 : 1,
+    );
     return arr;
   }
   // "date" (일정 빠른순): 오늘 이후를 오름차순으로 먼저, 지난 행사는 내림차순으로 뒤에
@@ -66,7 +68,11 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
   if (USE_DUMMY) {
     const key = normalize(q);
     const list = key
-      ? DUMMY_EVENTS.filter((e) => [e.title, e.description, e.location, e.department].some((f) => normalize(f).includes(key)))
+      ? DUMMY_EVENTS.filter((e) =>
+          [e.title, e.description, e.location, e.department].some((f) =>
+            normalize(f).includes(key),
+          ),
+        )
       : [...DUMMY_EVENTS];
     return sortEvents(list, sort);
   }

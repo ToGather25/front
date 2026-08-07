@@ -41,14 +41,27 @@ export default function FindPassword() {
 
         <div className="relative">
           <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <h1 className="text-headline-4 font-bold text-white mb-3">{church?.name ?? "ToGather"}</h1>
+          <h1 className="text-headline-4 font-bold text-white mb-3">
+            {church?.name ?? "ToGather"}
+          </h1>
           <p className="text-body-2 text-white/70 leading-relaxed">
-            안전한 계정 관리를 위해<br />본인 확인 후 재설정을 도와드려요
+            안전한 계정 관리를 위해
+            <br />
+            본인 확인 후 재설정을 도와드려요
           </p>
         </div>
       </div>
@@ -59,13 +72,25 @@ export default function FindPassword() {
           {status === "sent" ? (
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B5280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#3B5280"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h2 className="text-headline-5 font-bold text-grey-11 mb-3">재설정 링크를 보냈습니다</h2>
+              <h2 className="text-headline-5 font-bold text-grey-11 mb-3">
+                재설정 링크를 보냈습니다
+              </h2>
               <p className="text-body-3 text-grey-6 leading-relaxed mb-8">
-                {form.email}로 비밀번호 재설정 링크를 보냈습니다.<br />
+                {form.email}로 비밀번호 재설정 링크를 보냈습니다.
+                <br />
                 메일함(스팸함 포함)을 확인해 주세요.
               </p>
               <Link
@@ -86,20 +111,30 @@ export default function FindPassword() {
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div>
-                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">이메일</label>
+                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                    이메일
+                  </label>
                   <input
-                    name="email" type="email" required
-                    value={form.email} onChange={handleChange}
+                    name="email"
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={handleChange}
                     placeholder="example@email.com"
                     className={inputCls}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">휴대폰 번호</label>
+                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                    휴대폰 번호
+                  </label>
                   <input
-                    name="phone" type="tel" required
-                    value={form.phone} onChange={handleChange}
+                    name="phone"
+                    type="tel"
+                    required
+                    value={form.phone}
+                    onChange={handleChange}
                     placeholder="010-0000-0000"
                     className={inputCls}
                   />
@@ -121,7 +156,9 @@ export default function FindPassword() {
               </form>
 
               <p className="text-center text-body-4 text-grey-6 mt-8 border-t border-grey-2 pt-6">
-                <Link to="/login" className="text-blue-7 hover:underline font-semibold">로그인으로 돌아가기</Link>
+                <Link to="/login" className="text-blue-7 hover:underline font-semibold">
+                  로그인으로 돌아가기
+                </Link>
               </p>
             </>
           )}

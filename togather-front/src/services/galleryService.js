@@ -27,9 +27,7 @@ export async function getCommunities(churchId) {
 export async function getPhotos(churchId, params = {}) {
   if (USE_DUMMY) {
     const { communityId } = params;
-    return communityId
-      ? DUMMY_PHOTOS.filter((p) => p.communityId === communityId)
-      : DUMMY_PHOTOS;
+    return communityId ? DUMMY_PHOTOS.filter((p) => p.communityId === communityId) : DUMMY_PHOTOS;
   }
   const res = await api.get(`/churches/${churchId}/gallery`, { params });
   return res.data.data;

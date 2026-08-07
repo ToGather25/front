@@ -10,11 +10,16 @@ const iso = (dt) => `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getD
 const NOW = new Date();
 const TODAY = iso(NOW);
 const MONTH_START = new Date(NOW.getFullYear(), NOW.getMonth(), 1);
-const DAYS_IN_CURRENT_MONTH = new Date(MONTH_START.getFullYear(), MONTH_START.getMonth() + 1, 0).getDate();
+const DAYS_IN_CURRENT_MONTH = new Date(
+  MONTH_START.getFullYear(),
+  MONTH_START.getMonth() + 1,
+  0,
+).getDate();
 const TODAY_DAY = NOW.getDate();
 
 /** 이번 달 1일 기준 monthOffset개월 뒤의 day일 */
-const d = (monthOffset, day) => iso(new Date(MONTH_START.getFullYear(), MONTH_START.getMonth() + monthOffset, day));
+const d = (monthOffset, day) =>
+  iso(new Date(MONTH_START.getFullYear(), MONTH_START.getMonth() + monthOffset, day));
 
 /** "YYYY-MM-DD"에서 days만큼 이동 */
 const shift = (dateStr, days) => {

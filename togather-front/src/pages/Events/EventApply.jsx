@@ -25,7 +25,11 @@ export default function EventApply() {
   const { id } = useParams();
   const { church } = useChurch();
   const { currentUser } = useAuth();
-  const { data: event, loading } = useFetch(() => getEventById(church.id, id), [church.id, id], null);
+  const { data: event, loading } = useFetch(
+    () => getEventById(church.id, id),
+    [church.id, id],
+    null,
+  );
 
   const [form, setForm] = useState({
     name: currentUser?.name ?? "",
@@ -54,7 +58,9 @@ export default function EventApply() {
 
   if (loading) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center text-body-3 text-grey-5">불러오는 중...</div>
+      <div className="max-w-md mx-auto px-4 py-16 text-center text-body-3 text-grey-5">
+        불러오는 중...
+      </div>
     );
   }
 
@@ -76,7 +82,16 @@ export default function EventApply() {
     return (
       <InfoCard>
         <div className="w-14 h-14 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-5">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B5280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#3B5280"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
         </div>
@@ -106,7 +121,16 @@ export default function EventApply() {
     return (
       <InfoCard>
         <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B5280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#3B5280"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
@@ -157,7 +181,9 @@ export default function EventApply() {
 
       {/* 행사 요약 */}
       <div className="border border-bluegrey-2 rounded-2xl p-6 mb-8">
-        <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold mb-2 ${ds.chip}`}>
+        <span
+          className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold mb-2 ${ds.chip}`}
+        >
           {event.department}
         </span>
         <p className="text-sub-tit-4 font-bold text-grey-11 mb-2">{event.title}</p>
@@ -178,14 +204,30 @@ export default function EventApply() {
           <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
             이름 <span className="text-red-400">*</span>
           </label>
-          <input name="name" type="text" required value={form.name} onChange={handleChange} placeholder="홍길동" className={inputCls} />
+          <input
+            name="name"
+            type="text"
+            required
+            value={form.name}
+            onChange={handleChange}
+            placeholder="홍길동"
+            className={inputCls}
+          />
         </div>
 
         <div>
           <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
             연락처 <span className="text-red-400">*</span>
           </label>
-          <input name="phone" type="tel" required value={form.phone} onChange={handleChange} placeholder="010-0000-0000" className={inputCls} />
+          <input
+            name="phone"
+            type="tel"
+            required
+            value={form.phone}
+            onChange={handleChange}
+            placeholder="010-0000-0000"
+            className={inputCls}
+          />
         </div>
 
         <div>
@@ -226,8 +268,12 @@ export default function EventApply() {
             onChange={handleChange}
             className="w-4 h-4 mt-0.5 accent-blue-7 shrink-0"
           />
-          <label htmlFor="agreePrivacy" className="text-body-4 text-grey-7 cursor-pointer select-none leading-relaxed">
-            <span className="text-red-400">*</span> 개인정보 수집·이용에 동의합니다. 수집된 정보는 행사 신청 및 안내 목적으로만 사용됩니다.
+          <label
+            htmlFor="agreePrivacy"
+            className="text-body-4 text-grey-7 cursor-pointer select-none leading-relaxed"
+          >
+            <span className="text-red-400">*</span> 개인정보 수집·이용에 동의합니다. 수집된 정보는
+            행사 신청 및 안내 목적으로만 사용됩니다.
           </label>
         </div>
 

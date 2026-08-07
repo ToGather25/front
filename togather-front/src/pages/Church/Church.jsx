@@ -8,8 +8,14 @@ import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const TABS = [
-  "인사말", "교회 비전", "교회 연혁", "예배 안내", "섬기는 사람들",
-  "층별 안내", "오시는 길", "차량운행 안내",
+  "인사말",
+  "교회 비전",
+  "교회 연혁",
+  "예배 안내",
+  "섬기는 사람들",
+  "층별 안내",
+  "오시는 길",
+  "차량운행 안내",
 ];
 
 // ── 이미지 로딩 실패/미등록 시 대체 UI ──────────────────
@@ -33,7 +39,10 @@ function Greeting() {
           {paragraphs.map((text, i) => (
             <p key={i}>
               {text.split("\n").map((line, j) => (
-                <span key={j}>{line}{j < text.split("\n").length - 1 && <br />}</span>
+                <span key={j}>
+                  {line}
+                  {j < text.split("\n").length - 1 && <br />}
+                </span>
               ))}
             </p>
           ))}
@@ -46,7 +55,11 @@ function Greeting() {
               alt="서명"
               className="h-10 w-auto object-contain"
               fallback={
-                <img src={church.logoUrl ?? LogoIcon} alt="교회 로고" className="h-10 w-auto object-contain opacity-40" />
+                <img
+                  src={church.logoUrl ?? LogoIcon}
+                  alt="교회 로고"
+                  className="h-10 w-auto object-contain opacity-40"
+                />
               }
             />
           </div>
@@ -71,11 +84,11 @@ function Vision() {
   const { church } = useChurch();
   const { mainTitle, mainVerse, items } = church.vision;
 
-  const D    = 280;
+  const D = 280;
   const SIDE = 220;
-  const TH   = Math.round(SIDE * Math.sqrt(3) / 2);
-  const W    = SIDE + D;
-  const H    = TH + D;
+  const TH = Math.round((SIDE * Math.sqrt(3)) / 2);
+  const W = SIDE + D;
+  const H = TH + D;
 
   // 좌/우 설명 텍스트 칸 폭(w-40) · 원 그룹과의 간격(gap-10) — 아래 TOTAL_W 계산과 정렬에 사용
   const SIDE_TEXT_W = 160;
@@ -83,9 +96,9 @@ function Vision() {
   const TOTAL_W = SIDE_TEXT_W + GAP + W + GAP + SIDE_TEXT_W;
 
   const layout = [
-    { item: items[0], left: Math.round((W - D) / 2), top: 0,  z: 3, delay: "0s"    },
-    { item: items[1], left: 0,                        top: TH, z: 2, delay: "0.25s" },
-    { item: items[2], left: W - D,                    top: TH, z: 1, delay: "0.5s"  },
+    { item: items[0], left: Math.round((W - D) / 2), top: 0, z: 3, delay: "0s" },
+    { item: items[1], left: 0, top: TH, z: 2, delay: "0.25s" },
+    { item: items[2], left: W - D, top: TH, z: 1, delay: "0.5s" },
   ];
 
   return (
@@ -104,7 +117,10 @@ function Vision() {
 
       {/* 전체(위 설명 + 원 3개 + 좌우 설명)를 한 덩어리로 페이지 중앙에 배치 */}
       <div className="overflow-x-auto">
-        <div className="mx-auto flex flex-col items-center gap-4" style={{ width: TOTAL_W, maxWidth: "100%" }}>
+        <div
+          className="mx-auto flex flex-col items-center gap-4"
+          style={{ width: TOTAL_W, maxWidth: "100%" }}
+        >
           <p className="text-body-2 text-grey-7 text-center mb-2" style={{ width: W }}>
             {items[0].description}
           </p>
@@ -124,7 +140,11 @@ function Vision() {
                   key={item.label}
                   className="absolute rounded-full border-2 border-grey-9 bg-transparent flex items-center justify-center"
                   style={{
-                    width: D, height: D, left, top, zIndex: z,
+                    width: D,
+                    height: D,
+                    left,
+                    top,
+                    zIndex: z,
                     animation: `circleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay} both`,
                   }}
                 >
@@ -191,29 +211,61 @@ function WorshipInfo() {
 // ── 섬기는 사람들 ──────────────────────────────────────
 const MicIcon = () => (
   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"
+    />
   </svg>
 );
 
 const PhoneIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+  <svg
+    className="w-3.5 h-3.5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    viewBox="0 0 24 24"
+  >
     <path d="M4 6c0-1 1-2 2-2h2l2 5-2 2a12 12 0 0 0 5 5l2-2 5 2v2c0 1-1 2-2 2A18 18 0 0 1 4 6z" />
   </svg>
 );
 
 const MailIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-    <rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" />
+  <svg
+    className="w-3.5 h-3.5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    viewBox="0 0 24 24"
+  >
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 7 9 6 9-6" />
   </svg>
 );
 
 function ContactLinks({ tel, email }) {
-  const linkCls = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bluegrey-1 text-body-5 text-grey-7 hover:bg-blue-1 hover:text-blue-8 transition-colors";
+  const linkCls =
+    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bluegrey-1 text-body-5 text-grey-7 hover:bg-blue-1 hover:text-blue-8 transition-colors";
   return (
     <div className="flex flex-wrap gap-1.5">
-      {tel && <a href={`tel:${tel}`} className={linkCls}><PhoneIcon />{tel}</a>}
-      {email && <a href={`mailto:${email}`} className={linkCls}><MailIcon />메일</a>}
+      {tel && (
+        <a href={`tel:${tel}`} className={linkCls}>
+          <PhoneIcon />
+          {tel}
+        </a>
+      )}
+      {email && (
+        <a href={`mailto:${email}`} className={linkCls}>
+          <MailIcon />
+          메일
+        </a>
+      )}
     </div>
   );
 }
@@ -243,7 +295,9 @@ function PersonCard({ name, tel, email, role, image, location, showSermon = fals
             <div className="flex items-center gap-2 min-w-0">
               <p className="text-body-3 font-semibold text-grey-11 truncate">{name}</p>
               {location && (
-                <span className="px-2 py-0.5 rounded-full bg-point-1 text-point-7 text-body-5 font-semibold shrink-0">{location}</span>
+                <span className="px-2 py-0.5 rounded-full bg-point-1 text-point-7 text-body-5 font-semibold shrink-0">
+                  {location}
+                </span>
               )}
             </div>
             {showSermon && (
@@ -251,11 +305,14 @@ function PersonCard({ name, tel, email, role, image, location, showSermon = fals
                 to="/말씀/설교"
                 className="flex items-center gap-1 text-body-5 text-blue-7 border border-blue-7 px-2 py-0.5 rounded-full shrink-0"
               >
-                <MicIcon />설교영상
+                <MicIcon />
+                설교영상
               </Link>
             )}
           </div>
-          <div className="mb-1"><ContactLinks tel={tel} email={email} /></div>
+          <div className="mb-1">
+            <ContactLinks tel={tel} email={email} />
+          </div>
           <p className="text-body-5 text-grey-7">{role}</p>
         </div>
       </div>
@@ -272,11 +329,11 @@ function Staff() {
   const [query, setQuery] = useState("");
 
   const GROUPS = {
-    "교역자": clergy,
-    "시무장로": elders,
-    "협동·사역장로": associateElders,
-    "은퇴장로": retiredElders,
-    "파송선교사": missionaries,
+    교역자: clergy,
+    시무장로: elders,
+    협동·사역장로: associateElders,
+    은퇴장로: retiredElders,
+    파송선교사: missionaries,
   };
 
   const q = query.trim().toLowerCase();
@@ -324,28 +381,40 @@ function Staff() {
           {/* 담임목사 — 와이드 카드 ("교역자" 칩에서만 노출) */}
           {showHeadPastor && (
             <div className="border border-primary/20 bg-blue-1/30 rounded-2xl p-7 mb-6 flex flex-col md:flex-row gap-6 md:gap-8">
-              <StaffAvatar image={headPastor.image} name={headPastor.name} className="w-44 aspect-[1/1.2] rounded-2xl" />
+              <StaffAvatar
+                image={headPastor.image}
+                name={headPastor.name}
+                className="w-44 aspect-[1/1.2] rounded-2xl"
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                   <div>
-                    <span className="text-caption font-bold text-primary uppercase tracking-widest">담임목사</span>
-                    <h3 className="text-sub-tit-3 font-bold text-grey-12 mt-0.5">{headPastor.name}</h3>
+                    <span className="text-caption font-bold text-primary uppercase tracking-widest">
+                      담임목사
+                    </span>
+                    <h3 className="text-sub-tit-3 font-bold text-grey-12 mt-0.5">
+                      {headPastor.name}
+                    </h3>
                   </div>
                   <Link
                     to="/말씀/설교"
                     className="flex items-center gap-1.5 text-body-4 text-blue-7 border border-blue-7 px-4 py-1.5 rounded-full shrink-0"
                   >
-                    <MicIcon />설교영상
+                    <MicIcon />
+                    설교영상
                   </Link>
                 </div>
-                <div className="mb-4"><ContactLinks tel={headPastor.tel} email={headPastor.email} /></div>
+                <div className="mb-4">
+                  <ContactLinks tel={headPastor.tel} email={headPastor.email} />
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-bluegrey-2">
                   <div>
                     <p className="text-caption font-bold text-grey-7 mb-2 tracking-wider">학력</p>
                     <ul className="flex flex-col gap-1.5">
                       {headPastor.education.map((item, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
-                          <span className="text-primary shrink-0 mt-1">·</span>{item}
+                          <span className="text-primary shrink-0 mt-1">·</span>
+                          {item}
                         </li>
                       ))}
                     </ul>
@@ -355,7 +424,8 @@ function Staff() {
                     <ul className="flex flex-col gap-1.5">
                       {headPastor.career.map((item, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-body-4 text-grey-8">
-                          <span className="text-primary shrink-0 mt-1">·</span>{item}
+                          <span className="text-primary shrink-0 mt-1">·</span>
+                          {item}
                         </li>
                       ))}
                     </ul>
@@ -389,7 +459,10 @@ const HISTORY_ROW = ({ era, events, isLast, style }) => (
       <h3 className="text-headline-4 font-bold text-grey-11 mb-2">{era}</h3>
       <div className="border border-bluegrey-2 rounded-xl overflow-hidden">
         {events.map(({ date, content }, i) => (
-          <div key={i} className="flex items-start gap-4 px-4 py-2.5 border-b border-grey-2 last:border-b-0 text-body-4">
+          <div
+            key={i}
+            className="flex items-start gap-4 px-4 py-2.5 border-b border-grey-2 last:border-b-0 text-body-4"
+          >
             <span className="text-blue-7 w-24 shrink-0 font-medium">{date}</span>
             <span className="text-grey-8">{content}</span>
           </div>
@@ -406,7 +479,7 @@ function History() {
 
   const VISIBLE = 2;
   const items = church.history;
-  const canUp   = startIdx > 0;
+  const canUp = startIdx > 0;
   const canDown = startIdx + VISIBLE < items.length;
   const visible = items.slice(startIdx, startIdx + VISIBLE);
 
@@ -443,7 +516,13 @@ function History() {
                 : "border-grey-3 text-grey-4 cursor-not-allowed"
             }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
             </svg>
           </button>
@@ -456,7 +535,13 @@ function History() {
                 : "border-grey-3 text-grey-4 cursor-not-allowed"
             }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -503,7 +588,9 @@ function FloorGuide() {
                   i === selectedIdx ? "bg-blue-1" : "hover:bg-grey-1"
                 }`}
               >
-                <td className={`py-3.5 pl-2 w-28 font-semibold ${i === selectedIdx ? "text-primary" : "text-grey-8"}`}>
+                <td
+                  className={`py-3.5 pl-2 w-28 font-semibold ${i === selectedIdx ? "text-primary" : "text-grey-8"}`}
+                >
                   {floor}
                 </td>
                 <td className={`py-3.5 ${i === selectedIdx ? "text-grey-9" : "text-grey-7"}`}>
@@ -531,8 +618,12 @@ function FloorGuide() {
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-grey-5">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <p className="text-body-5">{selected.floor} 사진</p>
             </div>
@@ -621,12 +712,17 @@ function TransportGuide() {
         />
         {hasAnyRoute && (
           <div className="mt-3 flex flex-wrap gap-3">
-            {routes.filter((r) => r.waypoints?.length > 0).map(({ name, color }) => (
-              <div key={name} className="flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 rounded-full" style={{ background: color }} />
-                <span className="text-body-5 text-grey-7">{name}</span>
-              </div>
-            ))}
+            {routes
+              .filter((r) => r.waypoints?.length > 0)
+              .map(({ name, color }) => (
+                <div key={name} className="flex items-center gap-1.5">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full"
+                    style={{ background: color }}
+                  />
+                  <span className="text-body-5 text-grey-7">{name}</span>
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -635,7 +731,7 @@ function TransportGuide() {
 }
 
 const TAB_CONTENT = {
-  "인사말": <Greeting />,
+  인사말: <Greeting />,
   "교회 비전": <Vision />,
   "교회 연혁": <History />,
   "예배 안내": <WorshipInfo />,

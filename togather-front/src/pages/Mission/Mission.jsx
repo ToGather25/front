@@ -60,8 +60,7 @@ const MISSION_NEWS = [
     date: "2026.03.15",
     location: "캄보디아",
     missionary: "이복음 선교사",
-    summary:
-      "지역 어린이 약 80명에게 성경 이야기를 전하고 함께 예배드렸습니다.",
+    summary: "지역 어린이 약 80명에게 성경 이야기를 전하고 함께 예배드렸습니다.",
   },
   {
     id: 3,
@@ -69,8 +68,7 @@ const MISSION_NEWS = [
     date: "2026.01.05",
     location: "몽골",
     missionary: "박말씀 선교사",
-    summary:
-      "영하 30도의 혹독한 추위 속에서도 성도들이 모여 말씀을 나눴습니다.",
+    summary: "영하 30도의 혹독한 추위 속에서도 성도들이 모여 말씀을 나눴습니다.",
   },
 ];
 
@@ -117,12 +115,13 @@ export default function Mission() {
 
       {/* Content */}
       <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
-
         {/* 전도회 소개 */}
         {activeTab === "전도회 소개" && (
           <div>
             <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">전도회 소개</h2>
-            <p className="text-body-2 text-grey-7 mb-8 whitespace-pre-line">{EVANGELISM_INFO.description}</p>
+            <p className="text-body-2 text-grey-7 mb-8 whitespace-pre-line">
+              {EVANGELISM_INFO.description}
+            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 max-w-2xl">
               <div className="border border-bluegrey-2 rounded-2xl p-5 flex items-start gap-3">
@@ -133,19 +132,27 @@ export default function Mission() {
                 </div>
                 <div>
                   <p className="text-body-5 text-grey-5 mb-0.5">회장</p>
-                  <p className="text-body-3 font-semibold text-grey-11">{EVANGELISM_INFO.leader.name}</p>
+                  <p className="text-body-3 font-semibold text-grey-11">
+                    {EVANGELISM_INFO.leader.name}
+                  </p>
                   <p className="text-body-5 text-grey-6">{EVANGELISM_INFO.leader.tel}</p>
                 </div>
               </div>
               <div className="border border-bluegrey-2 rounded-2xl p-5 flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-blue-7" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div>
                   <p className="text-body-5 text-grey-5 mb-0.5">정기 집결</p>
-                  <p className="text-body-3 font-semibold text-grey-11">{EVANGELISM_INFO.schedule}</p>
+                  <p className="text-body-3 font-semibold text-grey-11">
+                    {EVANGELISM_INFO.schedule}
+                  </p>
                 </div>
               </div>
             </div>
@@ -153,10 +160,23 @@ export default function Mission() {
             <h3 className="text-sub-tit-4 font-semibold text-grey-10 mb-4">주요 사역</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {EVANGELISM_INFO.activities.map(({ name, schedule, location }) => (
-                <div key={name} className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6">
+                <div
+                  key={name}
+                  className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
+                >
                   <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-blue-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    <svg
+                      className="w-5 h-5 text-blue-7"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                      />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -199,11 +219,29 @@ export default function Mission() {
 
             <div className="grid grid-cols-1 gap-4 max-w-2xl">
               {MISSION_CONTENT[missionType].items.map(({ name, schedule, location }) => (
-                <div key={name} className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6">
+                <div
+                  key={name}
+                  className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
+                >
                   <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-blue-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-5 h-5 text-blue-7"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -221,7 +259,9 @@ export default function Mission() {
         {activeTab === "선교지 소식" && (
           <div>
             <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">선교지 소식</h2>
-            <p className="text-body-2 text-grey-7 mb-8">현지에서 전해오는 생생한 선교 소식을 전합니다.</p>
+            <p className="text-body-2 text-grey-7 mb-8">
+              현지에서 전해오는 생생한 선교 소식을 전합니다.
+            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {MISSION_NEWS.map((news) => (
@@ -230,8 +270,18 @@ export default function Mission() {
                   className="border border-bluegrey-2 rounded-2xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="h-36 bg-bluegrey-1 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-bluegrey-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-10 h-10 text-bluegrey-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <div className="p-5">
@@ -241,7 +291,9 @@ export default function Mission() {
                       </span>
                       <span className="text-body-5 text-grey-5">{news.date}</span>
                     </div>
-                    <p className="text-body-2 font-semibold text-grey-11 mb-1 line-clamp-1">{news.title}</p>
+                    <p className="text-body-2 font-semibold text-grey-11 mb-1 line-clamp-1">
+                      {news.title}
+                    </p>
                     <p className="text-body-4 text-grey-6 mb-3">{news.missionary}</p>
                     <p className="text-body-4 text-grey-7 line-clamp-2">{news.summary}</p>
                   </div>

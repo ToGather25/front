@@ -29,7 +29,13 @@ function SectionHeader({ title, to }) {
       {to && (
         <Link to={to} className="flex items-center gap-0.5 text-[13px] text-grey-6">
           더보기
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            className="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </Link>
@@ -122,12 +128,7 @@ function VideoSection({ youtubeUrl, pastor, title, isLive }) {
   return (
     <section className="px-5 py-6">
       <SectionHeader title="예배 영상" to={youtubeUrl || "/"} />
-      <a
-        href={youtubeUrl || "#"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
+      <a href={youtubeUrl || "#"} target="_blank" rel="noopener noreferrer" className="block">
         <div className="aspect-video rounded-xl overflow-hidden bg-grey-3 relative">
           <img
             src={defaultBanner}
@@ -175,7 +176,8 @@ function MobileFooter({ church }) {
         </p>
       </div>
       <p className="text-[11px] text-grey-6">
-        Copyright © {church.name.startsWith("Togather") ? church.name : "Togather"} All rights reserved.
+        Copyright © {church.name.startsWith("Togather") ? church.name : "Togather"} All rights
+        reserved.
       </p>
     </footer>
   );
@@ -183,11 +185,7 @@ function MobileFooter({ church }) {
 
 export default function MobileHome() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(
-    () => getNotices(church.id),
-    [church.id],
-    []
-  );
+  const { data: notices = [] } = useFetch(() => getNotices(church.id), [church.id], []);
 
   const sermon = {
     service: "1부 예배",

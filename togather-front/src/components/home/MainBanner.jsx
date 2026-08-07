@@ -44,7 +44,8 @@ export default function MainBanner() {
       {/* Content */}
       <div className="relative h-full max-w-[1576px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
         {/* Eyebrow badge */}
-        <div className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full mb-7 text-sm font-medium"
+        <div
+          className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full mb-7 text-sm font-medium"
           style={{
             border: "1px solid rgba(255,255,255,.35)",
             backdropFilter: "blur(6px)",
@@ -92,12 +93,21 @@ export default function MainBanner() {
           <Link
             to="/교회소개?tab=예배 안내"
             className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full font-semibold text-[17px] tracking-[-0.3px] text-white hover:-translate-y-0.5 transition-all duration-200"
-            style={{ background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.4)" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,.18)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,.08)")}
+            style={{
+              background: "rgba(255,255,255,.08)",
+              border: "1px solid rgba(255,255,255,.4)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,.18)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,.08)")}
           >
             <span>예배 안내</span>
-            <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-[18px] h-[18px]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
@@ -113,7 +123,8 @@ export default function MainBanner() {
         <div
           className="w-px h-[60px]"
           style={{
-            background: "linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%)",
             animation: "scrollPulse 2s ease-in-out infinite",
           }}
         />

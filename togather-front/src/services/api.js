@@ -30,7 +30,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 /** 더미 모드 여부. .env에서 VITE_USE_DUMMY=false 로 끄면 실제 API 호출 */

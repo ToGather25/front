@@ -8,7 +8,7 @@ import Section from "@/components/common/Section";
 const TABS = ["전체", "공지", "행사", "소식"];
 
 const TAG_STYLES = {
-  공지: { bg: "rgba(61,85,136,.12)",  color: "#2b3c61" },
+  공지: { bg: "rgba(61,85,136,.12)", color: "#2b3c61" },
   행사: { bg: "rgba(255,150,27,.14)", color: "#cc6600" },
   소식: { bg: "rgba(32,152,243,.14)", color: "#1a7bc0" },
 };
@@ -16,11 +16,11 @@ const TAG_STYLES = {
 const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const UPCOMING_EVENTS = [
-  { id: 1,  dateISO: "2026-07-12", title: "구역장 모임",          time: "14:00 본당" },
-  { id: 2,  dateISO: "2026-07-19", title: "새 가족 환영회",        time: "예배 후 친교실" },
-  { id: 3,  dateISO: "2026-07-26", title: "성가대 여름 특별 연습", time: "20:00 4층" },
-  { id: 4,  dateISO: "2026-08-02", title: "여름 연합 예배",        time: "11:00 본당" },
-  { id: 5,  dateISO: "2026-08-15", title: "광복절 특별 예배",      time: "10:30 본당" },
+  { id: 1, dateISO: "2026-07-12", title: "구역장 모임", time: "14:00 본당" },
+  { id: 2, dateISO: "2026-07-19", title: "새 가족 환영회", time: "예배 후 친교실" },
+  { id: 3, dateISO: "2026-07-26", title: "성가대 여름 특별 연습", time: "20:00 4층" },
+  { id: 4, dateISO: "2026-08-02", title: "여름 연합 예배", time: "11:00 본당" },
+  { id: 5, dateISO: "2026-08-15", title: "광복절 특별 예배", time: "10:30 본당" },
 ];
 
 function formatEventDate(dateISO) {
@@ -33,21 +33,15 @@ function formatEventDate(dateISO) {
 function getUpcomingEvents() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return UPCOMING_EVENTS
-    .filter(e => new Date(e.dateISO + "T00:00:00") >= today)
-    .slice(0, 4);
+  return UPCOMING_EVENTS.filter((e) => new Date(e.dateISO + "T00:00:00") >= today).slice(0, 4);
 }
 
 export default function NoticeSection() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(
-    () => getNotices(church.id),
-    [church.id],
-    []
-  );
+  const { data: notices = [] } = useFetch(() => getNotices(church.id), [church.id], []);
   const [tab, setTab] = useState("전체");
 
-  const rows = (tab === "전체" ? notices : notices.filter(n => n.type === tab)).slice(0, 5);
+  const rows = (tab === "전체" ? notices : notices.filter((n) => n.type === tab)).slice(0, 5);
   const upcomingEvents = getUpcomingEvents();
 
   return (
@@ -67,7 +61,7 @@ export default function NoticeSection() {
           {/* Tabs + 전체보기 */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex gap-2">
-              {TABS.map(t => (
+              {TABS.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
@@ -81,9 +75,18 @@ export default function NoticeSection() {
                 </button>
               ))}
             </div>
-            <Link to="/공지사항" className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors">
+            <Link
+              to="/공지사항"
+              className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors"
+            >
               전체보기
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </Link>
@@ -108,10 +111,21 @@ export default function NoticeSection() {
                     >
                       {n.type}
                     </span>
-                    <span className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}>
+                    <span
+                      className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}
+                    >
                       {n.featured && (
                         <span className="inline-flex items-center justify-center shrink-0 mr-3 align-middle rounded-[5px] w-[22px] h-[22px] bg-blue-7">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
                             <line x1="12" y1="17" x2="12" y2="22" />
                             <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
                           </svg>
@@ -157,7 +171,9 @@ export default function NoticeSection() {
                       <div className="text-body-5 font-medium text-grey-6 mt-0.5">{w}요일</div>
                     </div>
                     <div className="min-w-0">
-                      <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">{e.title}</div>
+                      <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">
+                        {e.title}
+                      </div>
                       <div className="text-caption text-grey-6 mt-1">{e.time}</div>
                     </div>
                   </Link>
@@ -171,7 +187,13 @@ export default function NoticeSection() {
             className="mt-4 w-full flex items-center justify-center gap-2 py-4 bg-white rounded-2xl border border-bluegrey-2 text-[15px] font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-6 transition-colors"
           >
             캘린더로 보기
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>

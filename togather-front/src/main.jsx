@@ -12,5 +12,5 @@ createRoot(document.getElementById("root")).render(
         <App />
       </SearchProvider>
     </ChurchProvider>
-  </StrictMode>
+  </StrictMode>,
 );

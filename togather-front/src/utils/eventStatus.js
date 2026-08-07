@@ -38,7 +38,14 @@ export const REG_BTN_TONE = {
  * }}
  */
 export function getRegistrationState(event, now = new Date()) {
-  const base = { label: "", disabled: true, reason: null, remaining: null, opensAt: null, closesAt: null };
+  const base = {
+    label: "",
+    disabled: true,
+    reason: null,
+    remaining: null,
+    opensAt: null,
+    closesAt: null,
+  };
 
   if (!event) return { ...base, status: REG_STATUS.NONE };
   if (event.canRegister !== true) return { ...base, status: REG_STATUS.NONE };
@@ -95,7 +102,8 @@ export function getRegistrationState(event, now = new Date()) {
   }
 
   // 5) 신청 가능
-  const remaining = event.capacity != null ? Math.max(0, event.capacity - (event.registeredCount ?? 0)) : null;
+  const remaining =
+    event.capacity != null ? Math.max(0, event.capacity - (event.registeredCount ?? 0)) : null;
   return {
     status: REG_STATUS.OPEN,
     label: LABEL[REG_STATUS.OPEN],
@@ -112,9 +120,13 @@ export function getRegistrationMessage(state) {
   if (!state) return "";
   switch (state.reason) {
     case "before":
-      return state.opensAt ? `신청은 ${state.opensAt}부터 가능합니다.` : "아직 신청 기간이 아닙니다.";
+      return state.opensAt
+        ? `신청은 ${state.opensAt}부터 가능합니다.`
+        : "아직 신청 기간이 아닙니다.";
     case "period_ended":
-      return state.closesAt ? `신청이 ${state.closesAt}에 마감되었습니다.` : "신청이 마감되었습니다.";
+      return state.closesAt
+        ? `신청이 ${state.closesAt}에 마감되었습니다.`
+        : "신청이 마감되었습니다.";
     case "full":
       return "정원이 모두 마감되었습니다.";
     case "event_passed":

@@ -27,7 +27,10 @@ export default function WordSermonDetail() {
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-24 md:px-8">
-        <div className="w-full rounded-2xl bg-grey-2 animate-pulse" style={{ aspectRatio: "16/9" }} />
+        <div
+          className="w-full rounded-2xl bg-grey-2 animate-pulse"
+          style={{ aspectRatio: "16/9" }}
+        />
       </div>
     );
   }
@@ -38,8 +41,10 @@ export default function WordSermonDetail() {
     return (
       <div className="max-w-3xl mx-auto px-8 py-24 text-center">
         <p className="text-sub-tit-4 text-grey-6">설교를 찾을 수 없습니다.</p>
-        <button onClick={() => navigate("/말씀/설교")}
-          className="mt-6 px-5 py-2.5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors">
+        <button
+          onClick={() => navigate("/말씀/설교")}
+          className="mt-6 px-5 py-2.5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors"
+        >
           목록으로 돌아가기
         </button>
       </div>
@@ -62,7 +67,12 @@ export default function WordSermonDetail() {
             className="flex items-center gap-1.5 text-blue-3 hover:text-white transition-colors text-body-4 mb-3"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             예배 다시보기
           </button>
@@ -72,7 +82,10 @@ export default function WordSermonDetail() {
 
       <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-12">
         {/* 영상 플레이어 */}
-        <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-8" style={{ aspectRatio: "16/9" }}>
+        <div
+          className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-8"
+          style={{ aspectRatio: "16/9" }}
+        >
           {sermon.videoId ? (
             <iframe
               src={`https://www.youtube.com/embed/${sermon.videoId}`}
@@ -86,8 +99,12 @@ export default function WordSermonDetail() {
                 <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
               </svg>
               {church?.social?.youtube && (
-                <a href={church.social.youtube} target="_blank" rel="noopener noreferrer"
-                  className="px-5 py-2.5 rounded-full bg-red-600 text-white text-body-3 font-semibold hover:bg-red-700 transition-colors">
+                <a
+                  href={church.social.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 rounded-full bg-red-600 text-white text-body-3 font-semibold hover:bg-red-700 transition-colors"
+                >
                   YouTube에서 보기
                 </a>
               )}
@@ -107,18 +124,26 @@ export default function WordSermonDetail() {
               className="flex-1 text-left px-4 py-3.5 rounded-xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all group"
             >
               <p className="text-body-5 text-grey-5 mb-1">이전 설교</p>
-              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">{prev.title}</p>
+              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">
+                {prev.title}
+              </p>
             </button>
-          ) : <div className="flex-1" />}
+          ) : (
+            <div className="flex-1" />
+          )}
           {next ? (
             <button
               onClick={() => navigate(`/말씀/설교/${next.id}`)}
               className="flex-1 text-right px-4 py-3.5 rounded-xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all group"
             >
               <p className="text-body-5 text-grey-5 mb-1">다음 설교</p>
-              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">{next.title}</p>
+              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">
+                {next.title}
+              </p>
             </button>
-          ) : <div className="flex-1" />}
+          ) : (
+            <div className="flex-1" />
+          )}
         </div>
       </div>
     </div>

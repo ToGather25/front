@@ -7,7 +7,8 @@ import { formatDotDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
-const inputCls = "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
+const inputCls =
+  "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
 function emptyForm() {
@@ -45,7 +46,10 @@ function EventFormModal({ event, onClose, onSave, saving }) {
   const [form, setForm] = useState(toFormState(event));
 
   const set = (key) => (e) =>
-    setForm((prev) => ({ ...prev, [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
+    setForm((prev) => ({
+      ...prev,
+      [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    }));
 
   const handleSubmit = () => {
     if (!form.title.trim() || !form.date) return;
@@ -61,19 +65,33 @@ function EventFormModal({ event, onClose, onSave, saving }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,.45)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,.45)" }}
+    >
       <div className="bg-white rounded-2xl p-8 w-[640px] max-h-[90vh] overflow-y-auto shadow-2xl">
-        <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">{isEdit ? "행사 수정" : "새 행사 등록"}</h3>
+        <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">
+          {isEdit ? "행사 수정" : "새 행사 등록"}
+        </h3>
         <div className="flex flex-col gap-4">
           <div>
             <label className={labelCls}>행사명</label>
-            <input className={inputCls} value={form.title} onChange={set("title")} placeholder="행사명" />
+            <input
+              className={inputCls}
+              value={form.title}
+              onChange={set("title")}
+              placeholder="행사명"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelCls}>주최 부서</label>
-              <select className={`${inputCls} bg-white`} value={form.department} onChange={set("department")}>
+              <select
+                className={`${inputCls} bg-white`}
+                value={form.department}
+                onChange={set("department")}
+              >
                 {EVENT_CATEGORIES.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
@@ -81,7 +99,12 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             </div>
             <div>
               <label className={labelCls}>장소</label>
-              <input className={inputCls} value={form.location} onChange={set("location")} placeholder="장소" />
+              <input
+                className={inputCls}
+                value={form.location}
+                onChange={set("location")}
+                placeholder="장소"
+              />
             </div>
           </div>
 
@@ -92,11 +115,21 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             </div>
             <div>
               <label className={labelCls}>시작 시간</label>
-              <input type="time" className={inputCls} value={form.startTime} onChange={set("startTime")} />
+              <input
+                type="time"
+                className={inputCls}
+                value={form.startTime}
+                onChange={set("startTime")}
+              />
             </div>
             <div>
               <label className={labelCls}>종료 시간</label>
-              <input type="time" className={inputCls} value={form.endTime} onChange={set("endTime")} />
+              <input
+                type="time"
+                className={inputCls}
+                value={form.endTime}
+                onChange={set("endTime")}
+              />
             </div>
           </div>
 
@@ -123,7 +156,12 @@ function EventFormModal({ event, onClose, onSave, saving }) {
           </div>
 
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={form.canRegister} onChange={set("canRegister")} className="w-4 h-4 accent-primary" />
+            <input
+              type="checkbox"
+              checked={form.canRegister}
+              onChange={set("canRegister")}
+              className="w-4 h-4 accent-primary"
+            />
             <span className="text-body-4 text-grey-8">신청 받기</span>
           </label>
 
@@ -131,11 +169,21 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             <div className="grid grid-cols-3 gap-4 bg-grey-1 rounded-xl p-4">
               <div>
                 <label className={labelCls}>신청 시작일</label>
-                <input type="date" className={`${inputCls} bg-white`} value={form.registrationStart} onChange={set("registrationStart")} />
+                <input
+                  type="date"
+                  className={`${inputCls} bg-white`}
+                  value={form.registrationStart}
+                  onChange={set("registrationStart")}
+                />
               </div>
               <div>
                 <label className={labelCls}>신청 마감일</label>
-                <input type="date" className={`${inputCls} bg-white`} value={form.registrationEnd} onChange={set("registrationEnd")} />
+                <input
+                  type="date"
+                  className={`${inputCls} bg-white`}
+                  value={form.registrationEnd}
+                  onChange={set("registrationEnd")}
+                />
               </div>
               <div>
                 <label className={labelCls}>정원</label>
@@ -153,7 +201,10 @@ function EventFormModal({ event, onClose, onSave, saving }) {
         </div>
 
         <div className="flex gap-3 justify-end mt-6">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors">
+          <button
+            onClick={onClose}
+            className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors"
+          >
             취소
           </button>
           <button
@@ -179,7 +230,11 @@ const STATUS_BADGE = {
 
 export default function EventsManage() {
   const { church } = useChurch();
-  const { data: events = [], loading, refetch } = useFetch(() => getEvents(church.id), [church.id], []);
+  const {
+    data: events = [],
+    loading,
+    refetch,
+  } = useFetch(() => getEvents(church.id), [church.id], []);
   const [tab, setTab] = useState("전체");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(null); // null | "new" | event
@@ -213,7 +268,12 @@ export default function EventsManage() {
   return (
     <div>
       {modal && (
-        <EventFormModal event={modal === "new" ? null : modal} onClose={() => setModal(null)} onSave={handleSave} saving={saving} />
+        <EventFormModal
+          event={modal === "new" ? null : modal}
+          onClose={() => setModal(null)}
+          onSave={handleSave}
+          saving={saving}
+        />
       )}
 
       <div className="flex items-center justify-between mb-2">
@@ -222,7 +282,14 @@ export default function EventsManage() {
           onClick={() => setModal("new")}
           className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors flex items-center gap-2"
         >
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -239,7 +306,9 @@ export default function EventsManage() {
               key={t}
               onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-full text-body-5 font-medium transition-colors ${
-                t === tab ? "bg-primary text-white" : "bg-white border border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
+                t === tab
+                  ? "bg-primary text-white"
+                  : "bg-white border border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
               }`}
             >
               {t}
@@ -253,7 +322,11 @@ export default function EventsManage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <img src={IcoSearch} className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px]" alt="" />
+          <img
+            src={IcoSearch}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px]"
+            alt=""
+          />
         </div>
       </div>
 
@@ -291,7 +364,9 @@ export default function EventsManage() {
               >
                 <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
                 <span className="flex justify-center">
-                  <span className={`text-body-5 font-bold px-2 py-0.5 rounded ${ds.chip}`}>{e.department}</span>
+                  <span className={`text-body-5 font-bold px-2 py-0.5 rounded ${ds.chip}`}>
+                    {e.department}
+                  </span>
                 </span>
                 <span className="pl-2 text-body-4 text-grey-9 truncate pr-4">{e.title}</span>
                 <span className="text-body-5 text-grey-6 truncate pr-2">{e.location}</span>
@@ -305,15 +380,21 @@ export default function EventsManage() {
                   )}
                 </span>
                 <span className="text-body-5 text-grey-6 text-center">
-                  {e.canRegister ? `${formatDotDate(e.registrationStart)} ~ ${formatDotDate(e.registrationEnd)}` : "-"}
+                  {e.canRegister
+                    ? `${formatDotDate(e.registrationStart)} ~ ${formatDotDate(e.registrationEnd)}`
+                    : "-"}
                 </span>
                 <span className="text-center">
                   {e.canRegister ? (
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-body-5 text-grey-7">
-                        {e.capacity != null ? `${e.registeredCount}/${e.capacity}` : `${e.registeredCount}명`}
+                        {e.capacity != null
+                          ? `${e.registeredCount}/${e.capacity}`
+                          : `${e.registeredCount}명`}
                       </span>
-                      <span className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[regState.status] ?? STATUS_BADGE.closed}`}>
+                      <span
+                        className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[regState.status] ?? STATUS_BADGE.closed}`}
+                      >
                         {regState.label}
                       </span>
                     </div>

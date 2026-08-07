@@ -10,7 +10,9 @@ import SearchOverlay from "@/components/common/SearchOverlay";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 }
 
@@ -135,15 +137,27 @@ function DesktopHeader() {
           >
             <div
               className="bg-white rounded-2xl shadow-2xl w-[320px] px-8 py-8 flex flex-col items-center gap-5"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="w-14 h-14 rounded-full bg-blue-1 flex items-center justify-center">
-                <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                <svg
+                  className="w-7 h-7 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                  />
                 </svg>
               </div>
               <div className="text-center">
-                <p className="text-sub-tit-4 font-bold text-grey-12 mb-2">로그인이 필요한 서비스입니다</p>
+                <p className="text-sub-tit-4 font-bold text-grey-12 mb-2">
+                  로그인이 필요한 서비스입니다
+                </p>
                 <p className="text-body-4 text-grey-6">교적부를 이용하려면 로그인해 주세요.</p>
               </div>
               <div className="flex gap-2 w-full">
@@ -238,8 +252,12 @@ function DesktopFooter() {
           </div>
           <div className="flex flex-col gap-5 py-2">
             <div className="flex items-center gap-10 text-body-2 font-bold text-grey-10">
-              <Link to="/privacy" className="font-extrabold hover:text-blue-7 transition-colors">개인정보취급방침</Link>
-              <Link to="/terms" className="hover:text-blue-7 transition-colors">이용 약관</Link>
+              <Link to="/privacy" className="font-extrabold hover:text-blue-7 transition-colors">
+                개인정보취급방침
+              </Link>
+              <Link to="/terms" className="hover:text-blue-7 transition-colors">
+                이용 약관
+              </Link>
             </div>
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-10 text-body-3 text-grey-9">
@@ -249,11 +267,15 @@ function DesktopFooter() {
                 </div>
                 <div className="flex items-center gap-3">
                   <img src={FooterPhone} className="w-5 h-5 shrink-0" alt="" />
-                  <span>TEL <strong>{church.tel}</strong></span>
+                  <span>
+                    TEL <strong>{church.tel}</strong>
+                  </span>
                   {church.fax && (
                     <>
                       <span className="text-grey-5">|</span>
-                      <span>FAX <strong>{church.fax}</strong></span>
+                      <span>
+                        FAX <strong>{church.fax}</strong>
+                      </span>
                     </>
                   )}
                 </div>
@@ -267,20 +289,35 @@ function DesktopFooter() {
         </div>
 
         <div className="flex items-center gap-4 pb-1">
-          <a href={church.social?.youtube ?? "#"} aria-label="YouTube" target="_blank" rel="noopener noreferrer"
-            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.youtube ?? "#"}
+            aria-label="YouTube"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
           </a>
-          <a href={church.social?.instagram ?? "#"} aria-label="Instagram" target="_blank" rel="noopener noreferrer"
-            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.instagram ?? "#"}
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
             </svg>
           </a>
-          <a href={church.social?.facebook ?? "#"} aria-label="Facebook" target="_blank" rel="noopener noreferrer"
-            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.facebook ?? "#"}
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-7 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
@@ -310,34 +347,59 @@ function MobileFooter() {
 
         {/* 약관 */}
         <div className="flex items-center gap-5 text-[13px] font-medium text-grey-7">
-          <Link to="/privacy" className="font-bold text-grey-9 hover:text-primary transition-colors">개인정보취급방침</Link>
+          <Link
+            to="/privacy"
+            className="font-bold text-grey-9 hover:text-primary transition-colors"
+          >
+            개인정보취급방침
+          </Link>
           <span className="w-px h-3 bg-bluegrey-3" />
-          <Link to="/terms" className="hover:text-primary transition-colors">이용 약관</Link>
+          <Link to="/terms" className="hover:text-primary transition-colors">
+            이용 약관
+          </Link>
         </div>
 
         {/* 교회 정보 */}
         <div className="flex flex-col items-center gap-1.5 text-[12px] text-grey-6 text-center">
           <span>{church.address}</span>
-          <span>TEL {church.tel}{church.fax ? ` · FAX ${church.fax}` : ""}</span>
+          <span>
+            TEL {church.tel}
+            {church.fax ? ` · FAX ${church.fax}` : ""}
+          </span>
           {church.email && <span>{church.email}</span>}
         </div>
 
         {/* SNS 아이콘 */}
         <div className="flex items-center gap-3">
-          <a href={church.social?.youtube ?? "#"} aria-label="YouTube" target="_blank" rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.youtube ?? "#"}
+            aria-label="YouTube"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
           </a>
-          <a href={church.social?.instagram ?? "#"} aria-label="Instagram" target="_blank" rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.instagram ?? "#"}
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
             </svg>
           </a>
-          <a href={church.social?.facebook ?? "#"} aria-label="Facebook" target="_blank" rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors">
+          <a
+            href={church.social?.facebook ?? "#"}
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full border border-bluegrey-2 flex items-center justify-center text-grey-6 hover:text-primary hover:border-primary transition-colors"
+          >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
@@ -365,7 +427,13 @@ function MobileHeader({ onMenuOpen }) {
         />
       </Link>
       <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
@@ -383,7 +451,9 @@ function MobileDrawer({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   return (
@@ -399,7 +469,13 @@ function MobileDrawer({ isOpen, onClose }) {
         <div className="flex items-center justify-between px-5 h-14 border-b border-bluegrey-2 shrink-0">
           <span className="text-[17px] font-bold text-primary">{church.name}</span>
           <button onClick={onClose} className="p-1.5 -mr-1 text-grey-8" aria-label="메뉴 닫기">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -436,7 +512,10 @@ function MobileDrawer({ isOpen, onClose }) {
         </nav>
 
         {/* 로그인/유틸 */}
-        <div className="px-5 py-5 border-t border-bluegrey-2 shrink-0" style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}>
+        <div
+          className="px-5 py-5 border-t border-bluegrey-2 shrink-0"
+          style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+        >
           {currentUser ? (
             <div className="flex flex-col gap-2">
               <Link
@@ -447,7 +526,10 @@ function MobileDrawer({ isOpen, onClose }) {
                 마이페이지
               </Link>
               <button
-                onClick={() => { logout(); onClose(); }}
+                onClick={() => {
+                  logout();
+                  onClose();
+                }}
                 className="w-full text-center py-2.5 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9"
               >
                 로그아웃
@@ -482,40 +564,90 @@ function MobileDrawer({ isOpen, onClose }) {
 // ─────────────────────────────────────────────────────
 function IconBible({ active }) {
   return (
-    <svg className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+    <svg
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+      />
     </svg>
   );
 }
 
 function IconJubo({ active }) {
   return (
-    <svg className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+    <svg
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+      />
     </svg>
   );
 }
 
 function IconHome() {
   return (
-    <svg className="w-[26px] h-[26px] text-white" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+    <svg
+      className="w-[26px] h-[26px] text-white"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+      />
     </svg>
   );
 }
 
 function IconCalendar({ active }) {
   return (
-    <svg className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+    <svg
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+      />
     </svg>
   );
 }
 
 function IconMyPage({ active }) {
   return (
-    <svg className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    <svg
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+      />
     </svg>
   );
 }
@@ -574,15 +706,13 @@ function BottomNav() {
           const active = tab.match(pathname);
           if (tab.isHome) {
             return (
-              <Link
-                key={tab.label}
-                to={tab.to}
-                className="flex-1 flex flex-col items-center pb-2"
-              >
+              <Link key={tab.label} to={tab.to} className="flex-1 flex flex-col items-center pb-2">
                 <div className="w-[52px] h-[52px] rounded-full bg-primary flex items-center justify-center shadow-md -mt-4">
                   <IconHome />
                 </div>
-                <span className={`text-[10px] mt-0.5 font-medium ${active ? "text-primary" : "text-grey-6"}`}>
+                <span
+                  className={`text-[10px] mt-0.5 font-medium ${active ? "text-primary" : "text-grey-6"}`}
+                >
                   {tab.label}
                 </span>
               </Link>

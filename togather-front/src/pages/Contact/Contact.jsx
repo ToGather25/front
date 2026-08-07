@@ -31,22 +31,31 @@ export default function Contact() {
 
       <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-14">
         <div className="grid gap-12 grid-cols-1 md:grid-cols-[1fr_400px]">
-
           {/* 문의 양식 */}
           {submitted ? (
             <div className="flex flex-col items-center justify-center gap-6 py-24 col-span-2">
               <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <p className="text-sub-tit-3 font-bold text-grey-11">문의가 접수되었습니다.</p>
               <p className="text-body-3 text-grey-7 text-center">
-                빠른 시일 내에 답변 드리겠습니다.<br />
+                빠른 시일 내에 답변 드리겠습니다.
+                <br />
                 연락처 이메일 또는 전화로 회신드릴 예정입니다.
               </p>
               <button
-                onClick={() => { setForm({ name: "", phone: "", email: "", category: "", message: "" }); setSubmitted(false); }}
+                onClick={() => {
+                  setForm({ name: "", phone: "", email: "", category: "", message: "" });
+                  setSubmitted(false);
+                }}
                 className="mt-2 px-8 py-3 rounded-full bg-primary text-white font-semibold text-body-3 hover:bg-blue-8 transition-colors"
               >
                 추가 문의하기
@@ -56,7 +65,9 @@ export default function Contact() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-body-4 font-semibold text-grey-9">이름 <span className="text-blue-7">*</span></label>
+                  <label className="text-body-4 font-semibold text-grey-9">
+                    이름 <span className="text-blue-7">*</span>
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -68,7 +79,9 @@ export default function Contact() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-body-4 font-semibold text-grey-9">연락처 <span className="text-blue-7">*</span></label>
+                  <label className="text-body-4 font-semibold text-grey-9">
+                    연락처 <span className="text-blue-7">*</span>
+                  </label>
                   <input
                     type="tel"
                     name="phone"
@@ -94,7 +107,9 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-body-4 font-semibold text-grey-9">문의 유형 <span className="text-blue-7">*</span></label>
+                <label className="text-body-4 font-semibold text-grey-9">
+                  문의 유형 <span className="text-blue-7">*</span>
+                </label>
                 <select
                   name="category"
                   value={form.category}
@@ -104,13 +119,17 @@ export default function Contact() {
                 >
                   <option value="">선택해 주세요</option>
                   {categories.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-body-4 font-semibold text-grey-9">문의 내용 <span className="text-blue-7">*</span></label>
+                <label className="text-body-4 font-semibold text-grey-9">
+                  문의 내용 <span className="text-blue-7">*</span>
+                </label>
                 <textarea
                   name="message"
                   value={form.message}
@@ -142,34 +161,54 @@ export default function Contact() {
                     <img src={IcoPhone} className="w-5 h-5" alt="" />
                   </div>
                   <div className="pt-1">
-                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">전화</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
+                      전화
+                    </p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.tel}</p>
-                    {church.fax && <p className="text-body-4 text-grey-6 mt-0.5">FAX {church.fax}</p>}
+                    {church.fax && (
+                      <p className="text-body-4 text-grey-6 mt-0.5">FAX {church.fax}</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      viewBox="0 0 24 24"
+                    >
                       <rect x="4" y="4" width="16" height="14" rx="2" />
                       <path d="M4 8l8 5 8-5" />
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">이메일</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
+                      이메일
+                    </p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.email}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      viewBox="0 0 24 24"
+                    >
                       <circle cx="12" cy="12" r="10" />
                       <path d="M12 6v6l4 2" />
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">운영 시간</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
+                      운영 시간
+                    </p>
                     <p className="text-body-3 text-grey-9 mt-0.5">평일 오전 9시 ~ 오후 6시</p>
                     <p className="text-body-4 text-grey-6 mt-0.5">월요일·공휴일 휴무</p>
                   </div>
@@ -177,13 +216,21 @@ export default function Contact() {
 
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M12 2c4 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2-7 6-11z" />
                       <circle cx="12" cy="12" r="2.5" />
                     </svg>
                   </div>
                   <div className="pt-1">
-                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">주소</p>
+                    <p className="text-caption font-bold text-grey-7 uppercase tracking-[0.06em]">
+                      주소
+                    </p>
                     <p className="text-body-3 text-grey-9 mt-0.5">{church.address}</p>
                   </div>
                 </div>

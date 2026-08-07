@@ -45,14 +45,27 @@ export default function LoginPage() {
 
         <div className="relative">
           <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
           </div>
-          <h1 className="text-headline-4 font-bold text-white mb-3">{church?.name ?? "ToGather"}</h1>
+          <h1 className="text-headline-4 font-bold text-white mb-3">
+            {church?.name ?? "ToGather"}
+          </h1>
           <p className="text-body-2 text-white/70 leading-relaxed">
-            말씀과 공동체가 함께하는<br />교회 커뮤니티 서비스
+            말씀과 공동체가 함께하는
+            <br />
+            교회 커뮤니티 서비스
           </p>
         </div>
 
@@ -83,7 +96,9 @@ export default function LoginPage() {
             <div>
               <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">이메일</label>
               <input
-                name="email" type="email" required
+                name="email"
+                type="email"
+                required
                 className="w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all"
                 placeholder="example@email.com"
               />
@@ -92,7 +107,9 @@ export default function LoginPage() {
             <div>
               <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">비밀번호</label>
               <input
-                name="password" type="password" required
+                name="password"
+                type="password"
+                required
                 className="w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all"
                 placeholder="••••••••"
               />
@@ -109,7 +126,10 @@ export default function LoginPage() {
                   로그인 유지
                 </label>
               </div>
-              <Link to="/find-password" className="text-body-5 text-blue-6 hover:text-blue-8 transition-colors">
+              <Link
+                to="/find-password"
+                className="text-body-5 text-blue-6 hover:text-blue-8 transition-colors"
+              >
                 비밀번호 찾기
               </Link>
             </div>
@@ -143,15 +163,24 @@ export default function LoginPage() {
                 aria-label={`${provider.name}로 로그인`}
                 className="w-12 h-12 rounded-full border border-grey-2 flex items-center justify-center overflow-hidden hover:brightness-95 active:scale-95 transition-all"
               >
-                <img src={provider.icon} alt={provider.name} className="w-full h-full object-cover" />
+                <img
+                  src={provider.icon}
+                  alt={provider.name}
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>
 
           <div className="flex justify-center items-center gap-4 mt-6 text-body-4 text-grey-7">
-            <Link to="/find-id" className="hover:text-blue-7 transition-colors">아이디 찾기</Link>
+            <Link to="/find-id" className="hover:text-blue-7 transition-colors">
+              아이디 찾기
+            </Link>
             <span className="text-grey-3">|</span>
-            <Link to="/register" className="text-blue-7 font-semibold hover:text-blue-8 transition-colors">
+            <Link
+              to="/register"
+              className="text-blue-7 font-semibold hover:text-blue-8 transition-colors"
+            >
               회원가입
             </Link>
           </div>

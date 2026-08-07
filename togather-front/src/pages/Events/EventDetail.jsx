@@ -14,7 +14,7 @@ export default function EventDetail() {
   const { data: event, loading } = useFetch(
     () => getEventById(church.id, id),
     [church.id, id],
-    null
+    null,
   );
 
   if (loading) {
@@ -29,7 +29,10 @@ export default function EventDetail() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 md:px-8 text-center">
         <p className="text-body-2 text-grey-7 mb-4">행사를 찾을 수 없습니다.</p>
-        <Link to="/교회행사" className="text-body-4 text-blue-7 hover:text-blue-8 transition-colors">
+        <Link
+          to="/교회행사"
+          className="text-body-4 text-blue-7 hover:text-blue-8 transition-colors"
+        >
           ← 행사 캘린더로 돌아가기
         </Link>
       </div>
@@ -57,7 +60,9 @@ export default function EventDetail() {
         <p className="text-body-3 text-grey-7 mt-1">{event.location}</p>
       </div>
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-body-4 text-grey-7 mb-6">
-        <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold ${ds.chip}`}>
+        <span
+          className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold ${ds.chip}`}
+        >
           {event.department}
         </span>
         <span>

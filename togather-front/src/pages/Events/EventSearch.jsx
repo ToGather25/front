@@ -23,7 +23,9 @@ function EventResultRow({ event, query }) {
           <HighlightText text={event.description} query={query} />
         </p>
       </div>
-      <span className="text-body-4 text-grey-6 shrink-0 tabular-nums">{formatMonthDay(event.date)}</span>
+      <span className="text-body-4 text-grey-6 shrink-0 tabular-nums">
+        {formatMonthDay(event.date)}
+      </span>
     </Link>
   );
 }
@@ -37,7 +39,7 @@ export default function EventSearch() {
   const { data: results = [], loading } = useFetch(
     () => searchEvents(church.id, { q, sort }),
     [church.id, q, sort],
-    []
+    [],
   );
   const { data: recent = [] } = useFetch(() => getRecentEvents(church.id, 5), [church.id], []);
 
@@ -63,7 +65,9 @@ export default function EventSearch() {
         </div>
       ) : results.length === 0 ? (
         <div>
-          <p className="text-body-2 text-grey-8 font-semibold mb-8">'{q}'에 대한 검색 결과가 없습니다.</p>
+          <p className="text-body-2 text-grey-8 font-semibold mb-8">
+            '{q}'에 대한 검색 결과가 없습니다.
+          </p>
           {recent.length > 0 && (
             <div>
               <p className="text-body-3 font-semibold text-grey-9 mb-2">최근 등록된 행사</p>

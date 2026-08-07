@@ -23,7 +23,13 @@ export default function ServiceBand() {
           className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors"
         >
           전체 안내
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </Link>
@@ -43,9 +49,7 @@ export default function ServiceBand() {
             <p className="text-headline-4 font-bold text-primary tracking-[-0.5px] leading-none mb-2">
               {s.time}
             </p>
-            {s.location && (
-              <p className="text-body-5 text-grey-5">{s.location}</p>
-            )}
+            {s.location && <p className="text-body-5 text-grey-5">{s.location}</p>}
           </div>
         ))}
       </div>

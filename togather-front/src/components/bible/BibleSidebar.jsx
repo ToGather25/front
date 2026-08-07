@@ -33,9 +33,7 @@ export default function BibleSidebar({
           sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"
         }`}
       >
-        {sidebarOpen && (
-          <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />
-        )}
+        {sidebarOpen && <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />}
         <button
           onClick={onToggle}
           className="w-8 h-8 flex flex-col items-center justify-center gap-[5px] shrink-0 text-grey-6 hover:text-grey-9"

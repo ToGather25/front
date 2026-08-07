@@ -18,7 +18,13 @@ export default function JuboPreviewSection() {
             className="flex items-center gap-1 text-body-3 font-medium text-grey-7 hover:text-blue-6 transition-colors"
           >
             전체 보기
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </Link>
@@ -27,7 +33,13 @@ export default function JuboPreviewSection() {
         <div className="bg-white border border-bluegrey-2 rounded-2xl p-6 flex items-center gap-5">
           {/* 이전 버튼 */}
           <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-2 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
@@ -59,7 +71,13 @@ export default function JuboPreviewSection() {
 
           {/* 다음 버튼 */}
           <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-2 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </button>

@@ -25,7 +25,12 @@ function buildCalendarCells(year, month) {
 
   const cells = [];
   for (let i = 0; i < firstDay; i++) {
-    cells.push({ key: `prev-${i}`, day: daysInPrevMonth - firstDay + 1 + i, inMonth: false, dateStr: null });
+    cells.push({
+      key: `prev-${i}`,
+      day: daysInPrevMonth - firstDay + 1 + i,
+      inMonth: false,
+      dateStr: null,
+    });
   }
   for (let day = 1; day <= daysInMonth; day++) {
     cells.push({ key: `cur-${day}`, day, inMonth: true, dateStr: toDateKey(year, month, day) });
@@ -55,7 +60,7 @@ export default function Events() {
   const { data: events = [], loading } = useFetch(
     () => getEvents(church.id, { year, month: month + 1 }),
     [church.id, year, month],
-    []
+    [],
   );
 
   const prevMonth = () => {
@@ -69,7 +74,7 @@ export default function Events() {
 
   const eventsForDate = (dateStr) =>
     events.filter(
-      (e) => e.date === dateStr && (activeCategory === null || e.department === activeCategory)
+      (e) => e.date === dateStr && (activeCategory === null || e.department === activeCategory),
     );
 
   const selectedEvents = selectedDate ? eventsForDate(selectedDate) : [];
@@ -82,13 +87,34 @@ export default function Events() {
       <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
         <div className="flex items-center gap-3">
           <h1 className="text-sub-tit-1 font-bold text-grey-12">{monthName}</h1>
-          <button onClick={prevMonth} className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors">
-            <svg className="w-4 h-4 text-grey-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <button
+            onClick={prevMonth}
+            className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors"
+          >
+            <svg
+              className="w-4 h-4 text-grey-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors">
-            <svg className="w-4 h-4 text-grey-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button
+            onClick={nextMonth}
+            className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors"
+          >
+            <svg
+              className="w-4 h-4 text-grey-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -134,7 +160,10 @@ export default function Events() {
             {cells.map((cell) => {
               if (!cell.inMonth) {
                 return (
-                  <div key={cell.key} className="border-b border-r border-bluegrey-2 min-h-14 md:min-h-24 p-2">
+                  <div
+                    key={cell.key}
+                    className="border-b border-r border-bluegrey-2 min-h-14 md:min-h-24 p-2"
+                  >
                     <span className="text-body-4 text-grey-4">{cell.day}</span>
                   </div>
                 );
@@ -143,14 +172,18 @@ export default function Events() {
               const dayEvents = eventsForDate(cell.dateStr);
               const isSelected = selectedDate === cell.dateStr;
               const isToday =
-                today.getFullYear() === year && today.getMonth() === month && today.getDate() === cell.day;
+                today.getFullYear() === year &&
+                today.getMonth() === month &&
+                today.getDate() === cell.day;
 
               return (
                 <div
                   key={cell.key}
                   onClick={() => setSelectedDate(cell.dateStr)}
                   className={`relative border-b border-r border-bluegrey-2 min-h-14 md:min-h-24 p-2 cursor-pointer transition-colors ${
-                    isSelected ? "bg-blue-1/60 outline outline-2 outline-dashed outline-blue-6 -outline-offset-2 z-10" : "hover:bg-bluegrey-1"
+                    isSelected
+                      ? "bg-blue-1/60 outline outline-2 outline-dashed outline-blue-6 -outline-offset-2 z-10"
+                      : "hover:bg-bluegrey-1"
                   }`}
                 >
                   <span
@@ -199,18 +232,26 @@ export default function Events() {
           </div>
           <div className="flex flex-col divide-y divide-bluegrey-2">
             {loading ? (
-              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">불러오는 중...</div>
+              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
+                불러오는 중...
+              </div>
             ) : !selectedDate ? (
-              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">날짜를 선택하세요.</div>
+              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
+                날짜를 선택하세요.
+              </div>
             ) : selectedEvents.length === 0 ? (
-              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">일정이 없습니다.</div>
+              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
+                일정이 없습니다.
+              </div>
             ) : (
               selectedEvents.map((evt) => {
                 const ds = getDepartmentStyle(evt.department);
                 return (
                   <div key={evt.id} className="px-6 py-5 flex flex-col gap-3">
                     <div className="flex items-center justify-between">
-                      <span className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${ds.chip}`}>
+                      <span
+                        className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${ds.chip}`}
+                      >
                         {evt.department}
                       </span>
                       <span className="text-body-5 text-bluegrey-4">등록일 {evt.createdAt}</span>

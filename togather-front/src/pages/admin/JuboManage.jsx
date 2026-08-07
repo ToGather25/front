@@ -31,7 +31,8 @@ function FieldRow({ label, children }) {
   );
 }
 
-const inputCls = "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 text-grey-10 focus:outline-none focus:border-primary transition-colors";
+const inputCls =
+  "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
 export default function JuboManage() {
   const [edition, setEdition] = useState(EDITIONS[0]);
@@ -71,7 +72,10 @@ export default function JuboManage() {
             <img src={IcoSearch} className="w-[15px] h-[15px]" alt="" />
             미리보기
           </button>
-          <button onClick={handleSave} className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors">
+          <button
+            onClick={handleSave}
+            className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+          >
             {saved ? "저장 완료 ✓" : "저장"}
           </button>
         </div>
@@ -83,13 +87,23 @@ export default function JuboManage() {
         <select
           className="border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 text-grey-9 focus:outline-none focus:border-primary bg-white"
           value={edition}
-          onChange={e => setEdition(e.target.value)}
+          onChange={(e) => setEdition(e.target.value)}
         >
-          {EDITIONS.map(e => <option key={e}>{e}</option>)}
+          {EDITIONS.map((e) => (
+            <option key={e}>{e}</option>
+          ))}
         </select>
         <button className="ml-2 px-4 py-2.5 rounded-xl border border-grey-3 text-body-4 font-medium text-grey-7 hover:border-primary hover:text-primary transition-colors flex items-center gap-2">
-          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          <svg
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           새 주보 생성
         </button>
@@ -97,67 +111,146 @@ export default function JuboManage() {
 
       <div className="grid gap-5">
         {/* 예배 순서 */}
-        <SectionCard title="예배 순서 및 설교" icon={
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-          </svg>
-        }>
+        <SectionCard
+          title="예배 순서 및 설교"
+          icon={
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          }
+        >
           <div>
             <FieldRow label="주제 말씀">
-              <input className={inputCls} value={worship.verse} onChange={e => setWorship(p => ({...p, verse: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.verse}
+                onChange={(e) => setWorship((p) => ({ ...p, verse: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="말씀 출처">
-              <input className={inputCls} value={worship.verseRef} onChange={e => setWorship(p => ({...p, verseRef: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.verseRef}
+                onChange={(e) => setWorship((p) => ({ ...p, verseRef: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="설교자">
-              <input className={inputCls} value={worship.pastor} onChange={e => setWorship(p => ({...p, pastor: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.pastor}
+                onChange={(e) => setWorship((p) => ({ ...p, pastor: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="설교 제목">
-              <input className={inputCls} value={worship.title} onChange={e => setWorship(p => ({...p, title: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.title}
+                onChange={(e) => setWorship((p) => ({ ...p, title: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="본문 말씀">
-              <input className={inputCls} value={worship.scripture} onChange={e => setWorship(p => ({...p, scripture: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.scripture}
+                onChange={(e) => setWorship((p) => ({ ...p, scripture: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="찬양">
-              <input className={inputCls} value={worship.praise} onChange={e => setWorship(p => ({...p, praise: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={worship.praise}
+                onChange={(e) => setWorship((p) => ({ ...p, praise: e.target.value }))}
+              />
             </FieldRow>
           </div>
         </SectionCard>
 
         {/* 주요 공지 */}
-        <SectionCard title="주요 공지 사항" icon={
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-            <polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/>
-          </svg>
-        }>
+        <SectionCard
+          title="주요 공지 사항"
+          icon={
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              viewBox="0 0 24 24"
+            >
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+            </svg>
+          }
+        >
           <div>
-            {["item1","item2","item3","item4"].map((key, i) => (
+            {["item1", "item2", "item3", "item4"].map((key, i) => (
               <FieldRow key={key} label={`공지 ${i + 1}`}>
-                <input className={inputCls} value={notice[key]} onChange={e => setNotice(p => ({...p, [key]: e.target.value}))} placeholder="공지 내용 (비워두면 미표시)" />
+                <input
+                  className={inputCls}
+                  value={notice[key]}
+                  onChange={(e) => setNotice((p) => ({ ...p, [key]: e.target.value }))}
+                  placeholder="공지 내용 (비워두면 미표시)"
+                />
               </FieldRow>
             ))}
           </div>
         </SectionCard>
 
         {/* 섬기는 분들 */}
-        <SectionCard title="이 주 섬기는 분들" icon={
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-          </svg>
-        }>
+        <SectionCard
+          title="이 주 섬기는 분들"
+          icon={
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              viewBox="0 0 24 24"
+            >
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+          }
+        >
           <div>
             <FieldRow label="대표 기도">
-              <input className={inputCls} value={service.prayer} onChange={e => setService(p => ({...p, prayer: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={service.prayer}
+                onChange={(e) => setService((p) => ({ ...p, prayer: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="성경 봉독">
-              <input className={inputCls} value={service.scripture} onChange={e => setService(p => ({...p, scripture: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={service.scripture}
+                onChange={(e) => setService((p) => ({ ...p, scripture: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="헌금 위원">
-              <input className={inputCls} value={service.offering} onChange={e => setService(p => ({...p, offering: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={service.offering}
+                onChange={(e) => setService((p) => ({ ...p, offering: e.target.value }))}
+              />
             </FieldRow>
             <FieldRow label="꽃꽂이">
-              <input className={inputCls} value={service.flower} onChange={e => setService(p => ({...p, flower: e.target.value}))} />
+              <input
+                className={inputCls}
+                value={service.flower}
+                onChange={(e) => setService((p) => ({ ...p, flower: e.target.value }))}
+              />
             </FieldRow>
           </div>
         </SectionCard>

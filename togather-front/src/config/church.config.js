@@ -7,16 +7,16 @@
  * 현재는 로컬 설정 파일 사용 (개발 단계)
  */
 
-import floor1  from "@/assets/floors/1.png";
-import floor2  from "@/assets/floors/2.png";
-import floor3  from "@/assets/floors/3.png";
-import floor4  from "@/assets/floors/4.png";
+import floor1 from "@/assets/floors/1.png";
+import floor2 from "@/assets/floors/2.png";
+import floor3 from "@/assets/floors/3.png";
+import floor4 from "@/assets/floors/4.png";
 import floorB1 from "@/assets/floors/B1.png";
 
 const churchConfig = {
   // ── 식별자 ────────────────────────────────────────────
-  id: "togather-church",          // API 요청 시 churchId로 사용
-  slug: "togather",               // 서브도메인/URL 슬러그
+  id: "togather-church", // API 요청 시 churchId로 사용
+  slug: "togather", // 서브도메인/URL 슬러그
 
   // ── 교회 기본 정보 ────────────────────────────────────
   name: "알곡교회",
@@ -30,19 +30,19 @@ const churchConfig = {
 
   // ── 지도 설정 (카카오맵) ──────────────────────────────
   location: {
-    level: 3,   // 확대 수준 (낮을수록 확대)
+    level: 3, // 확대 수준 (낮을수록 확대)
   },
 
   // ── 브랜드 ────────────────────────────────────────────
   // logoUrl: "/icons/512x512.png"  // CDN URL로 교체 가능
-  logoUrl: null,   // null이면 기본 로고 사용
+  logoUrl: null, // null이면 기본 로고 사용
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube: "https://www.youtube.com/channel/UCEqVXU3lm5RbDRWbTSPc_yg",           // 채널 URL (푸터 링크용)
-    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg",           // UC로 시작하는 채널 ID (예: UCxxxxxxxxxxxxxxxxxx)
-    instagram:        null,
-    facebook:         null,
+    youtube: "https://www.youtube.com/channel/UCEqVXU3lm5RbDRWbTSPc_yg", // 채널 URL (푸터 링크용)
+    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg", // UC로 시작하는 채널 ID (예: UCxxxxxxxxxxxxxxxxxx)
+    instagram: null,
+    facebook: null,
   },
 
   // ── 네비게이션 (교회별 커스텀 가능) ──────────────────
@@ -51,20 +51,20 @@ const churchConfig = {
       label: "교회소개",
       to: "/교회소개",
       children: [
-        { label: "인사말",        to: "/교회소개?tab=인사말" },
-        { label: "교회 비전",      to: "/교회소개?tab=교회 비전" },
-        { label: "교회 연혁",      to: "/교회소개?tab=교회 연혁" },
-        { label: "예배 안내",     to: "/교회소개?tab=예배 안내" },
+        { label: "인사말", to: "/교회소개?tab=인사말" },
+        { label: "교회 비전", to: "/교회소개?tab=교회 비전" },
+        { label: "교회 연혁", to: "/교회소개?tab=교회 연혁" },
+        { label: "예배 안내", to: "/교회소개?tab=예배 안내" },
         { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
-        { label: "층별 안내",     to: "/교회소개?tab=층별 안내" },
-        { label: "오시는 길",     to: "/교회소개?tab=오시는 길" },
+        { label: "층별 안내", to: "/교회소개?tab=층별 안내" },
+        { label: "오시는 길", to: "/교회소개?tab=오시는 길" },
         { label: "차량운행 안내", to: "/교회소개?tab=차량운행 안내" },
       ],
     },
     {
       label: "예배·방송",
       children: [
-        { label: "예배 다시보기",           to: "/말씀/설교" },
+        { label: "예배 다시보기", to: "/말씀/설교" },
         { label: "실시간 방송 (ON-AIR)", to: "/말씀/방송" },
         // { label: "찬양 플레이리스트",    to: "/말씀/찬양" },
       ],
@@ -72,9 +72,9 @@ const churchConfig = {
     {
       label: "주일학교",
       children: [
-        { label: "유치부",      to: "/주일학교/유치부" },
-        { label: "초등부",      to: "/주일학교/초등부" },
-        { label: "중·고등부",   to: "/주일학교/중고등부" },
+        { label: "유치부", to: "/주일학교/유치부" },
+        { label: "초등부", to: "/주일학교/초등부" },
+        { label: "중·고등부", to: "/주일학교/중고등부" },
         { label: "대학·청년부", to: "/주일학교/청년부" },
       ],
     },
@@ -82,47 +82,48 @@ const churchConfig = {
       label: "전도·선교",
       children: [
         { label: "전도회 소개", to: "/전도선교/전도회" },
-        { label: "국내 선교",   to: "/전도선교/국내" },
-        { label: "해외 선교",   to: "/전도선교/해외" },
+        { label: "국내 선교", to: "/전도선교/국내" },
+        { label: "해외 선교", to: "/전도선교/해외" },
         { label: "선교지 소식", to: "/전도선교/소식" },
       ],
     },
     {
       label: "양육·훈련",
       children: [
-        { label: "제자훈련",         to: "/양육훈련/제자훈련" },
-        { label: "구역 모임",        to: "/양육훈련/구역" },
-        { label: "오늘의 묵상",      to: "/양육훈련/묵상" },
-        { label: "양육 프로그램",    to: "/양육훈련/프로그램" },
+        { label: "제자훈련", to: "/양육훈련/제자훈련" },
+        { label: "구역 모임", to: "/양육훈련/구역" },
+        { label: "오늘의 묵상", to: "/양육훈련/묵상" },
+        { label: "양육 프로그램", to: "/양육훈련/프로그램" },
         { label: "양육·훈련 게시판", to: "/양육훈련/게시판" },
-        { label: "성경 읽기·쓰기",   to: "/양육훈련" },
+        { label: "성경 읽기·쓰기", to: "/양육훈련" },
       ],
     },
     {
       label: "교회소식",
       children: [
         { label: "스마트 주보", to: "/주보" },
-        { label: "공지사항",    to: "/공지사항" },
-        { label: "교회행사",   to: "/교회행사" },
-        { label: "갤러리",     to: "/갤러리" },
+        { label: "공지사항", to: "/공지사항" },
+        { label: "교회행사", to: "/교회행사" },
+        { label: "갤러리", to: "/갤러리" },
       ],
     },
   ],
 
   // ── 기능 플래그 (SaaS 플랜별 ON/OFF) ────────────────
   features: {
-    jubo:    true,    // 스마트 주보
-    events:  true,    // 교회행사 캘린더
-    gallery: true,    // 갤러리
-    bible:   true,    // 성경 읽기/필사
-    mypage:  true,    // 마이페이지
+    jubo: true, // 스마트 주보
+    events: true, // 교회행사 캘린더
+    gallery: true, // 갤러리
+    bible: true, // 성경 읽기/필사
+    mypage: true, // 마이페이지
   },
 
   // ── 히어로 배너 텍스트 ────────────────────────────────
   mainBanner: {
     url: "",
     title: "하나님의 사랑이 우리에게\n이렇게 나타난 바 되었으니",
-    subtitle: "하나님의 자기의 독생자를 세상에 보내심은\n저로 말미암아 우리를 살리려 하심이니라 (요일 4:9)",
+    subtitle:
+      "하나님의 자기의 독생자를 세상에 보내심은\n저로 말미암아 우리를 살리려 하심이니라 (요일 4:9)",
   },
 
   // ── 인사말 ────────────────────────────────────────────
@@ -140,7 +141,7 @@ const churchConfig = {
       church: "알곡교회",
       title: "담임목사",
       name: "김함께",
-      signatureImage: null,   // 직인/캘리그라피 서명 이미지 URL — 없으면 교회 로고로 대체
+      signatureImage: null, // 직인/캘리그라피 서명 이미지 URL — 없으면 교회 로고로 대체
     },
   },
 
@@ -150,7 +151,7 @@ const churchConfig = {
     mainTitle: "알곡교회 공동체 비전 ToGather",
     mainVerse: '"함께 모여 하나님 아버지께로"',
     items: [
-      { label: "Together",  description: "첫번째 비전에 대한 내용을 입력하세요." },
+      { label: "Together", description: "첫번째 비전에 대한 내용을 입력하세요." },
       { label: "To father", description: "두번째 비전에 대한 내용을 입력하세요." },
       { label: "To gather", description: "세번째 비전에 대한 내용을 입력하세요." },
     ],
@@ -159,18 +160,18 @@ const churchConfig = {
   // ── 예배 시간표 ───────────────────────────────────────
   worshipSchedule: {
     regular: [
-      { name: "1부 예배",   time: "주일 오전 9시",     location: "본당" },
-      { name: "2부 예배",   time: "주일 오전 11시",    location: "본당" },
-      { name: "오후 예배",  time: "주일 오후 2시",     location: "본당" },
-      { name: "수요 예배",  time: "수요일 오전 10시",  location: "본당" },
-      { name: "금요기도회", time: "금요일 오후 8시",   location: "본당" },
-      { name: "새벽기도회", time: "매일 오전 5시반",   location: "본당" },
+      { name: "1부 예배", time: "주일 오전 9시", location: "본당" },
+      { name: "2부 예배", time: "주일 오전 11시", location: "본당" },
+      { name: "오후 예배", time: "주일 오후 2시", location: "본당" },
+      { name: "수요 예배", time: "수요일 오전 10시", location: "본당" },
+      { name: "금요기도회", time: "금요일 오후 8시", location: "본당" },
+      { name: "새벽기도회", time: "매일 오전 5시반", location: "본당" },
     ],
     departments: [
-      { name: "유치부",      time: "주일 오전 11시", location: "1층 유치부실" },
-      { name: "초등부",      time: "주일 오전 11시", location: "B1층 초등부실" },
-      { name: "중등부",      time: "주일 오전 11시", location: "B1층 초등부실" },
-      { name: "대학·청년부", time: "주일 오후 3시",  location: "1층 카페" },
+      { name: "유치부", time: "주일 오전 11시", location: "1층 유치부실" },
+      { name: "초등부", time: "주일 오전 11시", location: "B1층 초등부실" },
+      { name: "중등부", time: "주일 오전 11시", location: "B1층 초등부실" },
+      { name: "대학·청년부", time: "주일 오후 3시", location: "1층 카페" },
     ],
   },
 
@@ -183,42 +184,133 @@ const churchConfig = {
       email: "gather@gmail.com",
       role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
       image: null,
-      education: [
-        "OOO대학교 졸업",
-        "OOO신대학원 졸업",
-        "미국 OOO대학교 신학대학원",
-      ],
-      career: [
-        "OO교회 nnn사 사역",
-        "전 OO교회 담임목사",
-        "2008' OO역 박사 취득",
-      ],
+      education: ["OOO대학교 졸업", "OOO신대학원 졸업", "미국 OOO대학교 신학대학원"],
+      career: ["OO교회 nnn사 사역", "전 OO교회 담임목사", "2008' OO역 박사 취득"],
     },
     clergy: [
-      { name: "김무리 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
-      { name: "김모두 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
-      { name: "임축복 목사",   tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
-      { name: "이행복 전도사", tel: "02-1234-5678", email: "gather@gmail.com", role: "교회 내 역할 및 소속 부서 등을 입력하세요.", image: null },
+      {
+        name: "김무리 목사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
+        image: null,
+      },
+      {
+        name: "김모두 전도사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
+        image: null,
+      },
+      {
+        name: "임축복 목사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
+        image: null,
+      },
+      {
+        name: "이행복 전도사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
+        image: null,
+      },
     ],
     elders: [
-      { name: "홍길동 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
-      { name: "박성실 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
-      { name: "최믿음 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
-      { name: "정소망 장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "시무장로", image: null },
+      {
+        name: "홍길동 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "시무장로",
+        image: null,
+      },
+      {
+        name: "박성실 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "시무장로",
+        image: null,
+      },
+      {
+        name: "최믿음 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "시무장로",
+        image: null,
+      },
+      {
+        name: "정소망 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "시무장로",
+        image: null,
+      },
     ],
     associateElders: [
-      { name: "김사랑 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로", image: null },
-      { name: "이은혜 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "사역장로", image: null },
-      { name: "박기쁨 장로",   tel: "02-1234-5678", email: "gather@gmail.com", role: "협동장로", image: null },
+      {
+        name: "김사랑 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "협동장로",
+        image: null,
+      },
+      {
+        name: "이은혜 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "사역장로",
+        image: null,
+      },
+      {
+        name: "박기쁨 장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "협동장로",
+        image: null,
+      },
     ],
     retiredElders: [
-      { name: "윤경건 원로장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로", image: null },
-      { name: "강진리 은퇴장로", tel: "02-1234-5678", email: "gather@gmail.com", role: "은퇴장로", image: null },
+      {
+        name: "윤경건 원로장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "은퇴장로",
+        image: null,
+      },
+      {
+        name: "강진리 은퇴장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "은퇴장로",
+        image: null,
+      },
     ],
     missionaries: [
-      { name: "오복음 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "태국 방콕 파송", location: "태국", image: null },
-      { name: "서열방 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "캄보디아 프놈펜 파송", location: "캄보디아", image: null },
-      { name: "문선교 선교사", tel: "02-1234-5678", email: "gather@gmail.com", role: "몽골 울란바토르 파송", location: "몽골", image: null },
+      {
+        name: "오복음 선교사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "태국 방콕 파송",
+        location: "태국",
+        image: null,
+      },
+      {
+        name: "서열방 선교사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "캄보디아 프놈펜 파송",
+        location: "캄보디아",
+        image: null,
+      },
+      {
+        name: "문선교 선교사",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "몽골 울란바토르 파송",
+        location: "몽골",
+        image: null,
+      },
     ],
   },
 
@@ -280,17 +372,29 @@ const churchConfig = {
 
   // ── 층별 안내 ─────────────────────────────────────────
   floorGuide: [
-    { floor: "4층",  rooms: "청년부실, 사무실",                                          image: floor4  },
-    { floor: "3층",  rooms: "목양실, 당회실, 방송실, 재정부실",                          image: floor3  },
-    { floor: "2층",  rooms: "본당, 자모실",                                               image: floor2  },
-    { floor: "1층",  rooms: "식당, 새가족실, 카페, 유치부실",                            image: floor1  },
-    { floor: "B1층", rooms: "중·고등부실, 초등부실, 소회의실1, 소회의실2, 소회의실3",    image: floorB1 },
+    { floor: "4층", rooms: "청년부실, 사무실", image: floor4 },
+    { floor: "3층", rooms: "목양실, 당회실, 방송실, 재정부실", image: floor3 },
+    { floor: "2층", rooms: "본당, 자모실", image: floor2 },
+    { floor: "1층", rooms: "식당, 새가족실, 카페, 유치부실", image: floor1 },
+    {
+      floor: "B1층",
+      rooms: "중·고등부실, 초등부실, 소회의실1, 소회의실2, 소회의실3",
+      image: floorB1,
+    },
   ],
 
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
   communities: [
-    "알곡교회", "청년부", "유치부", "초등부", "중·고등부",
-    "새가족부", "전도회", "남선교회", "여전도회", "권사회",
+    "알곡교회",
+    "청년부",
+    "유치부",
+    "초등부",
+    "중·고등부",
+    "새가족부",
+    "전도회",
+    "남선교회",
+    "여전도회",
+    "권사회",
   ],
 
   // ── 주차 안내 ─────────────────────────────────────────
@@ -315,7 +419,7 @@ const churchConfig = {
         waypoints: [
           { lat: 37.4847, lng: 126.9291, label: "신림역" },
           { lat: 37.4814, lng: 126.9407, label: "신림사거리" },
-          { lat: 37.4790, lng: 126.9310, label: "난곡사거리" },
+          { lat: 37.479, lng: 126.931, label: "난곡사거리" },
         ],
       },
       {

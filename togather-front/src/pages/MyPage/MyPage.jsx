@@ -44,74 +44,209 @@ const MOCK_GROUPS = [
 ];
 
 const INITIAL_SCHEDULES = [
-  { id: 1,  date: "02.18", day: "화", title: "1구역 모임",         info: "옥길동 박OO 권사 댁 · 19:30",  status: "참석 예정" },
-  { id: 2,  date: "02.22", day: "토", title: "성가대 부활절 연습", info: "본당 4층 · 20:00",              status: "미정" },
-  { id: 3,  date: "02.23", day: "주", title: "주일 1·2부 예배",    info: "본당 · 09:00 / 11:00",         status: "참석 예정" },
-  { id: 4,  date: "02.25", day: "화", title: "개인 — 직장 송별회", info: "강남 · 19:00",                 status: "참석 예정" },
-  { id: 5,  date: "04.05", day: "주", title: "부활주일 연합 예배", info: "본당 · 11:00",                 status: "참석 예정" },
-  { id: 6,  date: "04.12", day: "주", title: "주일 1부 예배",      info: "본당 · 09:00",                 status: "참석 예정" },
-  { id: 7,  date: "04.15", day: "화", title: "1구역 모임",         info: "옥길동 박OO 권사 댁 · 19:30",  status: "미정" },
-  { id: 8,  date: "04.19", day: "토", title: "성가대 정기연습",    info: "본당 4층 · 20:00",              status: "참석 예정" },
-  { id: 9,  date: "04.27", day: "주", title: "어린이주일 연합예배",info: "본당 · 10:30",                 status: "참석 예정" },
-  { id: 10, date: "05.04", day: "주", title: "주일 2부 예배",      info: "본당 · 11:00",                 status: "참석 예정" },
-  { id: 11, date: "05.06", day: "화", title: "1구역 심방",         info: "옥길동 · 19:00",               status: "미정" },
-  { id: 12, date: "05.18", day: "주", title: "오순절 기념 예배",   info: "본당 · 11:00",                 status: "참석 예정" },
+  {
+    id: 1,
+    date: "02.18",
+    day: "화",
+    title: "1구역 모임",
+    info: "옥길동 박OO 권사 댁 · 19:30",
+    status: "참석 예정",
+  },
+  {
+    id: 2,
+    date: "02.22",
+    day: "토",
+    title: "성가대 부활절 연습",
+    info: "본당 4층 · 20:00",
+    status: "미정",
+  },
+  {
+    id: 3,
+    date: "02.23",
+    day: "주",
+    title: "주일 1·2부 예배",
+    info: "본당 · 09:00 / 11:00",
+    status: "참석 예정",
+  },
+  {
+    id: 4,
+    date: "02.25",
+    day: "화",
+    title: "개인 — 직장 송별회",
+    info: "강남 · 19:00",
+    status: "참석 예정",
+  },
+  {
+    id: 5,
+    date: "04.05",
+    day: "주",
+    title: "부활주일 연합 예배",
+    info: "본당 · 11:00",
+    status: "참석 예정",
+  },
+  {
+    id: 6,
+    date: "04.12",
+    day: "주",
+    title: "주일 1부 예배",
+    info: "본당 · 09:00",
+    status: "참석 예정",
+  },
+  {
+    id: 7,
+    date: "04.15",
+    day: "화",
+    title: "1구역 모임",
+    info: "옥길동 박OO 권사 댁 · 19:30",
+    status: "미정",
+  },
+  {
+    id: 8,
+    date: "04.19",
+    day: "토",
+    title: "성가대 정기연습",
+    info: "본당 4층 · 20:00",
+    status: "참석 예정",
+  },
+  {
+    id: 9,
+    date: "04.27",
+    day: "주",
+    title: "어린이주일 연합예배",
+    info: "본당 · 10:30",
+    status: "참석 예정",
+  },
+  {
+    id: 10,
+    date: "05.04",
+    day: "주",
+    title: "주일 2부 예배",
+    info: "본당 · 11:00",
+    status: "참석 예정",
+  },
+  { id: 11, date: "05.06", day: "화", title: "1구역 심방", info: "옥길동 · 19:00", status: "미정" },
+  {
+    id: 12,
+    date: "05.18",
+    day: "주",
+    title: "오순절 기념 예배",
+    info: "본당 · 11:00",
+    status: "참석 예정",
+  },
 ];
 
 const INITIAL_PRAYERS = [
   {
-    id: 1, type: "기도", title: "가정 회복을 위한 기도",
+    id: 1,
+    type: "기도",
+    title: "가정 회복을 위한 기도",
     content: "가족 간의 깊은 대화가 필요합니다. 함께 기도해 주세요.",
-    date: "2026.02.10", status: "답변 완료",
-    reply: "김OO 목사 — 가정을 향한 하나님의 회복을 함께 기도합니다. 화요일 심방 일정 잡아드리겠습니다.",
+    date: "2026.02.10",
+    status: "답변 완료",
+    reply:
+      "김OO 목사 — 가정을 향한 하나님의 회복을 함께 기도합니다. 화요일 심방 일정 잡아드리겠습니다.",
   },
   {
-    id: 2, type: "상담", title: "진로 상담 요청",
+    id: 2,
+    type: "상담",
+    title: "진로 상담 요청",
     content: "이직 결정을 앞두고 지혜가 필요합니다.",
-    date: "2026.02.04", status: "답변 대기",
+    date: "2026.02.04",
+    status: "답변 대기",
     reply: null,
   },
   {
-    id: 3, type: "기도", title: "건강 회복 감사",
+    id: 3,
+    type: "기도",
+    title: "건강 회복 감사",
     content: "수술 잘 끝났습니다. 함께 기도해 주신 모든 분께 감사드립니다.",
-    date: "2026.01.27", status: "답변 완료",
+    date: "2026.01.27",
+    status: "답변 완료",
     reply: "이OO 부목사 — 회복의 은혜를 함께 기뻐합니다. 다음 주 새벽기도 함께 나누면 좋겠습니다.",
   },
   {
-    id: 4, type: "기도", title: "자녀 입시를 위한 기도",
+    id: 4,
+    type: "기도",
+    title: "자녀 입시를 위한 기도",
     content: "큰 아이가 수능을 앞두고 있습니다. 지혜와 평안을 위해 기도 부탁드립니다.",
-    date: "2026.01.15", status: "답변 완료",
+    date: "2026.01.15",
+    status: "답변 완료",
     reply: "김OO 목사 — 시험 기간 내내 함께 기도하겠습니다.",
   },
   {
-    id: 5, type: "상담", title: "부부 갈등 상담 요청",
+    id: 5,
+    type: "상담",
+    title: "부부 갈등 상담 요청",
     content: "가정 내 갈등으로 힘든 시간을 보내고 있습니다. 상담을 부탁드립니다.",
-    date: "2026.01.08", status: "답변 완료",
+    date: "2026.01.08",
+    status: "답변 완료",
     reply: "이OO 부목사 — 이번 주 금요일 저녁에 시간을 내겠습니다.",
   },
   {
-    id: 6, type: "기도", title: "직장 문제를 위한 기도",
+    id: 6,
+    type: "기도",
+    title: "직장 문제를 위한 기도",
     content: "새 직장을 구하고 있습니다. 좋은 길이 열리도록 기도해 주세요.",
-    date: "2025.12.20", status: "답변 대기",
+    date: "2025.12.20",
+    status: "답변 대기",
     reply: null,
   },
   {
-    id: 7, type: "상담", title: "신앙 고민 상담",
+    id: 7,
+    type: "상담",
+    title: "신앙 고민 상담",
     content: "믿음이 흔들리는 시기입니다. 말씀으로 도움받고 싶습니다.",
-    date: "2025.12.05", status: "답변 완료",
+    date: "2025.12.05",
+    status: "답변 완료",
     reply: "김OO 목사 — 언제든지 연락 주세요. 함께 말씀 나누겠습니다.",
   },
 ];
 
 const INITIAL_INQUIRIES = [
-  { id: 1, title: "교적 정보 수정 요청 (주소 변경)", date: "2026.02.12", status: "답변 완료", reply: "사무국 — 주소 변경 완료되었습니다. 다음 주보부터 반영됩니다." },
-  { id: 2, title: "새가족부 신청",                   date: "2026.02.05", status: "진행 중",  reply: null },
-  { id: 3, title: "심방 일정 요청",                   date: "2026.01.20", status: "답변 완료", reply: "부목사 — 2/3 화요일 19:00에 방문드리겠습니다." },
-  { id: 4, title: "교육 프로그램 등록",               date: "2026.01.10", status: "답변 완료", reply: "교육부 — 제자훈련 1기 등록 완료되었습니다." },
-  { id: 5, title: "성가대 악보 신청",                 date: "2025.12.28", status: "답변 완료", reply: "사무국 — 악보 준비되었습니다. 연습 전 수령해 주세요." },
-  { id: 6, title: "헌금 영수증 발급 요청",            date: "2025.12.15", status: "답변 완료", reply: "사무국 — 이메일로 발송드렸습니다." },
-  { id: 7, title: "구역 변경 신청",                   date: "2025.11.30", status: "진행 중",  reply: null },
-  { id: 8, title: "봉사 일정 문의",                   date: "2025.11.20", status: "답변 완료", reply: "사무국 — 다음 달 봉사 일정표를 공유드렸습니다." },
+  {
+    id: 1,
+    title: "교적 정보 수정 요청 (주소 변경)",
+    date: "2026.02.12",
+    status: "답변 완료",
+    reply: "사무국 — 주소 변경 완료되었습니다. 다음 주보부터 반영됩니다.",
+  },
+  { id: 2, title: "새가족부 신청", date: "2026.02.05", status: "진행 중", reply: null },
+  {
+    id: 3,
+    title: "심방 일정 요청",
+    date: "2026.01.20",
+    status: "답변 완료",
+    reply: "부목사 — 2/3 화요일 19:00에 방문드리겠습니다.",
+  },
+  {
+    id: 4,
+    title: "교육 프로그램 등록",
+    date: "2026.01.10",
+    status: "답변 완료",
+    reply: "교육부 — 제자훈련 1기 등록 완료되었습니다.",
+  },
+  {
+    id: 5,
+    title: "성가대 악보 신청",
+    date: "2025.12.28",
+    status: "답변 완료",
+    reply: "사무국 — 악보 준비되었습니다. 연습 전 수령해 주세요.",
+  },
+  {
+    id: 6,
+    title: "헌금 영수증 발급 요청",
+    date: "2025.12.15",
+    status: "답변 완료",
+    reply: "사무국 — 이메일로 발송드렸습니다.",
+  },
+  { id: 7, title: "구역 변경 신청", date: "2025.11.30", status: "진행 중", reply: null },
+  {
+    id: 8,
+    title: "봉사 일정 문의",
+    date: "2025.11.20",
+    status: "답변 완료",
+    reply: "사무국 — 다음 달 봉사 일정표를 공유드렸습니다.",
+  },
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────
@@ -183,10 +318,12 @@ function StatusBadge({ status }) {
     "답변 대기": "text-amber-600 bg-amber-50 border border-amber-200",
     "진행 중": "text-blue-600 bg-blue-50 border border-blue-200",
     "참석 예정": "text-teal-700 bg-teal-50 border border-teal-200",
-    "미정": "text-grey-6 bg-grey-2 border border-grey-4",
+    미정: "text-grey-6 bg-grey-2 border border-grey-4",
   };
   return (
-    <span className={`text-body-5 rounded-full px-3 py-1 whitespace-nowrap ${styles[status] ?? "text-grey-7 bg-grey-2"}`}>
+    <span
+      className={`text-body-5 rounded-full px-3 py-1 whitespace-nowrap ${styles[status] ?? "text-grey-7 bg-grey-2"}`}
+    >
       {status}
     </span>
   );
@@ -203,18 +340,23 @@ function Pagination({ total, perPage, current, onChange }) {
         disabled={current === 1}
         className="w-8 h-8 flex items-center justify-center rounded-lg text-grey-6 hover:bg-grey-2 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M15 18l-6-6 6-6" />
         </svg>
       </button>
-      {pages.map(p => (
+      {pages.map((p) => (
         <button
           key={p}
           onClick={() => onChange(p)}
           className={`w-8 h-8 rounded-lg text-body-5 transition-colors ${
-            p === current
-              ? "bg-primary text-white font-semibold"
-              : "text-grey-7 hover:bg-grey-2"
+            p === current ? "bg-primary text-white font-semibold" : "text-grey-7 hover:bg-grey-2"
           }`}
         >
           {p}
@@ -225,7 +367,14 @@ function Pagination({ total, perPage, current, onChange }) {
         disabled={current === totalPages}
         className="w-8 h-8 flex items-center justify-center rounded-lg text-grey-6 hover:bg-grey-2 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
@@ -234,20 +383,20 @@ function Pagination({ total, perPage, current, onChange }) {
 }
 
 const TABS = [
-  { key: "info",     label: "내 정보",     iconActive: UserWhite,      iconInactive: UserBlue },
-  { key: "dept",     label: "부서 / 직책", iconActive: ChurchIcon,     iconInactive: ChurchIcon },
-  { key: "schedule", label: "일정",         iconActive: CalWhite,       iconInactive: CalBlue },
-  { key: "prayer",   label: "기도 / 상담", iconActive: HeartHandWhite, iconInactive: HeartHandBlue },
-  { key: "inquiry",  label: "문의하기",     iconActive: ChatWhite,      iconInactive: ChatBlue },
+  { key: "info", label: "내 정보", iconActive: UserWhite, iconInactive: UserBlue },
+  { key: "dept", label: "부서 / 직책", iconActive: ChurchIcon, iconInactive: ChurchIcon },
+  { key: "schedule", label: "일정", iconActive: CalWhite, iconInactive: CalBlue },
+  { key: "prayer", label: "기도 / 상담", iconActive: HeartHandWhite, iconInactive: HeartHandBlue },
+  { key: "inquiry", label: "문의하기", iconActive: ChatWhite, iconInactive: ChatBlue },
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────
 export default function MyPage() {
-  const [activeTab, setActiveTab]         = useState("info");
-  const [modal, setModal]                 = useState(null);
+  const [activeTab, setActiveTab] = useState("info");
+  const [modal, setModal] = useState(null);
   const [deptChangeMode, setDeptChangeMode] = useState(false);
   const [inquiryWriteMode, setInquiryWriteMode] = useState(false);
-  const [prayerFilter, setPrayerFilter]   = useState("전체");
+  const [prayerFilter, setPrayerFilter] = useState("전체");
 
   const [userForm, setUserForm] = useState({
     name: MOCK_USER.name,
@@ -258,67 +407,88 @@ export default function MyPage() {
     newPw: "",
   });
 
-  const [schedules, setSchedules]   = useState(INITIAL_SCHEDULES);
+  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
   const [scheduleForm, setScheduleForm] = useState({ date: "", day: "", title: "", info: "" });
 
-  const [prayers, setPrayers]       = useState(INITIAL_PRAYERS);
+  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
   const [prayerForm, setPrayerForm] = useState({ date: "", day: "", title: "", content: "" });
 
-  const [inquiries, setInquiries]       = useState(INITIAL_INQUIRIES);
-  const [inquiryForm, setInquiryForm]   = useState({ title: "", content: "" });
+  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
+  const [inquiryForm, setInquiryForm] = useState({ title: "", content: "" });
 
   const PAGE_SIZE = 5;
   const PRAYER_PAGE_SIZE = 4;
   const [schedulePage, setSchedulePage] = useState(1);
-  const [prayerPage, setPrayerPage]     = useState(1);
-  const [inquiryPage, setInquiryPage]   = useState(1);
+  const [prayerPage, setPrayerPage] = useState(1);
+  const [inquiryPage, setInquiryPage] = useState(1);
 
   const fileInputRef = useRef(null);
 
   function resetInfo() {
     setUserForm({
-      name: MOCK_USER.name, phone: MOCK_USER.phone,
-      email: MOCK_USER.email, address: MOCK_USER.address,
-      currentPw: "", newPw: "",
+      name: MOCK_USER.name,
+      phone: MOCK_USER.phone,
+      email: MOCK_USER.email,
+      address: MOCK_USER.address,
+      currentPw: "",
+      newPw: "",
     });
   }
 
   function handleAddSchedule() {
     if (!scheduleForm.title) return;
-    setSchedules(prev => [...prev, {
-      id: Date.now(), date: scheduleForm.date || "MM.DD",
-      day: scheduleForm.day, title: scheduleForm.title,
-      info: scheduleForm.info, status: "참석 예정",
-    }]);
+    setSchedules((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        date: scheduleForm.date || "MM.DD",
+        day: scheduleForm.day,
+        title: scheduleForm.title,
+        info: scheduleForm.info,
+        status: "참석 예정",
+      },
+    ]);
     setScheduleForm({ date: "", day: "", title: "", info: "" });
     setModal(null);
   }
 
   function handleAddPrayer() {
     if (!prayerForm.title) return;
-    setPrayers(prev => [...prev, {
-      id: Date.now(), type: "기도", title: prayerForm.title,
-      content: prayerForm.content, date: `2026.${prayerForm.date || "03.15"}`,
-      status: "답변 대기", reply: null,
-    }]);
+    setPrayers((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        type: "기도",
+        title: prayerForm.title,
+        content: prayerForm.content,
+        date: `2026.${prayerForm.date || "03.15"}`,
+        status: "답변 대기",
+        reply: null,
+      },
+    ]);
     setPrayerForm({ date: "", day: "", title: "", content: "" });
     setModal(null);
   }
 
   function handleAddInquiry() {
     if (!inquiryForm.title) return;
-    setInquiries(prev => [{
-      id: Date.now(), title: inquiryForm.title,
-      date: "2026.03.15", status: "진행 중", reply: null,
-    }, ...prev]);
+    setInquiries((prev) => [
+      {
+        id: Date.now(),
+        title: inquiryForm.title,
+        date: "2026.03.15",
+        status: "진행 중",
+        reply: null,
+      },
+      ...prev,
+    ]);
     setInquiryForm({ title: "", content: "" });
     setInquiryWriteMode(false);
     setInquiryPage(1);
   }
 
-  const filteredPrayers = prayerFilter === "전체"
-    ? prayers
-    : prayers.filter(p => p.type === prayerFilter);
+  const filteredPrayers =
+    prayerFilter === "전체" ? prayers : prayers.filter((p) => p.type === prayerFilter);
 
   function handlePrayerFilter(f) {
     setPrayerFilter(f);
@@ -326,7 +496,10 @@ export default function MyPage() {
   }
 
   const pagedSchedules = schedules.slice((schedulePage - 1) * PAGE_SIZE, schedulePage * PAGE_SIZE);
-  const pagedPrayers   = filteredPrayers.slice((prayerPage - 1) * PRAYER_PAGE_SIZE, prayerPage * PRAYER_PAGE_SIZE);
+  const pagedPrayers = filteredPrayers.slice(
+    (prayerPage - 1) * PRAYER_PAGE_SIZE,
+    prayerPage * PRAYER_PAGE_SIZE,
+  );
   const pagedInquiries = inquiries.slice((inquiryPage - 1) * PAGE_SIZE, inquiryPage * PAGE_SIZE);
 
   return (
@@ -355,10 +528,14 @@ export default function MyPage() {
             </div>
 
             <div className="bg-grey-1 border border-grey-3 rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto">
-              {TABS.map(tab => (
+              {TABS.map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => { setActiveTab(tab.key); setDeptChangeMode(false); setInquiryWriteMode(false); }}
+                  onClick={() => {
+                    setActiveTab(tab.key);
+                    setDeptChangeMode(false);
+                    setInquiryWriteMode(false);
+                  }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-body-4 transition-colors shrink-0 md:w-full whitespace-nowrap ${
                     activeTab === tab.key
                       ? "bg-primary text-white font-semibold"
@@ -378,7 +555,6 @@ export default function MyPage() {
 
           {/* ── Content ── */}
           <main className="flex-1 min-w-0">
-
             {/* 내 정보 */}
             {activeTab === "info" && (
               <div className="space-y-5">
@@ -422,7 +598,7 @@ export default function MyPage() {
                       <InputField
                         label="이름"
                         value={userForm.name}
-                        onChange={e => setUserForm(f => ({ ...f, name: e.target.value }))}
+                        onChange={(e) => setUserForm((f) => ({ ...f, name: e.target.value }))}
                       />
                       <ReadonlyField
                         label="생년월일"
@@ -434,18 +610,18 @@ export default function MyPage() {
                       <InputField
                         label="휴대폰"
                         value={userForm.phone}
-                        onChange={e => setUserForm(f => ({ ...f, phone: e.target.value }))}
+                        onChange={(e) => setUserForm((f) => ({ ...f, phone: e.target.value }))}
                       />
                       <InputField
                         label="이메일"
                         value={userForm.email}
-                        onChange={e => setUserForm(f => ({ ...f, email: e.target.value }))}
+                        onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))}
                       />
                     </div>
                     <InputField
                       label="주소"
                       value={userForm.address}
-                      onChange={e => setUserForm(f => ({ ...f, address: e.target.value }))}
+                      onChange={(e) => setUserForm((f) => ({ ...f, address: e.target.value }))}
                     />
                   </div>
                 </section>
@@ -479,14 +655,14 @@ export default function MyPage() {
                       label="현재 비밀번호"
                       type="password"
                       value={userForm.currentPw}
-                      onChange={e => setUserForm(f => ({ ...f, currentPw: e.target.value }))}
+                      onChange={(e) => setUserForm((f) => ({ ...f, currentPw: e.target.value }))}
                       placeholder="••••••••"
                     />
                     <InputField
                       label="새 비밀번호"
                       type="password"
                       value={userForm.newPw}
-                      onChange={e => setUserForm(f => ({ ...f, newPw: e.target.value }))}
+                      onChange={(e) => setUserForm((f) => ({ ...f, newPw: e.target.value }))}
                       placeholder="8자 이상"
                     />
                   </div>
@@ -523,7 +699,11 @@ export default function MyPage() {
                       </div>
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <ReadonlyField label="직분" value={MOCK_DEPT.position} note="사무국 문의로 변경 가능합니다." />
+                          <ReadonlyField
+                            label="직분"
+                            value={MOCK_DEPT.position}
+                            note="사무국 문의로 변경 가능합니다."
+                          />
                           <ReadonlyField label="소속 부서" value={MOCK_DEPT.department} />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -545,10 +725,16 @@ export default function MyPage() {
                         >
                           <IconBack />
                         </button>
-                        <h2 className="text-sub-tit-4 font-bold text-grey-11">부서 / 직책 변경 신청</h2>
+                        <h2 className="text-sub-tit-4 font-bold text-grey-11">
+                          부서 / 직책 변경 신청
+                        </h2>
                       </div>
                       <div className="space-y-4">
-                        <ReadonlyField label="직분" value={MOCK_DEPT.position} note="사무국 문의로 변경 가능합니다." />
+                        <ReadonlyField
+                          label="직분"
+                          value={MOCK_DEPT.position}
+                          note="사무국 문의로 변경 가능합니다."
+                        />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
                           <ReadonlyField label="구역" value={MOCK_DEPT.district} />
@@ -566,7 +752,10 @@ export default function MyPage() {
                           취소
                         </button>
                         <button
-                          onClick={() => { setDeptChangeMode(false); setModal("dept-change-done"); }}
+                          onClick={() => {
+                            setDeptChangeMode(false);
+                            setModal("dept-change-done");
+                          }}
                           className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
                         >
                           신청하기
@@ -578,16 +767,23 @@ export default function MyPage() {
 
                 {!deptChangeMode && (
                   <section className="bg-white border border-grey-3 rounded-2xl p-8">
-                    <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">참여 중인 부서 / 모임</h2>
+                    <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">
+                      참여 중인 부서 / 모임
+                    </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {MOCK_GROUPS.map(g => (
-                        <div key={g.id} className="border border-grey-3 rounded-xl p-4 flex items-start gap-3">
+                      {MOCK_GROUPS.map((g) => (
+                        <div
+                          key={g.id}
+                          className="border border-grey-3 rounded-xl p-4 flex items-start gap-3"
+                        >
                           <div className="w-8 h-8 rounded-lg bg-grey-2 flex items-center justify-center shrink-0">
                             <img src={UserBlack} className="w-4 h-4" alt="" />
                           </div>
                           <div className="min-w-0">
                             <p className="text-body-4 font-semibold text-grey-10">{g.name}</p>
-                            <p className="text-body-5 text-grey-6 mt-0.5 leading-relaxed">{g.info}</p>
+                            <p className="text-body-5 text-grey-6 mt-0.5 leading-relaxed">
+                              {g.info}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -612,17 +808,18 @@ export default function MyPage() {
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {pagedSchedules.map(item => (
-                    <div key={item.id} className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4">
+                  {pagedSchedules.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4"
+                    >
                       <div className="shrink-0 w-12 text-center">
                         <p className="text-body-4 font-bold text-primary">{item.date}</p>
                         <p className="text-body-5 text-grey-6">{item.day}</p>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
-                        {item.info && (
-                          <p className="text-body-5 text-grey-6 mt-0.5">{item.info}</p>
-                        )}
+                        {item.info && <p className="text-body-5 text-grey-6 mt-0.5">{item.info}</p>}
                       </div>
                       <StatusBadge status={item.status} />
                     </div>
@@ -651,7 +848,7 @@ export default function MyPage() {
                   </button>
                 </div>
                 <div className="flex gap-2 mb-5">
-                  {["전체", "기도", "상담"].map(f => (
+                  {["전체", "기도", "상담"].map((f) => (
                     <button
                       key={f}
                       onClick={() => handlePrayerFilter(f)}
@@ -666,15 +863,17 @@ export default function MyPage() {
                   ))}
                 </div>
                 <div className="space-y-4">
-                  {pagedPrayers.map(item => (
+                  {pagedPrayers.map((item) => (
                     <div key={item.id} className="border border-grey-3 rounded-xl p-5">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-body-5 rounded px-2 py-0.5 ${
-                            item.type === "기도"
-                              ? "bg-grey-2 text-grey-7"
-                              : "bg-blue-1 text-primary"
-                          }`}>
+                          <span
+                            className={`text-body-5 rounded px-2 py-0.5 ${
+                              item.type === "기도"
+                                ? "bg-grey-2 text-grey-7"
+                                : "bg-blue-1 text-primary"
+                            }`}
+                          >
                             {item.type}
                           </span>
                           <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
@@ -687,7 +886,9 @@ export default function MyPage() {
                       <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
                       {item.reply && (
                         <div className="mt-3 pl-4 border-l-2 border-grey-3 flex items-start gap-1.5">
-                          <span className="mt-0.5 shrink-0"><IconChurch /></span>
+                          <span className="mt-0.5 shrink-0">
+                            <IconChurch />
+                          </span>
                           <p className="text-body-5 text-grey-6">{item.reply}</p>
                         </div>
                       )}
@@ -711,14 +912,17 @@ export default function MyPage() {
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-sub-tit-4 font-bold text-grey-11">문의</h2>
                       <button
-                        onClick={() => { setInquiryWriteMode(true); setInquiryForm({ title: "", content: "" }); }}
+                        onClick={() => {
+                          setInquiryWriteMode(true);
+                          setInquiryForm({ title: "", content: "" });
+                        }}
                         className="bg-primary text-white text-body-5 rounded-full px-5 py-2 hover:bg-blue-8 transition-colors"
                       >
                         문의하기
                       </button>
                     </div>
                     <div className="space-y-3">
-                      {pagedInquiries.map(item => (
+                      {pagedInquiries.map((item) => (
                         <div key={item.id} className="border border-grey-3 rounded-xl p-5">
                           <div className="flex items-center justify-between gap-4">
                             <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
@@ -729,7 +933,9 @@ export default function MyPage() {
                           </div>
                           {item.reply && (
                             <div className="mt-3 pl-4 border-l-2 border-grey-3 flex items-start gap-1.5">
-                              <span className="mt-0.5 shrink-0"><IconMail /></span>
+                              <span className="mt-0.5 shrink-0">
+                                <IconMail />
+                              </span>
                               <p className="text-body-5 text-grey-6">{item.reply}</p>
                             </div>
                           )}
@@ -762,14 +968,16 @@ export default function MyPage() {
                       <InputField
                         label="제목"
                         value={inquiryForm.title}
-                        onChange={e => setInquiryForm(f => ({ ...f, title: e.target.value }))}
+                        onChange={(e) => setInquiryForm((f) => ({ ...f, title: e.target.value }))}
                         placeholder="문의 제목을 입력해 주세요."
                       />
                       <div>
                         <label className="block text-body-5 text-grey-7 mb-1">문의 내용</label>
                         <textarea
                           value={inquiryForm.content}
-                          onChange={e => setInquiryForm(f => ({ ...f, content: e.target.value }))}
+                          onChange={(e) =>
+                            setInquiryForm((f) => ({ ...f, content: e.target.value }))
+                          }
                           placeholder="자세히 내용을 작성하여 주시면 더 도움이 됩니다."
                           rows={5}
                           className="w-full border border-grey-4 rounded-lg px-4 py-3 text-body-4 text-grey-10 bg-white outline-none focus:border-primary transition-colors resize-none"
@@ -853,9 +1061,7 @@ export default function MyPage() {
       {modal === "dept-change-done" && (
         <ModalOverlay onClose={() => setModal(null)}>
           <div className="text-center pt-2">
-            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">
-              신청이 접수되었습니다.
-            </h3>
+            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">신청이 접수되었습니다.</h3>
             <p className="text-body-5 text-grey-6 mb-8">
               검토 후 최종 처리 되며, 처리까지는 약 30일 정도 소요됩니다.
             </p>
@@ -877,26 +1083,26 @@ export default function MyPage() {
               <InputField
                 label="날짜 (MM.DD)"
                 value={scheduleForm.date}
-                onChange={e => setScheduleForm(f => ({ ...f, date: e.target.value }))}
+                onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
                 placeholder="03.15"
               />
               <InputField
                 label="요일"
                 value={scheduleForm.day}
-                onChange={e => setScheduleForm(f => ({ ...f, day: e.target.value }))}
+                onChange={(e) => setScheduleForm((f) => ({ ...f, day: e.target.value }))}
                 placeholder="주"
               />
             </div>
             <InputField
               label="제목"
               value={scheduleForm.title}
-              onChange={e => setScheduleForm(f => ({ ...f, title: e.target.value }))}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="예) 새가족 모임"
             />
             <InputField
               label="시간 · 장소"
               value={scheduleForm.info}
-              onChange={e => setScheduleForm(f => ({ ...f, info: e.target.value }))}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, info: e.target.value }))}
               placeholder="예) 본당 · 14:00"
             />
           </div>
@@ -925,27 +1131,27 @@ export default function MyPage() {
               <InputField
                 label="날짜 (MM.DD)"
                 value={prayerForm.date}
-                onChange={e => setPrayerForm(f => ({ ...f, date: e.target.value }))}
+                onChange={(e) => setPrayerForm((f) => ({ ...f, date: e.target.value }))}
                 placeholder="03.15"
               />
               <InputField
                 label="요일"
                 value={prayerForm.day}
-                onChange={e => setPrayerForm(f => ({ ...f, day: e.target.value }))}
+                onChange={(e) => setPrayerForm((f) => ({ ...f, day: e.target.value }))}
                 placeholder="주"
               />
             </div>
             <InputField
               label="제목"
               value={prayerForm.title}
-              onChange={e => setPrayerForm(f => ({ ...f, title: e.target.value }))}
+              onChange={(e) => setPrayerForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="예) 건강"
             />
             <div>
               <label className="block text-body-5 text-grey-7 mb-1">내용</label>
               <textarea
                 value={prayerForm.content}
-                onChange={e => setPrayerForm(f => ({ ...f, content: e.target.value }))}
+                onChange={(e) => setPrayerForm((f) => ({ ...f, content: e.target.value }))}
                 placeholder="기도 제목을 간략히 작성해 주세요."
                 rows={4}
                 className="w-full border border-grey-4 rounded-lg px-4 py-3 text-body-4 text-grey-10 bg-white outline-none focus:border-primary transition-colors resize-none"
@@ -968,7 +1174,6 @@ export default function MyPage() {
           </div>
         </ModalOverlay>
       )}
-
     </div>
   );
 }

@@ -10,11 +10,18 @@ const SERVICE_TYPES = ["주일예배", "새벽기도회", "수요기도회", "�
 
 function SermonThumb({ thumbnail, title }) {
   return (
-    <div className="w-full bg-grey-2 flex items-center justify-center overflow-hidden" style={{ aspectRatio: "16/9" }}>
+    <div
+      className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
+      style={{ aspectRatio: "16/9" }}
+    >
       {thumbnail ? (
         <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
       ) : (
-        <svg className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors" fill="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
         </svg>
       )}
@@ -88,7 +95,11 @@ export default function WordSermon() {
         {/* 검색바 */}
         <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-2xl">
           <div className="relative flex-1">
-            <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
+            <img
+              src={IcoSearch}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
+              alt=""
+            />
             <input
               type="text"
               value={inputVal}
@@ -97,8 +108,11 @@ export default function WordSermon() {
               className="w-full pl-10 pr-10 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
             />
             {inputVal && (
-              <button type="button" onClick={handleClear}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-grey-4 hover:text-grey-7 text-lg leading-none">
+              <button
+                type="button"
+                onClick={handleClear}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-grey-4 hover:text-grey-7 text-lg leading-none"
+              >
                 ✕
               </button>
             )}
@@ -113,11 +127,15 @@ export default function WordSermon() {
           >
             <option value="">예배 전체</option>
             {SERVICE_TYPES.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
-          <button type="submit"
-            className="px-5 py-3 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0">
+          <button
+            type="submit"
+            className="px-5 py-3 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0"
+          >
             검색
           </button>
         </form>
@@ -126,7 +144,10 @@ export default function WordSermon() {
         {loading && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
             {Array.from({ length: PAGE_SIZE }, (_, i) => (
-              <div key={i} className="rounded-2xl border border-bluegrey-2 overflow-hidden animate-pulse">
+              <div
+                key={i}
+                className="rounded-2xl border border-bluegrey-2 overflow-hidden animate-pulse"
+              >
                 <div className="w-full bg-grey-2" style={{ aspectRatio: "16/9" }} />
                 <div className="p-4 space-y-2">
                   <div className="h-4 bg-grey-2 rounded w-4/5" />
@@ -171,11 +192,24 @@ export default function WordSermon() {
             {/* 페이지네이션 */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-1">
-                <PageBtn onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} label="‹" />
+                <PageBtn
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  label="‹"
+                />
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <PageBtn key={p} onClick={() => setPage(p)} active={p === currentPage} label={String(p)} />
+                  <PageBtn
+                    key={p}
+                    onClick={() => setPage(p)}
+                    active={p === currentPage}
+                    label={String(p)}
+                  />
                 ))}
-                <PageBtn onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} label="›" />
+                <PageBtn
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  label="›"
+                />
               </div>
             )}
           </>
@@ -194,8 +228,8 @@ function PageBtn({ onClick, disabled, active, label }) {
         active
           ? "bg-blue-7 text-white"
           : disabled
-          ? "text-grey-4 cursor-not-allowed"
-          : "text-grey-8 hover:bg-blue-1 hover:text-blue-7"
+            ? "text-grey-4 cursor-not-allowed"
+            : "text-grey-8 hover:bg-blue-1 hover:text-blue-7"
       }`}
     >
       {label}

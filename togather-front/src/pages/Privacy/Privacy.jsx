@@ -72,8 +72,8 @@ export default function Privacy() {
 
       <div className="max-w-[860px] mx-auto px-8 py-16">
         <p className="text-body-2 text-grey-7 mb-12 leading-relaxed">
-          본 교회는 이용자의 개인정보를 소중히 여기며, 「개인정보 보호법」을 준수합니다.
-          본 방침을 통해 수집하는 개인정보의 항목, 이용 목적, 보유 기간 등을 안내합니다.
+          본 교회는 이용자의 개인정보를 소중히 여기며, 「개인정보 보호법」을 준수합니다. 본 방침을
+          통해 수집하는 개인정보의 항목, 이용 목적, 보유 기간 등을 안내합니다.
         </p>
 
         <div className="flex flex-col gap-10">
@@ -81,7 +81,9 @@ export default function Privacy() {
             <section key={title}>
               <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{title}</h2>
               <div className="border-t border-bluegrey-2 pt-4">
-                <p className="text-body-3 text-grey-8 leading-[1.9] whitespace-pre-line">{content}</p>
+                <p className="text-body-3 text-grey-8 leading-[1.9] whitespace-pre-line">
+                  {content}
+                </p>
               </div>
             </section>
           ))}

@@ -70,7 +70,7 @@ function CommunityAvatar({ community }) {
   return (
     <div
       className={`shrink-0 w-9 h-9 rounded-full bg-gradient-to-br ${getAvatarGradient(
-        community.id
+        community.id,
       )} flex items-center justify-center font-bold text-body-4 text-white`}
     >
       {community.name.charAt(0)}
@@ -165,7 +165,9 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
           </div>
           <div className="overflow-y-auto px-5 py-4">
             <p className="text-sub-tit-4 font-bold text-grey-11 mb-2">{photo.title}</p>
-            <p className="text-body-3 text-grey-8 whitespace-pre-line leading-relaxed">{photo.desc}</p>
+            <p className="text-body-3 text-grey-8 whitespace-pre-line leading-relaxed">
+              {photo.desc}
+            </p>
           </div>
         </div>
       </div>
@@ -177,7 +179,7 @@ function PhotoGrid({ church, community, onBack }) {
   const { data: photos = [], loading } = useFetch(
     () => getPhotos(church.id, { communityId: community.id }),
     [church.id, community.id],
-    []
+    [],
   );
   const [modalIdx, setModalIdx] = useState(null);
 
@@ -194,12 +196,14 @@ function PhotoGrid({ church, community, onBack }) {
       <div className="flex items-center gap-6 md:gap-9 pb-6 md:pb-8 border-b border-grey-2">
         <div
           className={`shrink-0 rounded-full bg-gradient-to-br ${getAvatarGradient(
-            community.id
+            community.id,
           )} p-1`}
         >
           <div className="p-1 bg-white rounded-full">
             <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-grey-2 flex items-center justify-center">
-              <span className="text-headline-3 font-bold text-grey-7">{community.name.charAt(0)}</span>
+              <span className="text-headline-3 font-bold text-grey-7">
+                {community.name.charAt(0)}
+              </span>
             </div>
           </div>
         </div>
@@ -259,12 +263,14 @@ function CommunityStoryCard({ community, onSelect }) {
     <button onClick={onSelect} className="group flex flex-col items-center gap-3 text-center">
       <div
         className={`p-1 rounded-full bg-gradient-to-br ${getAvatarGradient(
-          community.id
+          community.id,
         )} group-hover:scale-105 transition-transform`}
       >
         <div className="p-1 bg-white rounded-full">
           <div className="w-28 h-28 rounded-full bg-grey-2 flex items-center justify-center">
-            <span className="text-headline-3 font-bold text-grey-7">{community.name.charAt(0)}</span>
+            <span className="text-headline-3 font-bold text-grey-7">
+              {community.name.charAt(0)}
+            </span>
           </div>
         </div>
       </div>
@@ -281,7 +287,7 @@ export default function Gallery() {
   const { data: communities = [], loading } = useFetch(
     () => getCommunities(church.id),
     [church.id],
-    []
+    [],
   );
   const [selected, setSelected] = useState(null);
   const [searchParams] = useSearchParams();

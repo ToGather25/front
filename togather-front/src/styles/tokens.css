@@ -8,8 +8,8 @@
   /* ----------------------------------------------------------
      FONTS
   ---------------------------------------------------------- */
-  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont,
-    "Apple SD Gothic Neo", sans-serif;
+  --font-pretendard:
+    "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
 
   /* ----------------------------------------------------------
      COLORS — Primary
@@ -86,82 +86,82 @@
   ---------------------------------------------------------- */
 
   /* Headlines (Bold) */
-  --text-headline-1: 3.5rem;       /* 56px */
-  --text-headline-1--line-height: 4rem;        /* 64px */
+  --text-headline-1: 3.5rem; /* 56px */
+  --text-headline-1--line-height: 4rem; /* 64px */
 
-  --text-headline-2: 3rem;         /* 48px */
-  --text-headline-2--line-height: 3.25rem;     /* 52px */
+  --text-headline-2: 3rem; /* 48px */
+  --text-headline-2--line-height: 3.25rem; /* 52px */
 
-  --text-section-title: 2.75rem;   /* 44px — 홈 섹션 대제목 */
-  --text-section-title--line-height: 3.25rem;  /* 52px */
+  --text-section-title: 2.75rem; /* 44px — 홈 섹션 대제목 */
+  --text-section-title--line-height: 3.25rem; /* 52px */
 
-  --text-headline-3: 2.25rem;      /* 36px */
-  --text-headline-3--line-height: 2.75rem;     /* 44px */
+  --text-headline-3: 2.25rem; /* 36px */
+  --text-headline-3--line-height: 2.75rem; /* 44px */
 
-  --text-headline-4: 1.5rem;       /* 24px */
-  --text-headline-4--line-height: 2rem;        /* 32px */
+  --text-headline-4: 1.5rem; /* 24px */
+  --text-headline-4--line-height: 2rem; /* 32px */
 
-  --text-headline-5: 1.125rem;     /* 18px */
-  --text-headline-5--line-height: 1.5rem;      /* 24px */
+  --text-headline-5: 1.125rem; /* 18px */
+  --text-headline-5--line-height: 1.5rem; /* 24px */
 
   /* Sub Titles (SemiBold) */
-  --text-sub-tit-1: 1.75rem;       /* 28px */
-  --text-sub-tit-1--line-height: 2.5rem;       /* 40px */
+  --text-sub-tit-1: 1.75rem; /* 28px */
+  --text-sub-tit-1--line-height: 2.5rem; /* 40px */
 
-  --text-sub-tit-2: 1.5rem;        /* 24px */
-  --text-sub-tit-2--line-height: 2rem;         /* 32px */
+  --text-sub-tit-2: 1.5rem; /* 24px */
+  --text-sub-tit-2--line-height: 2rem; /* 32px */
 
-  --text-sub-tit-3: 1.25rem;       /* 20px */
-  --text-sub-tit-3--line-height: 1.75rem;      /* 28px */
+  --text-sub-tit-3: 1.25rem; /* 20px */
+  --text-sub-tit-3--line-height: 1.75rem; /* 28px */
 
-  --text-sub-tit-4: 1.125rem;      /* 18px */
-  --text-sub-tit-4--line-height: 1.5rem;       /* 24px */
+  --text-sub-tit-4: 1.125rem; /* 18px */
+  --text-sub-tit-4--line-height: 1.5rem; /* 24px */
 
-  --text-sub-tit-5: 1rem;          /* 16px */
-  --text-sub-tit-5--line-height: 1.5rem;       /* 24px */
+  --text-sub-tit-5: 1rem; /* 16px */
+  --text-sub-tit-5--line-height: 1.5rem; /* 24px */
 
   /* Body (Regular) */
-  --text-body-1: 1.125rem;         /* 18px */
-  --text-body-1--line-height: 1.75rem;         /* 28px */
+  --text-body-1: 1.125rem; /* 18px */
+  --text-body-1--line-height: 1.75rem; /* 28px */
 
-  --text-body-2: 1rem;             /* 16px */
-  --text-body-2--line-height: 1.5rem;          /* 24px */
+  --text-body-2: 1rem; /* 16px */
+  --text-body-2--line-height: 1.5rem; /* 24px */
 
-  --text-body-3: 0.875rem;         /* 14px */
-  --text-body-3--line-height: 1.375rem;        /* 22px */
+  --text-body-3: 0.875rem; /* 14px */
+  --text-body-3--line-height: 1.375rem; /* 22px */
 
-  --text-body-4: 0.875rem;         /* 14px */
-  --text-body-4--line-height: 1.25rem;         /* 20px */
+  --text-body-4: 0.875rem; /* 14px */
+  --text-body-4--line-height: 1.25rem; /* 20px */
 
-  --text-body-5: 0.75rem;          /* 12px */
-  --text-body-5--line-height: 1.125rem;        /* 18px */
+  --text-body-5: 0.75rem; /* 12px */
+  --text-body-5--line-height: 1.125rem; /* 18px */
 
-  --text-caption: 0.8125rem;       /* 13px — 소형 레이블·캡션 */
-  --text-caption--line-height: 1.25rem;        /* 20px */
+  --text-caption: 0.8125rem; /* 13px — 소형 레이블·캡션 */
+  --text-caption--line-height: 1.25rem; /* 20px */
 
   /* Button / Link */
-  --text-btn-large: 1.125rem;      /* 18px */
-  --text-btn-large--line-height: 1.375rem;     /* 22px */
+  --text-btn-large: 1.125rem; /* 18px */
+  --text-btn-large--line-height: 1.375rem; /* 22px */
 
-  --text-btn-normal: 1rem;         /* 16px */
-  --text-btn-normal--line-height: 1.25rem;     /* 20px */
+  --text-btn-normal: 1rem; /* 16px */
+  --text-btn-normal--line-height: 1.25rem; /* 20px */
 
-  --text-btn-medium: 0.875rem;     /* 14px */
-  --text-btn-medium--line-height: 1.25rem;     /* 20px */
+  --text-btn-medium: 0.875rem; /* 14px */
+  --text-btn-medium--line-height: 1.25rem; /* 20px */
 
-  --text-btn-small: 0.875rem;      /* 14px */
-  --text-btn-small--line-height: 1.25rem;      /* 20px */
+  --text-btn-small: 0.875rem; /* 14px */
+  --text-btn-small--line-height: 1.25rem; /* 20px */
 
-  --text-btn-xs: 0.75rem;          /* 12px */
-  --text-btn-xs--line-height: 1rem;            /* 16px */
+  --text-btn-xs: 0.75rem; /* 12px */
+  --text-btn-xs--line-height: 1rem; /* 16px */
 
   /* Fields */
-  --text-field-placeholder: 1rem;  /* 16px */
+  --text-field-placeholder: 1rem; /* 16px */
   --text-field-placeholder--line-height: 1.25rem; /* 20px */
 
-  --text-field-title: 0.75rem;     /* 12px */
-  --text-field-title--line-height: 1rem;       /* 16px */
+  --text-field-title: 0.75rem; /* 12px */
+  --text-field-title--line-height: 1rem; /* 16px */
 
-  --text-field-desc: 0.75rem;      /* 12px */
-  --text-field-desc--line-height: 1rem;        /* 16px */
+  --text-field-desc: 0.75rem; /* 12px */
+  --text-field-desc--line-height: 1rem; /* 16px */
 }

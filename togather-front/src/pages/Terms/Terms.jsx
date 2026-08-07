@@ -63,8 +63,8 @@ export default function Terms() {
 
       <div className="max-w-[860px] mx-auto px-8 py-16">
         <p className="text-body-2 text-grey-7 mb-12 leading-relaxed">
-          본 약관은 교회 웹사이트에서 제공하는 서비스 이용과 관련하여 교회와 이용자 간의
-          권리·의무 및 책임 사항, 기타 필요한 사항을 규정합니다.
+          본 약관은 교회 웹사이트에서 제공하는 서비스 이용과 관련하여 교회와 이용자 간의 권리·의무
+          및 책임 사항, 기타 필요한 사항을 규정합니다.
         </p>
 
         <div className="flex flex-col gap-10">
@@ -72,7 +72,9 @@ export default function Terms() {
             <section key={title}>
               <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{title}</h2>
               <div className="border-t border-bluegrey-2 pt-4">
-                <p className="text-body-3 text-grey-8 leading-[1.9] whitespace-pre-line">{content}</p>
+                <p className="text-body-3 text-grey-8 leading-[1.9] whitespace-pre-line">
+                  {content}
+                </p>
               </div>
             </section>
           ))}

@@ -9,13 +9,44 @@ const SECTION_TAB_MAP = {
   게시판: "양육/훈련 게시판",
 };
 
-const TABS = ["구역모임", "오늘의 묵상", "제자훈련", "양육프로그램", "양육/훈련 게시판", "성경읽기/쓰기"];
+const TABS = [
+  "구역모임",
+  "오늘의 묵상",
+  "제자훈련",
+  "양육프로그램",
+  "양육/훈련 게시판",
+  "성경읽기/쓰기",
+];
 
 const ZONES = [
-  { name: "1구역", leader: "홍길동 구역장", members: 8, time: "매주 목요일 오후 7:30", location: "구역장 댁" },
-  { name: "2구역", leader: "김성실 구역장", members: 7, time: "매주 금요일 오후 7:30", location: "구역장 댁" },
-  { name: "3구역", leader: "이믿음 구역장", members: 9, time: "매주 목요일 오후 8:00", location: "구역장 댁" },
-  { name: "4구역", leader: "박소망 구역장", members: 6, time: "매주 화요일 오후 7:30", location: "구역장 댁" },
+  {
+    name: "1구역",
+    leader: "홍길동 구역장",
+    members: 8,
+    time: "매주 목요일 오후 7:30",
+    location: "구역장 댁",
+  },
+  {
+    name: "2구역",
+    leader: "김성실 구역장",
+    members: 7,
+    time: "매주 금요일 오후 7:30",
+    location: "구역장 댁",
+  },
+  {
+    name: "3구역",
+    leader: "이믿음 구역장",
+    members: 9,
+    time: "매주 목요일 오후 8:00",
+    location: "구역장 댁",
+  },
+  {
+    name: "4구역",
+    leader: "박소망 구역장",
+    members: 6,
+    time: "매주 화요일 오후 7:30",
+    location: "구역장 댁",
+  },
 ];
 
 const QT_URL = "https://www.qtland.com/quiet/quiet.php?cate=A";
@@ -73,12 +104,48 @@ const NURTURE_PROGRAMS = [
 ];
 
 const BOARD_POSTS = [
-  { id: 1, category: "공지", title: "2026년 상반기 제자훈련 모집 안내", author: "교육부", date: "2026.04.28" },
-  { id: 2, category: "후기", title: "제자훈련 1단계 수료 소감 나눔", author: "이수련 집사", date: "2026.04.20" },
-  { id: 3, category: "공지", title: "5월 구역모임 일정 변경 안내", author: "교육부", date: "2026.04.18" },
-  { id: 4, category: "나눔", title: "양육프로그램 참여 후기 공유합니다", author: "박믿음 성도", date: "2026.04.10" },
-  { id: 5, category: "공지", title: "오늘의 묵상 4월 말씀 자료 배포", author: "교육부", date: "2026.04.01" },
-  { id: 6, category: "나눔", title: "성경통독 40일 완주 도전기", author: "김소망 성도", date: "2026.03.25" },
+  {
+    id: 1,
+    category: "공지",
+    title: "2026년 상반기 제자훈련 모집 안내",
+    author: "교육부",
+    date: "2026.04.28",
+  },
+  {
+    id: 2,
+    category: "후기",
+    title: "제자훈련 1단계 수료 소감 나눔",
+    author: "이수련 집사",
+    date: "2026.04.20",
+  },
+  {
+    id: 3,
+    category: "공지",
+    title: "5월 구역모임 일정 변경 안내",
+    author: "교육부",
+    date: "2026.04.18",
+  },
+  {
+    id: 4,
+    category: "나눔",
+    title: "양육프로그램 참여 후기 공유합니다",
+    author: "박믿음 성도",
+    date: "2026.04.10",
+  },
+  {
+    id: 5,
+    category: "공지",
+    title: "오늘의 묵상 4월 말씀 자료 배포",
+    author: "교육부",
+    date: "2026.04.01",
+  },
+  {
+    id: 6,
+    category: "나눔",
+    title: "성경통독 40일 완주 도전기",
+    author: "김소망 성도",
+    date: "2026.03.25",
+  },
 ];
 
 const LEVEL_COLORS = {
@@ -135,7 +202,6 @@ export default function Nurture() {
 
       {/* Content */}
       <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
-
         {/* 구역모임 */}
         {activeTab === "구역모임" && (
           <div>
@@ -186,7 +252,10 @@ export default function Nurture() {
                 새 탭에서 열기 ↗
               </a>
             </div>
-            <div className="relative w-full rounded-2xl overflow-hidden border border-bluegrey-2" style={{ height: "calc(100vh - 260px)", minHeight: "600px" }}>
+            <div
+              className="relative w-full rounded-2xl overflow-hidden border border-bluegrey-2"
+              style={{ height: "calc(100vh - 260px)", minHeight: "600px" }}
+            >
               <iframe
                 src={QT_URL}
                 title="오늘의 묵상 - QT Land"
@@ -195,8 +264,18 @@ export default function Nurture() {
               />
               {/* 사이트가 iframe 임베딩을 차단한 경우 표시되는 fallback */}
               <div className="absolute inset-0 -z-10 flex flex-col items-center justify-center gap-4 bg-bluegrey-1 text-grey-7">
-                <svg className="w-12 h-12 text-bluegrey-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                <svg
+                  className="w-12 h-12 text-bluegrey-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                  />
                 </svg>
                 <p className="text-body-3">페이지를 불러올 수 없습니다.</p>
                 <a
@@ -251,7 +330,9 @@ export default function Nurture() {
               {NURTURE_PROGRAMS.map((prog) => (
                 <div key={prog.title} className="border border-bluegrey-2 rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-body-5 font-semibold ${LEVEL_COLORS[prog.level]}`}>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-body-5 font-semibold ${LEVEL_COLORS[prog.level]}`}
+                    >
                       {prog.level}
                     </span>
                     <span className="text-body-5 text-grey-5">{prog.duration}</span>
@@ -288,12 +369,18 @@ export default function Nurture() {
                   key={post.id}
                   className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors cursor-pointer items-center"
                 >
-                  <span className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
+                  >
                     {post.category}
                   </span>
                   <span className="text-body-3 text-grey-10 px-3 truncate">{post.title}</span>
-                  <span className="hidden md:block text-body-5 text-grey-6 text-center">{post.author}</span>
-                  <span className="hidden md:block text-body-5 text-grey-5 text-center">{post.date}</span>
+                  <span className="hidden md:block text-body-5 text-grey-6 text-center">
+                    {post.author}
+                  </span>
+                  <span className="hidden md:block text-body-5 text-grey-5 text-center">
+                    {post.date}
+                  </span>
                 </div>
               ))}
             </div>
@@ -312,8 +399,18 @@ export default function Nurture() {
                 className="w-72 max-w-[90vw] h-80 bg-blue-8 rounded-2xl flex flex-col items-center justify-center gap-6 text-white hover:bg-blue-9 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 쓰기</span>
-                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                <svg
+                  className="w-16 h-16"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
                 </svg>
               </Link>
               <Link
@@ -321,8 +418,18 @@ export default function Nurture() {
                 className="w-72 max-w-[90vw] h-80 bg-white border-2 border-blue-3 rounded-2xl flex flex-col items-center justify-center gap-6 text-grey-11 hover:bg-blue-1 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 읽기</span>
-                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                <svg
+                  className="w-16 h-16"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                  />
                 </svg>
               </Link>
             </div>
