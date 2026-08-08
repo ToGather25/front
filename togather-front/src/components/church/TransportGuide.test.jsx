@@ -24,7 +24,7 @@ describe("TransportGuide", () => {
 
   it("경유지가 있는 코스가 하나라도 있으면 범례를 보여준다", () => {
     render(<TransportGuide />);
-    expect(screen.getAllByText("운행코스 1")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("운행코스 1")).toHaveLength(2);
     expect(
       screen.queryByText("경유지 좌표를 입력하면 지도에 경로가 표시됩니다."),
     ).not.toBeInTheDocument();

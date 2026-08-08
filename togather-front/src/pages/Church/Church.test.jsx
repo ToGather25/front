@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vite-plus/test";
-import { screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ChurchProvider } from "@/contexts/ChurchContext";
 import churchConfig from "@/config/church.config";
-import { render } from "@testing-library/react";
 import Church from "./Church";
 
 function renderChurch() {
