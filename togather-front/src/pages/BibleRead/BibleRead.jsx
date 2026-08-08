@@ -1,5 +1,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import BibleTutorial from "@/components/bible/BibleTutorial";
+import { saveLastPosition } from "@/utils/bibleReadingProgress";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/config/bible.config";
@@ -272,6 +276,8 @@ const MENU_ICON = {
 };
 
 export default function BibleRead() {
+  const currentUser = useAuth()?.currentUser;
+  const navigate = useNavigate();
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경읽기");
   const [selectedBook, setSelectedBook] = useState(state?.book ?? "창세기");
@@ -297,6 +303,10 @@ export default function BibleRead() {
       setCheckedVerses({});
     }
   }, [state]);
+
+  useEffect(() => {
+    if (currentUser) saveLastPosition(selectedBook, chapter);
+  }, [currentUser, selectedBook, chapter]);
 
   const verses = getVerses(selectedBook, chapter);
   const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
@@ -393,8 +403,18 @@ export default function BibleRead() {
     [toggleSave, toggleVerse],
   );
 
+  if (!currentUser) {
+    return (
+      <LoginRequiredModal
+        message="성경 읽기를 이용하려면 로그인해 주세요."
+        onCancel={() => navigate("/")}
+      />
+    );
+  }
+
   return (
     <>
+      <BibleTutorial />
       <div className="flex h-screen">
         {/* 공통 사이드바 */}
         <BibleSidebar
