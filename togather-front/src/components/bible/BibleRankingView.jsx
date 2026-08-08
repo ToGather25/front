@@ -1,11 +1,19 @@
-// 숫자를 한국어 단위로 포맷 (예: 12345566 → "1234만 5566절")
+// 숫자를 한국어 단위로 포맷 (예: 12345566 → "1,234만 5천 566")
+function formatUnderMan(n) {
+  if (n < 1000) return `${n.toLocaleString()}`;
+  const cheon = Math.floor(n / 1000);
+  const remainder = n % 1000;
+  if (remainder === 0) return `${cheon}천`;
+  return `${cheon}천 ${remainder}`;
+}
+
 function formatKorean(n) {
   if (n < 1000) return `${n.toLocaleString()}`;
   const man = Math.floor(n / 10000);
   const rest = n % 10000;
-  if (man === 0) return `${rest.toLocaleString()}`;
+  if (man === 0) return formatUnderMan(rest);
   if (rest === 0) return `${man.toLocaleString()}만`;
-  return `${man.toLocaleString()}만 ${rest.toLocaleString()}`;
+  return `${man.toLocaleString()}만 ${formatUnderMan(rest)}`;
 }
 
 function TrendIcon({ trend }) {
