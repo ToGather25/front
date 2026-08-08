@@ -1,19 +1,12 @@
 import { describe, it, expect } from "vite-plus/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
-import { ChurchProvider } from "@/contexts/ChurchContext";
 import churchConfig from "@/config/church.config";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import SignupNext from "./SignupNext";
 
 function renderSignupNext(initialEntry) {
-  return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <ChurchProvider>
-        <SignupNext />
-      </ChurchProvider>
-    </MemoryRouter>,
-  );
+  return renderWithChurch(<SignupNext />, { initialEntries: [initialEntry] });
 }
 
 describe("SignupNext", () => {

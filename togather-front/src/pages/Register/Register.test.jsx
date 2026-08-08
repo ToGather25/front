@@ -1,18 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
-import { ChurchProvider } from "@/contexts/ChurchContext";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import Register from "./Register";
 
 function renderRegister() {
-  return render(
-    <MemoryRouter>
-      <ChurchProvider>
-        <Register />
-      </ChurchProvider>
-    </MemoryRouter>,
-  );
+  return renderWithChurch(<Register />, { withRouter: true });
 }
 
 async function fillBasicFields(user, container, { name = "김철수", phone = "010-1111-2222" } = {}) {

@@ -1,22 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { MemoryRouter } from "react-router";
-import { ChurchProvider } from "@/contexts/ChurchContext";
-import { AuthProvider } from "@/contexts/auth";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import LoginPage from "./Login";
 
 function renderLogin() {
-  return render(
-    <MemoryRouter>
-      <ChurchProvider>
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
-      </ChurchProvider>
-    </MemoryRouter>,
-  );
+  return renderWithChurch(<LoginPage />, { withAuth: true });
 }
 
 describe("Login", () => {
