@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
+import { useAuth } from "@/contexts/auth";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 
 const SECTION_TAB_MAP = {
   구역: "구역모임",
@@ -164,6 +166,15 @@ const CATEGORY_COLORS = {
 export default function Nurture() {
   const { section } = useParams();
   const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
+  const { currentUser } = useAuth();
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
+
+  function handleBibleCardClick(e) {
+    if (!currentUser) {
+      e.preventDefault();
+      setShowLoginRequired(true);
+    }
+  }
 
   useEffect(() => {
     setActiveTab(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
@@ -396,6 +407,7 @@ export default function Nurture() {
             <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
               <Link
                 to="/말씀/필사"
+                onClick={handleBibleCardClick}
                 className="w-72 max-w-[90vw] h-80 bg-blue-8 rounded-2xl flex flex-col items-center justify-center gap-6 text-white hover:bg-blue-9 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 쓰기</span>
@@ -415,6 +427,7 @@ export default function Nurture() {
               </Link>
               <Link
                 to="/말씀/읽기"
+                onClick={handleBibleCardClick}
                 className="w-72 max-w-[90vw] h-80 bg-white border-2 border-blue-3 rounded-2xl flex flex-col items-center justify-center gap-6 text-grey-11 hover:bg-blue-1 transition-colors"
               >
                 <span className="text-sub-tit-3 font-semibold">성경 읽기</span>
@@ -436,6 +449,13 @@ export default function Nurture() {
           </div>
         )}
       </div>
+
+      {showLoginRequired && (
+        <LoginRequiredModal
+          message="성경 읽기·쓰기를 이용하려면 로그인해 주세요."
+          onCancel={() => setShowLoginRequired(false)}
+        />
+      )}
     </div>
   );
 }
