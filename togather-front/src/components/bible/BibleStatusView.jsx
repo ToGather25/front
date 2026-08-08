@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { OT, NT, BOOK_MAP } from "@/config/bible.config";
+import { getLastPosition } from "@/utils/bibleReadingProgress";
 
 // 성경 권별 절 수 (개역개정 기준)
 const VERSE_COUNT = {
@@ -287,7 +288,7 @@ function GoalBanner({ totalPct, monthGoalPct, hasGoal, onGoalSaved }) {
             </>
           ) : (
             <div className="flex flex-col items-start gap-2 mt-1">
-              <p className="text-body-4 text-grey-5">목표를 설정해 보세요</p>
+              <p className="text-body-4 text-grey-5">목표는 단기 목표부터!</p>
               <div className="h-1.5 bg-grey-3 rounded-full overflow-hidden w-full">
                 <div className="h-full w-0" />
               </div>
@@ -511,11 +512,13 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
             return (
               <button
                 key={abbr}
-                onClick={() =>
+                onClick={() => {
+                  const book = BOOK_MAP[abbr];
+                  const lastChapter = getLastPosition(book);
                   navigate(mode === "write" ? "/말씀/필사" : "/말씀/읽기", {
-                    state: { book: BOOK_MAP[abbr] },
-                  })
-                }
+                    state: lastChapter ? { book, chapter: lastChapter } : { book },
+                  });
+                }}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-bluegrey-2 hover:border-blue-4 hover:bg-blue-1 transition-all text-left group"
               >
                 <div className="flex-1 min-w-0">
@@ -557,11 +560,13 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
             return (
               <button
                 key={abbr}
-                onClick={() =>
+                onClick={() => {
+                  const book = BOOK_MAP[abbr];
+                  const lastChapter = getLastPosition(book);
                   navigate(mode === "write" ? "/말씀/필사" : "/말씀/읽기", {
-                    state: { book: BOOK_MAP[abbr] },
-                  })
-                }
+                    state: lastChapter ? { book, chapter: lastChapter } : { book },
+                  });
+                }}
                 className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 border transition-all hover:shadow-md ${
                   done
                     ? "bg-blue-7 border-blue-7 text-white"
