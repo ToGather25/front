@@ -38,6 +38,17 @@ export default function Register() {
   });
   const [status, setStatus] = useState("idle");
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyContact() {
+    try {
+      await navigator.clipboard.writeText(ADMIN_CONTACT);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // 클립보드 API 미지원 환경 — 조용히 무시(연락처는 여전히 화면에 보임)
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -397,10 +408,14 @@ export default function Register() {
               <br />
               교회 사무실로 문의해주세요.
             </p>
-            <p className="flex items-center justify-center gap-1.5 text-body-4 text-grey-7 mb-6">
+            <button
+              type="button"
+              onClick={handleCopyContact}
+              className="flex items-center justify-center gap-1.5 text-body-4 text-grey-7 mb-6 mx-auto hover:text-blue-7 transition-colors"
+            >
               <img src={IcoPhone} className="w-4 h-4 opacity-80" alt="" />
-              {ADMIN_CONTACT}
-            </p>
+              {copied ? "복사되었습니다" : ADMIN_CONTACT}
+            </button>
             <button
               onClick={() => setShowDuplicateModal(false)}
               className="w-full py-3 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
