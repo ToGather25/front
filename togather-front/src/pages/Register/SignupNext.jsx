@@ -373,11 +373,9 @@ export default function SignupNext() {
               </svg>
             </div>
             <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">
-              회원가입이 완료되었습니다!
+              {church?.name ?? "교회"}의 일원이 된 것을 축하합니다!
             </h2>
             <p className="text-body-3 text-grey-7 leading-relaxed mb-8">
-              {church?.name ?? "교회"}의 일원이 된 것을 환영합니다.
-              <br />
               이제 모든 교회 서비스를 이용할 수 있습니다.
             </p>
             <button
