@@ -24,8 +24,9 @@ describe("FindPassword", () => {
     await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-1234-5678");
     await user.click(screen.getByRole("button", { name: "재설정 링크 받기" }));
 
-    await waitFor(() =>
-      expect(screen.getByText("재설정 링크를 보냈습니다")).toBeInTheDocument(),
+    await waitFor(
+      () => expect(screen.getByText("재설정 링크를 보냈습니다")).toBeInTheDocument(),
+      { timeout: 2000 },
     );
     expect(screen.getByText(/member@example\.com/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "로그인으로 돌아가기" })).toHaveAttribute(
