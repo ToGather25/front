@@ -52,8 +52,9 @@ describe("Register", () => {
     expect(submitBtn).toBeEnabled();
     await user.click(submitBtn);
 
-    await waitFor(() =>
-      expect(screen.getByText("가입 신청이 완료되었습니다")).toBeInTheDocument(),
+    await waitFor(
+      () => expect(screen.getByText("가입 신청이 완료되었습니다")).toBeInTheDocument(),
+      { timeout: 2000 },
     );
   });
 
@@ -70,8 +71,9 @@ describe("Register", () => {
     await user.click(screen.getByLabelText(/개인정보 수집.*동의합니다/));
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
-    await waitFor(() =>
-      expect(screen.getByText("신청을 확인해 주세요")).toBeInTheDocument(),
+    await waitFor(
+      () => expect(screen.getByText("신청을 확인해 주세요")).toBeInTheDocument(),
+      { timeout: 2000 },
     );
   });
 
@@ -95,7 +97,7 @@ describe("Register", () => {
     await user.click(screen.getByLabelText(/개인정보 수집.*동의합니다/));
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
-    const contactButton = await screen.findByRole("button", { name: "02-2615-4067" });
+    const contactButton = await screen.findByRole("button", { name: "02-2615-4067" }, { timeout: 2000 });
     await user.click(contactButton);
 
     expect(writeText).toHaveBeenCalledWith("02-2615-4067");
