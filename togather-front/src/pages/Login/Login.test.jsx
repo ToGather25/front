@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
+import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
 import { MemoryRouter } from "react-router";
 import { ChurchProvider } from "@/contexts/ChurchContext";
 import { AuthProvider } from "@/contexts/auth";
@@ -31,15 +32,19 @@ describe("Login", () => {
     await user.type(screen.getByPlaceholderText("••••••••"), "test1234");
     await user.click(screen.getByRole("button", { name: "로그인" }));
 
-    await waitFor(() =>
-      expect(
-        screen.queryByText("이메일 또는 비밀번호가 일치하지 않습니다."),
-      ).not.toBeInTheDocument(),
-    );
+    await waitFor(() => {
+      const stored = JSON.parse(localStorage.getItem("user") ?? "null");
+      expect(stored?.email).toBe("test@togather.com");
+    });
+
+    expect(
+      screen.queryByText("이메일 또는 비밀번호가 일치하지 않습니다."),
+    ).not.toBeInTheDocument();
   });
 
   it("잘못된 자격증명으로 로그인하면 에러 문구를 보여준다", async () => {
     const user = userEvent.setup();
+    vi.spyOn(axios, "post").mockRejectedValueOnce(new Error("network error"));
     renderLogin();
 
     await user.type(screen.getByPlaceholderText("example@email.com"), "wrong@example.com");
