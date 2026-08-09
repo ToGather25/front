@@ -61,6 +61,20 @@ describe("BibleWrite — 필사 로직", () => {
     const user = userEvent.setup();
     renderWrite();
 
+    // 먼저 1장 1절이 아닌 상태로 이동시켜, 책 변경 후 "1장 1절로 리셋됨"을
+    // "애초에 안 바뀐 것"과 구분할 수 있게 한다.
+    await user.click(screen.getByRole("button", { name: "1장" }));
+    await user.click(screen.getByRole("button", { name: "3" }));
+    expect(screen.getByRole("button", { name: "3장" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "1절" }));
+    const verseButtons = screen.getAllByRole("button", { name: /^\d+$/ });
+    const otherVerse = verseButtons.find((b) => b.textContent !== "1");
+    await user.click(otherVerse);
+    expect(
+      screen.getByRole("button", { name: `${otherVerse.textContent}절` }),
+    ).toBeInTheDocument();
+
     await user.click(screen.getByRole("button", { name: "창세기" }));
     await user.click(screen.getByRole("button", { name: "출애굽기" }));
 
@@ -72,6 +86,11 @@ describe("BibleWrite — 필사 로직", () => {
   it("장 드롭다운에서 다른 장을 클릭하면 해당 장으로 이동하고 입력이 초기화된다", async () => {
     const user = userEvent.setup();
     const { container } = renderWrite();
+
+    // 먼저 입력값을 채워둬서, 장 이동 후 정말로 초기화되는지 검증할 수 있게 한다.
+    const textarea = container.querySelector("textarea");
+    await user.type(textarea, "가나다");
+    expect(textarea).not.toHaveValue("");
 
     await user.click(screen.getByRole("button", { name: "1장" }));
     await user.click(screen.getByRole("button", { name: "2" }));
