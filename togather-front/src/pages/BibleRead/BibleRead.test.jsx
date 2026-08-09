@@ -11,7 +11,7 @@ describe("BibleRead", () => {
   });
 
   it("로그인하지 않은 상태로 접근하면 로그인 필요 모달만 보여주고 본문은 렌더하지 않는다", () => {
-    renderWithChurch(<BibleRead />, { withRouter: true });
+    renderWithChurch(<BibleRead />, { withAuth: true });
     expect(screen.getByText("로그인이 필요한 서비스입니다")).toBeInTheDocument();
     expect(screen.queryByText("창세기")).not.toBeInTheDocument();
   });

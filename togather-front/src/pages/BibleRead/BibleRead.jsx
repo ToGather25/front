@@ -276,7 +276,7 @@ const MENU_ICON = {
 };
 
 export default function BibleRead() {
-  const currentUser = useAuth()?.currentUser;
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경읽기");
