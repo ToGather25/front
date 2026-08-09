@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "react-router";
+import { useAuth } from "@/contexts/auth";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
 import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
@@ -238,6 +240,7 @@ const MENU_ICON = {
 };
 
 export default function BibleWrite() {
+  const { currentUser } = useAuth();
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경쓰기");
   const [bookModalOpen, setBookModalOpen] = useState(false);
@@ -346,6 +349,15 @@ export default function BibleWrite() {
   };
 
   const isDone = isCorrect === true;
+
+  if (!currentUser) {
+    return (
+      <LoginRequiredModal
+        message="성경 쓰기를 이용하려면 로그인해 주세요."
+        onCancel={() => window.history.back()}
+      />
+    );
+  }
 
   return (
     <div className="flex h-screen">
