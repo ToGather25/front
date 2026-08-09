@@ -281,7 +281,7 @@ export default function BibleRead() {
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경읽기");
   const [selectedBook, setSelectedBook] = useState(state?.book ?? "창세기");
-  const [chapter, setChapter] = useState(1);
+  const [chapter, setChapter] = useState(state?.chapter ?? 1);
   const [checkedVerses, setCheckedVerses] = useState({});
   const [savedVerses, setSavedVerses] = useState({});
   const [bookOpen, setBookOpen] = useState(false);
@@ -299,7 +299,7 @@ export default function BibleRead() {
     if (state?.book) {
       setSelectedBook(state.book);
       setActiveMenu("성경읽기");
-      setChapter(1);
+      setChapter(state.chapter ?? 1);
       setCheckedVerses({});
     }
   }, [state]);
