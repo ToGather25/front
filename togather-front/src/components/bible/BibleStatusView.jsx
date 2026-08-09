@@ -514,7 +514,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
                 key={abbr}
                 onClick={() => {
                   const book = BOOK_MAP[abbr];
-                  const lastChapter = getLastPosition(book);
+                  const lastChapter = mode === "read" ? getLastPosition(book) : null;
                   navigate(mode === "write" ? "/말씀/필사" : "/말씀/읽기", {
                     state: lastChapter ? { book, chapter: lastChapter } : { book },
                   });
@@ -562,7 +562,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
                 key={abbr}
                 onClick={() => {
                   const book = BOOK_MAP[abbr];
-                  const lastChapter = getLastPosition(book);
+                  const lastChapter = mode === "read" ? getLastPosition(book) : null;
                   navigate(mode === "write" ? "/말씀/필사" : "/말씀/읽기", {
                     state: lastChapter ? { book, chapter: lastChapter } : { book },
                   });

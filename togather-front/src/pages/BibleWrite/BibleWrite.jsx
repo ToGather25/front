@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import bibleData from "@/data/bible.json";
@@ -241,6 +241,7 @@ const MENU_ICON = {
 
 export default function BibleWrite() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경쓰기");
   const [bookModalOpen, setBookModalOpen] = useState(false);
@@ -354,7 +355,7 @@ export default function BibleWrite() {
     return (
       <LoginRequiredModal
         message="성경 쓰기를 이용하려면 로그인해 주세요."
-        onCancel={() => window.history.back()}
+        onCancel={() => navigate("/")}
       />
     );
   }
