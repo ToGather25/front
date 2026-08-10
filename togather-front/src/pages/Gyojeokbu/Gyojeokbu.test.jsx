@@ -92,8 +92,7 @@ describe("Gyojeokbu — 검색·필터·상세 드로어", () => {
     const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
 
     await user.click(screen.getByText(MEMBERS[1].name));
-    const nextBtn = container.querySelectorAll("aside button")[1];
-    await user.click(nextBtn);
+    await user.click(screen.getByRole("button", { name: "다음" }));
 
     // 주의: m.phone은 드로어 안에 두 곳(Hero의 tel 링크 + 기본정보 InfoRow)에
     // 중복 렌더되어 getByText가 "multiple elements" 에러를 던진다.

@@ -37,8 +37,14 @@ export default function MembersManage() {
   const [pendingList, setPendingList] = useState(DUMMY_PENDING);
   const [approvingId, setApprovingId] = useState(null);
 
+  const matchesPosition = (m) => {
+    if (position === "전체") return true;
+    if (position === "집사") return m.role.includes("집사") && !m.role.includes("안수집사");
+    return m.role.includes(position);
+  };
+
   const filtered = MEMBERS.filter((m) => dept === "전체" || m.department === dept)
-    .filter((m) => position === "전체" || m.role === position)
+    .filter(matchesPosition)
     .filter(
       (m) => m.name.includes(search) || m.email?.includes(search) || m.phone.includes(search),
     );

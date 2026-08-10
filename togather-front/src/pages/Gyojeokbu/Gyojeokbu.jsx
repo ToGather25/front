@@ -659,6 +659,7 @@ export default function Gyojeokbu() {
                 <button
                   onClick={() => prevId && setSelectedId(prevId)}
                   disabled={!prevId}
+                  aria-label="이전"
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-bluegrey-1 disabled:opacity-30 transition-colors"
                 >
                   <svg
@@ -674,6 +675,7 @@ export default function Gyojeokbu() {
                 <button
                   onClick={() => nextId && setSelectedId(nextId)}
                   disabled={!nextId}
+                  aria-label="다음"
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-bluegrey-1 disabled:opacity-30 transition-colors"
                 >
                   <svg

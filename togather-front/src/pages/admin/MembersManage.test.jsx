@@ -15,20 +15,25 @@ describe("MembersManage — 교인 목록", () => {
     const target = MEMBERS.find((m) => m.department === "청년부 1부");
     const other = MEMBERS.find((m) => m.department !== "청년부 1부");
 
+    expect(target).toBeDefined();
+    expect(other).toBeDefined();
+
     fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "청년부 1부" } });
 
     expect(screen.getByText(target.name)).toBeInTheDocument();
     expect(screen.queryByText(other.name)).not.toBeInTheDocument();
   });
 
-  it("직책 필터를 선택하면 해당 직책 교인만 표시된다", () => {
+  it("직책 필터를 선택하면 해당 직책 교인만 표시된다(복합 직분 포함)", () => {
     render(<MembersManage />);
-    const target = MEMBERS.find((m) => m.role === "장로");
-    const other = MEMBERS.find((m) => m.role !== "장로");
+    const targets = MEMBERS.filter((m) => m.role.includes("권사"));
+    const other = MEMBERS.find((m) => !m.role.includes("권사"));
 
-    fireEvent.change(screen.getAllByRole("combobox")[1], { target: { value: "장로" } });
+    expect(targets.length).toBeGreaterThan(1); // "권사 · 1구역장" 같은 복합 직분이 실제로 존재하는지 전제 확인
 
-    expect(screen.getByText(target.name)).toBeInTheDocument();
+    fireEvent.change(screen.getAllByRole("combobox")[1], { target: { value: "권사" } });
+
+    targets.forEach((t) => expect(screen.getByText(t.name)).toBeInTheDocument());
     expect(screen.queryByText(other.name)).not.toBeInTheDocument();
   });
 
