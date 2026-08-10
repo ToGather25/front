@@ -81,3 +81,34 @@ describe("routes — /말씀 리다이렉트 + 예배 안내 라우트", () => {
     expect(screen.getByText("정기 예배")).toBeInTheDocument();
   });
 });
+
+describe("routes — /교적부 인증 가드", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("/교적부 진입 시 크래시 없이 로그인 필요 모달을 보여준다", () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/교적부"] });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(screen.getByText("로그인이 필요한 서비스입니다")).toBeInTheDocument();
+  });
+
+  it("로그인된 상태로 /교적부 진입 시 크래시 없이 교인 목록이 렌더된다", async () => {
+    localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
+    const router = createMemoryRouter(routes, { initialEntries: ["/교적부"] });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(await screen.findByPlaceholderText("이름 또는 휴대폰 번호로 검색")).toBeInTheDocument();
+  });
+});
