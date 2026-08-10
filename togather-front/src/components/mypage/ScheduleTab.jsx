@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { INITIAL_SCHEDULES } from "./mockData";
 import { StatusBadge, Pagination, InputField, ModalOverlay } from "./shared";
 
 const PAGE_SIZE = 5;
 
-export default function ScheduleTab() {
-  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
+export default function ScheduleTab({ schedules, setSchedules }) {
   const [scheduleForm, setScheduleForm] = useState({ date: "", day: "", title: "", info: "" });
   const [schedulePage, setSchedulePage] = useState(1);
   const [modal, setModal] = useState(null);

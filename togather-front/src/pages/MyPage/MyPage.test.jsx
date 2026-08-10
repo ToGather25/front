@@ -36,4 +36,27 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
     expect(screen.getByRole("button", { name: "+ 일정 추가" })).toBeInTheDocument();
     expect(screen.queryByText("내 프로필")).not.toBeInTheDocument();
   });
+
+  it("일정 탭에서 일정을 추가하고 다른 탭으로 이동했다가 돌아오면 추가한 일정이 유지된다", () => {
+    localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
+    renderWithChurch(<MyPage />, { withAuth: true });
+
+    fireEvent.click(screen.getByRole("button", { name: "일정" }));
+    const before = screen.getByText(/^내 일정 \(\d+\)$/).textContent;
+
+    fireEvent.click(screen.getByRole("button", { name: "+ 일정 추가" }));
+    fireEvent.change(screen.getByPlaceholderText("예) 새가족 모임"), {
+      target: { value: "지속성 테스트 일정" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+
+    const afterAdd = screen.getByText(/^내 일정 \(\d+\)$/).textContent;
+    expect(afterAdd).not.toBe(before);
+
+    fireEvent.click(screen.getByRole("button", { name: "문의하기" }));
+    fireEvent.click(screen.getByRole("button", { name: "일정" }));
+
+    const afterReturn = screen.getByText(/^내 일정 \(\d+\)$/).textContent;
+    expect(afterReturn).toBe(afterAdd);
+  });
 });

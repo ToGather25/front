@@ -1,6 +1,5 @@
 import { useState } from "react";
 import ChurchIcon from "@/assets/icon-svg/mypage-church.svg";
-import { INITIAL_PRAYERS } from "./mockData";
 import { StatusBadge, Pagination, InputField, ModalOverlay } from "./shared";
 
 const PRAYER_PAGE_SIZE = 4;
@@ -9,8 +8,7 @@ function IconChurch() {
   return <img src={ChurchIcon} className="w-4 h-4" alt="" />;
 }
 
-export default function PrayerTab() {
-  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
+export default function PrayerTab({ prayers, setPrayers }) {
   const [prayerForm, setPrayerForm] = useState({ date: "", day: "", title: "", content: "" });
   const [prayerFilter, setPrayerFilter] = useState("전체");
   const [prayerPage, setPrayerPage] = useState(1);

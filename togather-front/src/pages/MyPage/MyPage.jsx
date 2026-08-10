@@ -11,7 +11,12 @@ import HeartHandBlue from "@/assets/icon-svg/mypage-heart-hand-blue.svg";
 import HeartHandWhite from "@/assets/icon-svg/mypage-heart-hand-white.svg";
 import ChatBlue from "@/assets/icon-svg/mypage-chat-blue.svg";
 import ChatWhite from "@/assets/icon-svg/mypage-chat-white.svg";
-import { MOCK_USER } from "@/components/mypage/mockData";
+import {
+  MOCK_USER,
+  INITIAL_SCHEDULES,
+  INITIAL_PRAYERS,
+  INITIAL_INQUIRIES,
+} from "@/components/mypage/mockData";
 import InfoTab from "@/components/mypage/InfoTab";
 import DeptTab from "@/components/mypage/DeptTab";
 import ScheduleTab from "@/components/mypage/ScheduleTab";
@@ -30,6 +35,23 @@ export default function MyPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState("info");
+
+  // 탭을 벗어났다가 돌아와도 사용자가 입력·추가한 내용이 유지되도록(원본
+  // MyPage.jsx와 동일한 지속성), 여러 탭에 걸쳐 보존해야 하는 "데이터"만
+  // 부모가 소유한다. 필터/페이지 위치/모달 열림 여부처럼 뷰 상태 성격의
+  // 값은 각 탭이 자체 소유해 탭 전환 시 초기화되며, 이는 사용자가 입력한
+  // 값이 아니므로 문제없다.
+  const [userForm, setUserForm] = useState({
+    name: MOCK_USER.name,
+    phone: MOCK_USER.phone,
+    email: MOCK_USER.email,
+    address: MOCK_USER.address,
+    currentPw: "",
+    newPw: "",
+  });
+  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
+  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
+  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
 
   if (!currentUser) {
     return (
@@ -89,11 +111,21 @@ export default function MyPage() {
 
           {/* ── Content ── */}
           <main className="flex-1 min-w-0">
-            {activeTab === "info" && <InfoTab onNavigateDept={() => setActiveTab("dept")} />}
+            {activeTab === "info" && (
+              <InfoTab
+                userForm={userForm}
+                setUserForm={setUserForm}
+                onNavigateDept={() => setActiveTab("dept")}
+              />
+            )}
             {activeTab === "dept" && <DeptTab />}
-            {activeTab === "schedule" && <ScheduleTab />}
-            {activeTab === "prayer" && <PrayerTab />}
-            {activeTab === "inquiry" && <InquiryTab />}
+            {activeTab === "schedule" && (
+              <ScheduleTab schedules={schedules} setSchedules={setSchedules} />
+            )}
+            {activeTab === "prayer" && <PrayerTab prayers={prayers} setPrayers={setPrayers} />}
+            {activeTab === "inquiry" && (
+              <InquiryTab inquiries={inquiries} setInquiries={setInquiries} />
+            )}
           </main>
         </div>
       </div>

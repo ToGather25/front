@@ -1,16 +1,22 @@
 import { describe, it, expect } from "vite-plus/test";
+import { useState } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { INITIAL_PRAYERS } from "./mockData";
 import PrayerTab from "./PrayerTab";
 
+function Wrapper() {
+  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
+  return <PrayerTab prayers={prayers} setPrayers={setPrayers} />;
+}
+
 describe("PrayerTab — 기도 / 상담", () => {
   it("기도/상담 내역이 렌더된다", () => {
-    render(<PrayerTab />);
+    render(<Wrapper />);
     expect(screen.getByText(INITIAL_PRAYERS[0].title)).toBeInTheDocument();
   });
 
   it("'상담' 필터를 클릭하면 상담 타입만 표시된다", () => {
-    render(<PrayerTab />);
+    render(<Wrapper />);
     const target = INITIAL_PRAYERS.find((p) => p.type === "상담");
     const other = INITIAL_PRAYERS.find((p) => p.type === "기도");
 
@@ -21,7 +27,7 @@ describe("PrayerTab — 기도 / 상담", () => {
   });
 
   it("기도/상담을 신청하면 목록 끝에 '답변 대기' 상태로 추가된다", () => {
-    render(<PrayerTab />);
+    render(<Wrapper />);
 
     fireEvent.click(screen.getByRole("button", { name: "신청하기" }));
     fireEvent.change(screen.getByPlaceholderText("예) 건강"), {

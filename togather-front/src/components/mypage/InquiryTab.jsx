@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MailIcon from "@/assets/icon-svg/mypage-mail.svg";
-import { INITIAL_INQUIRIES, MOCK_USER } from "./mockData";
+import { MOCK_USER } from "./mockData";
 import { StatusBadge, Pagination, InputField, ReadonlyField, IconBack } from "./shared";
 
 const PAGE_SIZE = 5;
@@ -9,8 +9,7 @@ function IconMail() {
   return <img src={MailIcon} className="w-[13px] h-[13px]" alt="" />;
 }
 
-export default function InquiryTab() {
-  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
+export default function InquiryTab({ inquiries, setInquiries }) {
   const [inquiryForm, setInquiryForm] = useState({ title: "", content: "" });
   const [inquiryPage, setInquiryPage] = useState(1);
   const [inquiryWriteMode, setInquiryWriteMode] = useState(false);

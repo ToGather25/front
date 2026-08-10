@@ -7,16 +7,8 @@ function IconUpload() {
   return <img src={ImgUpload} className="w-4 h-4" alt="" />;
 }
 
-export default function InfoTab({ onNavigateDept }) {
+export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
   const [modal, setModal] = useState(null);
-  const [userForm, setUserForm] = useState({
-    name: MOCK_USER.name,
-    phone: MOCK_USER.phone,
-    email: MOCK_USER.email,
-    address: MOCK_USER.address,
-    currentPw: "",
-    newPw: "",
-  });
   const fileInputRef = useRef(null);
 
   function resetInfo() {
