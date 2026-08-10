@@ -61,7 +61,12 @@ describe("routes — /말씀 리다이렉트 + 예배 안내 라우트", () => {
       </ChurchProvider>,
     );
     expect(screen.getByRole("heading", { name: "예배·방송" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "실시간 예배" })).toHaveClass("border-blue-8");
+    // 헤더 드롭다운(예배·방송 메뉴)에도 동일 라벨의 링크가 있어 getByRole은 모호해진다.
+    // WordTabBar의 활성 탭(class="border-blue-8")을 명시적으로 찾아 검증한다.
+    const activeTabLinks = screen
+      .getAllByRole("link", { name: "실시간 예배" })
+      .filter((link) => link.className.includes("border-blue-8"));
+    expect(activeTabLinks).toHaveLength(1);
   });
 
   it("/말씀/안내 진입 시 예배 안내 페이지가 렌더된다", () => {

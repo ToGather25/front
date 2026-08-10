@@ -20,7 +20,7 @@ const ALL_KEYWORDS = [
   { label: "제자훈련", to: "/양육훈련/제자", category: "양육" },
   { label: "소그룹", to: "/양육훈련", category: "양육" },
   { label: "교회 소개", to: "/교회소개", category: "교회" },
-  { label: "예배 안내", to: "/교회소개?tab=예배 안내", category: "교회" },
+  { label: "예배 안내", to: "/말씀/안내", category: "예배" },
   { label: "오시는 길", to: "/교회소개?tab=오시는 길", category: "교회" },
   { label: "셔틀 안내", to: "/교회소개?tab=차량운행 안내", category: "교회" },
   { label: "주차 안내", to: "/교회소개?tab=오시는 길", category: "교회" },

@@ -11,6 +11,7 @@ describe("WordBroadcast — 실시간 예배(더미: 라이브 없음 → 가장
     expect(await screen.findByText(DUMMY_PAST_SERMONS[0].title)).toBeInTheDocument();
     expect(screen.queryByText("LIVE")).not.toBeInTheDocument();
     expect(screen.getByText(DUMMY_PAST_SERMONS[1].title)).toBeInTheDocument();
+    expect(screen.getAllByText(DUMMY_PAST_SERMONS[0].title)).toHaveLength(1);
   });
 
   it("videoId가 없으면 유튜브 채널 ID 안내 플레이스홀더를 보여준다", async () => {
@@ -24,6 +25,7 @@ describe("WordBroadcast — 실시간 예배(더미: 라이브 없음 → 가장
     renderWithChurch(<WordBroadcast />, { initialEntries: ["/말씀/방송"] });
     await screen.findByText(DUMMY_PAST_SERMONS[0].title);
 
+    expect(screen.queryByText("이번 주 주보")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "스마트 주보 보기" }));
 
     expect(screen.getByText("이번 주 주보")).toBeInTheDocument();
