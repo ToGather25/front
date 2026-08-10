@@ -29,13 +29,12 @@ describe("Church 셸", () => {
     expect(screen.queryByText(churchConfig.greeting.title)).not.toBeInTheDocument();
   });
 
-  it("8개 탭 버튼이 모두 렌더된다", () => {
+  it("7개 탭 버튼이 렌더되고 예배 안내 탭은 없다(예배·방송으로 이전됨)", () => {
     renderChurch();
     [
       "인사말",
       "교회 비전",
       "교회 연혁",
-      "예배 안내",
       "섬기는 사람들",
       "층별 안내",
       "오시는 길",
@@ -43,5 +42,6 @@ describe("Church 셸", () => {
     ].forEach((tab) => {
       expect(screen.getByRole("button", { name: tab })).toBeInTheDocument();
     });
+    expect(screen.queryByRole("button", { name: "예배 안내" })).not.toBeInTheDocument();
   });
 });

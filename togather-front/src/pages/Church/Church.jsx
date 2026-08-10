@@ -1,7 +1,6 @@
 import { useSearchParams } from "react-router";
 import Greeting from "@/components/church/Greeting";
 import Vision from "@/components/church/Vision";
-import WorshipInfo from "@/components/church/WorshipInfo";
 import Staff from "@/components/church/Staff";
 import History from "@/components/church/History";
 import FloorGuide from "@/components/church/FloorGuide";
@@ -12,7 +11,6 @@ const TABS = [
   "인사말",
   "교회 비전",
   "교회 연혁",
-  "예배 안내",
   "섬기는 사람들",
   "층별 안내",
   "오시는 길",
@@ -23,7 +21,6 @@ const TAB_CONTENT = {
   인사말: <Greeting />,
   "교회 비전": <Vision />,
   "교회 연혁": <History />,
-  "예배 안내": <WorshipInfo />,
   "섬기는 사람들": <Staff />,
   "층별 안내": <FloorGuide />,
   "오시는 길": <Direction />,
