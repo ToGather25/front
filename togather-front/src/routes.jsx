@@ -25,7 +25,7 @@ import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
 import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
 import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordSermonDetail from "@/pages/WordSermon/WordSermonDetail";
-// import WordPraise from "@/pages/WordPraise/WordPraise";
+import WordInfo from "@/pages/WordInfo/WordInfo";
 import Contact from "@/pages/Contact/Contact";
 import Notice from "@/pages/Notice/Notice";
 import Privacy from "@/pages/Privacy/Privacy";
@@ -64,11 +64,11 @@ export const routes = [
       { path: "교회행사/:id/신청", element: <EventApply /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송
-      { path: "말씀", element: <Navigate to="/양육훈련" replace /> },
+      { path: "말씀", element: <Navigate to="/말씀/방송" replace /> },
       { path: "말씀/방송", element: <WordBroadcast /> },
       { path: "말씀/설교", element: <WordSermon /> },
       { path: "말씀/설교/:id", element: <WordSermonDetail /> },
-      // { path: "말씀/찬양", element: <WordPraise /> },
+      { path: "말씀/안내", element: <WordInfo /> },
       // 주일학교
       { path: "주일학교", element: <SundaySchool /> },
       { path: "주일학교/:dept", element: <SundaySchool /> },

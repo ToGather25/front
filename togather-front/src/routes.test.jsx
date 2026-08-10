@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { routes } from "./routes";
+import { ChurchProvider } from "@/contexts/ChurchContext";
+import { SearchProvider } from "@/contexts/SearchContext";
 
 /**
  * 회귀 방지 테스트 (C-1): /말씀/읽기, /말씀/필사 라우트는 routes.jsx의 실제 라우트 트리에서
@@ -36,5 +38,41 @@ describe("routes — 말씀 읽기/필사 라우트의 AuthProvider 존재 확�
     const router = createMemoryRouter(routes, { initialEntries: ["/말씀/읽기"] });
     render(<RouterProvider router={router} />);
     expect(await screen.findByText("창세기")).toBeInTheDocument();
+  });
+});
+
+/**
+ * 아래 두 테스트는 "/" 하위 RootLayout 라우트(즉 말씀/방송, 말씀/안내)를 거치므로
+ * DesktopHeader/DesktopFooter/MobileFooter/SearchOverlay가 함께 렌더된다.
+ * 이 컴포넌트들은 useChurch()/useSearch()를 쓰는데, 실제 앱에서는 main.jsx가
+ * ChurchProvider·SearchProvider로 RouterProvider 바깥을 감싸주지만 여기서는
+ * routes 배열만 createMemoryRouter에 직접 꽂으므로 그 provider들이 없다.
+ * (위쪽 "말씀/읽기·필사" 테스트들은 AuthOnlyLayout만 거쳐 RootLayout을 타지 않으므로
+ * 이 문제가 드러나지 않았다.) 그래서 여기서만 두 provider로 감싸 렌더한다.
+ */
+describe("routes — /말씀 리다이렉트 + 예배 안내 라우트", () => {
+  it("/말씀 진입 시 /말씀/방송(예배·방송 기본 탭)으로 리다이렉트된다", () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/말씀"] });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "예배·방송" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "실시간 예배" })).toHaveClass("border-blue-8");
+  });
+
+  it("/말씀/안내 진입 시 예배 안내 페이지가 렌더된다", () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/말씀/안내"] });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(screen.getByText("정기 예배")).toBeInTheDocument();
   });
 });
