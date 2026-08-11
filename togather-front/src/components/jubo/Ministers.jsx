@@ -28,11 +28,11 @@ export default function Ministers() {
           <div key={title}>
             <p className="text-caption font-bold text-grey-9 mb-2 px-1">{title}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-              {items.map((item, index) => {
+              {items.map((item) => {
                 const [role, name] = item.split("|").map((s) => s.trim());
                 return (
                   <Link
-                    key={`${title}-${index}`}
+                    key={item}
                     to="/교적부"
                     className="group flex items-center gap-2.5 p-3 rounded-xl border border-bluegrey-2 bg-white hover:border-primary hover:bg-blue-1 transition-all print:pointer-events-none"
                   >
