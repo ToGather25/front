@@ -157,7 +157,7 @@ function DesktopHeader() {
             <div
               className="grid divide-x divide-bluegrey-2"
               style={{
-                gridTemplateColumns: `repeat(${NAV_ITEMS.filter((n) => n.children).length}, 1fr)`,
+                gridTemplateColumns: `repeat(${NAV_ITEMS.filter((n) => n.children).length}, minmax(0, 1fr))`,
               }}
             >
               {NAV_ITEMS.filter((item) => item.children).map((item) => {
@@ -183,7 +183,7 @@ function DesktopHeader() {
                         key={child.label}
                         to={child.to}
                         onClick={() => setOpenMenu(null)}
-                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap"
+                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors"
                       >
                         <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
                         {child.label}
