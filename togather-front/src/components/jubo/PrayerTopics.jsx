@@ -24,16 +24,11 @@ export default function PrayerTopics() {
         기도제목
       </SectionTitle>
       {prayerTopics.length === 0 ? (
-        <p className="mt-8 text-center text-body-4 text-grey-5">
-          이번 주 기도제목을 준비 중입니다
-        </p>
+        <p className="mt-8 text-center text-body-4 text-grey-5">이번 주 기도제목을 준비 중입니다</p>
       ) : (
         <div className="mt-5 flex flex-col gap-3">
           {prayerTopics.map((item, i) => (
-            <div
-              key={i}
-              className="border border-bluegrey-2 rounded-xl p-4 flex items-start gap-3"
-            >
+            <div key={i} className="border border-bluegrey-2 rounded-xl p-4 flex items-start gap-3">
               {item.category && (
                 <span className="text-xl shrink-0" aria-hidden="true">
                   {CATEGORY_EMOJI[item.category] ?? "🙏"}

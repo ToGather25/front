@@ -4,12 +4,16 @@ import juboConfig from "@/config/jubo.config";
 import Giving from "./Giving";
 
 describe("Giving — 헌금", () => {
+  let writeText;
+
   beforeEach(() => {
     // jsdom의 navigator.clipboard는 getter만 있는 접근자 프로퍼티라 Object.assign으로는
     // 덮어쓸 수 없다 — Register.test.jsx에서 이미 검증된 patterns대로 configurable: true인
-    // 값 프로퍼티로 재정의한다.
+    // 값 프로퍼티로 재정의한다. writeText는 로컬 변수로 잡아두고 단언에 사용한다
+    // (navigator.clipboard.writeText를 직접 참조하면 oxlint의 unbound-method 경고가 뜬다).
+    writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      value: { writeText },
       writable: true,
       configurable: true,
     });
@@ -28,9 +32,7 @@ describe("Giving — 헌금", () => {
     fireEvent.click(screen.getByText(juboConfig.giving.bankAccount.accountNumber));
 
     expect(await screen.findByText("복사되었습니다")).toBeInTheDocument();
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      juboConfig.giving.bankAccount.accountNumber,
-    );
+    expect(writeText).toHaveBeenCalledWith(juboConfig.giving.bankAccount.accountNumber);
   });
 
   it("qrCodeUrl이 없으면 QR 카드가 렌더되지 않는다", () => {
