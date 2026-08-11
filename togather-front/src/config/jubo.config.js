@@ -95,7 +95,7 @@ const juboConfig = {
     { organization: "브라질 | 상갈루스", target: "선교사님 성함", region: "후원구역명" },
     { organization: "태국 | 파티아", target: "선교사님 성함", region: "후원구역명" },
     { organization: "OOO교회", target: "목사님 성함", region: "후원구역명" },
-    { organization: "AAA교회", target: "목사님 성함", region: "후원구역명" },
+    { organization: "OOO교회", target: "목사님 성함", region: "후원구역명" },
     { organization: "기독교보", target: "기관이름", region: "후원구역명" },
   ],
 
