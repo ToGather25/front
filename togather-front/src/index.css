@@ -108,6 +108,10 @@
     display: block;
   }
 
+  html {
+    font-size: 112.5%;
+  }
+
   body {
     line-height: 1;
     font-family: var(--font-pretendard);
