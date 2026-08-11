@@ -154,38 +154,45 @@ function DesktopHeader() {
             }
           `}</style>
           <div className="max-w-[1920px] mx-auto px-8 py-8">
-            {(() => {
-              const item = NAV_ITEMS.find((n) => n.label === openMenu);
-              if (!item) return null;
-              const count = item.children?.length ?? 0;
-              const columnsClass = count > 6 ? "columns-3" : count > 3 ? "columns-2" : "columns-1";
-              return (
-                <div className="flex gap-12">
-                  <div className="w-[160px] shrink-0 border-r border-bluegrey-2 pr-8 flex flex-col justify-center">
+            <div
+              className="grid divide-x divide-bluegrey-2"
+              style={{
+                gridTemplateColumns: `repeat(${NAV_ITEMS.filter((n) => n.children).length}, 1fr)`,
+              }}
+            >
+              {NAV_ITEMS.filter((item) => item.children).map((item) => {
+                const active = openMenu === item.label;
+                return (
+                  <div
+                    key={item.label}
+                    className={`px-6 flex flex-col gap-1 rounded-md transition-colors ${
+                      active ? "bg-blue-1" : ""
+                    }`}
+                  >
                     <Link
                       to={item.to ?? item.children[0].to}
                       onClick={() => setOpenMenu(null)}
-                      className="text-sub-tit-4 font-bold text-primary transition-colors"
+                      className={`text-sub-tit-4 font-bold mb-2 transition-colors ${
+                        active ? "text-primary" : "text-grey-10"
+                      }`}
                     >
                       {item.label}
                     </Link>
-                  </div>
-                  <div className={`flex-1 ${columnsClass} gap-x-10`}>
-                    {item.children?.map((child) => (
+                    {item.children.map((child) => (
                       <Link
                         key={child.label}
                         to={child.to}
                         onClick={() => setOpenMenu(null)}
-                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap break-inside-avoid"
+                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap"
                       >
                         <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
                         {child.label}
                       </Link>
                     ))}
                   </div>
-                </div>
-              );
-            })()}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
