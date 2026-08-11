@@ -61,7 +61,7 @@ export default function WordSermonDetail() {
       {/* Hero */}
       <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <button
             onClick={() => navigate("/말씀/설교")}
             className="flex items-center gap-1.5 text-blue-3 hover:text-white transition-colors text-body-4 mb-3"

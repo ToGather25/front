@@ -10,7 +10,7 @@ const TABS = [
 export default function WordTabBar() {
   return (
     <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
-      <div className="max-w-[1576px] mx-auto px-4 md:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex overflow-x-auto">
           {TABS.map((tab) => (
             <NavLink

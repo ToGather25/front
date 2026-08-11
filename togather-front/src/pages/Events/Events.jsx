@@ -82,7 +82,7 @@ export default function Events() {
   const monthName = `${year}년 ${month + 1}월`;
 
   return (
-    <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-20 md:px-8 md:pt-10">
+    <div className="max-w-[1400px] mx-auto px-4 pt-6 pb-20 md:px-8 md:pt-10">
       {/* Header Row */}
       <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
         <div className="flex items-center gap-3">

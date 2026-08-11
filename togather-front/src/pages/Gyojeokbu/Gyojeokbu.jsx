@@ -400,7 +400,7 @@ export default function Gyojeokbu() {
 
   return (
     <div className="min-h-screen bg-bluegrey-1 relative">
-      <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-14">
+      <div className="max-w-[1400px] mx-auto px-4 py-8 md:px-8 md:py-14">
         {/* Page header */}
         <div className="flex flex-wrap items-end justify-between gap-3 mb-6 md:mb-8">
           <div>

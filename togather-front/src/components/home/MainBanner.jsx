@@ -42,7 +42,7 @@ export default function MainBanner() {
       />
 
       {/* Content */}
-      <div className="relative h-full max-w-[1576px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
+      <div className="relative h-full max-w-[1400px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
         {/* Eyebrow badge */}
         <div
           className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full mb-7 text-sm font-medium"

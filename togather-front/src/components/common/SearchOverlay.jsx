@@ -164,12 +164,10 @@ export default function SearchOverlay() {
           opacity: active ? 1 : 0,
         }}
       >
-        {/* 헤더 높이만큼 여백 (sticky header 아래) */}
-        <div className="h-[72px] hidden md:block" />
         <div className="h-14 md:hidden" />
 
         {/* 검색 인풋 */}
-        <div className="max-w-[860px] mx-auto px-4 py-4">
+        <div className="max-w-[860px] mx-auto px-4 py-6">
           <div
             className="flex items-center gap-3 px-5 h-[56px] rounded-2xl border-2 border-primary bg-white"
             style={{ boxShadow: "0 0 0 4px rgba(61,85,136,.1)" }}
