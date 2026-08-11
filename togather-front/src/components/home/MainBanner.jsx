@@ -91,7 +91,7 @@ export default function MainBanner() {
             </svg>
           </Link>
           <Link
-            to="/교회소개?tab=예배 안내"
+            to="/말씀/안내"
             className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full font-semibold text-[17px] tracking-[-0.3px] text-white hover:-translate-y-0.5 transition-all duration-200"
             style={{
               background: "rgba(255,255,255,.08)",

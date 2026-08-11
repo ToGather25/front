@@ -11,9 +11,11 @@ const ChurchContext = createContext(null);
  * - 운영: 서브도메인 기반 API 호출로 교체
  *
  * 교체 시 fetchChurchConfig() 내부만 수정하면 됩니다.
+ *
+ * initialChurch: 테스트에서 커스텀 config를 주입할 때만 사용 (실제 앱에서는 전달하지 않음).
  */
-export function ChurchProvider({ children }) {
-  const [church, setChurch] = useState(defaultConfig); // oxlint-disable-line no-unused-vars -- TODO 구현 시 사용
+export function ChurchProvider({ children, initialChurch }) {
+  const [church, setChurch] = useState(initialChurch ?? defaultConfig); // oxlint-disable-line no-unused-vars -- TODO 구현 시 사용
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

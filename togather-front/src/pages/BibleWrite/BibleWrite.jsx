@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
-import { BOOK_MAP, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
+import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
@@ -238,10 +240,12 @@ const MENU_ICON = {
 };
 
 export default function BibleWrite() {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const { state } = useLocation();
   const [activeMenu, setActiveMenu] = useState("성경쓰기");
   const [bookModalOpen, setBookModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState(state?.book ?? "창");
+  const [selectedBook, setSelectedBook] = useState(BOOK_ABBREV[state?.book] ?? state?.book ?? "창");
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [selectedVerse, setSelectedVerse] = useState(1);
   const [typed, setTyped] = useState("");
@@ -255,7 +259,7 @@ export default function BibleWrite() {
 
   useEffect(() => {
     if (state?.book) {
-      setSelectedBook(state.book);
+      setSelectedBook(BOOK_ABBREV[state.book] ?? state.book);
       setActiveMenu("성경쓰기");
       setSelectedChapter(1);
       setSelectedVerse(1);
@@ -346,6 +350,15 @@ export default function BibleWrite() {
   };
 
   const isDone = isCorrect === true;
+
+  if (!currentUser) {
+    return (
+      <LoginRequiredModal
+        message="성경 쓰기를 이용하려면 로그인해 주세요."
+        onCancel={() => navigate("/")}
+      />
+    );
+  }
 
   return (
     <div className="flex h-screen">

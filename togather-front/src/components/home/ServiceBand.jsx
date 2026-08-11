@@ -19,7 +19,7 @@ export default function ServiceBand() {
           </h3>
         </div>
         <Link
-          to="/교회소개?tab=예배 안내"
+          to="/말씀/안내"
           className="inline-flex items-center gap-1.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors"
         >
           전체 안내

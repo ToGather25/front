@@ -1,101 +1,9 @@
 import { useState } from "react";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import MEMBERS from "@/config/members.config";
 
-const DEPARTMENTS = ["전체", "청년부", "장년부", "유치부", "초등부", "중고등부", "노년부"];
-const POSITIONS = ["전체", "집사", "권사", "장로", "목사", "전도사", "성도"];
-
-const DUMMY_MEMBERS = [
-  {
-    id: 1,
-    name: "김영수",
-    dept: "장년부",
-    position: "담임목사",
-    phone: "010-1234-5678",
-    email: "pastor@algok.com",
-    registered: "1998.03.01",
-  },
-  {
-    id: 2,
-    name: "이미영",
-    dept: "장년부",
-    position: "권사",
-    phone: "010-2345-6789",
-    email: "lee@algok.com",
-    registered: "2005.06.12",
-  },
-  {
-    id: 3,
-    name: "박성민",
-    dept: "장년부",
-    position: "부목사",
-    phone: "010-3456-7890",
-    email: "park@algok.com",
-    registered: "2015.01.10",
-  },
-  {
-    id: 4,
-    name: "최지현",
-    dept: "청년부",
-    position: "성도",
-    phone: "010-4567-8901",
-    email: "choi@mail.com",
-    registered: "2022.03.20",
-  },
-  {
-    id: 5,
-    name: "정다운",
-    dept: "청년부",
-    position: "성도",
-    phone: "010-5678-9012",
-    email: "jung@mail.com",
-    registered: "2023.09.05",
-  },
-  {
-    id: 6,
-    name: "한소희",
-    dept: "초등부",
-    position: "전도사",
-    phone: "010-6789-0123",
-    email: "han@algok.com",
-    registered: "2020.07.18",
-  },
-  {
-    id: 7,
-    name: "오민준",
-    dept: "중고등부",
-    position: "성도",
-    phone: "010-7890-1234",
-    email: "oh@mail.com",
-    registered: "2021.02.28",
-  },
-  {
-    id: 8,
-    name: "윤서현",
-    dept: "노년부",
-    position: "장로",
-    phone: "010-8901-2345",
-    email: "yoon@mail.com",
-    registered: "1995.11.30",
-  },
-  {
-    id: 9,
-    name: "강태양",
-    dept: "청년부",
-    position: "집사",
-    phone: "010-9012-3456",
-    email: "kang@mail.com",
-    registered: "2018.04.14",
-  },
-  {
-    id: 10,
-    name: "임나은",
-    dept: "유치부",
-    position: "성도",
-    phone: "010-0123-4567",
-    email: "lim@mail.com",
-    registered: "2024.01.07",
-  },
-];
+const DEPARTMENTS = ["전체", ...new Set(MEMBERS.map((m) => m.department))];
+const POSITIONS = ["전체", ...new Set(MEMBERS.map((m) => m.role))];
 
 const DUMMY_PENDING = [
   {
@@ -129,9 +37,17 @@ export default function MembersManage() {
   const [pendingList, setPendingList] = useState(DUMMY_PENDING);
   const [approvingId, setApprovingId] = useState(null);
 
-  const filtered = DUMMY_MEMBERS.filter((m) => dept === "전체" || m.dept === dept)
-    .filter((m) => position === "전체" || m.position === position)
-    .filter((m) => m.name.includes(search) || m.email.includes(search) || m.phone.includes(search));
+  const matchesPosition = (m) => {
+    if (position === "전체") return true;
+    if (position === "집사") return m.role.includes("집사") && !m.role.includes("안수집사");
+    return m.role.includes(position);
+  };
+
+  const filtered = MEMBERS.filter((m) => dept === "전체" || m.department === dept)
+    .filter(matchesPosition)
+    .filter(
+      (m) => m.name.includes(search) || m.email?.includes(search) || m.phone.includes(search),
+    );
 
   const handleApprove = async (id) => {
     setApprovingId(id);
@@ -189,7 +105,7 @@ export default function MembersManage() {
       <div className="flex border-b border-grey-2 mb-5">
         <button className={tabCls("active")} onClick={() => setActiveTab("active")}>
           교인 목록
-          <span className="ml-1.5 text-body-5 text-grey-5">({DUMMY_MEMBERS.length})</span>
+          <span className="ml-1.5 text-body-5 text-grey-5">({MEMBERS.length})</span>
         </button>
         <button className={tabCls("pending")} onClick={() => setActiveTab("pending")}>
           승인 대기
@@ -270,8 +186,8 @@ export default function MembersManage() {
                 >
                   <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
                   <span className="text-body-4 font-semibold text-grey-10">{m.name}</span>
-                  <span className="text-body-5 text-grey-7">{m.dept}</span>
-                  <span className="text-body-5 text-grey-7">{m.position}</span>
+                  <span className="text-body-5 text-grey-7">{m.department}</span>
+                  <span className="text-body-5 text-grey-7">{m.role}</span>
                   <span className="text-body-5 text-grey-6">{m.phone}</span>
                   <span className="text-body-5 text-grey-6 truncate">{m.email}</span>
                   <span className="text-body-5 text-grey-5">{m.registered}</span>

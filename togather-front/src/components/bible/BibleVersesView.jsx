@@ -5,6 +5,19 @@ import IcoHeartRed from "@/assets/icon-svg/heart-red.svg";
 export default function BibleVersesView({ mode = "read", items = [], mockItems = [], onRemove }) {
   const [search, setSearch] = useState("");
   const [favOnly, setFavOnly] = useState(false);
+  const [removingKeys, setRemovingKeys] = useState(new Set());
+
+  function handleRemove(key) {
+    setRemovingKeys((prev) => new Set(prev).add(key));
+    setTimeout(() => {
+      onRemove(key);
+      setRemovingKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }, 200);
+  }
 
   const displayList = items.length > 0 ? items : mockItems;
   const filtered = displayList.filter((v) => {
@@ -80,8 +93,14 @@ export default function BibleVersesView({ mode = "read", items = [], mockItems =
             {filtered.map((v) => {
               const displayBook = v.book || v.bookName || "";
               const displayVerse = v.num ?? v.verse;
+              const isRemoving = removingKeys.has(v.key);
               return (
-                <div key={v.key} className="flex flex-col">
+                <div
+                  key={v.key}
+                  className={`flex flex-col transition-all duration-200 ${
+                    isRemoving ? "scale-0 opacity-0" : "scale-100 opacity-100"
+                  }`}
+                >
                   <div className="bg-white border border-bluegrey-2 rounded-2xl px-6 py-5 flex-1 flex flex-col justify-between min-h-[140px]">
                     <p className="text-body-3 text-grey-10 leading-relaxed">{v.text}</p>
                     <p className="text-body-4 text-grey-7 mt-4 text-right">
@@ -90,7 +109,7 @@ export default function BibleVersesView({ mode = "read", items = [], mockItems =
                   </div>
                   {mode === "read" && onRemove && (
                     <div className="flex justify-end pr-1 mt-1">
-                      <button onClick={() => onRemove(v.key)} className="p-1">
+                      <button onClick={() => handleRemove(v.key)} className="p-1">
                         <img src={IcoHeartRed} className="w-5 h-5" alt="" />
                       </button>
                     </div>

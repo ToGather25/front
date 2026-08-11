@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "@/contexts/auth";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import MEMBERS from "@/config/members.config";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
@@ -66,7 +68,7 @@ function AttendBar({ ytd }) {
 }
 
 /* ── Detail drawer body ── */
-function DetailBody({ m, onSelect }) {
+function DetailBody({ m, onSelect, isAdmin }) {
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -232,16 +234,18 @@ function DetailBody({ m, onSelect }) {
           </Section>
         )}
 
-        {/* 메모 */}
-        <Section title="목회 메모">
-          {m.notes ? (
-            <p className="text-body-3 text-grey-9 leading-[1.6] bg-bluegrey-1 rounded-xl p-4 m-0">
-              {m.notes}
-            </p>
-          ) : (
-            <p className="text-caption text-grey-5 m-0">저장된 메모가 없습니다.</p>
-          )}
-        </Section>
+        {/* 메모 (관리자 전용) */}
+        {isAdmin && (
+          <Section title="목회 메모">
+            {m.notes ? (
+              <p className="text-body-3 text-grey-9 leading-[1.6] bg-bluegrey-1 rounded-xl p-4 m-0">
+                {m.notes}
+              </p>
+            ) : (
+              <p className="text-caption text-grey-5 m-0">저장된 메모가 없습니다.</p>
+            )}
+          </Section>
+        )}
       </div>
     </div>
   );
@@ -350,6 +354,8 @@ const FILTER_DEFS = [
 ];
 
 export default function Gyojeokbu() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("전체");
   const [selectedId, setSelectedId] = useState(null);
@@ -382,6 +388,15 @@ export default function Gyojeokbu() {
   const idx = matches.findIndex((m) => m.id === selectedId);
   const prevId = idx > 0 ? matches[idx - 1].id : null;
   const nextId = idx >= 0 && idx < matches.length - 1 ? matches[idx + 1].id : null;
+
+  if (!currentUser) {
+    return (
+      <LoginRequiredModal
+        message="교적부를 이용하려면 로그인해 주세요."
+        onCancel={() => navigate("/")}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bluegrey-1 relative">
@@ -644,6 +659,7 @@ export default function Gyojeokbu() {
                 <button
                   onClick={() => prevId && setSelectedId(prevId)}
                   disabled={!prevId}
+                  aria-label="이전"
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-bluegrey-1 disabled:opacity-30 transition-colors"
                 >
                   <svg
@@ -659,6 +675,7 @@ export default function Gyojeokbu() {
                 <button
                   onClick={() => nextId && setSelectedId(nextId)}
                   disabled={!nextId}
+                  aria-label="다음"
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-bluegrey-1 disabled:opacity-30 transition-colors"
                 >
                   <svg
@@ -716,7 +733,7 @@ export default function Gyojeokbu() {
             </div>
 
             <div className="flex-1 overflow-y-auto" key={member.id}>
-              <DetailBody m={member} onSelect={setSelectedId} />
+              <DetailBody m={member} onSelect={setSelectedId} isAdmin={currentUser?.isAdmin} />
             </div>
           </>
         )}

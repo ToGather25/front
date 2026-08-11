@@ -54,7 +54,6 @@ const churchConfig = {
         { label: "인사말", to: "/교회소개?tab=인사말" },
         { label: "교회 비전", to: "/교회소개?tab=교회 비전" },
         { label: "교회 연혁", to: "/교회소개?tab=교회 연혁" },
-        { label: "예배 안내", to: "/교회소개?tab=예배 안내" },
         { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
         { label: "층별 안내", to: "/교회소개?tab=층별 안내" },
         { label: "오시는 길", to: "/교회소개?tab=오시는 길" },
@@ -64,9 +63,10 @@ const churchConfig = {
     {
       label: "예배·방송",
       children: [
-        { label: "예배 다시보기", to: "/말씀/설교" },
-        { label: "실시간 방송 (ON-AIR)", to: "/말씀/방송" },
-        // { label: "찬양 플레이리스트",    to: "/말씀/찬양" },
+        { label: "실시간 예배", to: "/말씀/방송" },
+        { label: "예배 목록", to: "/말씀/설교" },
+        { label: "예배 안내", to: "/말씀/안내" },
+        { label: "스마트 주보", to: "/주보" },
       ],
     },
     {

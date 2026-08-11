@@ -74,7 +74,7 @@ export default function WordSermonDetail() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            예배 다시보기
+            예배 목록
           </button>
           <h1 className="text-headline-4 font-bold text-white">예배·방송</h1>
         </div>
