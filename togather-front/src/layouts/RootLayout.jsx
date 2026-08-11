@@ -165,7 +165,7 @@ function DesktopHeader() {
                 return (
                   <div
                     key={item.label}
-                    className={`px-6 flex flex-col gap-1 rounded-md transition-colors ${
+                    className={`px-6 py-6 flex flex-col gap-1 rounded-md transition-colors ${
                       active ? "bg-blue-1" : ""
                     }`}
                   >
