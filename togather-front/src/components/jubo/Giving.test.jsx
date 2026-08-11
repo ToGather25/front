@@ -37,4 +37,34 @@ describe("Giving — 헌금", () => {
     render(<Giving />);
     expect(screen.queryByAltText("헌금 QR 코드")).not.toBeInTheDocument();
   });
+
+  it("qrCodeUrl이 있으면 QR 카드가 렌더된다", async () => {
+    // 이 테스트 안에서만 jubo.config의 giving.qrCodeUrl에 임시 URL을 주입한다.
+    // 실제 jubo.config.js 파일은 건드리지 않고, vi.doMock + 동적 import로
+    // 이 테스트에만 국한된 모듈 인스턴스를 만든다(다른 테스트의 정적 import에는 영향 없음).
+    vi.resetModules();
+    vi.doMock("@/config/jubo.config", async (importOriginal) => {
+      const actual = await importOriginal();
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          giving: {
+            ...actual.default.giving,
+            qrCodeUrl: "https://example.com/giving-qr.png",
+          },
+        },
+      };
+    });
+
+    const { default: GivingWithQrCode } = await import("./Giving");
+    render(<GivingWithQrCode />);
+
+    const qrImage = screen.getByAltText("헌금 QR 코드");
+    expect(qrImage).toBeInTheDocument();
+    expect(qrImage).toHaveAttribute("src", "https://example.com/giving-qr.png");
+
+    vi.doUnmock("@/config/jubo.config");
+    vi.resetModules();
+  });
 });
