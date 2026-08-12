@@ -1,35 +1,54 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import defaultConfig from "@/config/church.config";
+import { getTenant } from "@/services/tenantService";
+import { setCurrentChurchId } from "@/services/api";
 
 const ChurchContext = createContext(null);
+
+function TenantErrorScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-grey-1 px-6">
+      <p className="text-body-2 text-grey-8">교회 정보를 찾을 수 없습니다.</p>
+    </div>
+  );
+}
 
 /**
  * ChurchProvider
  *
- * SaaS 멀티테넌트 지원:
- * - 현재: 로컬 config 파일 사용 (개발/더미)
- * - 운영: 서브도메인 기반 API 호출로 교체
+ * /api/tenant를 호출해 테넌트(교회) 설정을 가져온다. 응답을 church.config.js(defaultConfig) 위에
+ * 얕게 병합하므로, 백엔드가 일부 필드를 안 내려줘도 화면이 깨지지 않는다.
  *
- * 교체 시 fetchChurchConfig() 내부만 수정하면 됩니다.
- *
- * initialChurch: 테스트에서 커스텀 config를 주입할 때만 사용 (실제 앱에서는 전달하지 않음).
+ * initialChurch: 테스트에서 커스텀 config를 주입할 때만 사용(실제 앱에서는 전달하지 않음) —
+ * 주어지면 fetch 자체를 생략한다.
  */
 export function ChurchProvider({ children, initialChurch }) {
-  const [church, setChurch] = useState(initialChurch ?? defaultConfig); // oxlint-disable-line no-unused-vars -- TODO 구현 시 사용
-  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState({
+    church: initialChurch ?? defaultConfig,
+    status: initialChurch ? "ready" : "loading",
+  });
 
   useEffect(() => {
-    // TODO: 운영 환경에서 서브도메인/도메인 기반으로 교체
-    // const domain = window.location.hostname;
-    // fetchChurchByDomain(domain).then(setChurch).finally(() => setLoading(false));
-    setLoading(false);
+    if (initialChurch) return;
+    const domain = import.meta.env.VITE_DEV_CHURCH_DOMAIN || window.location.hostname;
+    getTenant(domain)
+      .then((data) => {
+        setCurrentChurchId(data.id);
+        setState({ church: { ...defaultConfig, ...data }, status: "ready" });
+      })
+      .catch(() => setState((s) => ({ ...s, status: "error" })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <ChurchContext.Provider value={{ church, loading }}>{children}</ChurchContext.Provider>;
+  return (
+    <ChurchContext.Provider value={state}>
+      {state.status === "error" ? <TenantErrorScreen /> : children}
+    </ChurchContext.Provider>
+  );
 }
 
 export function useChurch() {
   const ctx = useContext(ChurchContext);
   if (!ctx) throw new Error("useChurch must be used inside ChurchProvider");
-  return ctx;
+  return { church: ctx.church, loading: ctx.status === "loading" };
 }
