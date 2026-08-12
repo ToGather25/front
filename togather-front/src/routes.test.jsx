@@ -143,3 +143,38 @@ describe("routes — /mypage 인증 가드", () => {
     expect(await screen.findByText("내 프로필")).toBeInTheDocument();
   });
 });
+
+/**
+ * 회귀 방지 테스트: /register, /register/next는 RootLayout(AuthProvider 제공처) 하위이므로
+ * useAuth()가 정상 동작해야 한다. 이 테스트는 실제 routes 배열을 createMemoryRouter에 그대로
+ * 꽂아 렌더링함으로써, Provider 트리 구성이 실제로 맞는지 확인한다(개별 컴포넌트 테스트는
+ * renderWithChurch로 Provider를 직접 감싸므로 이 문제를 못 잡는다 — 이전 사이클들에서
+ * 반복적으로 나온 함정).
+ */
+describe("routes — /register, /register/next의 Provider 트리 확인", () => {
+  it("/register 진입 시 크래시 없이 회원가입 폼이 렌더된다", () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/register"] });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "회원가입" })).toBeInTheDocument();
+  });
+
+  it("/register/next?token=... 진입 시 크래시 없이 계정 생성 폼이 렌더된다", () => {
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/register/next?token=test-token"],
+    });
+    render(
+      <ChurchProvider>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+      </ChurchProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "계정 만들기" })).toBeInTheDocument();
+  });
+});
