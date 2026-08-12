@@ -1,26 +1,12 @@
-import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import api from "@/services/api";
 
 export const authContext = createContext(null);
 
 export function useAuth() {
   return useContext(authContext);
 }
-
-const DUMMY_USER = {
-  email: "test@togather.com",
-  password: "test1234",
-  name: "홍길동",
-  community: "청년부",
-};
-
-const DUMMY_ADMIN = {
-  email: "admin@togather.com",
-  password: "admin1234",
-  name: "알곡관리자",
-  isAdmin: true,
-};
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -31,45 +17,40 @@ export function AuthProvider({ children }) {
   }, [currentUser]);
 
   async function login({ email, password }) {
-    if (email === DUMMY_ADMIN.email && password === DUMMY_ADMIN.password) {
-      const user = { email: DUMMY_ADMIN.email, name: DUMMY_ADMIN.name, isAdmin: true };
-      setCurrentUser(user);
-      localStorage.setItem("user", JSON.stringify(user));
-      void navigate("/admin");
-      return;
-    }
-    if (email === DUMMY_USER.email && password === DUMMY_USER.password) {
-      const user = {
-        email: DUMMY_USER.email,
-        name: DUMMY_USER.name,
-        community: DUMMY_USER.community,
-      };
-      setCurrentUser(user);
-      localStorage.setItem("user", JSON.stringify(user));
-      void navigate("/");
-      return;
-    }
-    const res = await axios.post("/auth/login", { email, password });
-    setCurrentUser(res.data.data);
+    const res = await api.post("/auth/login", { email, password });
+    const user = res.data.data;
+    setCurrentUser(user);
     localStorage.setItem("token", res.data.token);
-    void navigate("/");
+    if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
+    void navigate(user.isAdmin ? "/admin" : "/");
   }
 
-  async function register(user) {
-    const res = await axios.post("/auth/register", user);
-    setCurrentUser(res.data.data);
-    localStorage.setItem("token", res.data.token);
-    void navigate("/");
+  async function register(payload) {
+    const res = await api.post("/auth/register", payload);
+    return res.data.data;
   }
 
-  function logout() {
+  async function completeRegistration({ token, username, password }) {
+    const res = await api.post("/auth/register/complete", { token, username, password });
+    return res.data;
+  }
+
+  async function logout() {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      await api.post("/church/auth/logout", { refreshToken });
+    } catch {
+      // best-effort — 실패해도 로컬 상태 정리는 진행한다
+    }
     setCurrentUser(null);
     localStorage.clear();
-    void navigate("/");
+    void navigate("/login");
   }
 
   return (
-    <authContext.Provider value={{ currentUser, setCurrentUser, login, logout, register }}>
+    <authContext.Provider
+      value={{ currentUser, setCurrentUser, login, logout, register, completeRegistration }}
+    >
       {children}
     </authContext.Provider>
   );

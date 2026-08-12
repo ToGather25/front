@@ -1,9 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import LoginPage from "./Login";
+
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn() },
+}));
+
+import api from "@/services/api";
 
 function renderLogin() {
   return renderWithChurch(<LoginPage />, { withAuth: true });
@@ -11,10 +16,17 @@ function renderLogin() {
 
 describe("Login", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     localStorage.clear();
   });
 
-  it("올바른 테스트 계정으로 로그인하면 에러가 뜨지 않는다", async () => {
+  it("올바른 계정으로 로그인하면 에러가 뜨지 않는다", async () => {
+    api.post.mockResolvedValue({
+      data: {
+        data: { email: "test@togather.com", name: "홍길동", isAdmin: false },
+        token: "access-token",
+      },
+    });
     const user = userEvent.setup();
     renderLogin();
 
@@ -33,8 +45,8 @@ describe("Login", () => {
   });
 
   it("잘못된 자격증명으로 로그인하면 에러 문구를 보여준다", async () => {
+    api.post.mockRejectedValue({ response: { status: 401, data: { code: "A006" } } });
     const user = userEvent.setup();
-    vi.spyOn(axios, "post").mockRejectedValueOnce(new Error("network error"));
     renderLogin();
 
     await user.type(screen.getByPlaceholderText("example@email.com"), "wrong@example.com");
