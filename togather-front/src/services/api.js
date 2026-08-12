@@ -33,16 +33,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const REFRESH_URL = "/church/auth/token/refresh";
+
 // 응답 인터셉터 — 401 시 refresh token으로 한 번 갱신 재시도, 실패하면 로그아웃
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config;
     const refreshToken = localStorage.getItem("refreshToken");
-    if (err.response?.status === 401 && !original._retried && refreshToken) {
+    const isRefreshRequest = original?.url === REFRESH_URL;
+    if (
+      err.response?.status === 401 &&
+      !isRefreshRequest &&
+      !original._retried &&
+      refreshToken
+    ) {
       original._retried = true;
       try {
-        const { data } = await api.post("/church/auth/token/refresh", { refreshToken });
+        const { data } = await api.post(REFRESH_URL, { refreshToken });
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
         return api(original);
