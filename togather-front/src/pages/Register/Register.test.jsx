@@ -4,8 +4,14 @@ import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import Register from "./Register";
 
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn() },
+}));
+
+import api from "@/services/api";
+
 function renderRegister() {
-  return renderWithChurch(<Register />, { withRouter: true });
+  return renderWithChurch(<Register />, { withRouter: true, withAuth: true });
 }
 
 async function fillBasicFields(user, container, { name = "김철수", phone = "010-1111-2222" } = {}) {
@@ -20,10 +26,7 @@ async function fillBasicFields(user, container, { name = "김철수", phone = "0
 
 describe("Register", () => {
   beforeEach(() => {
-    // jsdom의 navigator.clipboard는 getter만 있는 접근자 프로퍼티라 Object.assign으로는 덮어쓸 수 없어
-    // configurable: true인 값 프로퍼티로 재정의한다. (참고: userEvent.setup()을 호출하면
-    // 내부적으로 자체 Clipboard 스텁을 다시 덮어씌우므로, 클립보드 동작을 검증하는 테스트는
-    // setup() 이후 시점에 이 mock을 다시 재설치해야 한다 — 아래 마지막 테스트 참고)
+    vi.clearAllMocks();
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: vi.fn().mockResolvedValue(undefined) },
       writable: true,
@@ -36,7 +39,8 @@ describe("Register", () => {
     expect(screen.getByRole("button", { name: "가입 신청하기" })).toBeDisabled();
   });
 
-  it("필수 정보를 입력하고 동의하면 제출 버튼이 활성화되고, 제출 시 완료 화면으로 전환된다", async () => {
+  it("필수 정보를 입력하고 동의하면 제출 버튼이 활성화되고, 제출 성공 시 완료 화면으로 전환된다", async () => {
+    api.post.mockResolvedValue({ data: { data: { requestId: 1, status: "PENDING" }, token: null } });
     const user = userEvent.setup();
     const { container } = renderRegister();
 
@@ -49,19 +53,18 @@ describe("Register", () => {
       () => expect(screen.getByText("가입 신청이 완료되었습니다")).toBeInTheDocument(),
       { timeout: 2000 },
     );
+    expect(api.post).toHaveBeenCalledWith(
+      "/auth/register",
+      expect.objectContaining({ name: "김철수", phone: "010-1111-2222", isNewcomer: true, agreePrivacy: true }),
+    );
   });
 
-  it("승인 대기 중인 정보로 제출하면 중복 신청 모달을 보여준다", async () => {
+  it("이미 승인 처리 중인 정보로 제출하면(409 SU001) 중복 신청 모달을 보여준다", async () => {
+    api.post.mockRejectedValue({ response: { status: 409, data: { code: "SU001" } } });
     const user = userEvent.setup();
     const { container } = renderRegister();
 
-    // Register.jsx의 PENDING_TEST_MEMBER 목업과 정확히 일치하는 값
-    await user.type(screen.getByPlaceholderText("홍길동"), "홍길동");
-    await user.selectOptions(container.querySelector('select[name="birthYear"]'), "1999");
-    await user.selectOptions(container.querySelector('select[name="birthMonth"]'), "1");
-    await user.selectOptions(container.querySelector('select[name="birthDay"]'), "1");
-    await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-9999-8888");
-    await user.click(screen.getByLabelText(/개인정보 수집.*동의합니다/));
+    await fillBasicFields(user, container, { name: "이영희", phone: "010-9999-8888" });
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
     await waitFor(
@@ -70,10 +73,26 @@ describe("Register", () => {
     );
   });
 
-  it("중복 신청 모달에서 연락처를 클릭하면 클립보드에 복사되고 문구가 바뀐다", async () => {
+  it("네트워크 오류 등 SU001이 아닌 실패는 화면에 에러 메시지를 보여준다", async () => {
+    api.post.mockRejectedValue({ response: { status: 500, data: { code: "UNKNOWN" } } });
     const user = userEvent.setup();
-    // userEvent.setup()이 자체 Clipboard 스텁을 navigator.clipboard에 다시 덮어씌우므로
-    // (내부적으로 attachClipboardStubToView 호출), setup() 이후 시점에 우리 mock을 재설치한다.
+    const { container } = renderRegister();
+
+    await fillBasicFields(user, container);
+    await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
+      ).toBeInTheDocument(),
+    );
+    // 중복 모달은 뜨지 않아야 한다 — SU001 전용
+    expect(screen.queryByText("신청을 확인해 주세요")).not.toBeInTheDocument();
+  });
+
+  it("중복 신청 모달에서 연락처를 클릭하면 클립보드에 복사되고 문구가 바뀐다", async () => {
+    api.post.mockRejectedValue({ response: { status: 409, data: { code: "SU001" } } });
+    const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText },
@@ -82,12 +101,7 @@ describe("Register", () => {
     });
     const { container } = renderRegister();
 
-    await user.type(screen.getByPlaceholderText("홍길동"), "홍길동");
-    await user.selectOptions(container.querySelector('select[name="birthYear"]'), "1999");
-    await user.selectOptions(container.querySelector('select[name="birthMonth"]'), "1");
-    await user.selectOptions(container.querySelector('select[name="birthDay"]'), "1");
-    await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-9999-8888");
-    await user.click(screen.getByLabelText(/개인정보 수집.*동의합니다/));
+    await fillBasicFields(user, container, { name: "박민수", phone: "010-5555-4444" });
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
     const contactButton = await screen.findByRole("button", { name: "02-2615-4067" }, { timeout: 2000 });

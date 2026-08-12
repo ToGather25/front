@@ -1,19 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useAuth } from "@/contexts/auth";
+import { getErrorMessage } from "@/utils/apiErrors";
 import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
 const ADMIN_CONTACT = "02-2615-4067";
-
-// 중복 신청 모달 테스트용 — 승인 대기 중(아직 미승인)인 경우
-const PENDING_TEST_MEMBER = { name: "홍길동", birthYear: "1999", birthMonth: "1", birthDay: "1" };
-// 이미 승인은 됐지만 계정(아이디/비번)을 아직 만들지 않은 경우 — 계정 생성 화면으로 바로 이동
-const APPROVED_TEST_MEMBER = {
-  name: "알곡교회",
-  birthYear: "1999",
-  birthMonth: "1",
-  birthDay: "1",
-};
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => CURRENT_YEAR - i);
@@ -26,7 +18,7 @@ function daysInMonth(year, month) {
 
 export default function Register() {
   const { church } = useChurch();
-  const navigate = useNavigate();
+  const { register } = useAuth();
   const [form, setForm] = useState({
     name: "",
     birthYear: "",
@@ -39,6 +31,7 @@ export default function Register() {
   const [status, setStatus] = useState("idle");
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   async function handleCopyContact() {
     try {
@@ -65,34 +58,27 @@ export default function Register() {
     });
   };
 
-  const matchesTestMember = (member) =>
-    form.name.trim() === member.name &&
-    form.birthYear === member.birthYear &&
-    form.birthMonth === member.birthMonth &&
-    form.birthDay === member.birthDay;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
+    setSubmitError("");
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      // TODO: API 연동 — 휴대폰 번호로 회원 상태 확인 (PENDING/APPROVED/없음). 지금은 테스트용으로 이름+생년월일만 비교
-      if (matchesTestMember(APPROVED_TEST_MEMBER)) {
-        // 이미 승인된 성도 — 대기 없이 바로 계정 생성 화면으로 이동
-        void navigate(
-          `/register/next?token=test-token-approved&name=${encodeURIComponent(form.name)}`,
-        );
-        return;
-      }
-      if (matchesTestMember(PENDING_TEST_MEMBER)) {
-        setStatus("idle");
-        setShowDuplicateModal(true);
-        return;
-      }
+      const birthdate = `${form.birthYear}-${String(form.birthMonth).padStart(2, "0")}-${String(form.birthDay).padStart(2, "0")}`;
+      await register({
+        name: form.name,
+        birthdate,
+        phone: form.phone,
+        isNewcomer: form.isNewcomer,
+        agreePrivacy: form.agreePrivacy,
+      });
       setStatus("done");
-    } catch {
+    } catch (err) {
       setStatus("idle");
-      setShowDuplicateModal(true);
+      if (err.response?.data?.code === "SU001") {
+        setShowDuplicateModal(true);
+      } else {
+        setSubmitError(getErrorMessage(err));
+      }
     }
   };
 
@@ -130,12 +116,6 @@ export default function Register() {
             className="inline-block w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
           >
             로그인으로 돌아가기
-          </Link>
-          <Link
-            to={`/register/next?token=test-token&name=${encodeURIComponent(form.name || "홍길동")}`}
-            className="block mt-4 text-body-4 text-grey-5 hover:text-grey-7 transition-colors"
-          >
-            테스트: 승인 후 계정 생성 화면 보기
           </Link>
         </div>
       </div>
@@ -362,6 +342,11 @@ export default function Register() {
               >
                 {status === "submitting" ? "신청 중..." : "가입 신청하기"}
               </button>
+              {submitError && (
+                <p className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3">
+                  {submitError}
+                </p>
+              )}
             </form>
 
             <p className="text-center text-body-4 text-grey-6 mt-8 border-t border-grey-2 pt-6">
