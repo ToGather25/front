@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
+import PrevNextPagination from "@/components/common/PrevNextPagination";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const TABS = ["전체", "공지", "행사", "소식"];
 
@@ -13,6 +15,7 @@ const TAG_STYLES = {
 };
 
 const PAGE_SIZE = 10;
+const FILTER_FETCH_LIMIT = 1000;
 
 function IconPin() {
   return (
@@ -34,66 +37,23 @@ function IconPin() {
   );
 }
 
-function Pagination({ total, perPage, current, onChange }) {
-  const totalPages = Math.max(1, Math.ceil(total / perPage));
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  return (
-    <div className="flex items-center justify-center gap-1 mt-8">
-      <button
-        onClick={() => onChange(current - 1)}
-        disabled={current === 1}
-        className="w-9 h-9 flex items-center justify-center rounded-lg text-grey-6 hover:bg-grey-2 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-      {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onChange(p)}
-          className={`w-9 h-9 rounded-lg text-body-4 font-medium transition-colors ${
-            p === current ? "bg-primary text-white" : "text-grey-7 hover:bg-grey-2"
-          }`}
-        >
-          {p}
-        </button>
-      ))}
-      <button
-        onClick={() => onChange(current + 1)}
-        disabled={current === totalPages}
-        className="w-9 h-9 flex items-center justify-center rounded-lg text-grey-6 hover:bg-grey-2 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
 export default function Notice() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(() => getNotices(church.id), [church.id], []);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState("전체");
-  const [page, setPage] = useState(1);
+  const [serverPage, setServerPage] = useState(1);
+  const [clientPage, setClientPage] = useState(1);
   const [selected, setSelected] = useState(null);
+
+  const isFiltered = tab !== "전체";
+  const { data: notices = [] } = useFetch(
+    () =>
+      isFiltered
+        ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
+        : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
+    [church.id, isFiltered, serverPage],
+    [],
+  );
 
   useEffect(() => {
     const id = searchParams.get("id");
@@ -103,12 +63,16 @@ export default function Notice() {
     }
   }, [notices, searchParams]);
 
-  const filtered = tab === "전체" ? notices : notices.filter((n) => n.type === tab);
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const filtered = isFiltered ? notices.filter((n) => n.type === tab) : notices;
+  const paged = isFiltered
+    ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
+    : filtered;
+  const hasNext = !isFiltered && notices.length === PAGE_SIZE;
 
   function handleTabChange(t) {
     setTab(t);
-    setPage(1);
+    setServerPage(1);
+    setClientPage(1);
     setSelected(null);
   }
 
@@ -240,12 +204,16 @@ export default function Notice() {
             </div>
 
             <div className="flex-1" />
-            <Pagination
-              total={filtered.length}
-              perPage={PAGE_SIZE}
-              current={page}
-              onChange={setPage}
-            />
+            {isFiltered ? (
+              <NumberedPagination
+                total={filtered.length}
+                perPage={PAGE_SIZE}
+                current={clientPage}
+                onChange={setClientPage}
+              />
+            ) : (
+              <PrevNextPagination page={serverPage} hasNext={hasNext} onChange={setServerPage} />
+            )}
           </div>
         </>
       )}
