@@ -185,7 +185,11 @@ function MobileFooter({ church }) {
 
 export default function MobileHome() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(() => getNotices(church.id), [church.id], []);
+  const { data: notices = [] } = useFetch(
+    () => getNotices(church.id, { limit: 10 }),
+    [church.id],
+    [],
+  );
 
   const sermon = {
     service: "1부 예배",
