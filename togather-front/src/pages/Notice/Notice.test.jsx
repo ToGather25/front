@@ -89,4 +89,39 @@ describe("Notice — 공개 목록", () => {
     await user.click(screen.getByRole("button", { name: "목록으로" }));
     expect(screen.queryByText("목록으로")).not.toBeInTheDocument();
   });
+
+  it("탭을 전환하면 열려있던 상세가 닫힌 채로 유지된다(서버 응답이 매번 새 배열이어도)", async () => {
+    api.get.mockImplementation(() =>
+      Promise.resolve({ data: { data: MIXED.map((n) => ({ ...n })) } }),
+    );
+    const user = userEvent.setup();
+    renderWithChurch(<Notice />, { withRouter: true });
+    await screen.findByText("공지 1");
+
+    await user.click(screen.getByText("공지 1"));
+    expect(screen.getByText("내용")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "행사" }));
+
+    await waitFor(() => expect(screen.queryByText("목록으로")).not.toBeInTheDocument());
+  });
+
+  it("첫 페이지 밖의 공지로 딥링크하면 limit:1000으로 조회해 상세를 연다", async () => {
+    const notices = makeNotices(20);
+    api.get.mockImplementation(() => Promise.resolve({ data: { data: notices } }));
+    renderWithChurch(<Notice />, { withRouter: true, initialEntries: ["/공지사항?id=15"] });
+
+    // 상세로 전환되기 전, id로 필터링되지 않은 목록이 잠깐 렌더될 수 있어(둘 다 같은 텍스트를
+    // 가짐) 목록에는 없는 heading 역할(h2, 상세 화면 전용)로 안정적으로 대기한다.
+    expect(
+      await screen.findByRole("heading", { name: "공지 15" }),
+    ).toBeInTheDocument();
+
+    expect(api.get).toHaveBeenCalledWith(expect.stringContaining("/notices"), {
+      params: { limit: 1000 },
+    });
+    expect(api.get).not.toHaveBeenCalledWith(expect.stringContaining("/notices"), {
+      params: { page: 1, limit: 10 },
+    });
+  });
 });

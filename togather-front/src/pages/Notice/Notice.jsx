@@ -46,12 +46,13 @@ export default function Notice() {
   const [selected, setSelected] = useState(null);
 
   const isFiltered = tab !== "전체";
+  const hasDeepLinkId = !!searchParams.get("id");
   const { data: notices = [] } = useFetch(
     () =>
-      isFiltered
+      isFiltered || hasDeepLinkId
         ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
         : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
-    [church.id, isFiltered, serverPage],
+    [church.id, isFiltered, hasDeepLinkId, serverPage],
     [],
   );
 
@@ -74,6 +75,7 @@ export default function Notice() {
     setServerPage(1);
     setClientPage(1);
     setSelected(null);
+    setSearchParams({});
   }
 
   function formatDate(dateStr) {
