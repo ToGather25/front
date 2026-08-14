@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { DUMMY_NOTICES } from "@/data/dummy/notices";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getNotices, createNotice, updateNotice, deleteNotice } from "@/services/noticeService";
+import PrevNextPagination from "@/components/common/PrevNextPagination";
+import NumberedPagination from "@/components/common/NumberedPagination";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const TABS = ["전체", "공지", "행사", "소식"];
@@ -10,11 +14,30 @@ const TAG_STYLES = {
   소식: { background: "rgba(32,152,243,.14)", color: "#1a7bc0" },
 };
 
+const PAGE_SIZE = 10;
+const FILTER_FETCH_LIMIT = 1000;
+
 function NoticeModal({ notice, onClose, onSave }) {
   const isEdit = !!notice;
   const [form, setForm] = useState(
     notice ?? { type: "공지", title: "", body: "", author: "", featured: false },
   );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleSubmit() {
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave(form);
+      onClose();
+    } catch {
+      setError("저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -28,24 +51,36 @@ function NoticeModal({ notice, onClose, onSave }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-body-5 font-semibold text-grey-7 mb-1.5">카테고리</label>
-              <select
-                className="w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary bg-white"
-                value={form.type}
-                onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
-              >
-                {["공지", "행사", "소식"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
+              {isEdit ? (
+                <p className="w-full border border-grey-2 bg-grey-1 rounded-xl px-4 py-2.5 text-body-4 text-grey-6">
+                  {form.type}
+                </p>
+              ) : (
+                <select
+                  className="w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary bg-white"
+                  value={form.type}
+                  onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
+                >
+                  {["공지", "행사", "소식"].map((t) => (
+                    <option key={t}>{t}</option>
+                  ))}
+                </select>
+              )}
             </div>
             <div>
               <label className="block text-body-5 font-semibold text-grey-7 mb-1.5">작성자</label>
-              <input
-                className="w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary"
-                value={form.author}
-                onChange={(e) => setForm((p) => ({ ...p, author: e.target.value }))}
-                placeholder="작성자"
-              />
+              {isEdit ? (
+                <p className="w-full border border-grey-2 bg-grey-1 rounded-xl px-4 py-2.5 text-body-4 text-grey-6">
+                  {form.author}
+                </p>
+              ) : (
+                <input
+                  className="w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary"
+                  value={form.author}
+                  onChange={(e) => setForm((p) => ({ ...p, author: e.target.value }))}
+                  placeholder="작성자"
+                />
+              )}
             </div>
           </div>
           <div>
@@ -67,31 +102,37 @@ function NoticeModal({ notice, onClose, onSave }) {
               placeholder="공지 내용을 입력하세요"
             />
           </div>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(e) => setForm((p) => ({ ...p, featured: e.target.checked }))}
-              className="w-4 h-4 accent-primary"
-            />
-            <span className="text-body-4 text-grey-8">상단 고정</span>
-          </label>
+          {isEdit ? (
+            <p className="text-body-5 text-grey-5">
+              상단 고정: {form.featured ? "고정됨" : "고정 안 됨"} · 등록 시에만 설정할 수 있어요.
+            </p>
+          ) : (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.featured}
+                onChange={(e) => setForm((p) => ({ ...p, featured: e.target.checked }))}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-body-4 text-grey-8">상단 고정</span>
+            </label>
+          )}
+          {error && <p className="text-body-5 text-red-500">{error}</p>}
         </div>
         <div className="flex gap-3 justify-end mt-6">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors disabled:opacity-50"
           >
             취소
           </button>
           <button
-            onClick={() => {
-              onSave(form);
-              onClose();
-            }}
-            className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+            onClick={handleSubmit}
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors disabled:opacity-50"
           >
-            {isEdit ? "저장" : "등록"}
+            {saving ? "저장 중..." : isEdit ? "저장" : "등록"}
           </button>
         </div>
       </div>
@@ -100,30 +141,67 @@ function NoticeModal({ notice, onClose, onSave }) {
 }
 
 export default function NoticesManage() {
+  const { church } = useChurch();
   const [tab, setTab] = useState("전체");
-  const [notices, setNotices] = useState(
-    DUMMY_NOTICES.map((n) => ({ ...n, views: Math.floor(Math.random() * 500 + 10) })),
-  );
-  const [modal, setModal] = useState(null); // null | "new" | { notice }
   const [search, setSearch] = useState("");
+  const [serverPage, setServerPage] = useState(1);
+  const [clientPage, setClientPage] = useState(1);
+  const [modal, setModal] = useState(null); // null | "new" | { notice }
+  const [actionError, setActionError] = useState(null);
 
-  const filtered = notices
-    .filter((n) => tab === "전체" || n.type === tab)
-    .filter((n) => n.title.includes(search));
+  const isFiltered = tab !== "전체" || search !== "";
+  const {
+    data: notices = [],
+    loading,
+    refetch,
+  } = useFetch(
+    () =>
+      isFiltered
+        ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
+        : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
+    [church.id, isFiltered, serverPage],
+    [],
+  );
 
-  function handleSave(form) {
-    if (form.id) {
-      setNotices((prev) => prev.map((n) => (n.id === form.id ? { ...n, ...form } : n)));
-    } else {
-      setNotices((prev) => [
-        { ...form, id: Date.now(), date: new Date().toISOString().slice(0, 10), views: 0 },
-        ...prev,
-      ]);
-    }
+  const filtered = isFiltered
+    ? notices.filter((n) => tab === "전체" || n.type === tab).filter((n) => n.title.includes(search))
+    : notices;
+  const displayPage = isFiltered ? clientPage : serverPage;
+  const paged = isFiltered
+    ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
+    : filtered;
+  const hasNext = !isFiltered && notices.length === PAGE_SIZE;
+
+  function handleTabChange(t) {
+    setTab(t);
+    setServerPage(1);
+    setClientPage(1);
   }
 
-  function handleDelete(id) {
-    if (confirm("삭제하시겠습니까?")) setNotices((prev) => prev.filter((n) => n.id !== id));
+  function handleSearchChange(value) {
+    setSearch(value);
+    setServerPage(1);
+    setClientPage(1);
+  }
+
+  async function handleSave(form) {
+    if (form.id) {
+      await updateNotice(church.id, form.id, form);
+    } else {
+      await createNotice(church.id, form);
+    }
+    await refetch();
+  }
+
+  async function handleDelete(id) {
+    if (!confirm("삭제하시겠습니까?")) return;
+    setActionError(null);
+    try {
+      await deleteNotice(church.id, id);
+      await refetch();
+    } catch {
+      setActionError("삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }
   }
 
   return (
@@ -157,13 +235,15 @@ export default function NoticesManage() {
         </button>
       </div>
 
+      {actionError && <p className="text-body-4 text-red-500 mb-4">{actionError}</p>}
+
       {/* Filter row */}
       <div className="flex items-center gap-3 mb-4">
         <div className="flex gap-2">
           {TABS.map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => handleTabChange(t)}
               className={`px-4 py-2 rounded-full text-body-5 font-medium transition-colors ${t === tab ? "bg-primary text-white" : "bg-white border border-grey-3 text-grey-7 hover:border-primary hover:text-primary"}`}
             >
               {t}
@@ -175,7 +255,7 @@ export default function NoticesManage() {
             className="border border-grey-3 rounded-xl pl-9 pr-4 py-2 text-body-4 text-grey-9 focus:outline-none focus:border-primary w-64"
             placeholder="제목 검색"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
           <img
             src={IcoSearch}
@@ -189,27 +269,30 @@ export default function NoticesManage() {
       <div className="bg-white rounded-2xl border border-grey-2 overflow-hidden">
         <div
           className="grid text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2 px-6 py-3"
-          style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 72px 80px 100px" }}
+          style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 100px" }}
         >
           <span className="text-center">No</span>
           <span className="text-center">구분</span>
           <span className="pl-2">제목</span>
           <span className="text-center">작성자</span>
           <span className="text-center">작성일</span>
-          <span className="text-center">조회</span>
           <span className="text-center">고정</span>
           <span className="text-center">관리</span>
         </div>
-        {filtered.length === 0 ? (
+        {loading && paged.length === 0 ? (
+          <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+        ) : paged.length === 0 ? (
           <div className="py-16 text-center text-grey-5 text-body-3">공지사항이 없습니다.</div>
         ) : (
-          filtered.map((n, i) => (
+          paged.map((n, i) => (
             <div
               key={n.id}
-              className={`grid items-center px-6 py-3.5 hover:bg-grey-1 transition-colors ${i < filtered.length - 1 ? "border-b border-grey-2" : ""}`}
-              style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 72px 80px 100px" }}
+              className={`grid items-center px-6 py-3.5 hover:bg-grey-1 transition-colors ${i < paged.length - 1 ? "border-b border-grey-2" : ""}`}
+              style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 100px" }}
             >
-              <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
+              <span className="text-body-5 text-grey-5 text-center">
+                {(displayPage - 1) * PAGE_SIZE + i + 1}
+              </span>
               <span className="flex justify-center">
                 <span
                   className="text-body-5 font-bold px-2 py-0.5 rounded"
@@ -240,7 +323,6 @@ export default function NoticesManage() {
               <span className="text-body-5 text-grey-6 text-center">
                 {n.date?.replace(/-/g, ".")}
               </span>
-              <span className="text-body-5 text-grey-6 text-center">{n.views}</span>
               <span className="text-center">
                 {n.featured ? (
                   <span className="text-body-5 font-semibold text-primary">고정</span>
@@ -266,6 +348,17 @@ export default function NoticesManage() {
           ))
         )}
       </div>
+
+      {isFiltered ? (
+        <NumberedPagination
+          total={filtered.length}
+          perPage={PAGE_SIZE}
+          current={clientPage}
+          onChange={setClientPage}
+        />
+      ) : (
+        <PrevNextPagination page={serverPage} hasNext={hasNext} onChange={setServerPage} />
+      )}
     </div>
   );
 }
