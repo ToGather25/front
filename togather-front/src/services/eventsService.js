@@ -76,8 +76,15 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
       : [...DUMMY_EVENTS];
     return sortEvents(list, sort);
   }
-  const res = await api.get(`/churches/${churchId}/events/search`, { params: { q, sort } });
-  return res.data.data;
+  // 백엔드에 검색 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 필터링한다.
+  const res = await api.get(`/churches/${churchId}/events`);
+  const key = normalize(q);
+  const list = key
+    ? res.data.data.filter((e) =>
+        [e.title, e.description, e.location, e.department].some((f) => normalize(f).includes(key)),
+      )
+    : res.data.data;
+  return sortEvents(list, sort);
 }
 
 /**
@@ -90,8 +97,9 @@ export async function getRecentEvents(churchId, limit = 5) {
   if (USE_DUMMY) {
     return sortEvents(DUMMY_EVENTS, "createdAt").slice(0, limit);
   }
-  const res = await api.get(`/churches/${churchId}/events/recent`, { params: { limit } });
-  return res.data.data;
+  // 백엔드에 최근순 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 정렬한다.
+  const res = await api.get(`/churches/${churchId}/events`);
+  return sortEvents(res.data.data, "createdAt").slice(0, limit);
 }
 
 /**
@@ -147,7 +155,7 @@ export async function createEvent(churchId, payload) {
     DUMMY_EVENTS.unshift(created);
     return created;
   }
-  const res = await api.post(`/churches/${churchId}/events`, payload);
+  const res = await api.post(`/church/admin/events`, payload);
   return res.data.data;
 }
 
@@ -165,7 +173,7 @@ export async function updateEvent(churchId, eventId, payload) {
     DUMMY_EVENTS[idx] = { ...DUMMY_EVENTS[idx], ...payload };
     return DUMMY_EVENTS[idx];
   }
-  const res = await api.put(`/churches/${churchId}/events/${eventId}`, payload);
+  const res = await api.patch(`/church/admin/events/${eventId}`, payload);
   return res.data.data;
 }
 
@@ -180,6 +188,6 @@ export async function deleteEvent(churchId, eventId) {
     if (idx !== -1) DUMMY_EVENTS.splice(idx, 1);
     return { success: true };
   }
-  const res = await api.delete(`/churches/${churchId}/events/${eventId}`);
+  const res = await api.delete(`/church/admin/events/${eventId}`);
   return res.data;
 }
