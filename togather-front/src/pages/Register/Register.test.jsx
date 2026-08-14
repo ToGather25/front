@@ -55,7 +55,13 @@ describe("Register", () => {
     );
     expect(api.post).toHaveBeenCalledWith(
       "/auth/register",
-      expect.objectContaining({ name: "김철수", phone: "010-1111-2222", isNewcomer: true, agreePrivacy: true }),
+      expect.objectContaining({
+        name: "김철수",
+        birthdate: "1995-05-10",
+        phone: "010-1111-2222",
+        isNewcomer: true,
+        agreePrivacy: true,
+      }),
     );
   });
 

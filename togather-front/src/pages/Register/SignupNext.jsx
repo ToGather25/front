@@ -19,6 +19,7 @@ export default function SignupNext() {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | done | invalid
   const [showModal, setShowModal] = useState(false);
+  const [completeError, setCompleteError] = useState("");
 
   useEffect(() => {
     if (!token) setStatus("invalid");
@@ -93,7 +94,13 @@ export default function SignupNext() {
 
   const handleComplete = async () => {
     setShowModal(false);
-    await login({ email: form.username, password: form.password });
+    try {
+      await login({ email: form.username, password: form.password });
+    } catch {
+      setCompleteError(
+        "가입은 완료됐지만 자동 로그인에 실패했습니다. 아래 로그인 페이지에서 다시 시도해 주세요.",
+      );
+    }
   };
 
   const inputCls = (field) =>
@@ -235,6 +242,15 @@ export default function SignupNext() {
                 <p className="text-body-3 text-grey-6">사용할 아이디와 비밀번호를 설정해 주세요.</p>
               )}
             </div>
+
+            {completeError && (
+              <div className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3 mb-4">
+                {completeError}{" "}
+                <Link to="/login" className="underline font-semibold">
+                  로그인 페이지로 이동
+                </Link>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               {/* 아이디(이메일) */}

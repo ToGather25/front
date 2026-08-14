@@ -184,10 +184,6 @@ export default function LoginPage() {
               회원가입
             </Link>
           </div>
-
-          <p className="text-center text-body-5 text-grey-4 mt-8 border-t border-grey-2 pt-6">
-            테스트 계정: test@togather.com / test1234
-          </p>
         </div>
       </div>
     </div>

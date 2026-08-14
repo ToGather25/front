@@ -33,7 +33,10 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-const REFRESH_URL = "/church/auth/token/refresh";
+const REFRESH_URL = "/auth/token/refresh";
+// 인증이 필요 없는 공개 엔드포인트 — 이 경로의 401은 "세션 만료"가 아니라
+// 자격증명 실패 자체이므로 refresh 재시도나 전역 로그아웃 리다이렉트를 타면 안 된다.
+const PUBLIC_AUTH_URLS = ["/auth/login", "/auth/register", "/auth/register/complete"];
 
 // 응답 인터셉터 — 401 시 refresh token으로 한 번 갱신 재시도, 실패하면 로그아웃
 api.interceptors.response.use(
@@ -42,9 +45,12 @@ api.interceptors.response.use(
     const original = err.config;
     const refreshToken = localStorage.getItem("refreshToken");
     const isRefreshRequest = original?.url === REFRESH_URL;
+    const isPublicAuthRequest = PUBLIC_AUTH_URLS.includes(original?.url);
+
     if (
       err.response?.status === 401 &&
       !isRefreshRequest &&
+      !isPublicAuthRequest &&
       !original._retried &&
       refreshToken
     ) {
@@ -58,7 +64,7 @@ api.interceptors.response.use(
         // refresh도 실패 — 아래 로그아웃 처리로 진행
       }
     }
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && !isPublicAuthRequest) {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
