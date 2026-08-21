@@ -56,7 +56,7 @@ describe("GalleryManage", () => {
 
     expect(await screen.findByText("여름 수련회")).toBeInTheDocument();
     expect(api.get).toHaveBeenCalledWith("/churches/togather-church/gallery", {
-      params: { communityId: 1 },
+      params: { communityId: 1, limit: 200 },
     });
   });
 
@@ -94,6 +94,55 @@ describe("GalleryManage", () => {
 
     await waitFor(() => expect(api.delete).toHaveBeenCalledWith("/church/admin/gallery/10"));
     expect(screen.queryByText("여름 수련회")).not.toBeInTheDocument();
+  });
+
+  it("사진 등록이 실패하면 모달이 닫히지 않고 인라인 에러 메시지가 뜬다", async () => {
+    api.post.mockRejectedValue(new Error("network error"));
+    const user = userEvent.setup();
+    renderWithChurch(<GalleryManage />);
+    await screen.findByText("청년부");
+    await user.click(screen.getByText("청년부"));
+    await screen.findByText("여름 수련회");
+
+    await user.click(screen.getByRole("button", { name: "사진 등록" }));
+    await user.type(screen.getByPlaceholderText("예) 여름 수련회"), "가을 야유회");
+    await user.click(screen.getByRole("button", { name: "등록" }));
+
+    expect(
+      await screen.findByText("사진 등록에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("예) 여름 수련회")).toBeInTheDocument();
+  });
+
+  it("사진 삭제가 실패하면 인라인 에러 메시지가 뜨고 사진이 그리드에서 사라지지 않는다", async () => {
+    api.delete.mockRejectedValue(new Error("network error"));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const user = userEvent.setup();
+    renderWithChurch(<GalleryManage />);
+    await screen.findByText("청년부");
+    await user.click(screen.getByText("청년부"));
+    await screen.findByText("여름 수련회");
+
+    await user.click(screen.getByRole("button", { name: "삭제" }));
+
+    expect(
+      await screen.findByText("사진 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("여름 수련회")).toBeInTheDocument();
+  });
+
+  it("삭제 확인 대화상자에서 취소하면 deletePhoto를 호출하지 않는다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    const user = userEvent.setup();
+    renderWithChurch(<GalleryManage />);
+    await screen.findByText("청년부");
+    await user.click(screen.getByText("청년부"));
+    await screen.findByText("여름 수련회");
+
+    await user.click(screen.getByRole("button", { name: "삭제" }));
+
+    expect(api.delete).not.toHaveBeenCalled();
+    expect(screen.getByText("여름 수련회")).toBeInTheDocument();
   });
 
   it("공동체 조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
