@@ -1,34 +1,23 @@
 import { useState } from "react";
-import ChurchIcon from "@/assets/icon-svg/mypage-church.svg";
-import { StatusBadge, Pagination, InputField, ModalOverlay } from "./shared";
+import { useChurch } from "@/contexts/ChurchContext";
+import { addMyPrayer } from "@/services/myPageService";
+import { StatusBadge, Pagination, ModalOverlay } from "./shared";
 
 const PRAYER_PAGE_SIZE = 4;
-
-function IconChurch() {
-  return <img src={ChurchIcon} className="w-4 h-4" alt="" />;
-}
+const PRAYER_TYPES = ["기도", "상담"];
 
 export default function PrayerTab({ prayers, setPrayers }) {
-  const [prayerForm, setPrayerForm] = useState({ date: "", day: "", title: "", content: "" });
+  const { church } = useChurch();
+  const [prayerForm, setPrayerForm] = useState({ type: "기도", content: "" });
   const [prayerFilter, setPrayerFilter] = useState("전체");
   const [prayerPage, setPrayerPage] = useState(1);
   const [modal, setModal] = useState(null);
 
-  function handleAddPrayer() {
-    if (!prayerForm.title) return;
-    setPrayers((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        type: "기도",
-        title: prayerForm.title,
-        content: prayerForm.content,
-        date: `2026.${prayerForm.date || "03.15"}`,
-        status: "답변 대기",
-        reply: null,
-      },
-    ]);
-    setPrayerForm({ date: "", day: "", title: "", content: "" });
+  async function handleAddPrayer() {
+    if (!prayerForm.content) return;
+    const created = await addMyPrayer(church.id, prayerForm);
+    setPrayers((prev) => [created, ...prev]);
+    setPrayerForm({ type: "기도", content: "" });
     setModal(null);
   }
 
@@ -56,7 +45,7 @@ export default function PrayerTab({ prayers, setPrayers }) {
         </button>
       </div>
       <div className="flex gap-2 mb-5">
-        {["전체", "기도", "상담"].map((f) => (
+        {["전체", ...PRAYER_TYPES].map((f) => (
           <button
             key={f}
             onClick={() => handlePrayerFilter(f)}
@@ -72,30 +61,19 @@ export default function PrayerTab({ prayers, setPrayers }) {
         {pagedPrayers.map((item) => (
           <div key={item.id} className="border border-grey-3 rounded-xl p-5">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span
-                  className={`text-body-5 rounded px-2 py-0.5 ${
-                    item.type === "기도" ? "bg-grey-2 text-grey-7" : "bg-blue-1 text-primary"
-                  }`}
-                >
-                  {item.type}
-                </span>
-                <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
-              </div>
+              <span
+                className={`text-body-5 rounded px-2 py-0.5 ${
+                  item.type === "기도" ? "bg-grey-2 text-grey-7" : "bg-blue-1 text-primary"
+                }`}
+              >
+                {item.type}
+              </span>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-body-5 text-grey-6">{item.date}</span>
+                <span className="text-body-5 text-grey-6">{item.createdAt?.slice(0, 10)}</span>
                 <StatusBadge status={item.status} />
               </div>
             </div>
             <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
-            {item.reply && (
-              <div className="mt-3 pl-4 border-l-2 border-grey-3 flex items-start gap-1.5">
-                <span className="mt-0.5 shrink-0">
-                  <IconChurch />
-                </span>
-                <p className="text-body-5 text-grey-6">{item.reply}</p>
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -110,26 +88,25 @@ export default function PrayerTab({ prayers, setPrayers }) {
         <ModalOverlay onClose={() => setModal(null)}>
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">기도 / 상담 신청하기</h3>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField
-                label="날짜 (MM.DD)"
-                value={prayerForm.date}
-                onChange={(e) => setPrayerForm((f) => ({ ...f, date: e.target.value }))}
-                placeholder="03.15"
-              />
-              <InputField
-                label="요일"
-                value={prayerForm.day}
-                onChange={(e) => setPrayerForm((f) => ({ ...f, day: e.target.value }))}
-                placeholder="주"
-              />
+            <div>
+              <label className="block text-body-5 text-grey-7 mb-1">유형</label>
+              <div className="flex gap-2">
+                {PRAYER_TYPES.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setPrayerForm((f) => ({ ...f, type: t }))}
+                    className={`text-body-4 rounded-full px-5 py-2 transition-colors ${
+                      prayerForm.type === t
+                        ? "bg-primary text-white"
+                        : "bg-grey-2 text-grey-7 hover:bg-grey-3"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
             </div>
-            <InputField
-              label="제목"
-              value={prayerForm.title}
-              onChange={(e) => setPrayerForm((f) => ({ ...f, title: e.target.value }))}
-              placeholder="예) 건강"
-            />
             <div>
               <label className="block text-body-5 text-grey-7 mb-1">내용</label>
               <textarea
