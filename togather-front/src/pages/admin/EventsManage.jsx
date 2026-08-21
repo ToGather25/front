@@ -22,9 +22,6 @@ function emptyForm() {
     description: "",
     imageUrl: "",
     canRegister: false,
-    registrationStart: "",
-    registrationEnd: "",
-    capacity: "",
   };
 }
 
@@ -35,9 +32,6 @@ function toFormState(event) {
     startTime: event.startTime ?? "",
     endTime: event.endTime ?? "",
     imageUrl: event.imageUrl ?? "",
-    registrationStart: event.registrationStart ?? "",
-    registrationEnd: event.registrationEnd ?? "",
-    capacity: event.capacity ?? "",
   };
 }
 
@@ -58,9 +52,6 @@ function EventFormModal({ event, onClose, onSave, saving }) {
       startTime: form.startTime || null,
       endTime: form.endTime || null,
       imageUrl: form.imageUrl || null,
-      capacity: form.canRegister && form.capacity !== "" ? Number(form.capacity) : null,
-      registrationStart: form.canRegister && form.registrationStart ? form.registrationStart : null,
-      registrationEnd: form.canRegister && form.registrationEnd ? form.registrationEnd : null,
     });
   };
 
@@ -164,40 +155,6 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             />
             <span className="text-body-4 text-grey-8">신청 받기</span>
           </label>
-
-          {form.canRegister && (
-            <div className="grid grid-cols-3 gap-4 bg-grey-1 rounded-xl p-4">
-              <div>
-                <label className={labelCls}>신청 시작일</label>
-                <input
-                  type="date"
-                  className={`${inputCls} bg-white`}
-                  value={form.registrationStart}
-                  onChange={set("registrationStart")}
-                />
-              </div>
-              <div>
-                <label className={labelCls}>신청 마감일</label>
-                <input
-                  type="date"
-                  className={`${inputCls} bg-white`}
-                  value={form.registrationEnd}
-                  onChange={set("registrationEnd")}
-                />
-              </div>
-              <div>
-                <label className={labelCls}>정원</label>
-                <input
-                  type="number"
-                  min={1}
-                  className={`${inputCls} bg-white`}
-                  value={form.capacity}
-                  onChange={set("capacity")}
-                  placeholder="비워두면 무제한"
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="flex gap-3 justify-end mt-6">
@@ -220,12 +177,16 @@ function EventFormModal({ event, onClose, onSave, saving }) {
   );
 }
 
-const GRID_COLS = "48px 90px 1fr 130px 120px 150px 100px 110px";
+const GRID_COLS = "48px 90px 1fr 130px 120px 100px 110px";
 
 const STATUS_BADGE = {
   open: "bg-blue-1 text-blue-8",
-  upcoming: "bg-grey-2 text-grey-7",
   closed: "bg-grey-2 text-grey-6",
+};
+
+const ADMIN_STATUS_LABEL = {
+  open: "신청가능",
+  closed: "신청마감",
 };
 
 export default function EventsManage() {
@@ -239,6 +200,7 @@ export default function EventsManage() {
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(null); // null | "new" | event
   const [saving, setSaving] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   const filtered = events
     .filter((e) => tab === "전체" || e.department === tab)
@@ -261,8 +223,13 @@ export default function EventsManage() {
 
   async function handleDelete(id) {
     if (!confirm("삭제하시겠습니까?")) return;
-    await deleteEvent(church.id, id);
-    await refetch();
+    setDeleteError(null);
+    try {
+      await deleteEvent(church.id, id);
+      await refetch();
+    } catch {
+      setDeleteError("삭제할 수 없습니다. 이미 신청 내역이 있는 행사일 수 있습니다.");
+    }
   }
 
   return (
@@ -276,7 +243,7 @@ export default function EventsManage() {
         />
       )}
 
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-headline-5 font-bold text-grey-11">교회행사 관리</h1>
         <button
           onClick={() => setModal("new")}
@@ -296,7 +263,7 @@ export default function EventsManage() {
           행사 등록
         </button>
       </div>
-      <p className="text-body-5 text-grey-5 mb-6">더미 모드: 새로고침 시 초기화됩니다.</p>
+      {deleteError && <p className="text-body-4 text-red-500 mb-4">{deleteError}</p>}
 
       {/* Filter row */}
       <div className="flex items-center gap-3 mb-4">
@@ -341,7 +308,6 @@ export default function EventsManage() {
           <span className="pl-2">행사명</span>
           <span>장소</span>
           <span className="text-center">행사일시</span>
-          <span className="text-center">신청기간</span>
           <span className="text-center">신청현황</span>
           <span className="text-center">관리</span>
         </div>
@@ -379,25 +345,13 @@ export default function EventsManage() {
                     </>
                   )}
                 </span>
-                <span className="text-body-5 text-grey-6 text-center">
-                  {e.canRegister
-                    ? `${formatDotDate(e.registrationStart)} ~ ${formatDotDate(e.registrationEnd)}`
-                    : "-"}
-                </span>
                 <span className="text-center">
                   {e.canRegister ? (
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-body-5 text-grey-7">
-                        {e.capacity != null
-                          ? `${e.registeredCount}/${e.capacity}`
-                          : `${e.registeredCount}명`}
-                      </span>
-                      <span
-                        className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[regState.status] ?? STATUS_BADGE.closed}`}
-                      >
-                        {regState.label}
-                      </span>
-                    </div>
+                    <span
+                      className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[regState.status] ?? STATUS_BADGE.closed}`}
+                    >
+                      {ADMIN_STATUS_LABEL[regState.status] ?? "-"}
+                    </span>
                   ) : (
                     <span className="text-body-5 text-grey-4">-</span>
                   )}
