@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useChurch } from "@/contexts/ChurchContext";
+import { addMyInquiry } from "@/services/myPageService";
 import MailIcon from "@/assets/icon-svg/mypage-mail.svg";
 import { MOCK_USER } from "./mockData";
 import { StatusBadge, Pagination, InputField, ReadonlyField, IconBack } from "./shared";
@@ -10,22 +12,15 @@ function IconMail() {
 }
 
 export default function InquiryTab({ inquiries, setInquiries }) {
+  const { church } = useChurch();
   const [inquiryForm, setInquiryForm] = useState({ title: "", content: "" });
   const [inquiryPage, setInquiryPage] = useState(1);
   const [inquiryWriteMode, setInquiryWriteMode] = useState(false);
 
-  function handleAddInquiry() {
+  async function handleAddInquiry() {
     if (!inquiryForm.title) return;
-    setInquiries((prev) => [
-      {
-        id: Date.now(),
-        title: inquiryForm.title,
-        date: "2026.03.15",
-        status: "진행 중",
-        reply: null,
-      },
-      ...prev,
-    ]);
+    const created = await addMyInquiry(church.id, inquiryForm);
+    setInquiries((prev) => [created, ...prev]);
     setInquiryForm({ title: "", content: "" });
     setInquiryWriteMode(false);
     setInquiryPage(1);
@@ -55,16 +50,16 @@ export default function InquiryTab({ inquiries, setInquiries }) {
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-body-5 text-grey-6">{item.date}</span>
+                    <span className="text-body-5 text-grey-6">{item.createdAt?.slice(0, 10)}</span>
                     <StatusBadge status={item.status} />
                   </div>
                 </div>
-                {item.reply && (
+                {item.answer && (
                   <div className="mt-3 pl-4 border-l-2 border-grey-3 flex items-start gap-1.5">
                     <span className="mt-0.5 shrink-0">
                       <IconMail />
                     </span>
-                    <p className="text-body-5 text-grey-6">{item.reply}</p>
+                    <p className="text-body-5 text-grey-6">{item.answer}</p>
                   </div>
                 )}
               </div>
