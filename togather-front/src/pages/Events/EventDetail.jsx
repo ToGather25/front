@@ -87,7 +87,7 @@ export default function EventDetail() {
 
       {/* 신청 버튼 — 데스크탑 인라인 */}
       <div className="hidden md:flex flex-col items-center gap-2">
-        <RegistrationButton event={event} size="lg" showRemaining />
+        <RegistrationButton event={event} size="lg" />
       </div>
 
       {/* 신청 버튼 — 모바일 sticky bar (BottomNav 위, canRegister:false면 미노출) */}
