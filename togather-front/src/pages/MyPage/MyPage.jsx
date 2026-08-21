@@ -50,38 +50,74 @@ export default function MyPage() {
   const [schedules, setSchedules] = useState([]);
   const [prayers, setPrayers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [scheduleError, setScheduleError] = useState(false);
+  const [prayerError, setPrayerError] = useState(false);
+  const [inquiryError, setInquiryError] = useState(false);
+
+  // 각 fetch는 마운트 시 useEffect에서 한 번, "다시 시도" 버튼 클릭 시 한 번 더
+  // 호출된다. cancelledRef는 useEffect의 cleanup(언마운트/의존성 변경) 시점에만
+  // 넘겨 stale response로 인한 setState를 막고, 재시도 호출에서는 생략한다.
+  function fetchSchedules(cancelledRef) {
+    setScheduleError(false);
+    return getMySchedules(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setSchedules(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setScheduleError(true);
+      });
+  }
+
+  function fetchPrayers(cancelledRef) {
+    setPrayerError(false);
+    return getMyPrayers(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setPrayers(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setPrayerError(true);
+      });
+  }
+
+  function fetchInquiries(cancelledRef) {
+    setInquiryError(false);
+    return getMyInquiries(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setInquiries(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setInquiryError(true);
+      });
+  }
 
   useEffect(() => {
     if (!currentUser) return;
-    let cancelled = false;
-    getMySchedules(church.id).then((list) => {
-      if (!cancelled) setSchedules(list);
-    });
+    const cancelledRef = { current: false };
+    fetchSchedules(cancelledRef);
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [church.id, currentUser]);
 
   useEffect(() => {
     if (!currentUser) return;
-    let cancelled = false;
-    getMyPrayers(church.id).then((list) => {
-      if (!cancelled) setPrayers(list);
-    });
+    const cancelledRef = { current: false };
+    fetchPrayers(cancelledRef);
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [church.id, currentUser]);
 
   useEffect(() => {
     if (!currentUser) return;
-    let cancelled = false;
-    getMyInquiries(church.id).then((list) => {
-      if (!cancelled) setInquiries(list);
-    });
+    const cancelledRef = { current: false };
+    fetchInquiries(cancelledRef);
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [church.id, currentUser]);
 
   if (!currentUser) {
@@ -151,11 +187,28 @@ export default function MyPage() {
             )}
             {activeTab === "dept" && <DeptTab />}
             {activeTab === "schedule" && (
-              <ScheduleTab schedules={schedules} setSchedules={setSchedules} />
+              <ScheduleTab
+                schedules={schedules}
+                setSchedules={setSchedules}
+                loadError={scheduleError}
+                onRetry={() => fetchSchedules()}
+              />
             )}
-            {activeTab === "prayer" && <PrayerTab prayers={prayers} setPrayers={setPrayers} />}
+            {activeTab === "prayer" && (
+              <PrayerTab
+                prayers={prayers}
+                setPrayers={setPrayers}
+                loadError={prayerError}
+                onRetry={() => fetchPrayers()}
+              />
+            )}
             {activeTab === "inquiry" && (
-              <InquiryTab inquiries={inquiries} setInquiries={setInquiries} />
+              <InquiryTab
+                inquiries={inquiries}
+                setInquiries={setInquiries}
+                loadError={inquiryError}
+                onRetry={() => fetchInquiries()}
+              />
             )}
           </main>
         </div>
