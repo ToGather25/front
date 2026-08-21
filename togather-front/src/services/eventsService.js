@@ -17,7 +17,7 @@
  * @property {number}  registeredCount    - 현재 신청 인원
  */
 
-import api, { USE_DUMMY } from "./api";
+import api, { isDummy } from "./api";
 import { DUMMY_EVENTS } from "@/data/dummy/events";
 
 const todayIso = () => {
@@ -30,9 +30,8 @@ const normalize = (s) => (s ?? "").replace(/\s/g, "").toLowerCase();
 function sortEvents(list, sort) {
   const arr = [...list];
   if (sort === "createdAt") {
-    arr.sort((a, b) =>
-      a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : a.date < b.date ? -1 : 1,
-    );
+    // 백엔드에 createdAt 필드가 없어, 자동증가 id 내림차순을 "최근 등록순"의 근사치로 쓴다.
+    arr.sort((a, b) => (b.id > a.id ? 1 : b.id < a.id ? -1 : 0));
     return arr;
   }
   // "date" (일정 빠른순): 오늘 이후를 오름차순으로 먼저, 지난 행사는 내림차순으로 뒤에
@@ -49,7 +48,7 @@ function sortEvents(list, sort) {
  * @returns {Promise<Event[]>}
  */
 export async function getEvents(churchId, params = {}) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     if (!params.year || !params.month) return [...DUMMY_EVENTS];
     const prefix = `${params.year}-${String(params.month).padStart(2, "0")}`;
     return DUMMY_EVENTS.filter((e) => e.date.startsWith(prefix));
@@ -65,7 +64,7 @@ export async function getEvents(churchId, params = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const key = normalize(q);
     const list = key
       ? DUMMY_EVENTS.filter((e) =>
@@ -94,7 +93,7 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function getRecentEvents(churchId, limit = 5) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     return sortEvents(DUMMY_EVENTS, "createdAt").slice(0, limit);
   }
   // 백엔드에 최근순 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 정렬한다.
@@ -109,7 +108,7 @@ export async function getRecentEvents(churchId, limit = 5) {
  * @returns {Promise<Event|null>}
  */
 export async function getEventById(churchId, eventId) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     return DUMMY_EVENTS.find((e) => String(e.id) === String(eventId)) ?? null;
   }
   const res = await api.get(`/churches/${churchId}/events/${eventId}`);
@@ -117,18 +116,16 @@ export async function getEventById(churchId, eventId) {
 }
 
 /**
- * 행사 신청
+ * 행사 신청 — 백엔드가 요청 바디를 받지 않는다(로그인한 사용자 식별만으로 처리).
  * @param {string} churchId
  * @param {number|string} eventId
- * @param {{ name?:string, phone?:string, attendeeCount?:number, note?:string }} payload
+ * @returns {Promise<{registered:boolean}>}
  */
-export async function registerForEvent(churchId, eventId, payload = {}) {
-  if (USE_DUMMY) {
-    const event = DUMMY_EVENTS.find((e) => String(e.id) === String(eventId));
-    if (event) event.registeredCount = (event.registeredCount ?? 0) + (payload.attendeeCount ?? 1);
-    return { success: true, registration: { ...payload, eventId, status: "PENDING" } };
+export async function registerForEvent(churchId, eventId) {
+  if (isDummy("events")) {
+    return { registered: true };
   }
-  const res = await api.post(`/churches/${churchId}/events/${eventId}/register`, payload);
+  const res = await api.post(`/churches/${churchId}/events/${eventId}/register`);
   return res.data;
 }
 
@@ -139,7 +136,7 @@ export async function registerForEvent(churchId, eventId, payload = {}) {
  * @returns {Promise<Event>}
  */
 export async function createEvent(churchId, payload) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const created = {
       id: Date.now(),
       startTime: null,
@@ -167,7 +164,7 @@ export async function createEvent(churchId, payload) {
  * @returns {Promise<Event|null>}
  */
 export async function updateEvent(churchId, eventId, payload) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
     if (idx === -1) return null;
     DUMMY_EVENTS[idx] = { ...DUMMY_EVENTS[idx], ...payload };
@@ -183,7 +180,7 @@ export async function updateEvent(churchId, eventId, payload) {
  * @param {number|string} eventId
  */
 export async function deleteEvent(churchId, eventId) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
     if (idx !== -1) DUMMY_EVENTS.splice(idx, 1);
     return { success: true };
