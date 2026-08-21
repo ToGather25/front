@@ -2,9 +2,11 @@
 
 ## 배경
 
-"백엔드 연동" 이니셔티브([[project-backend-integration-initiative]])의 "화면은 있는데 API 미연동 24건" 배치 중 두 번째 서브프로젝트. 대상은 `Gyojeokbu.jsx`(일반/교인용 교적부)와 `MembersManage.jsx`(관리자 교인 관리)의 "교인 목록" 탭 — 둘 다 지금은 `src/config/members.config.js`라는 정적 목업 파일만 참조하고 API 호출이 전혀 없다.
+"백엔드 연동" 이니셔티브([[project-backend-integration-initiative]])의 "화면은 있는데 API 미연동 24건" 배치 중 두 번째 서브프로젝트. 이번 사이클의 실제 대상은 `MembersManage.jsx`(관리자 교인 관리)의 "교인 목록" 탭 하나다 — `Gyojeokbu.jsx`(일반 교인용 교적부)도 당초 함께 다루려 했으나, 아래에서 설명하는 백엔드 권한 문제로 이번 사이클에서는 제외하고 더미 상태 그대로 둔다(사용자와 이 판단을 두 차례 재확인함). 두 화면 다 지금은 `src/config/members.config.js`라는 정적 목업 파일만 참조하고 API 호출이 전혀 없었다.
 
 **가입 승인("승인 대기" 탭)은 이번 사이클 범위에서 제외한다** — 백엔드에 `POST .../signup-requests/{id}/approve`, `/reject` 두 엔드포인트만 있고, 대기 중인 가입 신청 목록을 조회하는 GET API가 아예 없다(swagger·컨트롤러 소스·`api-spec-v2.md` 전부 확인, 목록 조회 자체가 없음이 확실함). 목록을 가져올 방법이 없어 이 탭은 지금 상태(더미 `DUMMY_PENDING`) 그대로 두고 손대지 않는다 — 사용자가 백엔드에 별도로 목록 API 추가를 요청하기로 함.
+
+**`Gyojeokbu.jsx`(일반 교인용 교적부)도 이번 사이클 범위에서 제외한다** — 백엔드 `SecurityConfig.java`를 확인한 결과 `/api/church/admin/members`는 `.requestMatchers("/api/church/admin/**").hasRole("CHURCH_ADMIN")`로 가드되어 있다. `Gyojeokbu.jsx`는 지금 일반 교인(관리자 아님)도 접근 가능한 화면인데(기존 테스트에 명시: "일반 교인으로 로그인하면 교인 목록이 보이고"), 이 엔드포인트를 그대로 연결하면 일반 교인은 403을 받아 아무것도 못 보게 된다 — 지금의 더미 모드보다 후퇴하는 회귀다. 백엔드에 일반 교인용(비관리자) 교적부 조회 API가 생기기 전까지 `Gyojeokbu.jsx`는 더미 상태 그대로 두고, **이번 사이클은 `MembersManage.jsx`(관리자, 원래도 CHURCH_ADMIN 전용 화면이라 권한 문제 없음)의 "교인 목록" 탭만 연동한다.**
 
 ## 백엔드 계약 (실제 컨트롤러 소스로 확인, `ChurchAdminMemberController.java`)
 
@@ -96,38 +98,11 @@ export async function getMemberDetail(churchId, publicId) {
 
 ### 2. 더미 데이터 축소 — `src/data/dummy/members.js` 신규
 
-기존 `src/config/members.config.js`(15개 필드짜리 풍부한 목업)를 대체한다. 새 더미는 백엔드 응답과 동일한 6개 필드만 가진 배열(`id, name, birthDate, phone, newcomer, registeredAt`) — 약 15명 규모로 새로 작성. `members.config.js`는 이 두 화면 외에 다른 참조가 없음을 확인했으므로 **파일 자체를 삭제**한다.
+기존 `src/config/members.config.js`(15개 필드짜리 풍부한 목업)를 대체한다. 새 더미는 백엔드 응답과 동일한 6개 필드만 가진 배열(`id, name, birthDate, phone, newcomer, registeredAt`) — 약 15명 규모로 새로 작성. `members.config.js`는 `MembersManage.jsx`(교인 목록 탭)에서만 쓰이던 것을 확인했으므로(`Gyojeokbu.jsx`는 이번 사이클에서 손대지 않지만 이 파일을 계속 참조해야 하므로 삭제하지 않는다 — 아래 참고) **삭제하지 않고 그대로 둔다.**
 
-### 3. `Gyojeokbu.jsx` 재설계
+### 3. `MembersManage.jsx` "교인 목록" 탭 재설계
 
-**제거**:
-- 통계 카드 4개(전체교인/직분자/청년부/등록가구) → 백엔드가 `pageInfo.totalElements`로 총원만 줄 수 있어 "전체 교인" 카드 1개만 남긴다. 직분자/청년부/등록가구는 필드가 없어 통째로 제거.
-- 필터 칩 전체(전체/장로권사/안수집사/집사/청년/1~5구역) — role/region 필드 자체가 없음.
-- "새 교인 등록" 버튼(생성 API 없음), "엑셀 다운로드" 버튼(내보내기 API 없음).
-- 상세 드로어의 가족/이력/목회메모/출석현황 섹션, `RoleChip`/`AttendBar` 컴포넌트.
-- 아바타의 `nameRoman` 표시.
-- 이메일 연락 버튼(이메일 필드 없음) — 전화 버튼만 유지.
-
-**유지·변경**:
-- 검색창은 그대로 두되 **서버 사이드 검색**으로 전환(`keyword` 파라미터, 400ms 디바운스) — region/smallGroup 로컬 필터링 로직 제거.
-- 목록은 클라이언트 전체 로드 대신 **서버 페이지네이션**(size=20)으로 전환 — 기존 `PrevNextPagination` 컴포넌트 재사용(공지사항 사이클에서 이미 공용화됨).
-- 테이블 컬럼: 이름(아바타) / 생년월일 / 휴대폰(마스킹) / 등록일 / 신규 배지(`newcomer`) / 이동 화살표. 직분·구역/소그룹·최근출석·출석률 컬럼 제거.
-- 상세 드로어는 행 클릭 시 `getMemberDetail(church.id, m.id)`를 호출해 원문 전화번호 + `hasAccount` 배지를 보여준다(목록엔 마스킹된 번호만 오므로 상세는 별도 API 호출 필요 — 목록 응답을 재사용하지 않는다).
-- 아바타 색상(`avatarTone`)은 백엔드에 없으므로 `id`(UUID 문자열)를 8색 팔레트에 매핑하는 순수 함수로 대체한다(더미 데이터도 동일 함수로 통일 — 두 갈래 로직 안 만듦):
-
-```js
-function toneFromId(id) {
-  const sum = String(id)
-    .split("")
-    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return (sum % 8) + 1; // AVATAR_COLORS는 1~8 인덱스
-}
-```
-- 이전/다음 드로어 네비게이션(`prevId`/`nextId`)은 **현재 로드된 페이지 안에서만** 동작한다(서버 페이지네이션으로 바뀌어 전체 목록을 한 번에 들고 있지 않으므로, 페이지 경계를 넘는 이동은 지원하지 않음 — 페이지당 20명이면 실사용에 충분하다고 판단, 필요해지면 다음 사이클에서 확장).
-- 로그인 게이트(`!currentUser`)는 그대로 유지.
-- "인쇄" 버튼은 원래 API 의존 없는 순수 클라이언트 기능이라(현재도 미구현 상태) 이번 사이클 범위 밖 — 손대지 않는다.
-
-### 4. `MembersManage.jsx` "교인 목록" 탭 재설계
+**`Gyojeokbu.jsx`는 이번 사이클에서 전혀 건드리지 않는다** — 위에서 결정한 대로 백엔드에 일반 교인용 조회 API가 없어 지금의 `members.config.js` 더미 그대로 유지한다. 따라서 `members.config.js` 파일 자체는 삭제하지 않는다(`Gyojeokbu.jsx`가 계속 참조함).
 
 ("승인 대기" 탭은 위에서 결정한 대로 이번 사이클에서 손대지 않는다 — `DUMMY_PENDING` 그대로 유지.)
 
@@ -155,9 +130,9 @@ function toneFromId(id) {
 ## 테스트 계획
 
 - `src/services/memberService.test.js`(신규): `getMembers`가 1-based `page`를 0-based로 변환해 `GET /church/admin/members`를 호출하는지, `keyword` 파라미터가 그대로 전달되는지, `getMemberDetail`이 `GET /church/admin/members/{publicId}`를 호출하는지. `isDummy` 모킹은 기존 사이클과 동일 패턴.
-- `src/pages/Gyojeokbu/Gyojeokbu.test.jsx`(신규): 목록이 렌더되는지, 검색어 입력이 디바운스 후 `getMembers`를 `keyword`와 함께 호출하는지, 행 클릭 시 `getMemberDetail`을 호출해 상세를 보여주는지, 직분/구역/가족/이력 관련 UI가 전혀 렌더되지 않는지, 비로그인 시 `LoginRequiredModal`이 뜨는지(기존 동작 유지 확인).
-- `src/pages/admin/MembersManage.test.jsx`(신규): "교인 목록" 탭이 `getMembers`로 렌더되는지, 부서/직책 필터·교인등록·엑셀다운로드·삭제 버튼이 존재하지 않는지, "상세" 클릭 시 `getMemberDetail` 모달이 뜨는지, "승인 대기" 탭은 기존 더미 동작 그대로인지(회귀 확인).
+- `src/pages/admin/MembersManage.test.jsx`(전면 교체 — 기존 테스트는 전부 `members.config.js`의 부서/직책 클라이언트 필터에 의존해 이번 변경으로 전제 자체가 사라짐): "교인 목록" 탭이 `getMembers`로 렌더되는지, 검색어 입력이 디바운스 후 서버 `keyword` 검색을 호출하는지, 부서/직책 필터·교인등록·엑셀다운로드·삭제 버튼이 존재하지 않는지, "상세" 클릭 시 `getMemberDetail` 모달이 뜨는지, "승인 대기" 탭은 기존 더미 동작 그대로인지(회귀 확인 — 탭 전환 자체가 깨지지 않는지).
+- `Gyojeokbu.jsx`는 이번 사이클에서 코드를 바꾸지 않으므로 기존 `Gyojeokbu.test.jsx`는 그대로 둔다(수정 없음, 회귀 없어야 함).
 
 ## 확인 필요
 
-없음 — 위 결정 전부 사용자와 직접 확인(가입승인 스킵, 백엔드 없는 필드 전면 제거)을 거쳤다.
+없음 — 위 결정 전부 사용자와 직접 확인을 거쳤다(가입승인 스킵, 백엔드 없는 필드 전면 제거, 그리고 `Gyojeokbu.jsx` 제외 여부는 권한 문제를 명시적으로 설명한 뒤 재확인까지 받음).
