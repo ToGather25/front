@@ -1,9 +1,20 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { routes } from "./routes";
 import { ChurchProvider } from "@/contexts/ChurchContext";
 import { SearchProvider } from "@/contexts/SearchContext";
+
+// MyPage가 마운트되면 /my/schedules, /my/prayers, /my/inquiries를 실제로 호출한다.
+// 이 파일의 라우팅 스모크 테스트들은 응답 내용에 관심이 없으므로 빈 목록으로 막아
+// jsdom에서 실제 네트워크 요청이 실패해 unhandled rejection이 나는 것을 방지한다.
+vi.mock("@/services/api", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    default: { ...actual.default, get: vi.fn().mockResolvedValue({ data: { data: [] } }) },
+  };
+});
 
 /**
  * 회귀 방지 테스트 (C-1): /말씀/읽기, /말씀/필사 라우트는 routes.jsx의 실제 라우트 트리에서

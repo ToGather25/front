@@ -1,28 +1,29 @@
 import { useState } from "react";
-import { StatusBadge, Pagination, InputField, ModalOverlay } from "./shared";
+import { useChurch } from "@/contexts/ChurchContext";
+import { addMySchedule, deleteMySchedule } from "@/services/myPageService";
+import { formatMonthDay, getWeekdayLabel, parseLocalDate } from "@/utils/date";
+import { Pagination, InputField, ModalOverlay } from "./shared";
 
 const PAGE_SIZE = 5;
 
 export default function ScheduleTab({ schedules, setSchedules }) {
-  const [scheduleForm, setScheduleForm] = useState({ date: "", day: "", title: "", info: "" });
+  const { church } = useChurch();
+  const [scheduleForm, setScheduleForm] = useState({ date: "", title: "", memo: "" });
   const [schedulePage, setSchedulePage] = useState(1);
   const [modal, setModal] = useState(null);
 
-  function handleAddSchedule() {
-    if (!scheduleForm.title) return;
-    setSchedules((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        date: scheduleForm.date || "MM.DD",
-        day: scheduleForm.day,
-        title: scheduleForm.title,
-        info: scheduleForm.info,
-        status: "참석 예정",
-      },
-    ]);
-    setScheduleForm({ date: "", day: "", title: "", info: "" });
+  async function handleAddSchedule() {
+    if (!scheduleForm.title || !scheduleForm.date) return;
+    const created = await addMySchedule(church.id, scheduleForm);
+    setSchedules((prev) => [...prev, created]);
+    setScheduleForm({ date: "", title: "", memo: "" });
     setModal(null);
+  }
+
+  async function handleDeleteSchedule(id) {
+    if (!confirm("삭제하시겠습니까?")) return;
+    await deleteMySchedule(church.id, id);
+    setSchedules((prev) => prev.filter((s) => s.id !== id));
   }
 
   const pagedSchedules = schedules.slice((schedulePage - 1) * PAGE_SIZE, schedulePage * PAGE_SIZE);
@@ -39,22 +40,30 @@ export default function ScheduleTab({ schedules, setSchedules }) {
         </button>
       </div>
       <div className="space-y-3">
-        {pagedSchedules.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4"
-          >
-            <div className="shrink-0 w-12 text-center">
-              <p className="text-body-4 font-bold text-primary">{item.date}</p>
-              <p className="text-body-5 text-grey-6">{item.day}</p>
+        {pagedSchedules.map((item) => {
+          const d = parseLocalDate(item.date);
+          return (
+            <div
+              key={item.id}
+              className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4"
+            >
+              <div className="shrink-0 w-12 text-center">
+                <p className="text-body-4 font-bold text-primary">{formatMonthDay(item.date)}</p>
+                <p className="text-body-5 text-grey-6">{d ? getWeekdayLabel(d.getDay()) : ""}</p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
+                {item.memo && <p className="text-body-5 text-grey-6 mt-0.5">{item.memo}</p>}
+              </div>
+              <button
+                onClick={() => handleDeleteSchedule(item.id)}
+                className="text-body-5 text-grey-5 hover:text-red-500 transition-colors shrink-0"
+              >
+                삭제
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
-              {item.info && <p className="text-body-5 text-grey-6 mt-0.5">{item.info}</p>}
-            </div>
-            <StatusBadge status={item.status} />
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="flex-1" />
       <Pagination
@@ -68,20 +77,13 @@ export default function ScheduleTab({ schedules, setSchedules }) {
         <ModalOverlay onClose={() => setModal(null)}>
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">일정 추가</h3>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField
-                label="날짜 (MM.DD)"
-                value={scheduleForm.date}
-                onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
-                placeholder="03.15"
-              />
-              <InputField
-                label="요일"
-                value={scheduleForm.day}
-                onChange={(e) => setScheduleForm((f) => ({ ...f, day: e.target.value }))}
-                placeholder="주"
-              />
-            </div>
+            <InputField
+              label="날짜"
+              type="date"
+              value={scheduleForm.date}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
+              placeholder="03.15"
+            />
             <InputField
               label="제목"
               value={scheduleForm.title}
@@ -90,8 +92,8 @@ export default function ScheduleTab({ schedules, setSchedules }) {
             />
             <InputField
               label="시간 · 장소"
-              value={scheduleForm.info}
-              onChange={(e) => setScheduleForm((f) => ({ ...f, info: e.target.value }))}
+              value={scheduleForm.memo}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, memo: e.target.value }))}
               placeholder="예) 본당 · 14:00"
             />
           </div>

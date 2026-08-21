@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
+import { getMySchedules, getMyPrayers, getMyInquiries } from "@/services/myPageService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import UserBlue from "@/assets/icon-svg/mypage-user-blue.svg";
 import UserWhite from "@/assets/icon-svg/mypage-user-white.svg";
@@ -11,12 +13,7 @@ import HeartHandBlue from "@/assets/icon-svg/mypage-heart-hand-blue.svg";
 import HeartHandWhite from "@/assets/icon-svg/mypage-heart-hand-white.svg";
 import ChatBlue from "@/assets/icon-svg/mypage-chat-blue.svg";
 import ChatWhite from "@/assets/icon-svg/mypage-chat-white.svg";
-import {
-  MOCK_USER,
-  INITIAL_SCHEDULES,
-  INITIAL_PRAYERS,
-  INITIAL_INQUIRIES,
-} from "@/components/mypage/mockData";
+import { MOCK_USER } from "@/components/mypage/mockData";
 import InfoTab from "@/components/mypage/InfoTab";
 import DeptTab from "@/components/mypage/DeptTab";
 import ScheduleTab from "@/components/mypage/ScheduleTab";
@@ -34,6 +31,7 @@ const TABS = [
 export default function MyPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { church } = useChurch();
   const [activeTab, setActiveTab] = useState("info");
 
   // 탭을 벗어났다가 돌아와도 사용자가 입력·추가한 내용이 유지되도록(원본
@@ -49,9 +47,42 @@ export default function MyPage() {
     currentPw: "",
     newPw: "",
   });
-  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
-  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
-  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
+  const [schedules, setSchedules] = useState([]);
+  const [prayers, setPrayers] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+    getMySchedules(church.id).then((list) => {
+      if (!cancelled) setSchedules(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [church.id, currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+    getMyPrayers(church.id).then((list) => {
+      if (!cancelled) setPrayers(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [church.id, currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+    getMyInquiries(church.id).then((list) => {
+      if (!cancelled) setInquiries(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [church.id, currentUser]);
 
   if (!currentUser) {
     return (
