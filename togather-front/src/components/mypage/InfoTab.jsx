@@ -1,4 +1,7 @@
 import { useState, useRef } from "react";
+import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
+import { withdrawAccount } from "@/services/myPageService";
 import ImgUpload from "@/assets/icon-svg/mypage-img-upload.svg";
 import { MOCK_USER } from "./mockData";
 import { ReadonlyField, InputField, ModalOverlay } from "./shared";
@@ -10,6 +13,19 @@ function IconUpload() {
 export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
   const [modal, setModal] = useState(null);
   const fileInputRef = useRef(null);
+  const { logout } = useAuth();
+  const { church } = useChurch();
+  const [withdrawError, setWithdrawError] = useState("");
+
+  async function handleWithdraw() {
+    setWithdrawError("");
+    try {
+      await withdrawAccount(church.id);
+      setModal("withdraw-done");
+    } catch {
+      setWithdrawError("탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }
+  }
 
   function resetInfo() {
     setUserForm({
@@ -150,10 +166,9 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
               회원 탈퇴를 진행하시겠습니까?
             </h3>
             <p className="text-body-5 text-grey-6 leading-relaxed mb-8">
-              탈퇴를 진행하면 계정 정보가 삭제되며, 일부 데이터는 복구할 수 없습니다.
-              <br />
-              탈퇴 신청 후 관리자의 검토를 거쳐 최종 처리됩니다.
+              탈퇴를 진행하면 계정 정보가 즉시 삭제되며, 복구할 수 없습니다.
             </p>
+            {withdrawError && <p className="text-body-5 text-red-500 mb-4">{withdrawError}</p>}
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setModal(null)}
@@ -162,7 +177,7 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
                 취소
               </button>
               <button
-                onClick={() => setModal("withdraw-done")}
+                onClick={handleWithdraw}
                 className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
               >
                 탈퇴 신청
@@ -173,18 +188,16 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
       )}
 
       {modal === "withdraw-done" && (
-        <ModalOverlay onClose={() => setModal(null)}>
+        <ModalOverlay onClose={logout}>
           <div className="text-center pt-2">
             <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">
-              탈퇴 신청이 접수되었습니다.
+              회원 탈퇴가 완료되었습니다.
             </h3>
             <p className="text-body-5 text-grey-6 leading-relaxed mb-8">
-              검토 완료 후 탈퇴가 최종 처리되며, 처리까지는 약 30일 정도 소요됩니다.
-              <br />
-              처리 전까지 서비스 이용이 제한될 수 있습니다.
+              그동안 ToGather를 이용해 주셔서 감사합니다.
             </p>
             <button
-              onClick={() => setModal(null)}
+              onClick={logout}
               className="bg-primary text-white rounded-full px-8 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
             >
               확인
