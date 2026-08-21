@@ -12,7 +12,15 @@ vi.mock("@/services/api", () => ({
 import api from "@/services/api";
 
 const PRAYERS = [
-  { id: 1, type: "기도", content: "건강을 위해 기도합니다", status: "답변 완료", createdAt: "2026-02-10T09:00:00" },
+  {
+    id: 1,
+    type: "기도",
+    title: "옛 제목",
+    content: "건강을 위해 기도합니다",
+    status: "답변 완료",
+    reply: "옛 답변입니다",
+    createdAt: "2026-02-10T09:00:00",
+  },
 ];
 
 describe("PrayerTab", () => {
@@ -23,7 +31,9 @@ describe("PrayerTab", () => {
   it("제목과 답변 텍스트를 표시하지 않는다", () => {
     renderWithChurch(<PrayerTab prayers={PRAYERS} setPrayers={() => {}} />);
     expect(screen.getByText("건강을 위해 기도합니다")).toBeInTheDocument();
-    expect(screen.queryByText("답변:")).not.toBeInTheDocument();
+    // title/reply는 옛 필드로, 현재 컴포넌트가 렌더하지 않아야 한다.
+    expect(screen.queryByText("옛 제목")).not.toBeInTheDocument();
+    expect(screen.queryByText("옛 답변입니다")).not.toBeInTheDocument();
   });
 
   it("신청 시 유형을 선택할 수 있고 addMyPrayer를 호출한다", async () => {

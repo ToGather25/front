@@ -11,16 +11,29 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-const SCHEDULES = [{ id: 1, title: "1구역 모임", date: "2026-02-18", memo: "옥길동 · 19:30" }];
+const SCHEDULES = [
+  {
+    id: 1,
+    title: "1구역 모임",
+    date: "2026-02-18",
+    memo: "옥길동 · 19:30",
+    status: "참석 예정",
+  },
+];
 
 describe("ScheduleTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("요일 입력 필드와 상태 배지가 없다", () => {
+  it("요일 입력 필드와 상태 배지가 없다", async () => {
+    const user = userEvent.setup();
     renderWithChurch(<ScheduleTab schedules={SCHEDULES} setSchedules={() => {}} />);
+
+    // "요일"은 원래 일정 추가 모달 안에 있던 필드였다. 모달을 열어야 실제로 검증된다.
+    await user.click(screen.getByRole("button", { name: "+ 일정 추가" }));
     expect(screen.queryByText("요일")).not.toBeInTheDocument();
+    // fixture에 status 필드가 있어도 StatusBadge가 되살아나지 않아야 한다.
     expect(screen.queryByText("참석 예정")).not.toBeInTheDocument();
   });
 
