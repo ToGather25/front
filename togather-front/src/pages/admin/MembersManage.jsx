@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getMembers, getMemberDetail } from "@/services/memberService";
+import PrevNextPagination from "@/components/common/PrevNextPagination";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
-import MEMBERS from "@/config/members.config";
-
-const DEPARTMENTS = ["전체", ...new Set(MEMBERS.map((m) => m.department))];
-const POSITIONS = ["전체", ...new Set(MEMBERS.map((m) => m.role))];
 
 const DUMMY_PENDING = [
   {
@@ -29,25 +29,111 @@ const DUMMY_PENDING = [
   },
 ];
 
+const EMPTY_PAGE = { page: 0, size: 20, totalElements: 0, totalPages: 0, hasNext: false, hasPrevious: false };
+
+function toDate(iso) {
+  return iso ? iso.slice(0, 10) : "-";
+}
+
+function MemberDetailModal({ detail, loading, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,.45)" }}
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl p-8 w-[420px] shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {loading ? (
+          <p className="text-body-3 text-grey-6 text-center py-8">불러오는 중...</p>
+        ) : !detail ? (
+          <p className="text-body-3 text-grey-6 text-center py-8">정보를 찾을 수 없습니다.</p>
+        ) : (
+          <>
+            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">{detail.name}</h3>
+            <div className="flex flex-col gap-3 text-body-4">
+              <div className="flex justify-between">
+                <span className="text-grey-6">생년월일</span>
+                <span className="text-grey-10 font-mono">{detail.birthDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-grey-6">연락처</span>
+                <span className="text-grey-10 font-mono">{detail.phone}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-grey-6">등록일</span>
+                <span className="text-grey-10 font-mono">{toDate(detail.registeredAt)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-grey-6">신규 여부</span>
+                <span className="text-grey-10">{detail.newcomer ? "새가족" : "-"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-grey-6">계정 연동</span>
+                <span className="text-grey-10">{detail.hasAccount ? "연동됨" : "미연동"}</span>
+              </div>
+            </div>
+          </>
+        )}
+        <button
+          onClick={onClose}
+          className="mt-6 w-full py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+        >
+          닫기
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function MembersManage() {
+  const { church } = useChurch();
   const [activeTab, setActiveTab] = useState("active"); // "active" | "pending"
-  const [dept, setDept] = useState("전체");
-  const [position, setPosition] = useState("전체");
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [page, setPage] = useState(1);
   const [pendingList, setPendingList] = useState(DUMMY_PENDING);
   const [approvingId, setApprovingId] = useState(null);
+  const [detailId, setDetailId] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
-  const matchesPosition = (m) => {
-    if (position === "전체") return true;
-    if (position === "집사") return m.role.includes("집사") && !m.role.includes("안수집사");
-    return m.role.includes(position);
-  };
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setKeyword(searchInput);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
-  const filtered = MEMBERS.filter((m) => dept === "전체" || m.department === dept)
-    .filter(matchesPosition)
-    .filter(
-      (m) => m.name.includes(search) || m.email?.includes(search) || m.phone.includes(search),
-    );
+  const {
+    data: { members, pageInfo } = { members: [], pageInfo: EMPTY_PAGE },
+    loading,
+  } = useFetch(
+    () => getMembers(church.id, { keyword, page }),
+    [church.id, keyword, page],
+    { members: [], pageInfo: EMPTY_PAGE },
+  );
+
+  useEffect(() => {
+    if (!detailId) {
+      setDetail(null);
+      return;
+    }
+    let cancelled = false;
+    setDetailLoading(true);
+    getMemberDetail(church.id, detailId).then((d) => {
+      if (!cancelled) {
+        setDetail(d);
+        setDetailLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [church.id, detailId]);
 
   const handleApprove = async (id) => {
     setApprovingId(id);
@@ -68,44 +154,13 @@ export default function MembersManage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-headline-5 font-bold text-grey-11">교인 관리</h1>
-        <div className="flex gap-2">
-          <button className="px-4 py-2.5 rounded-xl border border-grey-3 text-body-4 font-medium text-grey-7 hover:border-primary hover:text-primary transition-colors flex items-center gap-2">
-            <svg
-              width="15"
-              height="15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-              <polyline points="7,10 12,15 17,10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            엑셀 다운로드
-          </button>
-          <button className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors flex items-center gap-2">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            교인 등록
-          </button>
-        </div>
       </div>
 
       {/* 탭 */}
       <div className="flex border-b border-grey-2 mb-5">
         <button className={tabCls("active")} onClick={() => setActiveTab("active")}>
           교인 목록
-          <span className="ml-1.5 text-body-5 text-grey-5">({MEMBERS.length})</span>
+          <span className="ml-1.5 text-body-5 text-grey-5">({pageInfo.totalElements})</span>
         </button>
         <button className={tabCls("pending")} onClick={() => setActiveTab("pending")}>
           승인 대기
@@ -120,37 +175,13 @@ export default function MembersManage() {
       {/* ── 교인 목록 탭 ── */}
       {activeTab === "active" && (
         <>
-          <div className="bg-white rounded-2xl border border-grey-2 p-4 mb-4 flex flex-wrap items-center gap-3">
-            <div>
-              <label className="text-body-5 font-semibold text-grey-6 mr-2">부서</label>
-              <select
-                className="border border-grey-3 rounded-xl px-3 py-2 text-body-4 text-grey-9 focus:outline-none focus:border-primary bg-white"
-                value={dept}
-                onChange={(e) => setDept(e.target.value)}
-              >
-                {DEPARTMENTS.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-body-5 font-semibold text-grey-6 mr-2">직책</label>
-              <select
-                className="border border-grey-3 rounded-xl px-3 py-2 text-body-4 text-grey-9 focus:outline-none focus:border-primary bg-white"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-              >
-                {POSITIONS.map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-            <div className="ml-auto relative">
+          <div className="bg-white rounded-2xl border border-grey-2 p-4 mb-4 flex items-center gap-3">
+            <div className="relative">
               <input
                 className="border border-grey-3 rounded-xl pl-9 pr-4 py-2 text-body-4 text-grey-9 focus:outline-none focus:border-primary w-64"
-                placeholder="이름 / 연락처 / 이메일 검색"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                placeholder="이름 / 연락처 검색"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
               <img
                 src={IcoSearch}
@@ -158,51 +189,79 @@ export default function MembersManage() {
                 alt=""
               />
             </div>
-            <span className="text-body-5 text-grey-5">총 {filtered.length}명</span>
+            <span className="ml-auto text-body-5 text-grey-5">총 {pageInfo.totalElements}명</span>
           </div>
 
           <div className="bg-white rounded-2xl border border-grey-2 overflow-hidden">
-            <div
-              className="grid text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2 px-6 py-3"
-              style={{ gridTemplateColumns: "48px 80px 80px 80px 140px 1fr 110px 100px" }}
-            >
-              <span className="text-center">No</span>
-              <span>이름</span>
-              <span>부서</span>
-              <span>직책</span>
-              <span>연락처</span>
-              <span>이메일</span>
-              <span>등록일</span>
-              <span className="text-center">관리</span>
-            </div>
-            {filtered.length === 0 ? (
-              <div className="py-16 text-center text-grey-5 text-body-3">검색 결과가 없습니다.</div>
-            ) : (
-              filtered.map((m, i) => (
-                <div
-                  key={m.id}
-                  className={`grid items-center px-6 py-3.5 hover:bg-grey-1 transition-colors ${i < filtered.length - 1 ? "border-b border-grey-2" : ""}`}
-                  style={{ gridTemplateColumns: "48px 80px 80px 80px 140px 1fr 110px 100px" }}
-                >
-                  <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
-                  <span className="text-body-4 font-semibold text-grey-10">{m.name}</span>
-                  <span className="text-body-5 text-grey-7">{m.department}</span>
-                  <span className="text-body-5 text-grey-7">{m.role}</span>
-                  <span className="text-body-5 text-grey-6">{m.phone}</span>
-                  <span className="text-body-5 text-grey-6 truncate">{m.email}</span>
-                  <span className="text-body-5 text-grey-5">{m.registered}</span>
-                  <div className="flex gap-1.5 justify-center">
-                    <button className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors">
-                      상세
-                    </button>
-                    <button className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-red-400 hover:text-red-500 transition-colors">
-                      삭제
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2">
+                  <th className="text-center px-2 py-3 w-12">No</th>
+                  <th className="text-left px-4 py-3">이름</th>
+                  <th className="text-left px-4 py-3">생년월일</th>
+                  <th className="text-left px-4 py-3">연락처</th>
+                  <th className="text-left px-4 py-3">등록일</th>
+                  <th className="text-center px-4 py-3">신규</th>
+                  <th className="text-center px-4 py-3 w-20">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center text-grey-5 text-body-3">
+                      불러오는 중...
+                    </td>
+                  </tr>
+                ) : members.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center text-grey-5 text-body-3">
+                      검색 결과가 없습니다.
+                    </td>
+                  </tr>
+                ) : (
+                  members.map((m, i) => (
+                    <tr
+                      key={m.id}
+                      className={`hover:bg-grey-1 transition-colors ${i < members.length - 1 ? "border-b border-grey-2" : ""}`}
+                    >
+                      <td className="text-body-5 text-grey-5 text-center px-2 py-3.5">
+                        {(page - 1) * pageInfo.size + i + 1}
+                      </td>
+                      <td className="text-body-4 font-semibold text-grey-10 px-4 py-3.5">
+                        {m.name}
+                      </td>
+                      <td className="text-body-5 text-grey-7 font-mono px-4 py-3.5">
+                        {m.birthDate}
+                      </td>
+                      <td className="text-body-5 text-grey-6 font-mono px-4 py-3.5">{m.phone}</td>
+                      <td className="text-body-5 text-grey-5 font-mono px-4 py-3.5">
+                        {toDate(m.registeredAt)}
+                      </td>
+                      <td className="text-center px-4 py-3.5">
+                        {m.newcomer && (
+                          <span className="inline-flex px-2 py-0.5 rounded-md text-body-5 font-semibold bg-[#e0f5eb] text-[#008848]">
+                            새가족
+                          </span>
+                        )}
+                      </td>
+                      <td className="text-center px-4 py-3.5">
+                        <button
+                          onClick={() => setDetailId(m.id)}
+                          className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
+                        >
+                          상세
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
+
+          {pageInfo.totalPages > 1 && (
+            <PrevNextPagination page={page} hasNext={pageInfo.hasNext} onChange={setPage} />
+          )}
         </>
       )}
 
@@ -249,6 +308,14 @@ export default function MembersManage() {
             ))
           )}
         </div>
+      )}
+
+      {detailId && (
+        <MemberDetailModal
+          detail={detail}
+          loading={detailLoading}
+          onClose={() => setDetailId(null)}
+        />
       )}
     </div>
   );
