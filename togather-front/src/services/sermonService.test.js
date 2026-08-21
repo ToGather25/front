@@ -3,7 +3,7 @@ vi.mock("@/services/api", () => ({
   isDummy: () => false,
 }));
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 import api from "@/services/api";
 import {
   createSermon,

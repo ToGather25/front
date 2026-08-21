@@ -34,7 +34,7 @@ function SermonModal({ initial, onClose, onSave }) {
   const set = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
   const handleSubmit = () => {
-    if (!form.title.trim()) return;
+    if (!form.title.trim() || !form.sermonDate) return;
     onSave(form);
   };
 

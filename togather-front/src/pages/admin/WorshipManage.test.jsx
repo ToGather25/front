@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import WorshipManage from "./WorshipManage";
@@ -45,10 +45,13 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
       },
     });
     const user = userEvent.setup();
-    renderWithChurch(<WorshipManage />);
+    const { container } = renderWithChurch(<WorshipManage />);
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "새 설교");
+    fireEvent.change(container.querySelector('input[type="date"]'), {
+      target: { value: "2026-06-01" },
+    });
     await user.click(screen.getByRole("button", { name: "등록" }));
 
     expect(await screen.findByText("새 설교")).toBeInTheDocument();
@@ -75,10 +78,13 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     api.delete.mockResolvedValue({ data: null });
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const user = userEvent.setup();
-    renderWithChurch(<WorshipManage />);
+    const { container } = renderWithChurch(<WorshipManage />);
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "삭제될 설교");
+    fireEvent.change(container.querySelector('input[type="date"]'), {
+      target: { value: "2026-06-01" },
+    });
     await user.click(screen.getByRole("button", { name: "등록" }));
     await screen.findByText("삭제될 설교");
 
@@ -105,10 +111,13 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
       })
       .mockResolvedValueOnce({ data: { data: { id: 1, status: "BEFORE" } } });
     const user = userEvent.setup();
-    renderWithChurch(<WorshipManage />);
+    const { container } = renderWithChurch(<WorshipManage />);
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "방송용 설교");
+    fireEvent.change(container.querySelector('input[type="date"]'), {
+      target: { value: "2026-06-01" },
+    });
     await user.click(screen.getByRole("button", { name: "등록" }));
     await screen.findByText("방송용 설교");
 

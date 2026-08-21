@@ -67,6 +67,7 @@ export async function getPastSermons(channelId, maxResults = 12) {
  * @param {string} churchId
  * @returns {Promise<object[]>}
  */
+// oxlint-disable-next-line no-unused-vars
 export async function getAdminSermons(churchId) {
   if (isDummy("sermon")) return [...DUMMY_ADMIN_SERMONS];
   return [];
