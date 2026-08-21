@@ -42,6 +42,7 @@ describe("RegistrationButton", () => {
   });
 
   it("로그인한 상태에서 클릭하면 신청 API를 호출하고 버튼이 신청완료로 바뀐다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
     localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
     api.post.mockResolvedValue({ data: { registered: true } });
     const user = userEvent.setup();
@@ -57,6 +58,18 @@ describe("RegistrationButton", () => {
     expect(await screen.findByRole("button", { name: "신청완료" })).toBeDisabled();
   });
 
+  it("신청 확인 모달에서 취소를 누르면 API를 호출하지 않는다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
+    const user = userEvent.setup();
+    renderWithChurch(<RegistrationButton event={OPEN_EVENT} />, { withAuth: true });
+
+    await user.click(screen.getByRole("button", { name: "신청하기" }));
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "신청하기" })).toBeInTheDocument();
+  });
+
   it("이미 로컬에 신청 기록이 있으면 처음부터 신청완료로 렌더링된다", () => {
     localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
     localStorage.setItem("event_registered_togather-church_e1_hong@example.com", "true");
@@ -67,10 +80,25 @@ describe("RegistrationButton", () => {
   });
 
   it("신청 API가 실패하면 에러 메시지를 보여준다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
     localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
     api.post.mockRejectedValue(new Error("network error"));
     const user = userEvent.setup();
     renderWithChurch(<RegistrationButton event={OPEN_EVENT} />, { withAuth: true });
+
+    await user.click(screen.getByRole("button", { name: "신청하기" }));
+
+    expect(
+      await screen.findByText("신청에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+    ).toBeInTheDocument();
+  });
+
+  it("size='sm'일 때도 신청 API가 실패하면 에러 메시지를 보여준다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
+    api.post.mockRejectedValue(new Error("network error"));
+    const user = userEvent.setup();
+    renderWithChurch(<RegistrationButton event={OPEN_EVENT} size="sm" />, { withAuth: true });
 
     await user.click(screen.getByRole("button", { name: "신청하기" }));
 

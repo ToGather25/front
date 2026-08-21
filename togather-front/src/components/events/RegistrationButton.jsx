@@ -41,6 +41,7 @@ export default function RegistrationButton({ event, size = "lg", className = "" 
       setShowLoginModal(true);
       return;
     }
+    if (!window.confirm(`${event.title} 행사에 신청하시겠습니까?`)) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -83,10 +84,11 @@ export default function RegistrationButton({ event, size = "lg", className = "" 
 
   if (size === "sm") {
     return (
-      <>
+      <div className="flex-1 flex flex-col gap-1">
         {button}
+        {error && <span className="text-body-5 text-red-500 text-center">{error}</span>}
         {loginModal}
-      </>
+      </div>
     );
   }
 
