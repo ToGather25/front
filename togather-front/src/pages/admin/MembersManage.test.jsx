@@ -98,4 +98,21 @@ describe("MembersManage — 교인 목록 탭", () => {
     // DUMMY_PENDING에 승인 대기자가 3명이라 "승인" 버튼도 3개 렌더링된다(원본 더미 로직 그대로).
     expect(screen.getAllByRole("button", { name: "승인" }).length).toBeGreaterThan(0);
   });
+
+  it("상세 조회 중 에러가 발생하면 모달이 '정보를 찾을 수 없습니다.'로 표시되고 로딩 상태에 영원히 머무르지 않는다", async () => {
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+
+    // getMemberDetail이 reject하도록 모킹
+    api.get.mockRejectedValueOnce(new Error("network error"));
+
+    await user.click(screen.getByRole("button", { name: "상세" }));
+
+    // 에러 시 "정보를 찾을 수 없습니다."가 표시되어야 함
+    expect(await screen.findByText("정보를 찾을 수 없습니다.")).toBeInTheDocument();
+
+    // "불러오는 중..."은 사라져야 함
+    expect(screen.queryByText("불러오는 중...")).not.toBeInTheDocument();
+  });
 });

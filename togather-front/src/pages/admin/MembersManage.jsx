@@ -124,12 +124,22 @@ export default function MembersManage() {
     }
     let cancelled = false;
     setDetailLoading(true);
-    getMemberDetail(church.id, detailId).then((d) => {
-      if (!cancelled) {
-        setDetail(d);
-        setDetailLoading(false);
-      }
-    });
+    getMemberDetail(church.id, detailId)
+      .then((d) => {
+        if (!cancelled) {
+          setDetail(d);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDetail(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setDetailLoading(false);
+        }
+      });
     return () => {
       cancelled = true;
     };
