@@ -27,7 +27,7 @@ function toFormState(sermon) {
   return { ...emptyForm(), ...sermon };
 }
 
-function SermonModal({ initial, onClose, onSave }) {
+function SermonModal({ initial, onClose, onSave, saving }) {
   const isEdit = !!initial;
   const [form, setForm] = useState(() => toFormState(initial));
 
@@ -113,15 +113,17 @@ function SermonModal({ initial, onClose, onSave }) {
         <div className="flex gap-3 justify-end mt-7">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl border border-grey-3 text-body-4 text-grey-7 hover:bg-grey-1 transition-colors disabled:opacity-50"
           >
             취소
           </button>
           <button
             onClick={handleSubmit}
-            className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors disabled:opacity-50"
           >
-            {isEdit ? "수정" : "등록"}
+            {saving ? (isEdit ? "수정 중..." : "등록 중...") : isEdit ? "수정" : "등록"}
           </button>
         </div>
       </div>
@@ -129,7 +131,7 @@ function SermonModal({ initial, onClose, onSave }) {
   );
 }
 
-function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd }) {
+function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd, scheduling }) {
   const [url, setUrl] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
 
@@ -169,10 +171,10 @@ function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd }) {
             </div>
             <button
               onClick={() => onSchedule({ youtubeLiveUrl: url, scheduledStartAt: scheduledAt })}
-              disabled={!url || !scheduledAt}
+              disabled={!url || !scheduledAt || scheduling}
               className="mt-2 px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors"
             >
-              예약
+              {scheduling ? "예약 중..." : "예약"}
             </button>
           </div>
         ) : (
@@ -183,21 +185,25 @@ function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd }) {
             {broadcast.status === "BEFORE" && (
               <button
                 onClick={onStart}
-                className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+                disabled={scheduling}
+                className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors disabled:opacity-50"
               >
-                방송 시작
+                {scheduling ? "시작 중..." : "방송 시작"}
               </button>
             )}
             {broadcast.status === "LIVE" && (
               <button
                 onClick={onEnd}
-                className="px-6 py-2.5 rounded-xl bg-red-500 text-white text-body-4 font-semibold hover:bg-red-600 transition-colors"
+                disabled={scheduling}
+                className="px-6 py-2.5 rounded-xl bg-red-500 text-white text-body-4 font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
               >
-                방송 종료
+                {scheduling ? "종료 중..." : "방송 종료"}
               </button>
             )}
             <p className="text-body-5 text-grey-5">
-              이 방송 상태는 새로고침하면 사라집니다(백엔드에 조회 API가 없어 이 브라우저 세션에서만 추적됩니다).
+              이 방송 상태는 이 브라우저 세션에서만 추적됩니다. 새로고침하거나 이 설교를
+              삭제하면 화면에서 사라지지만, 이미 시작한 방송은 서버에서 계속 진행되며 다시
+              종료할 수 없습니다. 방송을 종료한 뒤 페이지를 벗어나 주세요.
             </p>
           </div>
         )}
@@ -220,6 +226,9 @@ export default function WorshipManage() {
   const [editingSermon, setEditingSermon] = useState(null);
   const [broadcasts, setBroadcasts] = useState({});
   const [broadcastSermonId, setBroadcastSermonId] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [scheduling, setScheduling] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -234,42 +243,83 @@ export default function WorshipManage() {
   const filtered = filter === "전체" ? sermons : sermons.filter((s) => s.worshipType === filter);
 
   async function handleSave(form) {
-    if (editingSermon) {
-      const updated = await updateSermon(church.id, editingSermon.id, form);
-      setSermons((prev) => prev.map((s) => (s.id === editingSermon.id ? updated : s)));
-    } else {
-      const created = await createSermon(church.id, form);
-      setSermons((prev) => [created, ...prev]);
+    setActionError(null);
+    setSaving(true);
+    try {
+      if (editingSermon) {
+        const updated = await updateSermon(church.id, editingSermon.id, form);
+        setSermons((prev) => prev.map((s) => (s.id === editingSermon.id ? updated : s)));
+      } else {
+        const created = await createSermon(church.id, form);
+        setSermons((prev) => [created, ...prev]);
+      }
+      setShowModal(false);
+      setEditingSermon(null);
+    } catch {
+      setActionError("설교 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSaving(false);
     }
-    setShowModal(false);
-    setEditingSermon(null);
   }
 
   async function handleDelete(id) {
-    if (!confirm("삭제하시겠습니까?")) return;
-    await deleteSermon(church.id, id);
-    setSermons((prev) => prev.filter((s) => s.id !== id));
+    const hasBroadcast = !!broadcasts[id];
+    const message = hasBroadcast
+      ? "이 설교에 예약/진행 중인 방송이 있습니다. 삭제해도 서버의 방송은 계속 남아있을 수 있습니다. 그래도 삭제하시겠습니까?"
+      : "삭제하시겠습니까?";
+    if (!confirm(message)) return;
+    setActionError(null);
+    try {
+      await deleteSermon(church.id, id);
+      setSermons((prev) => prev.filter((s) => s.id !== id));
+    } catch {
+      setActionError("설교 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }
   }
 
   async function handleSchedule({ youtubeLiveUrl, scheduledStartAt }) {
-    const result = await scheduleBroadcast(church.id, {
-      sermonId: broadcastSermonId,
-      youtubeLiveUrl,
-      scheduledStartAt,
-    });
-    setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    setActionError(null);
+    setScheduling(true);
+    try {
+      const result = await scheduleBroadcast(church.id, {
+        sermonId: broadcastSermonId,
+        youtubeLiveUrl,
+        scheduledStartAt,
+      });
+      setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    } catch {
+      setActionError("방송 예약에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setScheduling(false);
+    }
   }
 
   async function handleStart() {
-    const bc = broadcasts[broadcastSermonId];
-    const result = await startBroadcast(church.id, bc.id);
-    setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    setActionError(null);
+    setScheduling(true);
+    try {
+      const bc = broadcasts[broadcastSermonId];
+      const result = await startBroadcast(church.id, bc.id);
+      setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    } catch {
+      setActionError("방송 시작에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setScheduling(false);
+    }
   }
 
   async function handleEnd() {
-    const bc = broadcasts[broadcastSermonId];
-    const result = await endBroadcast(church.id, bc.id);
-    setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    setActionError(null);
+    setScheduling(true);
+    try {
+      const bc = broadcasts[broadcastSermonId];
+      const result = await endBroadcast(church.id, bc.id);
+      setBroadcasts((prev) => ({ ...prev, [broadcastSermonId]: result }));
+    } catch {
+      setActionError("방송 종료에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setScheduling(false);
+    }
   }
 
   return (
@@ -282,6 +332,7 @@ export default function WorshipManage() {
             setEditingSermon(null);
           }}
           onSave={handleSave}
+          saving={saving}
         />
       )}
       {broadcastSermonId && (
@@ -291,6 +342,7 @@ export default function WorshipManage() {
           onSchedule={handleSchedule}
           onStart={handleStart}
           onEnd={handleEnd}
+          scheduling={scheduling}
         />
       )}
 
@@ -317,6 +369,8 @@ export default function WorshipManage() {
           설교 등록
         </button>
       </div>
+
+      {actionError && <p className="text-body-4 text-red-500 mb-4">{actionError}</p>}
 
       <p className="text-body-5 text-grey-5 mb-4">
         백엔드에 설교 목록 조회 API가 없어 새로고침하면 등록한 설교 목록이 초기화됩니다.

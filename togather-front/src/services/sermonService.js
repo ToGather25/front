@@ -95,12 +95,14 @@ export async function createSermon(churchId, payload) {
  * @param {object} payload
  */
 export async function updateSermon(churchId, publicId, payload) {
+  const { title, scripture, preacher, worshipType, youtubeVideoId, sermonDate } = payload;
+  const fields = { title, scripture, preacher, worshipType, youtubeVideoId, sermonDate };
   if (isDummy("sermon")) {
     const idx = DUMMY_ADMIN_SERMONS.findIndex((s) => s.id === publicId);
-    if (idx !== -1) DUMMY_ADMIN_SERMONS[idx] = { ...DUMMY_ADMIN_SERMONS[idx], ...payload };
+    if (idx !== -1) DUMMY_ADMIN_SERMONS[idx] = { ...DUMMY_ADMIN_SERMONS[idx], ...fields };
     return DUMMY_ADMIN_SERMONS[idx] ?? null;
   }
-  const res = await api.patch(`/church/admin/sermons/${publicId}`, payload);
+  const res = await api.patch(`/church/admin/sermons/${publicId}`, fields);
   return res.data.data;
 }
 
