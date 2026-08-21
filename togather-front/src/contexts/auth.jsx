@@ -13,7 +13,11 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(currentUser));
+    if (currentUser) {
+      localStorage.setItem("user", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("user");
+    }
   }, [currentUser]);
 
   async function login({ email, password }) {
