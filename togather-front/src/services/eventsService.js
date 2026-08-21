@@ -1,4 +1,5 @@
 /**
+ * 백엔드 계약상 필수 필드는 title, date뿐이다. location, description은 optional이며 null일 수 있다.
  * @typedef {Object} Event
  * @property {number|string} id           - 더미는 number, 실 API는 uuid string. 비교는 항상 String() 캐스팅
  * @property {string}  title              - 행사명
@@ -6,15 +7,10 @@
  * @property {string}  date               - 행사일 "YYYY-MM-DD"
  * @property {string|null} startTime      - "HH:mm" | null
  * @property {string|null} endTime        - "HH:mm" | null
- * @property {string}  location           - 장소
- * @property {string}  description        - 상세 내용
+ * @property {string|null} location       - 장소 (optional)
+ * @property {string|null} description    - 상세 내용 (optional)
  * @property {string|null} imageUrl       - 대표 이미지. null이면 기본 배너 대체
- * @property {string}  createdAt          - 등록일 "YYYY-MM-DD"
  * @property {boolean} canRegister        - 신청을 받는 행사인지
- * @property {string|null} registrationStart - 신청 시작일 "YYYY-MM-DD"
- * @property {string|null} registrationEnd   - 신청 마감일 "YYYY-MM-DD" (당일까지 포함)
- * @property {number|null} capacity       - 정원(명). null = 무제한
- * @property {number}  registeredCount    - 현재 신청 인원
  */
 
 import api, { isDummy } from "./api";
