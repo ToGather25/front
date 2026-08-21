@@ -24,6 +24,13 @@ const EVENT = {
   imageUrl: null,
 };
 
+const EVENT_NO_LOCATION = {
+  ...EVENT,
+  id: 2,
+  title: "온라인 예배",
+  location: null,
+};
+
 describe("EventsManage — 관리자 CRUD", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -67,5 +74,18 @@ describe("EventsManage — 관리자 CRUD", () => {
       await screen.findByText("삭제할 수 없습니다. 이미 신청 내역이 있는 행사일 수 있습니다."),
     ).toBeInTheDocument();
     expect(screen.getByText("여름 수련회")).toBeInTheDocument();
+  });
+
+  it("location이 null인 행사가 있어도 검색 시 크래시하지 않고 정상 렌더링된다", async () => {
+    api.get.mockResolvedValue({ data: { data: [EVENT, EVENT_NO_LOCATION] } });
+    const user = userEvent.setup();
+    renderWithChurch(<EventsManage />);
+    await screen.findByText("여름 수련회");
+    expect(screen.getByText("온라인 예배")).toBeInTheDocument();
+
+    await user.type(screen.getByPlaceholderText("행사명 / 장소 검색"), "여름");
+
+    expect(screen.getByText("여름 수련회")).toBeInTheDocument();
+    expect(screen.queryByText("온라인 예배")).not.toBeInTheDocument();
   });
 });

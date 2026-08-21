@@ -204,7 +204,7 @@ export default function EventsManage() {
 
   const filtered = events
     .filter((e) => tab === "전체" || e.department === tab)
-    .filter((e) => e.title.includes(search) || e.location.includes(search))
+    .filter((e) => (e.title ?? "").includes(search) || (e.location ?? "").includes(search))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
   async function handleSave(form) {
