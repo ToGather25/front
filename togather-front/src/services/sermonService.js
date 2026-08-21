@@ -3,8 +3,8 @@
  * @typedef {{ id:string, videoId:string, title:string, date:string, thumbnail:string|null }} PastSermon
  */
 
-import { USE_DUMMY } from "./api";
-import { DUMMY_LIVE_SERMON, DUMMY_PAST_SERMONS } from "@/data/dummy/sermons";
+import api, { USE_DUMMY, isDummy } from "./api";
+import { DUMMY_LIVE_SERMON, DUMMY_PAST_SERMONS, DUMMY_ADMIN_SERMONS } from "@/data/dummy/sermons";
 
 const YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
 const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
@@ -59,4 +59,100 @@ export async function getPastSermons(channelId, maxResults = 12) {
       date: item.snippet.publishedAt?.slice(0, 10).replaceAll("-", "."),
       thumbnail: item.snippet.thumbnails?.medium?.url ?? null,
     }));
+}
+
+/**
+ * 설교 목록 조회 (관리자) — 백엔드에 목록 조회 API가 없어 더미 모드에서만 항목을 반환한다.
+ * 실API 모드에서는 항상 빈 배열을 반환하며, 화면은 등록/수정/삭제 결과를 로컬로 누적해서 보여준다.
+ * @param {string} churchId
+ * @returns {Promise<object[]>}
+ */
+export async function getAdminSermons(churchId) {
+  if (isDummy("sermon")) return [...DUMMY_ADMIN_SERMONS];
+  return [];
+}
+
+/**
+ * 설교 등록 (관리자)
+ * @param {string} churchId
+ * @param {{ title:string, scripture?:string, preacher?:string, worshipType?:string, youtubeVideoId?:string, sermonDate:string }} payload
+ */
+export async function createSermon(churchId, payload) {
+  if (isDummy("sermon")) {
+    const created = { id: `dummy-${Date.now()}`, ...payload };
+    DUMMY_ADMIN_SERMONS.unshift(created);
+    return created;
+  }
+  const res = await api.post(`/church/admin/sermons`, payload);
+  return res.data.data;
+}
+
+/**
+ * 설교 수정 (관리자)
+ * @param {string} churchId
+ * @param {string} publicId
+ * @param {object} payload
+ */
+export async function updateSermon(churchId, publicId, payload) {
+  if (isDummy("sermon")) {
+    const idx = DUMMY_ADMIN_SERMONS.findIndex((s) => s.id === publicId);
+    if (idx !== -1) DUMMY_ADMIN_SERMONS[idx] = { ...DUMMY_ADMIN_SERMONS[idx], ...payload };
+    return DUMMY_ADMIN_SERMONS[idx] ?? null;
+  }
+  const res = await api.patch(`/church/admin/sermons/${publicId}`, payload);
+  return res.data.data;
+}
+
+/**
+ * 설교 삭제 (관리자)
+ * @param {string} churchId
+ * @param {string} publicId
+ */
+export async function deleteSermon(churchId, publicId) {
+  if (isDummy("sermon")) {
+    const idx = DUMMY_ADMIN_SERMONS.findIndex((s) => s.id === publicId);
+    if (idx !== -1) DUMMY_ADMIN_SERMONS.splice(idx, 1);
+    return;
+  }
+  await api.delete(`/church/admin/sermons/${publicId}`);
+}
+
+/**
+ * 방송 예약 (관리자) — 백엔드에 조회 API가 없어 이 응답의 id를 호출부가 로컬로 계속 들고 있어야 한다.
+ * @param {string} churchId
+ * @param {{ sermonId:string, youtubeLiveUrl:string, scheduledStartAt:string }} payload
+ * @returns {Promise<{id:number|string, status:"BEFORE"}>}
+ */
+export async function scheduleBroadcast(churchId, { sermonId, youtubeLiveUrl, scheduledStartAt }) {
+  if (isDummy("sermon")) return { id: `dummy-bc-${Date.now()}`, status: "BEFORE" };
+  const res = await api.post(`/church/admin/broadcasts`, {
+    sermonId,
+    youtubeLiveUrl,
+    scheduledStartAt,
+  });
+  return res.data.data;
+}
+
+/**
+ * 방송 시작
+ * @param {string} churchId
+ * @param {number|string} broadcastId
+ * @returns {Promise<{id:number|string, status:"LIVE"}>}
+ */
+export async function startBroadcast(churchId, broadcastId) {
+  if (isDummy("sermon")) return { id: broadcastId, status: "LIVE" };
+  const res = await api.post(`/church/admin/broadcasts/${broadcastId}/start`);
+  return res.data.data;
+}
+
+/**
+ * 방송 종료
+ * @param {string} churchId
+ * @param {number|string} broadcastId
+ * @returns {Promise<{id:number|string, status:"ENDED"}>}
+ */
+export async function endBroadcast(churchId, broadcastId) {
+  if (isDummy("sermon")) return { id: broadcastId, status: "ENDED" };
+  const res = await api.post(`/church/admin/broadcasts/${broadcastId}/end`);
+  return res.data.data;
 }
