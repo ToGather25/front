@@ -7,6 +7,7 @@ import IcoBook from "@/assets/icon-svg/admin-book-white.svg";
 import IcoAnnounce from "@/assets/icon-svg/admin-announcement-white.svg";
 import IcoUsers from "@/assets/icon-svg/admin-users-white.svg";
 import IcoFile from "@/assets/icon-svg/admin-file-white.svg";
+import IcoGallery from "@/assets/icon-svg/admin-gallery-white.svg";
 import IcoSiteSettings from "@/assets/icon-svg/admin-site-settings-white.svg";
 import IcoCalendar from "@/assets/icon-svg/mypage-calendar-white.svg";
 
@@ -18,6 +19,7 @@ const MENU = [
   { label: "교회행사 관리", to: "/admin/events", icon: IcoCalendar },
   { label: "교인 관리", to: "/admin/members", icon: IcoUsers },
   { label: "스마트 주보 관리", to: "/admin/jubo", icon: IcoFile },
+  { label: "갤러리 관리", to: "/admin/gallery", icon: IcoGallery },
   { label: "사이트 기본 설정", to: "/admin/settings", icon: IcoSiteSettings },
 ];
 
