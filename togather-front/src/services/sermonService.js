@@ -4,7 +4,7 @@
  */
 
 import api, { USE_DUMMY, isDummy } from "./api";
-import { DUMMY_LIVE_SERMON, DUMMY_PAST_SERMONS, DUMMY_ADMIN_SERMONS } from "@/data/dummy/sermons";
+import { DUMMY_LIVE_SERMON, DUMMY_PAST_SERMONS, DUMMY_ADMIN_SERMONS, DUMMY_LIVE_SCREEN } from "@/data/dummy/sermons";
 
 const YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
 const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
@@ -157,5 +157,83 @@ export async function startBroadcast(churchId, broadcastId) {
 export async function endBroadcast(churchId, broadcastId) {
   if (isDummy("sermon")) return { id: broadcastId, status: "ENDED" };
   const res = await api.post(`/church/admin/broadcasts/${broadcastId}/end`);
+  return res.data.data;
+}
+
+/**
+ * 전체 YouTube URL(watch/live/youtu.be/embed 형식)에서 embed용 videoId만 추출한다.
+ * @param {string|null|undefined} url
+ * @returns {string|null}
+ */
+export function extractYoutubeVideoId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/(?:live|embed)\/)([\w-]{11})/,
+    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
+    /(?:youtu\.be\/)([\w-]{11})/,
+  ];
+  for (const re of patterns) {
+    const m = url.match(re);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+/**
+ * 실시간 예배 화면 조회
+ * @param {string} churchId
+ * @returns {Promise<{state:string, youtubeLiveUrl:string|null, sermon:object|null,
+ *   bulletinAvailable:boolean, recentSermons:object[]}>}
+ */
+// oxlint-disable-next-line no-unused-vars
+export async function getLiveScreen(churchId) {
+  if (isDummy("sermon")) return DUMMY_LIVE_SCREEN;
+  const res = await api.get(`/church/sermons/live`);
+  return res.data.data;
+}
+
+/**
+ * 설교 검색/목록 조회
+ * @param {string} churchId
+ * @param {{ keyword?:string, worshipType?:string, page?:number, size?:number }} params - page는 1-based(프론트 관례)
+ * @returns {Promise<{ sermons:object[], pageInfo:object }>}
+ */
+export async function searchSermons(churchId, { keyword, worshipType, page = 1, size = 12 } = {}) {
+  if (isDummy("sermon")) {
+    let list = DUMMY_ADMIN_SERMONS;
+    if (worshipType) list = list.filter((s) => s.worshipType === worshipType);
+    if (keyword?.trim()) {
+      const q = keyword.trim().toLowerCase();
+      list = list.filter((s) => s.title.toLowerCase().includes(q));
+    }
+    const start = (page - 1) * size;
+    const content = list.slice(start, start + size);
+    return {
+      sermons: content,
+      pageInfo: {
+        page: page - 1,
+        size,
+        totalElements: list.length,
+        totalPages: Math.max(1, Math.ceil(list.length / size)),
+        hasNext: start + size < list.length,
+        hasPrevious: page > 1,
+      },
+    };
+  }
+  const res = await api.get(`/church/sermons`, {
+    params: { keyword: keyword || undefined, worshipType: worshipType || undefined, page: page - 1, size },
+  });
+  return { sermons: res.data.data.content, pageInfo: res.data.data.pageInfo };
+}
+
+/**
+ * 설교 상세 조회
+ * @param {string} churchId
+ * @param {string} publicId
+ * @returns {Promise<object|null>}
+ */
+export async function getSermonDetail(churchId, publicId) {
+  if (isDummy("sermon")) return DUMMY_ADMIN_SERMONS.find((s) => s.id === publicId) ?? null;
+  const res = await api.get(`/church/sermons/${publicId}`);
   return res.data.data;
 }
