@@ -1,24 +1,36 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { addMyPrayer } from "@/services/myPageService";
+import { formatDotDate } from "@/utils/date";
 import { StatusBadge, Pagination, ModalOverlay } from "./shared";
 
 const PRAYER_PAGE_SIZE = 4;
 const PRAYER_TYPES = ["기도", "상담"];
 
-export default function PrayerTab({ prayers, setPrayers }) {
+export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
   const { church } = useChurch();
   const [prayerForm, setPrayerForm] = useState({ type: "기도", content: "" });
   const [prayerFilter, setPrayerFilter] = useState("전체");
   const [prayerPage, setPrayerPage] = useState(1);
   const [modal, setModal] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [addError, setAddError] = useState("");
 
   async function handleAddPrayer() {
     if (!prayerForm.content) return;
-    const created = await addMyPrayer(church.id, prayerForm);
-    setPrayers((prev) => [created, ...prev]);
-    setPrayerForm({ type: "기도", content: "" });
-    setModal(null);
+    setSubmitting(true);
+    setAddError("");
+    try {
+      const created = await addMyPrayer(church.id, prayerForm);
+      setPrayers((prev) => [created, ...prev]);
+      setPrayerForm({ type: "기도", content: "" });
+      setPrayerPage(1);
+      setModal(null);
+    } catch {
+      setAddError("기도/상담 신청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function handlePrayerFilter(f) {
@@ -57,32 +69,51 @@ export default function PrayerTab({ prayers, setPrayers }) {
           </button>
         ))}
       </div>
-      <div className="space-y-4">
-        {pagedPrayers.map((item) => (
-          <div key={item.id} className="border border-grey-3 rounded-xl p-5">
-            <div className="flex items-start justify-between gap-4">
-              <span
-                className={`text-body-5 rounded px-2 py-0.5 ${
-                  item.type === "기도" ? "bg-grey-2 text-grey-7" : "bg-blue-1 text-primary"
-                }`}
-              >
-                {item.type}
-              </span>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-body-5 text-grey-6">{item.createdAt?.slice(0, 10)}</span>
-                <StatusBadge status={item.status} />
+
+      {loadError ? (
+        <div className="flex flex-col items-center justify-center gap-4 py-10 text-center">
+          <p className="text-body-4 text-grey-7">
+            기도/상담 내역을 불러오지 못했습니다. 다시 시도해 주세요.
+          </p>
+          <button
+            onClick={onRetry}
+            className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
+          >
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-4">
+            {pagedPrayers.map((item) => (
+              <div key={item.id} className="border border-grey-3 rounded-xl p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <span
+                    className={`text-body-5 rounded px-2 py-0.5 ${
+                      item.type === "기도" ? "bg-grey-2 text-grey-7" : "bg-blue-1 text-primary"
+                    }`}
+                  >
+                    {item.type}
+                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-body-5 text-grey-6">
+                      {formatDotDate(item.createdAt?.slice(0, 10))}
+                    </span>
+                    <StatusBadge status={item.status} />
+                  </div>
+                </div>
+                <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
               </div>
-            </div>
-            <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
+            ))}
           </div>
-        ))}
-      </div>
-      <Pagination
-        total={filteredPrayers.length}
-        perPage={PRAYER_PAGE_SIZE}
-        current={prayerPage}
-        onChange={setPrayerPage}
-      />
+          <Pagination
+            total={filteredPrayers.length}
+            perPage={PRAYER_PAGE_SIZE}
+            current={prayerPage}
+            onChange={setPrayerPage}
+          />
+        </>
+      )}
 
       {modal === "add-prayer" && (
         <ModalOverlay onClose={() => setModal(null)}>
@@ -118,6 +149,7 @@ export default function PrayerTab({ prayers, setPrayers }) {
               />
             </div>
           </div>
+          {addError && <p className="text-body-5 text-red-500 mt-3">{addError}</p>}
           <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={() => setModal(null)}
@@ -127,9 +159,10 @@ export default function PrayerTab({ prayers, setPrayers }) {
             </button>
             <button
               onClick={handleAddPrayer}
-              className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
+              disabled={submitting}
+              className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              신청
+              {submitting ? "신청 중..." : "신청"}
             </button>
           </div>
         </ModalOverlay>
