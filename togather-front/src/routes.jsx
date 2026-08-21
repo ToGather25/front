@@ -8,7 +8,6 @@ import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
 import EventSearch from "@/pages/Events/EventSearch";
-import EventApply from "@/pages/Events/EventApply";
 import Gallery from "@/pages/Gallery/Gallery";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
@@ -61,7 +60,6 @@ export const routes = [
       { path: "교회행사", element: <Events /> },
       { path: "교회행사/검색", element: <EventSearch /> },
       { path: "교회행사/:id", element: <EventDetail /> },
-      { path: "교회행사/:id/신청", element: <EventApply /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송
       { path: "말씀", element: <Navigate to="/말씀/방송" replace /> },

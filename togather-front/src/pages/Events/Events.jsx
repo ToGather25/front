@@ -248,13 +248,12 @@ export default function Events() {
                 const ds = getDepartmentStyle(evt.department);
                 return (
                   <div key={evt.id} className="px-6 py-5 flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center">
                       <span
                         className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${ds.chip}`}
                       >
                         {evt.department}
                       </span>
-                      <span className="text-body-5 text-bluegrey-4">등록일 {evt.createdAt}</span>
                     </div>
                     <p className="text-body-2 font-semibold text-bluegrey-10">{evt.title}</p>
                     <p className="text-body-5 text-bluegrey-5">
