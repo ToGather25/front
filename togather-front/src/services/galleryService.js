@@ -21,7 +21,8 @@ export async function getCommunities(churchId) {
 /**
  * 갤러리 사진 목록 조회
  * @param {string} churchId
- * @param {{ communityId?:number, page?:number }} params
+ * @param {{ communityId?:number, page?:number, limit?:number }} params
+ *   - page: 백엔드는 0-based. 이 함수는 변환 없이 그대로 전달한다(noticeService/memberService의 1-based 변환과 다름).
  * @returns {Promise<Photo[]>}
  */
 export async function getPhotos(churchId, params = {}) {

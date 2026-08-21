@@ -11,6 +11,7 @@ import {
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
+const PHOTO_FETCH_LIMIT = 200;
 
 function CommunityModal({ onClose, onSave }) {
   const [form, setForm] = useState({ name: "", desc: "" });
@@ -170,6 +171,7 @@ export default function GalleryManage() {
   const [communityError, setCommunityError] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [photos, setPhotos] = useState([]);
+  const [photoLoading, setPhotoLoading] = useState(false);
   const [photoError, setPhotoError] = useState(false);
   const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
@@ -198,17 +200,23 @@ export default function GalleryManage() {
 
   function fetchPhotos(communityId, cancelledRef) {
     setPhotoError(false);
-    return getPhotos(church.id, { communityId })
+    setPhotoLoading(true);
+    return getPhotos(church.id, { communityId, limit: PHOTO_FETCH_LIMIT })
       .then((list) => {
         if (!cancelledRef?.current) setPhotos(list);
       })
       .catch(() => {
         if (!cancelledRef?.current) setPhotoError(true);
+      })
+      .finally(() => {
+        if (!cancelledRef?.current) setPhotoLoading(false);
       });
   }
 
   useEffect(() => {
     if (!selectedId) return;
+    setPhotos([]);
+    setDeleteError("");
     const cancelledRef = { current: false };
     fetchPhotos(selectedId, cancelledRef);
     return () => {
@@ -223,8 +231,13 @@ export default function GalleryManage() {
   }
 
   async function handleSavePhoto(form) {
-    const created = await createPhoto(church.id, { ...form, communityId: selectedId });
+    const created = await createPhoto(church.id, {
+      ...form,
+      imageUrl: form.imageUrl || null,
+      communityId: selectedId,
+    });
     setPhotos((prev) => [created, ...prev]);
+    setPhotoError(false);
   }
 
   async function handleDeletePhoto(photoId) {
@@ -315,7 +328,9 @@ export default function GalleryManage() {
 
             {deleteError && <p className="text-body-5 text-red-500 mb-3">{deleteError}</p>}
 
-            {photoError ? (
+            {photoLoading ? (
+              <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+            ) : photoError ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
                 <p className="text-body-4 text-grey-7">불러오지 못했습니다. 다시 시도해 주세요.</p>
                 <button
