@@ -33,14 +33,14 @@ describe("Notice — 공개 목록", () => {
     vi.clearAllMocks();
   });
 
-  it("기본 진입 시 page:1, limit:10으로 조회한다", async () => {
+  it("기본 진입 시(UI 1페이지) 백엔드에는 0-based page:0, limit:10으로 조회한다", async () => {
     api.get.mockResolvedValue({ data: { data: makeNotices(10) } });
     renderWithChurch(<Notice />, { withRouter: true });
 
     await screen.findByText("공지 1");
 
     expect(api.get).toHaveBeenCalledWith(expect.stringContaining("/notices"), {
-      params: { page: 1, limit: 10 },
+      params: { limit: 10, page: 0 },
     });
   });
 
@@ -121,7 +121,7 @@ describe("Notice — 공개 목록", () => {
       params: { limit: 1000 },
     });
     expect(api.get).not.toHaveBeenCalledWith(expect.stringContaining("/notices"), {
-      params: { page: 1, limit: 10 },
+      params: { limit: 10, page: 0 },
     });
   });
 });

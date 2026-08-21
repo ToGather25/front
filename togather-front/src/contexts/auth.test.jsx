@@ -122,6 +122,7 @@ describe("AuthProvider", () => {
 
     await authRef.logout();
 
+    expect(api.post).toHaveBeenCalledWith("/auth/logout", { refreshToken: "r" });
     expect(localStorage.getItem("token")).toBeNull();
     expect(localStorage.getItem("refreshToken")).toBeNull();
   });

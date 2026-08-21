@@ -18,7 +18,11 @@ export async function getNotices(churchId, params = {}) {
     const start = ((params.page ?? 1) - 1) * params.limit;
     return DUMMY_NOTICES.slice(start, start + params.limit);
   }
-  const res = await api.get(`/churches/${churchId}/notices`, { params });
+  // 프론트는 1-based page를 쓰지만 백엔드(Spring Data)는 0-based라 여기서 변환한다.
+  const { page, ...rest } = params;
+  const res = await api.get(`/churches/${churchId}/notices`, {
+    params: page != null ? { ...rest, page: page - 1 } : rest,
+  });
   return res.data.data;
 }
 

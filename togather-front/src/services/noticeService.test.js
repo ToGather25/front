@@ -13,13 +13,23 @@ describe("noticeService — 실 API 경로", () => {
     vi.clearAllMocks();
   });
 
-  it("getNotices는 page/limit 파라미터를 그대로 전달한다", async () => {
+  it("getNotices는 1-based page를 백엔드의 0-based page로 변환해 전달한다", async () => {
     api.get.mockResolvedValue({ data: { data: [] } });
 
     await getNotices("1", { page: 2, limit: 10 });
 
     expect(api.get).toHaveBeenCalledWith("/churches/1/notices", {
-      params: { page: 2, limit: 10 },
+      params: { limit: 10, page: 1 },
+    });
+  });
+
+  it("getNotices는 page가 없으면 page 파라미터 자체를 보내지 않는다(백엔드 기본값 0에 위임)", async () => {
+    api.get.mockResolvedValue({ data: { data: [] } });
+
+    await getNotices("1", { limit: 1000 });
+
+    expect(api.get).toHaveBeenCalledWith("/churches/1/notices", {
+      params: { limit: 1000 },
     });
   });
 

@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     const refreshToken = localStorage.getItem("refreshToken");
     try {
-      await api.post("/church/auth/logout", { refreshToken });
+      await api.post("/auth/logout", { refreshToken });
     } catch {
       // best-effort — 실패해도 로컬 상태 정리는 진행한다
     }
