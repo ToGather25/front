@@ -10,6 +10,7 @@ import { DUMMY_MY_SCHEDULES, DUMMY_MY_PRAYERS, DUMMY_MY_INQUIRIES } from "@/data
  * @param {string} churchId
  * @returns {Promise<MySchedule[]>}
  */
+// oxlint-disable-next-line no-unused-vars
 export async function getMySchedules(churchId) {
   if (isDummy("my")) return [...DUMMY_MY_SCHEDULES];
   const res = await api.get(`/my/schedules`);
@@ -51,6 +52,7 @@ export async function deleteMySchedule(churchId, id) {
  * @param {string} churchId
  * @returns {Promise<MyPrayer[]>}
  */
+// oxlint-disable-next-line no-unused-vars
 export async function getMyPrayers(churchId) {
   if (isDummy("my")) return [...DUMMY_MY_PRAYERS];
   const res = await api.get(`/my/prayers`);
@@ -83,6 +85,7 @@ export async function addMyPrayer(churchId, payload) {
  * @param {string} churchId
  * @returns {Promise<MyInquiry[]>}
  */
+// oxlint-disable-next-line no-unused-vars
 export async function getMyInquiries(churchId) {
   if (isDummy("my")) return [...DUMMY_MY_INQUIRIES];
   const res = await api.get(`/my/inquiries`);
@@ -115,6 +118,7 @@ export async function addMyInquiry(churchId, payload) {
  * 회원 탈퇴 (즉시 소프트삭제)
  * @param {string} churchId
  */
+// oxlint-disable-next-line no-unused-vars
 export async function withdrawAccount(churchId) {
   if (isDummy("my")) return;
   await api.delete(`/my/account`);
