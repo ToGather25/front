@@ -19,34 +19,44 @@ function ScrollToTop() {
 
 // ─────────────────────────────────────────────────────
 // 스크롤 방향에 따라 헤더 노출 여부를 결정하는 훅
-// 페이지 최상단 근처(threshold 이내)에서는 항상 노출, 아래로 delta 이상
-// 스크롤하면 숨김, 위로 delta 이상 스크롤하면 즉시 다시 노출한다.
+// 페이지 최상단 근처(threshold 이내)에서는 항상 노출, 마지막으로 방향이
+// 확정된 지점(anchor) 대비 아래로 delta 이상 스크롤하면 숨김, 위로 delta
+// 이상 스크롤하면 다시 노출한다.
+//
+// anchor는 "방향이 확정될 때만" 갱신한다(매 프레임 갱신하지 않음) — 그래야
+// 트랙패드/마우스의 미세한 스크롤 노이즈나, 헤더 자신의 max-height 트랜지션이
+// 유발하는 브라우저의 스크롤 앵커링(scroll anchoring) 보정값 같은 작은
+// 흔들림이 누적되지 않고, 진짜 방향 전환만 반영된다. 매 프레임 비교 방식은
+// 이 흔들림에 취약해 헤더가 나타났다 사라지기를 반복하는 깜빡임을 만들었다.
+//
 // atTop은 "최상단 근처" 여부만 별도로 노출한다 — 아래로 스크롤했다가 다시 위로
 // 올려 visible이 true가 된 경우와 구분하기 위함(예: 히어로 위 투명 헤더는
 // visible이 아니라 atTop 기준으로 켜져야 한다).
 // ─────────────────────────────────────────────────────
-function useHideHeaderOnScroll({ threshold = 80, delta = 8 } = {}) {
+function useHideHeaderOnScroll({ threshold = 80, delta = 16 } = {}) {
   const [visible, setVisible] = useState(true);
   const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
-    let lastY = window.scrollY;
+    let anchorY = window.scrollY;
     let ticking = false;
 
     function onScroll() {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const currentY = window.scrollY;
+        const currentY = Math.max(0, window.scrollY);
         setAtTop(currentY <= threshold);
         if (currentY <= threshold) {
           setVisible(true);
-        } else if (currentY > lastY + delta) {
+          anchorY = currentY;
+        } else if (currentY - anchorY > delta) {
           setVisible(false);
-        } else if (currentY < lastY - delta) {
+          anchorY = currentY;
+        } else if (anchorY - currentY > delta) {
           setVisible(true);
+          anchorY = currentY;
         }
-        lastY = currentY;
         ticking = false;
       });
     }
@@ -116,7 +126,13 @@ function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
     <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
       <div
         className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
-        style={{ maxHeight: visible ? `${barHeight || 200}px` : "0px" }}
+        style={{
+          maxHeight: visible ? `${barHeight || 200}px` : "0px",
+          // 이 박스가 접히는 동안 브라우저의 스크롤 앵커링이 scrollY를 보정하지
+          // 않도록 막는다 — 그 보정이 스크롤 리스너를 오탐시켜 헤더가
+          // 깜빡이는 원인이었다.
+          overflowAnchor: "none",
+        }}
       >
         <div
           ref={barRef}
@@ -467,7 +483,10 @@ function MobileHeader({ onMenuOpen, visible, barRef, barHeight }) {
   return (
     <header
       className="sticky top-0 z-50 overflow-hidden transition-[max-height] duration-300 ease-in-out md:hidden"
-      style={{ maxHeight: visible ? `${barHeight || 60}px` : "0px" }}
+      style={{
+        maxHeight: visible ? `${barHeight || 60}px` : "0px",
+        overflowAnchor: "none",
+      }}
     >
       <div
         ref={barRef}
