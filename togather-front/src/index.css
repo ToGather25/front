@@ -4,6 +4,25 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
 
+/*
+ * 헤더 스크롤 숨김/등장 애니메이션이 쓰는 커스텀 프로퍼티를 <length> 타입으로
+ * 등록한다. 등록하지 않으면 값이 바뀔 때(예: 89px → 0px) 브라우저가 이를
+ * 보간 가능한 길이값이 아니라 불연속적인 문자열 교체로 취급해, 이 값을
+ * 참조하는 top/max-height의 transition이 부드럽게 보간되지 않고 순간적으로
+ * 스냅되어 헤더와 sticky 서브탭이 서로 어긋나며 튀어 보이는 원인이 된다.
+ */
+@property --header-offset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 @layer base {
   html,
   body,
