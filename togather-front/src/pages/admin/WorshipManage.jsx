@@ -9,8 +9,9 @@ import {
   startBroadcast,
   endBroadcast,
 } from "@/services/sermonService";
+import { SERVICE_TYPES } from "@/config/sermon.config";
 
-const SERVICE_TYPES = ["전체", "주일 1부", "주일 2부", "수요 예배", "청년 예배"];
+const FILTER_TYPES = ["전체", ...SERVICE_TYPES];
 
 const BROADCAST_LABEL = { BEFORE: "예약됨", LIVE: "방송 중", ENDED: "종료됨" };
 
@@ -19,7 +20,7 @@ const inputCls =
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
 function emptyForm() {
-  return { sermonDate: "", worshipType: SERVICE_TYPES[1], title: "", preacher: "", scripture: "", youtubeVideoId: "" };
+  return { sermonDate: "", worshipType: SERVICE_TYPES[0], title: "", preacher: "", scripture: "", youtubeVideoId: "" };
 }
 
 function toFormState(sermon) {
@@ -65,7 +66,7 @@ function SermonModal({ initial, onClose, onSave, saving }) {
                 value={form.worshipType}
                 onChange={set("worshipType")}
               >
-                {SERVICE_TYPES.filter((s) => s !== "전체").map((s) => (
+                {SERVICE_TYPES.map((s) => (
                   <option key={s}>{s}</option>
                 ))}
               </select>
@@ -378,7 +379,7 @@ export default function WorshipManage() {
 
       {/* Filter */}
       <div className="flex gap-2 mb-4">
-        {SERVICE_TYPES.map((t) => (
+        {FILTER_TYPES.map((t) => (
           <button
             key={t}
             onClick={() => setFilter(t)}

@@ -1,30 +1,26 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
-import { getPastSermons } from "@/services/sermonService";
+import { searchSermons } from "@/services/sermonService";
+import { SERVICE_TYPES } from "@/config/sermon.config";
 
 const PAGE_SIZE = 12;
-const SERVICE_TYPES = ["주일예배", "새벽기도회", "수요기도회", "금요기도회"];
 
-function SermonThumb({ thumbnail, title }) {
+function SermonThumb() {
   return (
     <div
       className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
       style={{ aspectRatio: "16/9" }}
     >
-      {thumbnail ? (
-        <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
-      ) : (
-        <svg
-          className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-      )}
+      <svg
+        className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
     </div>
   );
 }
@@ -32,40 +28,44 @@ function SermonThumb({ thumbnail, title }) {
 export default function WordSermon() {
   const navigate = useNavigate();
   const { church } = useChurch();
-  const channelId = church.social?.youtubeChannelId;
   const [sermons, setSermons] = useState([]);
+  const [pageInfo, setPageInfo] = useState({ totalPages: 1 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const [inputVal, setInputVal] = useState("");
-  const [serviceType, setServiceType] = useState("");
+  const [worshipType, setWorshipType] = useState("");
   const [page, setPage] = useState(1);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    getPastSermons(channelId, 50).then((data) => {
-      if (!cancelled) {
-        setSermons(data);
+    setLoading(true);
+    setError(false);
+    searchSermons(church.id, {
+      keyword: query || undefined,
+      worshipType: worshipType || undefined,
+      page,
+      size: PAGE_SIZE,
+    })
+      .then(({ sermons: list, pageInfo: info }) => {
+        if (cancelled) return;
+        setSermons(list);
+        setPageInfo(info);
         setLoading(false);
-      }
-    });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("[WordSermon] 설교 목록 조회 실패:", err);
+        setError(true);
+        setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [channelId]);
+  }, [church.id, query, worshipType, page, reloadToken]);
 
-  const filtered = useMemo(() => {
-    let list = sermons;
-    if (serviceType) list = list.filter((s) => s.title.includes(serviceType));
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      list = list.filter((s) => s.title.toLowerCase().includes(q));
-    }
-    return list;
-  }, [sermons, query, serviceType]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = Math.max(1, pageInfo?.totalPages ?? 1);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -118,9 +118,9 @@ export default function WordSermon() {
             )}
           </div>
           <select
-            value={serviceType}
+            value={worshipType}
             onChange={(e) => {
-              setServiceType(e.target.value);
+              setWorshipType(e.target.value);
               setPage(1);
             }}
             className="px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all shrink-0"
@@ -158,31 +158,45 @@ export default function WordSermon() {
           </div>
         )}
 
+        {/* 조회 실패 */}
+        {!loading && error && (
+          <div className="py-24 text-center text-grey-6 text-body-2">
+            <p className="mb-4">불러오지 못했습니다. 다시 시도해 주세요.</p>
+            <button
+              onClick={() => setReloadToken((t) => t + 1)}
+              className="px-5 py-2.5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors"
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
+
         {/* 결과 없음 */}
-        {!loading && filtered.length === 0 && (
+        {!loading && !error && sermons.length === 0 && (
           <div className="py-24 text-center text-grey-6 text-body-2">
             검색 결과가 없습니다. 다른 검색어를 입력해 주세요.
           </div>
         )}
 
         {/* 4×3 그리드 */}
-        {!loading && filtered.length > 0 && (
+        {!loading && !error && sermons.length > 0 && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
-              {pageItems.map((s) => (
+              {sermons.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
                   className="group text-left rounded-2xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-lg transition-all"
                 >
-                  <SermonThumb thumbnail={s.thumbnail} title={s.title} />
-                  {/* 정보 */}
+                  <SermonThumb />
                   <div className="p-4">
                     <h3 className="text-body-3 font-semibold text-grey-11 group-hover:text-primary transition-colors line-clamp-2 mb-1.5">
                       {s.title}
                     </h3>
                     <div className="flex items-center gap-2 text-body-5 text-grey-6">
-                      <span>{s.date}</span>
+                      <span>{s.worshipType}</span>
+                      <span>·</span>
+                      <span>{s.sermonDate}</span>
                     </div>
                   </div>
                 </button>
@@ -194,20 +208,15 @@ export default function WordSermon() {
               <div className="flex items-center justify-center gap-1">
                 <PageBtn
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
+                  disabled={page === 1}
                   label="‹"
                 />
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <PageBtn
-                    key={p}
-                    onClick={() => setPage(p)}
-                    active={p === currentPage}
-                    label={String(p)}
-                  />
+                  <PageBtn key={p} onClick={() => setPage(p)} active={p === page} label={String(p)} />
                 ))}
                 <PageBtn
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  disabled={page === totalPages}
                   label="›"
                 />
               </div>
