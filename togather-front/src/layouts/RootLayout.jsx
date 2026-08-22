@@ -24,10 +24,14 @@ function ScrollToTop() {
 // 이상 스크롤하면 다시 노출한다.
 //
 // anchor는 "방향이 확정될 때만" 갱신한다(매 프레임 갱신하지 않음) — 그래야
-// 트랙패드/마우스의 미세한 스크롤 노이즈나, 헤더 자신의 max-height 트랜지션이
-// 유발하는 브라우저의 스크롤 앵커링(scroll anchoring) 보정값 같은 작은
-// 흔들림이 누적되지 않고, 진짜 방향 전환만 반영된다. 매 프레임 비교 방식은
-// 이 흔들림에 취약해 헤더가 나타났다 사라지기를 반복하는 깜빡임을 만들었다.
+// 트랙패드/마우스의 미세한 스크롤 노이즈에 흔들리지 않고 진짜 방향 전환만
+// 반영된다. (참고: 헤더를 숨길 때 max-height 같은 레이아웃 속성을 썼던
+// 이전 구현은 헤더 높이만큼 문서 전체 높이가 줄면서, 콘텐츠가 짧은
+// 페이지에서 스크롤 가능 범위 자체가 줄어 브라우저가 scrollY를 강제로
+// 당겨버렸다(clamp) — 이걸 "위로 스크롤함"으로 오인해 헤더를 다시 켜고,
+// 문서가 다시 늘어나 또 꺼지는 진동이 반짝임의 진짜 원인이었다. 지금은
+// 레이아웃에 영향을 주지 않는 transform으로 숨기므로 이 되먹임 자체가
+// 발생할 수 없다.)
 //
 // atTop은 "최상단 근처" 여부만 별도로 노출한다 — 아래로 스크롤했다가 다시 위로
 // 올려 visible이 true가 된 경우와 구분하기 위함(예: 히어로 위 투명 헤더는
@@ -95,7 +99,7 @@ function useMeasuredHeight(ref) {
 // ─────────────────────────────────────────────────────
 // Desktop Header (md 이상에서만 표시)
 // ─────────────────────────────────────────────────────
-function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
+function DesktopHeader({ visible, barRef, transparent = false }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
@@ -118,17 +122,16 @@ function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
   return (
     <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
       <div
-        className="overflow-hidden"
+        className="overflow-hidden transition-transform duration-300 ease-in-out"
         style={{
-          // max-height를 애니메이션시키면 사용자가 아직 스크롤 중인 동안
-          // 레이아웃이 실시간으로 밀려서(reflow) 화면이 실제 스크롤량보다
-          // 더 움직이는 것처럼 튀어 보였다(바운스) — 헤더 자체는 즉시
-          // 전환하고, 아래 sticky 서브탭의 top만 부드럽게 뒤따르게 한다.
-          maxHeight: visible ? `${barHeight || 200}px` : "0px",
-          // 이 박스가 접히는 동안 브라우저의 스크롤 앵커링이 scrollY를 보정하지
-          // 않도록 막는다 — 그 보정이 스크롤 리스너를 오탐시켜 헤더가
-          // 깜빡이는 원인이었다.
-          overflowAnchor: "none",
+          // max-height 등 레이아웃에 영향을 주는 속성으로 숨기면, 헤더 높이만큼
+          // 문서 전체 높이가 실시간으로 줄어든다 — 콘텐츠가 짧은 페이지에서는
+          // 이게 스크롤 가능 범위 자체를 줄여서 브라우저가 scrollY를 강제로
+          // 당겨버렸고(clamp), 스크롤 리스너가 이를 "위로 스크롤함"으로 오인해
+          // 헤더를 다시 켰다 — 그러면 문서가 다시 늘어나 또 꺼지는 조건이
+          // 충족되고... 이 진동이 반짝임의 진짜 원인이었다. transform은
+          // 레이아웃에 전혀 영향을 주지 않으므로 이 되먹임 자체가 불가능하다.
+          transform: visible ? "translateY(0)" : "translateY(-100%)",
         }}
       >
         <div
@@ -477,15 +480,12 @@ function MobileFooter() {
 // ─────────────────────────────────────────────────────
 // Mobile Header (md 미만에서만 표시)
 // ─────────────────────────────────────────────────────
-function MobileHeader({ onMenuOpen, visible, barRef, barHeight }) {
+function MobileHeader({ onMenuOpen, visible, barRef }) {
   const { church } = useChurch();
   return (
     <header
-      className="sticky top-0 z-50 overflow-hidden md:hidden"
-      style={{
-        maxHeight: visible ? `${barHeight || 60}px` : "0px",
-        overflowAnchor: "none",
-      }}
+      className="sticky top-0 z-50 overflow-hidden transition-transform duration-300 ease-in-out md:hidden"
+      style={{ transform: visible ? "translateY(0)" : "translateY(-100%)" }}
     >
       <div
         ref={barRef}
@@ -846,7 +846,6 @@ function Layout() {
         <DesktopHeader
           visible={headerVisible}
           barRef={desktopBarRef}
-          barHeight={desktopBarHeight}
           transparent={headerTransparent}
         />
       )}
@@ -856,7 +855,6 @@ function Layout() {
         onMenuOpen={() => setDrawerOpen(true)}
         visible={headerVisible}
         barRef={mobileBarRef}
-        barHeight={mobileBarHeight}
       />
 
       {/* 모바일 드로어 */}
