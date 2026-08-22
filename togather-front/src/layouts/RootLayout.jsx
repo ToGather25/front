@@ -21,9 +21,13 @@ function ScrollToTop() {
 // 스크롤 방향에 따라 헤더 노출 여부를 결정하는 훅
 // 페이지 최상단 근처(threshold 이내)에서는 항상 노출, 아래로 delta 이상
 // 스크롤하면 숨김, 위로 delta 이상 스크롤하면 즉시 다시 노출한다.
+// atTop은 "최상단 근처" 여부만 별도로 노출한다 — 아래로 스크롤했다가 다시 위로
+// 올려 visible이 true가 된 경우와 구분하기 위함(예: 히어로 위 투명 헤더는
+// visible이 아니라 atTop 기준으로 켜져야 한다).
 // ─────────────────────────────────────────────────────
 function useHideHeaderOnScroll({ threshold = 80, delta = 8 } = {}) {
   const [visible, setVisible] = useState(true);
+  const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -34,6 +38,7 @@ function useHideHeaderOnScroll({ threshold = 80, delta = 8 } = {}) {
       ticking = true;
       requestAnimationFrame(() => {
         const currentY = window.scrollY;
+        setAtTop(currentY <= threshold);
         if (currentY <= threshold) {
           setVisible(true);
         } else if (currentY > lastY + delta) {
@@ -50,7 +55,7 @@ function useHideHeaderOnScroll({ threshold = 80, delta = 8 } = {}) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [threshold, delta]);
 
-  return visible;
+  return { visible, atTop };
 }
 
 /**
@@ -87,12 +92,25 @@ function useMeasuredHeight(ref) {
 // ─────────────────────────────────────────────────────
 // Desktop Header (md 이상에서만 표시)
 // ─────────────────────────────────────────────────────
-function DesktopHeader({ visible, barRef, barHeight }) {
+function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
   const [openMenu, setOpenMenu] = useState(null);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+
+  const navLinkCls = (active) =>
+    transparent
+      ? active
+        ? "text-white font-bold border-b-2 border-white pb-0.5"
+        : "text-white hover:text-white/70"
+      : active
+        ? "text-primary font-bold border-b-2 border-primary pb-0.5"
+        : "text-grey-10 hover:text-primary";
+
+  const authBtnOutlineCls = transparent
+    ? "border-white/60 text-white hover:bg-white/10 hover:border-white"
+    : "border-bluegrey-2 text-grey-9 hover:text-primary hover:border-blue-5";
 
   return (
     <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
@@ -100,7 +118,12 @@ function DesktopHeader({ visible, barRef, barHeight }) {
         className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
         style={{ maxHeight: visible ? `${barHeight || 200}px` : "0px" }}
       >
-        <div ref={barRef} className="bg-white py-2 border-b border-bluegrey-2">
+        <div
+          ref={barRef}
+          className={`py-2 transition-colors duration-300 ${
+            transparent ? "bg-transparent" : "bg-white border-b border-bluegrey-2"
+          }`}
+        >
           <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
             <Link
               to="/"
@@ -109,7 +132,8 @@ function DesktopHeader({ visible, barRef, barHeight }) {
             >
               <img
                 src={church.logoUrl ?? LogoIcon}
-                className="h-22 w-22 object-contain"
+                className="h-22 w-22 object-contain transition-[filter] duration-300"
+                style={{ filter: transparent ? "brightness(0) invert(1)" : "none" }}
                 alt={`${church.name} 로고`}
               />
             </Link>
@@ -124,7 +148,11 @@ function DesktopHeader({ visible, barRef, barHeight }) {
                   {item.children ? (
                     <button
                       className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
-                        openMenu === item.label ? "text-primary" : "text-grey-10 hover:text-primary"
+                        openMenu === item.label
+                          ? navLinkCls(true)
+                          : transparent
+                            ? "text-white hover:text-white/70"
+                            : "text-grey-10 hover:text-primary"
                       }`}
                     >
                       {item.label}
@@ -134,11 +162,7 @@ function DesktopHeader({ visible, barRef, barHeight }) {
                       to={item.to}
                       end
                       className={({ isActive }) =>
-                        `text-body-2 font-medium transition-colors whitespace-nowrap ${
-                          isActive
-                            ? "text-primary font-bold border-b-2 border-primary pb-0.5"
-                            : "text-grey-10 hover:text-primary"
-                        }`
+                        `text-body-2 font-medium transition-colors whitespace-nowrap ${navLinkCls(isActive)}`
                       }
                     >
                       {item.label}
@@ -156,13 +180,13 @@ function DesktopHeader({ visible, barRef, barHeight }) {
                 <>
                   <Link
                     to="/mypage"
-                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
                   >
                     마이페이지
                   </Link>
                   <button
                     onClick={logout}
-                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
                   >
                     로그아웃
                   </button>
@@ -171,7 +195,7 @@ function DesktopHeader({ visible, barRef, barHeight }) {
                 <>
                   <Link
                     to="/register"
-                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
                   >
                     회원가입
                   </Link>
@@ -773,22 +797,31 @@ const BIBLE_PAGES = ["/말씀/읽기", "/말씀/필사"];
 function Layout() {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const headerVisible = useHideHeaderOnScroll();
+  const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
   const desktopBarRef = useRef(null);
   const mobileBarRef = useRef(null);
   const desktopBarHeight = useMeasuredHeight(desktopBarRef);
   const mobileBarHeight = useMeasuredHeight(mobileBarRef);
   // display:none인 브레이크포인트 쪽은 항상 0이 측정되므로, 둘을 더하기만 해도
   // "현재 화면에 실제로 보이는 헤더의 높이"가 된다 — sticky 서브탭이 이 값을 참조한다.
-  const headerOffset = desktopBarHeight + mobileBarHeight;
+  const headerHeight = desktopBarHeight + mobileBarHeight;
 
   const showBottomNav = !HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p));
   const isBiblePage = BIBLE_PAGES.some((p) => pathname.startsWith(p));
+  const isHome = pathname === "/";
+  // 홈 히어로 배너 위에서만(맨 위 근처) 헤더를 투명하게 — 배너가 헤더 뒤까지 차오르는 연출.
+  const headerTransparent = isHome && atTop;
 
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ "--header-offset": `${headerVisible ? headerOffset : 0}px` }}
+      style={{
+        // sticky 서브탭용 — 헤더가 숨김 상태면 0(서브탭이 자리를 메우며 위로 붙음).
+        "--header-offset": `${headerVisible ? headerHeight : 0}px`,
+        // 홈 히어로 배너가 헤더 아래로 파고들 때 쓰는 고정값 — 숨김 상태와 무관하게
+        // 항상 "완전히 펼쳐진" 헤더 높이를 유지해야 스크롤 중 레이아웃이 튀지 않는다.
+        "--header-height": `${headerHeight}px`,
+      }}
     >
       {/* 데스크탑 헤더 (bible 전체화면 페이지 제외) */}
       {!isBiblePage && (
@@ -796,6 +829,7 @@ function Layout() {
           visible={headerVisible}
           barRef={desktopBarRef}
           barHeight={desktopBarHeight}
+          transparent={headerTransparent}
         />
       )}
 

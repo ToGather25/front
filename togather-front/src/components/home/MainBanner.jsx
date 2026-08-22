@@ -8,7 +8,13 @@ export default function MainBanner() {
   const bgImage = url || defaultBanner;
 
   return (
-    <section className="relative h-[100vh] bg-black overflow-hidden">
+    <section
+      className="relative bg-black overflow-hidden"
+      style={{
+        marginTop: "calc(-1 * var(--header-height, 0px))",
+        height: "calc(100vh + var(--header-height, 0px))",
+      }}
+    >
       <style>{`
         @keyframes heroPan {
           from { transform: scale(1.04) translateX(-1%); }
