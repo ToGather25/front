@@ -125,8 +125,12 @@ function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
   return (
     <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
       <div
-        className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        className="overflow-hidden"
         style={{
+          // max-height를 애니메이션시키면 사용자가 아직 스크롤 중인 동안
+          // 레이아웃이 실시간으로 밀려서(reflow) 화면이 실제 스크롤량보다
+          // 더 움직이는 것처럼 튀어 보였다(바운스) — 헤더 자체는 즉시
+          // 전환하고, 아래 sticky 서브탭의 top만 부드럽게 뒤따르게 한다.
           maxHeight: visible ? `${barHeight || 200}px` : "0px",
           // 이 박스가 접히는 동안 브라우저의 스크롤 앵커링이 scrollY를 보정하지
           // 않도록 막는다 — 그 보정이 스크롤 리스너를 오탐시켜 헤더가
@@ -137,7 +141,9 @@ function DesktopHeader({ visible, barRef, barHeight, transparent = false }) {
         <div
           ref={barRef}
           className={`py-2 transition-colors duration-300 ${
-            transparent ? "bg-transparent" : "bg-white border-b border-bluegrey-2"
+            transparent
+              ? "bg-transparent border-b border-white/20"
+              : "bg-white border-b border-bluegrey-1"
           }`}
         >
           <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
@@ -482,7 +488,7 @@ function MobileHeader({ onMenuOpen, visible, barRef, barHeight }) {
   const { church } = useChurch();
   return (
     <header
-      className="sticky top-0 z-50 overflow-hidden transition-[max-height] duration-300 ease-in-out md:hidden"
+      className="sticky top-0 z-50 overflow-hidden md:hidden"
       style={{
         maxHeight: visible ? `${barHeight || 60}px` : "0px",
         overflowAnchor: "none",
@@ -490,7 +496,7 @@ function MobileHeader({ onMenuOpen, visible, barRef, barHeight }) {
     >
       <div
         ref={barRef}
-        className="bg-white border-b border-bluegrey-2 flex items-center justify-between px-5 h-14"
+        className="bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
         <Link to="/" className="flex items-center">
           <img
