@@ -69,10 +69,16 @@ function useHideHeaderOnScroll({ threshold = 80, delta = 16 } = {}) {
 }
 
 /**
- * 엘리먼트의 실제(축소되지 않은) 높이를 측정해 픽셀 값으로 반환한다.
- * display:none인 브레이크포인트에서는 0을 반환 — 데스크탑/모바일 헤더 중
- * 현재 화면에 실제로 보이는 쪽만 값을 갖게 되므로 별도 매체쿼리 분기 없이
- * 두 값을 더하기만 해도 "현재 보이는 헤더의 높이"가 된다.
+ * 엘리먼트의 실제(축소되지 않은) 높이를 마운트 시 한 번만 측정해 픽셀 값으로
+ * 반환한다. display:none인 브레이크포인트에서는 0을 반환 — 데스크탑/모바일
+ * 헤더 중 현재 화면에 실제로 보이는 쪽만 값을 갖게 되므로 별도 매체쿼리
+ * 분기 없이 두 값을 더하기만 해도 "현재 보이는 헤더의 높이"가 된다.
+ *
+ * 의도적으로 ResizeObserver/resize 리스너로 계속 재측정하지 않는다 — 이
+ * 훅이 측정한 높이가 다시 헤더의 max-height(레이아웃)에 쓰이므로, 재측정을
+ * 계속하면 "측정→렌더→레이아웃 변화→재측정"이 맞물려 헤더가 빠르게
+ * 켜졌다 꺼졌다 반복하는 깜빡임의 원인이 될 수 있다. 헤더 콘텐츠 자체가
+ * 런타임에 크기를 바꿀 일이 없으므로 최초 1회 측정으로 충분하다.
  */
 function useMeasuredHeight(ref) {
   const [height, setHeight] = useState(0);
@@ -80,20 +86,7 @@ function useMeasuredHeight(ref) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const update = () => setHeight(el.offsetHeight);
-    update();
-    window.addEventListener("resize", update);
-
-    // jsdom(테스트 환경)엔 ResizeObserver가 없다 — 실제 브라우저에서만 사용.
-    if (typeof ResizeObserver === "undefined") {
-      return () => window.removeEventListener("resize", update);
-    }
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", update);
-    };
+    setHeight(el.offsetHeight);
   }, [ref]);
 
   return height;
