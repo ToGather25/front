@@ -88,7 +88,7 @@ describe("WordBroadcast — 실시간 예배", () => {
     expect(screen.queryByText("LIVE")).not.toBeInTheDocument();
   });
 
-  it("ENDED 상태인데 videoId 파싱에 실패하면 예배 없음 안내로 폴백한다", async () => {
+  it("ENDED 상태인데 videoId 파싱에 실패하면 다시보기 준비 중 안내를 보여준다", async () => {
     mockLiveScreen({
       state: "ENDED",
       youtubeLiveUrl: null,
@@ -99,7 +99,7 @@ describe("WordBroadcast — 실시간 예배", () => {
 
     renderWithChurch(<WordBroadcast />, { initialEntries: ["/말씀/방송"] });
 
-    expect(await screen.findByText("오늘 예정된 예배가 없습니다")).toBeInTheDocument();
+    expect(await screen.findByText("다시보기 영상을 준비 중입니다")).toBeInTheDocument();
   });
 
   it("NONE 상태면 '오늘 예정된 예배가 없습니다' 안내를 보여준다", async () => {

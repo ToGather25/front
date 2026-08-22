@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import { getLiveScreen, extractYoutubeVideoId } from "@/services/sermonService";
@@ -47,11 +48,13 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
   );
 }
 
-function NoServiceCard() {
+function NoServiceCard({ emoji = "📭", message = "오늘 예정된 예배가 없습니다" }) {
   return (
     <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-      <div className="text-4xl">📭</div>
-      <p className="text-sub-tit-4 font-semibold text-grey-7">오늘 예정된 예배가 없습니다</p>
+      <div className="text-4xl" aria-hidden="true">
+        {emoji}
+      </div>
+      <p className="text-sub-tit-4 font-semibold text-grey-7">{message}</p>
     </div>
   );
 }
@@ -154,7 +157,9 @@ export default function WordBroadcast() {
         {status === "BEFORE" && (
           <section className="mb-14 max-w-3xl mx-auto">
             <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-              <div className="text-4xl">⏳</div>
+              <div className="text-4xl" aria-hidden="true">
+                ⏳
+              </div>
               <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다</p>
             </div>
             {screen.sermon && (
@@ -187,7 +192,7 @@ export default function WordBroadcast() {
                 )}
               </>
             ) : (
-              <NoServiceCard />
+              <NoServiceCard emoji="🎬" message="다시보기 영상을 준비 중입니다" />
             )}
           </section>
         )}
@@ -207,9 +212,9 @@ export default function WordBroadcast() {
           ) : (
             <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
               {recentSermons.map((s) => (
-                <a
+                <Link
                   key={s.id}
-                  href={`/말씀/설교/${s.id}`}
+                  to={`/말씀/설교/${s.id}`}
                   className="group shrink-0 w-52 rounded-xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-md transition-all"
                 >
                   <div
@@ -232,7 +237,7 @@ export default function WordBroadcast() {
                       <span>{s.sermonDate}</span>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

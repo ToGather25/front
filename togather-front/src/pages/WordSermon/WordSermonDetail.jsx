@@ -15,20 +15,19 @@ export default function WordSermonDetail() {
   useEffect(() => {
     let cancelled = false;
     setSermon(undefined);
-    Promise.all([
+    void Promise.allSettled([
       getSermonDetail(church.id, id),
       searchSermons(church.id, { page: 1, size: NEIGHBOR_FETCH_SIZE }),
-    ])
-      .then(([detail, { sermons }]) => {
-        if (cancelled) return;
-        setSermon(detail);
-        setNeighbors(sermons);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        console.error("[WordSermonDetail] 설교 상세 조회 실패:", err);
+    ]).then(([detailResult, neighborsResult]) => {
+      if (cancelled) return;
+      if (detailResult.status === "rejected") {
+        console.error("[WordSermonDetail] 설교 상세 조회 실패:", detailResult.reason);
         setSermon(null);
-      });
+        return;
+      }
+      setSermon(detailResult.value);
+      setNeighbors(neighborsResult.status === "fulfilled" ? neighborsResult.value.sermons : []);
+    });
     return () => {
       cancelled = true;
     };

@@ -101,6 +101,25 @@ describe("WordSermonDetail", () => {
     ).toBeInTheDocument();
   });
 
+  it("상세 조회는 성공했지만 인접 목록 조회가 실패해도 설교 내용을 보여준다", async () => {
+    const target = NEIGHBORS[2];
+    api.get.mockImplementation((url) => {
+      if (url === "/church/sermons") {
+        return Promise.reject(new Error("network error"));
+      }
+      const match = url.match(/^\/church\/sermons\/(.+)$/);
+      const found = match ? (NEIGHBORS.find((s) => s.id === match[1]) ?? null) : null;
+      return Promise.resolve({ data: { data: found } });
+    });
+
+    renderDetail(target.id);
+
+    expect(await screen.findByText(target.title)).toBeInTheDocument();
+    expect(screen.queryByText("설교를 찾을 수 없습니다.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /이전 설교/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /다음 설교/ })).not.toBeInTheDocument();
+  });
+
   it("'다음 설교' 버튼을 클릭하면 인접 목록 기준으로 해당 설교로 전환된다", async () => {
     mockBackend();
     const target = NEIGHBORS[2];

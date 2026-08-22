@@ -65,7 +65,7 @@ export default function WordSermon() {
     };
   }, [church.id, query, worshipType, page, reloadToken]);
 
-  const totalPages = Math.max(1, pageInfo.totalPages ?? 1);
+  const totalPages = Math.max(1, pageInfo?.totalPages ?? 1);
 
   const handleSearch = (e) => {
     e.preventDefault();
