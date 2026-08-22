@@ -809,7 +809,7 @@ export default function Notice() {
             </div>
           </div>
           {/* 본문 */}
-          <div className="px-8 py-8 min-h-[200px]">
+          <div className="px-8 py-8 min-h-[150px]">
             <p className="text-body-3 text-grey-9 leading-relaxed whitespace-pre-wrap">
               {selected.body}
             </p>

@@ -147,9 +147,7 @@ export default function SearchOverlay() {
       <div
         className="absolute inset-0 transition-opacity duration-200"
         style={{
-          backdropFilter: "blur(6px)",
-          WebkitBackdropFilter: "blur(6px)",
-          background: "rgba(20,28,48,0.35)",
+          background: "rgba(10, 15, 25, 0.35)",
           opacity: active ? 1 : 0,
         }}
         onClick={close}
@@ -157,7 +155,7 @@ export default function SearchOverlay() {
 
       {/* 검색 패널 */}
       <div
-        className="absolute left-0 right-0 bg-white shadow-2xl transition-all duration-200"
+        className="absolute left-0 right-0 bg-white py-5 shadow-2xl transition-all duration-200"
         style={{
           top: 0,
           transform: active ? "translateY(0)" : "translateY(-12px)",

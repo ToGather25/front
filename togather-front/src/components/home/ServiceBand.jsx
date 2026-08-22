@@ -11,9 +11,6 @@ export default function ServiceBand() {
       {/* Header */}
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
-            SERVICES
-          </p>
           <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
             예배 안내
           </h3>

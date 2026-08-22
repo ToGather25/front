@@ -29,10 +29,10 @@ function DesktopHeader() {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white border-b border-bluegrey-2 hidden md:block"
+      className="sticky top-0 z-50 bg-white py-2 border-b border-bluegrey-2 hidden md:block"
       onMouseLeave={() => setOpenMenu(null)}
     >
-      <div className="max-w-[1920px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
+      <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
         <Link
           to="/"
           className="flex items-center gap-2.5 shrink-0 w-[180px]"
@@ -86,13 +86,6 @@ function DesktopHeader() {
           {currentUser ? (
             <>
               <Link
-                to="/교적부"
-                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
-              >
-                교적부
-              </Link>
-              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
-              <Link
                 to="/mypage"
                 className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
               >
@@ -107,13 +100,6 @@ function DesktopHeader() {
             </>
           ) : (
             <>
-              <button
-                onClick={() => setShowLoginRequired(true)}
-                className="px-4 py-2 rounded-full bg-grey-4 text-grey-6 text-body-3 font-semibold cursor-default whitespace-nowrap"
-              >
-                교적부
-              </button>
-              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
               <Link
                 to="/register"
                 className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
@@ -153,7 +139,7 @@ function DesktopHeader() {
               to   { opacity: 1; transform: translateY(0); }
             }
           `}</style>
-          <div className="max-w-[1920px] mx-auto px-8 py-8">
+          <div className="max-w-[1440px] mx-auto px-8 py-8">
             <div
               className="grid divide-x divide-bluegrey-2"
               style={{
@@ -207,7 +193,7 @@ function DesktopFooter() {
   const { church } = useChurch();
   return (
     <footer className="bg-bluegrey-1 border-t border-bluegrey-2 hidden md:block">
-      <div className="max-w-[1920px] mx-auto px-8 py-14 flex items-end justify-between gap-8">
+      <div className="max-w-[1440px] mx-auto px-8 pt-10 pb-16 flex items-end justify-between gap-8">
         <div className="flex gap-16 items-start">
           <div className="flex items-center gap-2.5 h-[52px]">
             <img

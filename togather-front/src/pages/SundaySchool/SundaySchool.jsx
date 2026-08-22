@@ -144,7 +144,7 @@ export default function SundaySchool() {
     <div>
       {/* Hero Banner */}
       <div
-        className="relative h-[200px] md:h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
+        className="relative h-[150px] md:h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
         style={
           dept.bgImage
             ? {
@@ -207,7 +207,7 @@ export default function SundaySchool() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
         <DeptContent dept={dept} />
       </div>
     </div>

@@ -302,7 +302,7 @@ export default function Gallery() {
   }, [searchParams, communities]);
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
+    <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
       {!selected ? (
         /* Community List */
         loading ? (

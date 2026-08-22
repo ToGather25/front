@@ -54,9 +54,6 @@ export default function NoticeSection() {
         {/* Left: notices */}
         <div className="flex flex-col">
           <div className="mb-8">
-            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-              UPDATES
-            </p>
             <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
               공지 ∙ 소식
             </h3>
@@ -150,15 +147,12 @@ export default function NoticeSection() {
         {/* Right: upcoming events */}
         <aside className="flex flex-col">
           <div className="mb-8">
-            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-              CALENDAR
-            </p>
             <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
               다가오는 일정
             </h3>
           </div>
 
-          <ul className="flex-1 flex flex-col gap-3 list-none m-0 p-0">
+          <ul className="flex-1 flex flex-col gap-3 list-none m-0 p-0 bg-white rounded-2xl border border-bluegrey-2">
             {upcomingEvents.length === 0 ? (
               <li className="py-16 text-center text-grey-5 text-[15px]">예정된 일정이 없습니다.</li>
             ) : (

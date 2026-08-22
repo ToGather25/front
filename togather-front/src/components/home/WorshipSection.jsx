@@ -73,9 +73,6 @@ export default function WorshipSection() {
       <div className="grid gap-14 items-center" style={{ gridTemplateColumns: "560px 1fr" }}>
         {/* Sermon info */}
         <div className="py-2">
-          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-            THIS WEEK
-          </p>
           <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0 mb-2">
             이번 주 말씀
           </h3>

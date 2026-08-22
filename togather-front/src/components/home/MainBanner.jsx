@@ -8,7 +8,7 @@ export default function MainBanner() {
   const bgImage = url || defaultBanner;
 
   return (
-    <section className="relative h-[820px] bg-black overflow-hidden">
+    <section className="relative h-[100vh] bg-black overflow-hidden">
       <style>{`
         @keyframes heroPan {
           from { transform: scale(1.04) translateX(-1%); }
@@ -43,22 +43,6 @@ export default function MainBanner() {
 
       {/* Content */}
       <div className="relative h-full max-w-[1400px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
-        {/* Eyebrow badge */}
-        <div
-          className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full mb-7 text-sm font-medium"
-          style={{
-            border: "1px solid rgba(255,255,255,.35)",
-            backdropFilter: "blur(6px)",
-            color: "rgba(255,255,255,.92)",
-          }}
-        >
-          <span
-            className="w-1.5 h-1.5 rounded-full bg-blue-4"
-            style={{ boxShadow: "0 0 0 4px rgba(160,196,107,.25)" }}
-          />
-          <span>2026년 — 함께 드리는 예배</span>
-        </div>
-
         {/* Verse */}
         <p
           className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"

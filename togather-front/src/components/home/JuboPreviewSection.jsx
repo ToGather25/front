@@ -45,7 +45,7 @@ export default function JuboPreviewSection() {
           </button>
 
           {/* 주보 내용 */}
-          <div className="flex-1 flex gap-5 items-stretch min-h-[200px]">
+          <div className="flex-1 flex gap-5 items-stretch min-h-[150px]">
             {/* 표어 카드 */}
             <div className="bg-blue-1 rounded-xl flex flex-col items-center justify-center gap-5 px-10 py-8">
               <div className="w-24 h-24 rounded-full bg-primary flex flex-col items-center justify-center text-white shadow-md">

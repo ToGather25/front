@@ -17,11 +17,6 @@ export default function SearchSection() {
 
   return (
     <section className="w-full py-[100px] pb-[60px] flex flex-col items-center">
-      {/* Eye label */}
-      <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
-        QUICK FIND
-      </p>
-
       <h2 className="text-[38px] font-bold tracking-[-1.2px] text-grey-12 mb-8 text-center leading-[1.3]">
         원하는 기능을 빠르게 찾아보세요
       </h2>
