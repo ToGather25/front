@@ -89,7 +89,9 @@ describe("ChurchContext", () => {
       </ChurchProvider>,
     );
 
-    await waitFor(() => expect(screen.getByText("교회 정보를 찾을 수 없습니다.")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("교회 정보를 찾을 수 없습니다.")).toBeInTheDocument(),
+    );
     expect(screen.queryByTestId("name")).not.toBeInTheDocument();
   });
 

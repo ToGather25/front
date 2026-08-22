@@ -37,7 +37,10 @@ export function ChurchProvider({ children, initialChurch }) {
         setCurrentChurchId(data.id);
         // nav는 이 리액트 앱 전용 라우팅 구조(레이블+경로)라 백엔드가 값을 줄 이유가 없는 필드다 —
         // 얕은 병합에 맡기면 백엔드가 내려주는 무관한 nav(예: 빈 배열)가 GNB 메뉴를 통째로 지워버린다.
-        setState({ church: { ...defaultConfig, ...data, nav: defaultConfig.nav }, status: "ready" });
+        setState({
+          church: { ...defaultConfig, ...data, nav: defaultConfig.nav },
+          status: "ready",
+        });
       })
       .catch(() => setState((s) => ({ ...s, status: "error" })));
     // eslint-disable-next-line react-hooks/exhaustive-deps
