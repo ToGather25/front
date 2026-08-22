@@ -93,7 +93,10 @@ export default function Mission() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-bluegrey-2 bg-white sticky top-14 md:top-[72px] z-40">
+      <div
+        className="border-b border-bluegrey-2 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
+        style={{ top: "var(--header-offset)" }}
+      >
         <div className="max-w-[1400px] mx-auto px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (

@@ -1,5 +1,5 @@
 import { Outlet, Link, NavLink, useLocation } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
@@ -18,9 +18,76 @@ function ScrollToTop() {
 }
 
 // ─────────────────────────────────────────────────────
+// 스크롤 방향에 따라 헤더 노출 여부를 결정하는 훅
+// 페이지 최상단 근처(threshold 이내)에서는 항상 노출, 아래로 delta 이상
+// 스크롤하면 숨김, 위로 delta 이상 스크롤하면 즉시 다시 노출한다.
+// ─────────────────────────────────────────────────────
+function useHideHeaderOnScroll({ threshold = 80, delta = 8 } = {}) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        if (currentY <= threshold) {
+          setVisible(true);
+        } else if (currentY > lastY + delta) {
+          setVisible(false);
+        } else if (currentY < lastY - delta) {
+          setVisible(true);
+        }
+        lastY = currentY;
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold, delta]);
+
+  return visible;
+}
+
+/**
+ * 엘리먼트의 실제(축소되지 않은) 높이를 측정해 픽셀 값으로 반환한다.
+ * display:none인 브레이크포인트에서는 0을 반환 — 데스크탑/모바일 헤더 중
+ * 현재 화면에 실제로 보이는 쪽만 값을 갖게 되므로 별도 매체쿼리 분기 없이
+ * 두 값을 더하기만 해도 "현재 보이는 헤더의 높이"가 된다.
+ */
+function useMeasuredHeight(ref) {
+  const [height, setHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => setHeight(el.offsetHeight);
+    update();
+    window.addEventListener("resize", update);
+
+    // jsdom(테스트 환경)엔 ResizeObserver가 없다 — 실제 브라우저에서만 사용.
+    if (typeof ResizeObserver === "undefined") {
+      return () => window.removeEventListener("resize", update);
+    }
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [ref]);
+
+  return height;
+}
+
+// ─────────────────────────────────────────────────────
 // Desktop Header (md 이상에서만 표시)
 // ─────────────────────────────────────────────────────
-function DesktopHeader() {
+function DesktopHeader({ visible, barRef, barHeight }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
@@ -28,101 +95,105 @@ function DesktopHeader() {
   const [showLoginRequired, setShowLoginRequired] = useState(false);
 
   return (
-    <header
-      className="sticky top-0 z-50 bg-white py-2 border-b border-bluegrey-2 hidden md:block"
-      onMouseLeave={() => setOpenMenu(null)}
-    >
-      <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
-        <Link
-          to="/"
-          className="flex items-center gap-2.5 shrink-0 w-[180px]"
-          onMouseEnter={() => setOpenMenu(null)}
-        >
-          <img
-            src={church.logoUrl ?? LogoIcon}
-            className="h-22 w-22 object-contain"
-            alt={`${church.name} 로고`}
-          />
-        </Link>
-
-        <nav className="flex items-center gap-10 h-full">
-          {NAV_ITEMS.map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center h-full"
-              onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
+    <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
+      <div
+        className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        style={{ maxHeight: visible ? `${barHeight || 200}px` : "0px" }}
+      >
+        <div ref={barRef} className="bg-white py-2 border-b border-bluegrey-2">
+          <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 shrink-0 w-[180px]"
+              onMouseEnter={() => setOpenMenu(null)}
             >
-              {item.children ? (
-                <button
-                  className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
-                    openMenu === item.label ? "text-primary" : "text-grey-10 hover:text-primary"
-                  }`}
+              <img
+                src={church.logoUrl ?? LogoIcon}
+                className="h-22 w-22 object-contain"
+                alt={`${church.name} 로고`}
+              />
+            </Link>
+
+            <nav className="flex items-center gap-10 h-full">
+              {NAV_ITEMS.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center h-full"
+                  onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
                 >
-                  {item.label}
-                </button>
+                  {item.children ? (
+                    <button
+                      className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
+                        openMenu === item.label ? "text-primary" : "text-grey-10 hover:text-primary"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <NavLink
+                      to={item.to}
+                      end
+                      className={({ isActive }) =>
+                        `text-body-2 font-medium transition-colors whitespace-nowrap ${
+                          isActive
+                            ? "text-primary font-bold border-b-2 border-primary pb-0.5"
+                            : "text-grey-10 hover:text-primary"
+                        }`
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            <div
+              className="flex items-center gap-2.5 shrink-0 justify-end"
+              onMouseEnter={() => setOpenMenu(null)}
+            >
+              {currentUser ? (
+                <>
+                  <Link
+                    to="/mypage"
+                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                  >
+                    마이페이지
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                  >
+                    로그아웃
+                  </button>
+                </>
               ) : (
-                <NavLink
-                  to={item.to}
-                  end
-                  className={({ isActive }) =>
-                    `text-body-2 font-medium transition-colors whitespace-nowrap ${
-                      isActive
-                        ? "text-primary font-bold border-b-2 border-primary pb-0.5"
-                        : "text-grey-10 hover:text-primary"
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
+                <>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
+                  >
+                    회원가입
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+                  >
+                    로그인
+                  </Link>
+                </>
               )}
             </div>
-          ))}
-        </nav>
 
-        <div
-          className="flex items-center gap-2.5 shrink-0 justify-end"
-          onMouseEnter={() => setOpenMenu(null)}
-        >
-          {currentUser ? (
-            <>
-              <Link
-                to="/mypage"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                마이페이지
-              </Link>
-              <button
-                onClick={logout}
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                회원가입
-              </Link>
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
-              >
-                로그인
-              </Link>
-            </>
-          )}
+            {/* 로그인 필요 모달 */}
+            {showLoginRequired && (
+              <LoginRequiredModal
+                message="교적부를 이용하려면 로그인해 주세요."
+                onCancel={() => setShowLoginRequired(false)}
+              />
+            )}
+          </div>
         </div>
-
-        {/* 로그인 필요 모달 */}
-        {showLoginRequired && (
-          <LoginRequiredModal
-            message="교적부를 이용하려면 로그인해 주세요."
-            onCancel={() => setShowLoginRequired(false)}
-          />
-        )}
       </div>
 
       {openMenu && (
@@ -367,28 +438,36 @@ function MobileFooter() {
 // ─────────────────────────────────────────────────────
 // Mobile Header (md 미만에서만 표시)
 // ─────────────────────────────────────────────────────
-function MobileHeader({ onMenuOpen }) {
+function MobileHeader({ onMenuOpen, visible, barRef, barHeight }) {
   const { church } = useChurch();
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-bluegrey-2 flex items-center justify-between px-5 h-14 md:hidden">
-      <Link to="/" className="flex items-center">
-        <img
-          src={church.logoUrl ?? LogoIcon}
-          className="h-8 w-auto object-contain"
-          alt={`${church.name} 로고`}
-        />
-      </Link>
-      <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+    <header
+      className="sticky top-0 z-50 overflow-hidden transition-[max-height] duration-300 ease-in-out md:hidden"
+      style={{ maxHeight: visible ? `${barHeight || 60}px` : "0px" }}
+    >
+      <div
+        ref={barRef}
+        className="bg-white border-b border-bluegrey-2 flex items-center justify-between px-5 h-14"
+      >
+        <Link to="/" className="flex items-center">
+          <img
+            src={church.logoUrl ?? LogoIcon}
+            className="h-8 w-auto object-contain"
+            alt={`${church.name} 로고`}
+          />
+        </Link>
+        <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
     </header>
   );
 }
@@ -694,17 +773,39 @@ const BIBLE_PAGES = ["/말씀/읽기", "/말씀/필사"];
 function Layout() {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const headerVisible = useHideHeaderOnScroll();
+  const desktopBarRef = useRef(null);
+  const mobileBarRef = useRef(null);
+  const desktopBarHeight = useMeasuredHeight(desktopBarRef);
+  const mobileBarHeight = useMeasuredHeight(mobileBarRef);
+  // display:none인 브레이크포인트 쪽은 항상 0이 측정되므로, 둘을 더하기만 해도
+  // "현재 화면에 실제로 보이는 헤더의 높이"가 된다 — sticky 서브탭이 이 값을 참조한다.
+  const headerOffset = desktopBarHeight + mobileBarHeight;
 
   const showBottomNav = !HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p));
   const isBiblePage = BIBLE_PAGES.some((p) => pathname.startsWith(p));
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ "--header-offset": `${headerVisible ? headerOffset : 0}px` }}
+    >
       {/* 데스크탑 헤더 (bible 전체화면 페이지 제외) */}
-      {!isBiblePage && <DesktopHeader />}
+      {!isBiblePage && (
+        <DesktopHeader
+          visible={headerVisible}
+          barRef={desktopBarRef}
+          barHeight={desktopBarHeight}
+        />
+      )}
 
       {/* 모바일 헤더 */}
-      <MobileHeader onMenuOpen={() => setDrawerOpen(true)} />
+      <MobileHeader
+        onMenuOpen={() => setDrawerOpen(true)}
+        visible={headerVisible}
+        barRef={mobileBarRef}
+        barHeight={mobileBarHeight}
+      />
 
       {/* 모바일 드로어 */}
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
