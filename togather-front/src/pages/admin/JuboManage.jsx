@@ -54,6 +54,7 @@ export default function JuboManage() {
   }
 
   async function handlePublish() {
+    if (!window.confirm("주보를 발행하시겠습니까? 발행 즉시 공개 화면에 반영됩니다.")) return;
     setPublishing(true);
     setPublishError(false);
     try {

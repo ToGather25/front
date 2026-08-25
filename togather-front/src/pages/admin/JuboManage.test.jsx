@@ -228,11 +228,12 @@ describe("JuboManage — 주보 관리", () => {
     );
   });
 
-  it("발행하기를 누르면 publishJubo를 호출하고 발행 완료 상태가 된다", async () => {
+  it("발행하기를 누르면 확인 후 publishJubo를 호출하고 발행 완료 상태가 된다", async () => {
     mockCreateOnce();
     api.post.mockResolvedValueOnce({
       data: { data: { id: 42, issueNo: "제10-8", juboDate: "2026-06-01", published: true } },
     });
+    vi.spyOn(window, "confirm").mockReturnValue(true);
     const user = userEvent.setup();
     renderWithChurch(<JuboManage />);
     await screen.findByText("제10-7 · 2026년 2월 15일");
@@ -240,7 +241,25 @@ describe("JuboManage — 주보 관리", () => {
 
     await user.click(screen.getByRole("button", { name: "발행하기" }));
 
+    expect(window.confirm).toHaveBeenCalledWith(
+      "주보를 발행하시겠습니까? 발행 즉시 공개 화면에 반영됩니다.",
+    );
     await waitFor(() => expect(api.post).toHaveBeenCalledWith("/church/admin/jubo/42/publish"));
     expect(await screen.findByRole("button", { name: "발행 완료" })).toBeInTheDocument();
+  });
+
+  it("발행 확인을 취소하면 publishJubo를 호출하지 않는다", async () => {
+    mockCreateOnce();
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+
+    await user.click(screen.getByRole("button", { name: "발행하기" }));
+
+    expect(window.confirm).toHaveBeenCalled();
+    expect(api.post).not.toHaveBeenCalledWith("/church/admin/jubo/42/publish");
+    expect(screen.getByRole("button", { name: "발행하기" })).toBeInTheDocument();
   });
 });

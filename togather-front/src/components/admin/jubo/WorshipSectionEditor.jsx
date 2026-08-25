@@ -9,60 +9,56 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
   const { data: initialServices } = useFetch(() => getWorshipServices(churchId), [churchId], null);
   const { data: initialOrderMap } = useFetch(() => getWorshipOrder(churchId), [churchId], null);
 
+  // services는 {id, label, time} — id는 프론트 로컬 전용 키로, 라벨이 비어있거나
+  // 중복되는 동안(편집 중)에도 순서표(orderMap)가 서로 덮어쓰지 않도록 라벨 대신 id로 관리한다.
+  // 백엔드로 저장할 때만 라벨 기반 모양으로 변환한다(WORSHIP_ORDER는 백엔드 계약상 라벨 키 맵이라).
   const [services, setServices] = useState([]);
-  const [orderMap, setOrderMap] = useState({});
-  const [activeLabel, setActiveLabel] = useState(null);
+  const [orderMap, setOrderMap] = useState({}); // { [id]: [{role,name}] }
+  const [selectedId, setSelectedId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [saveErrorMessage, setSaveErrorMessage] = useState("");
 
   useEffect(() => {
-    if (initialServices) {
-      setServices(initialServices);
-      setActiveLabel(initialServices[0]?.label ?? null);
-    }
-  }, [initialServices]);
+    if (!initialServices || !initialOrderMap) return;
+    const withIds = initialServices.map((s) => ({ id: crypto.randomUUID(), ...s }));
+    const map = {};
+    withIds.forEach((s) => {
+      map[s.id] = initialOrderMap[s.label] ?? [];
+    });
+    setServices(withIds);
+    setOrderMap(map);
+    setSelectedId(withIds[0]?.id ?? null);
+  }, [initialServices, initialOrderMap]);
 
-  useEffect(() => {
-    if (initialOrderMap) setOrderMap(initialOrderMap);
-  }, [initialOrderMap]);
+  const activeId = selectedId ?? services[0]?.id ?? null;
 
   function addService() {
-    setServices((prev) => [...prev, { label: "", time: "" }]);
+    const id = crypto.randomUUID();
+    setServices((prev) => [...prev, { id, label: "", time: "" }]);
+    setOrderMap((prev) => ({ ...prev, [id]: [] }));
+    setSelectedId(id);
   }
 
-  function updateService(index, field, value) {
-    const prevLabel = services[index].label;
-    setServices((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], [field]: value };
-      return next;
-    });
-    if (field === "label" && prevLabel !== value) {
-      setOrderMap((prevMap) => {
-        if (!(prevLabel in prevMap)) return prevMap;
-        const { [prevLabel]: rows, ...rest } = prevMap;
-        return { ...rest, [value]: rows };
-      });
-      if (activeLabel === prevLabel) setActiveLabel(value);
-    }
+  function updateService(id, field, value) {
+    setServices((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   }
 
-  function removeService(index) {
-    const label = services[index].label;
-    setServices((prev) => prev.filter((_, i) => i !== index));
+  function removeService(id) {
+    setServices((prev) => prev.filter((s) => s.id !== id));
     setOrderMap((prev) => {
-      const { [label]: _removed, ...rest } = prev;
+      const { [id]: _removed, ...rest } = prev;
       return rest;
     });
-    if (activeLabel === label) setActiveLabel(null);
+    if (selectedId === id) setSelectedId(null);
   }
 
-  const activeRows = activeLabel ? (orderMap[activeLabel] ?? []) : [];
+  const activeRows = activeId ? (orderMap[activeId] ?? []) : [];
 
   function updateActiveRows(rows) {
-    if (!activeLabel) return;
-    setOrderMap((prev) => ({ ...prev, [activeLabel]: rows }));
+    if (!activeId) return;
+    setOrderMap((prev) => ({ ...prev, [activeId]: rows }));
   }
 
   function addRow() {
@@ -79,17 +75,40 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
     updateActiveRows(activeRows.filter((_, i) => i !== index));
   }
 
+  function validateBeforeSave() {
+    const labels = services.map((s) => s.label.trim());
+    if (labels.some((l) => !l)) return "모든 예배에 이름을 입력해주세요.";
+    const seen = new Set();
+    for (const label of labels) {
+      if (seen.has(label)) return `예배명이 중복되었습니다: "${label}"`;
+      seen.add(label);
+    }
+    return null;
+  }
+
   async function handleSave() {
+    const validationError = validateBeforeSave();
+    if (validationError) {
+      setSaveError(true);
+      setSaveErrorMessage(validationError);
+      return;
+    }
     setSaving(true);
     setSaveError(false);
     try {
-      await updateJuboSection(churchId, juboId, "WORSHIP_SERVICES", services);
-      await updateJuboSection(churchId, juboId, "WORSHIP_ORDER", orderMap);
+      const servicesPayload = services.map(({ label, time }) => ({ label, time }));
+      const orderPayload = {};
+      services.forEach((s) => {
+        orderPayload[s.label] = orderMap[s.id] ?? [];
+      });
+      await updateJuboSection(churchId, juboId, "WORSHIP_SERVICES", servicesPayload);
+      await updateJuboSection(churchId, juboId, "WORSHIP_ORDER", orderPayload);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error("[WorshipSectionEditor] 저장 실패:", err);
       setSaveError(true);
+      setSaveErrorMessage("저장 실패, 다시 시도해 주세요.");
     } finally {
       setSaving(false);
     }
@@ -104,24 +123,24 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
         </button>
       </div>
       <div className="flex flex-col gap-2 mb-6">
-        {services.map((s, i) => (
-          <div key={i} className="flex items-center gap-2">
+        {services.map((s) => (
+          <div key={s.id} className="flex items-center gap-2">
             <input
               className={inputCls}
               placeholder="예배명 (예: 주일 오전예배)"
               aria-label="예배명"
               value={s.label}
-              onChange={(e) => updateService(i, "label", e.target.value)}
+              onChange={(e) => updateService(s.id, "label", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="시간 (예: 오전 9:00)"
               aria-label="시간"
               value={s.time}
-              onChange={(e) => updateService(i, "time", e.target.value)}
+              onChange={(e) => updateService(s.id, "time", e.target.value)}
             />
             <button
-              onClick={() => removeService(i)}
+              onClick={() => removeService(s.id)}
               className="shrink-0 text-caption text-grey-5 hover:text-red-500"
               type="button"
             >
@@ -139,11 +158,11 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             {services.map((s) => (
               <button
-                key={s.label}
+                key={s.id}
                 type="button"
-                onClick={() => setActiveLabel(s.label)}
+                onClick={() => setSelectedId(s.id)}
                 className={`px-3 py-1.5 rounded-full text-caption border transition-colors ${
-                  activeLabel === s.label
+                  activeId === s.id
                     ? "bg-primary border-primary text-white font-semibold"
                     : "bg-white border-grey-3 text-grey-7"
                 }`}
@@ -155,7 +174,7 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
 
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-body-4 font-semibold text-grey-9">
-              {activeLabel || "예배"} 순서표
+              {services.find((s) => s.id === activeId)?.label || "예배"} 순서표
             </h4>
             <button onClick={addRow} className="text-caption text-primary font-semibold" type="button">
               + 순서 추가
@@ -204,9 +223,7 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
           {saving ? "저장 중..." : "저장"}
         </button>
         {saved && <span className="text-caption text-blue-7">저장됨</span>}
-        {saveError && (
-          <span className="text-caption text-red-500">저장 실패, 다시 시도해 주세요.</span>
-        )}
+        {saveError && <span className="text-caption text-red-500">{saveErrorMessage}</span>}
       </div>
     </div>
   );
