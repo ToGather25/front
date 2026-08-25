@@ -656,7 +656,6 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
 function NoServiceCard() {
   return (
     <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-      <div className="text-4xl">📭</div>
       <p className="text-sub-tit-4 font-semibold text-grey-7">오늘 예정된 예배가 없습니다</p>
     </div>
   );

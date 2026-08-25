@@ -12,7 +12,7 @@ export default function MainBanner() {
       className="relative bg-black overflow-hidden"
       style={{
         marginTop: "calc(-1 * var(--header-height, 0px))",
-        height: "calc(100vh + var(--header-height, 0px))",
+        height: "calc(95vh + var(--header-height, 0px))",
       }}
     >
       <style>{`

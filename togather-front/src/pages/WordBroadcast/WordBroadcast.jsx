@@ -48,12 +48,9 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
   );
 }
 
-function NoServiceCard({ emoji = "📭", message = "오늘 예정된 예배가 없습니다" }) {
+function NoServiceCard({message = "오늘 예정된 예배가 없습니다" }) {
   return (
     <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-      <div className="text-4xl" aria-hidden="true">
-        {emoji}
-      </div>
       <p className="text-sub-tit-4 font-semibold text-grey-7">{message}</p>
     </div>
   );
@@ -192,7 +189,7 @@ export default function WordBroadcast() {
                 )}
               </>
             ) : (
-              <NoServiceCard emoji="🎬" message="다시보기 영상을 준비 중입니다" />
+              <NoServiceCard message="다시보기 영상을 준비 중입니다" />
             )}
           </section>
         )}
