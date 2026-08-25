@@ -32,6 +32,8 @@ export default function Support() {
       </SectionTitle>
       {loading ? (
         <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+      ) : error?.response?.status === 404 ? (
+        <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
       ) : error ? (
         <div className="text-center py-10">
           <p className="text-caption text-grey-5 mb-2">후원 안내를 불러오지 못했습니다.</p>

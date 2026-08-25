@@ -38,4 +38,11 @@ describe("Offering — 예물", () => {
 
     expect(await screen.findByText("십일조")).toBeInTheDocument();
   });
+
+  it("404 응답이면 발행된 주보가 없다는 안내를 보여주고 재시도 버튼은 없다", async () => {
+    api.get.mockRejectedValueOnce({ response: { status: 404 } });
+    renderWithChurch(<Offering />);
+    expect(await screen.findByText("아직 발행된 주보가 없습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
+  });
 });

@@ -57,6 +57,8 @@ export default function Worship() {
         <div className="border-t border-grey-11 mb-1" />
         {loading ? (
           <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+        ) : servicesError?.response?.status === 404 || orderError?.response?.status === 404 ? (
+          <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
         ) : error ? (
           <div className="text-center py-10">
             <p className="text-caption text-grey-5 mb-2">예배 순서를 불러오지 못했습니다.</p>

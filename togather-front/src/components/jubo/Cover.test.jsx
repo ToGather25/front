@@ -37,4 +37,13 @@ describe("Cover — 표지", () => {
 
     expect(await screen.findByText("제10-7")).toBeInTheDocument();
   });
+
+  it("404 응답이면 발행된 주보가 없다는 안내를 보여주고 재시도 버튼은 없다", async () => {
+    api.get.mockRejectedValueOnce({ response: { status: 404 } });
+    renderWithChurch(<Cover />);
+    expect(await screen.findByText("아직 발행된 주보가 없습니다.")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "주보 정보를 불러오지 못했습니다. 다시 시도" }),
+    ).not.toBeInTheDocument();
+  });
 });

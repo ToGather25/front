@@ -23,7 +23,9 @@ export default function Cover() {
     <div className="flex flex-col gap-2 p-2">
       {/* 헤더 */}
       <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-2">
-        {juboInfoError ? (
+        {juboInfoError?.response?.status === 404 ? (
+          <span className="text-caption text-grey-5">아직 발행된 주보가 없습니다.</span>
+        ) : juboInfoError ? (
           <button
             onClick={refetchJuboInfo}
             className="text-caption text-primary underline"
