@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { JuboPage } from "@/components/jubo/shared";
 import Cover from "@/components/jubo/Cover";
@@ -111,7 +112,29 @@ function renderTab(tab) {
 // ── 메인 ───────────────────────────────────────────────
 export default function Jubo() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isPrinting, setIsPrinting] = useState(false);
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "표지";
+
+  useEffect(() => {
+    function handleBeforePrint() {
+      setIsPrinting(true);
+    }
+    function handleAfterPrint() {
+      setIsPrinting(false);
+    }
+    const mediaQueryList = window.matchMedia("print");
+    function handleMediaChange(e) {
+      setIsPrinting(e.matches);
+    }
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("afterprint", handleAfterPrint);
+    mediaQueryList.addEventListener("change", handleMediaChange);
+    return () => {
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("afterprint", handleAfterPrint);
+      mediaQueryList.removeEventListener("change", handleMediaChange);
+    };
+  }, []);
 
   return (
     <>
@@ -188,45 +211,47 @@ export default function Jubo() {
         {/* 화면: 현재 탭만 표시 */}
         <div className="jubo-single-tab">{renderTab(activeTab)}</div>
 
-        {/* 인쇄 전용: 모든 탭을 순서대로 렌더 (화면에서는 숨김) */}
-        <div className="jubo-print-all" style={{ display: "none" }}>
-          <JuboPage noPadding>
-            <Cover />
-          </JuboPage>
-          <JuboPage>
-            <Worship />
-          </JuboPage>
-          <JuboPage>
-            <News />
-          </JuboPage>
-          <JuboPage>
-            <Service />
-          </JuboPage>
-          <JuboPage>
-            <Offering />
-          </JuboPage>
-          <JuboPage>
-            <Support />
-          </JuboPage>
-          <JuboPage>
-            <District />
-          </JuboPage>
-          <JuboPage>
-            <Ministers />
-          </JuboPage>
-          <JuboPage>
-            <Direction />
-          </JuboPage>
-          <JuboPage>
-            <Sermon />
-          </JuboPage>
-          <JuboPage>
-            <Giving />
-          </JuboPage>
-          <JuboPage>
-            <PrayerTopics />
-          </JuboPage>
-        </div>
+        {/* 인쇄 전용: 모든 탭을 순서대로 렌더 (화면에서는 숨김) — 실제 인쇄 중에만 마운트해 useFetch 중복 호출을 막는다 */}
+        {isPrinting && (
+          <div className="jubo-print-all" style={{ display: "none" }}>
+            <JuboPage noPadding>
+              <Cover />
+            </JuboPage>
+            <JuboPage>
+              <Worship />
+            </JuboPage>
+            <JuboPage>
+              <News />
+            </JuboPage>
+            <JuboPage>
+              <Service />
+            </JuboPage>
+            <JuboPage>
+              <Offering />
+            </JuboPage>
+            <JuboPage>
+              <Support />
+            </JuboPage>
+            <JuboPage>
+              <District />
+            </JuboPage>
+            <JuboPage>
+              <Ministers />
+            </JuboPage>
+            <JuboPage>
+              <Direction />
+            </JuboPage>
+            <JuboPage>
+              <Sermon />
+            </JuboPage>
+            <JuboPage>
+              <Giving />
+            </JuboPage>
+            <JuboPage>
+              <PrayerTopics />
+            </JuboPage>
+          </div>
+        )}
       </div>
     </>
   );
