@@ -84,6 +84,22 @@ describe("WorshipSectionEditor — 라벨 없이 여러 예배를 추가해도 �
     expect(api.put).not.toHaveBeenCalled();
   });
 
+  it("WORSHIP_SERVICES는 저장됐지만 WORSHIP_ORDER 저장이 실패하면 부분 저장을 안내한다", async () => {
+    api.put.mockImplementation((url) => {
+      if (url.includes("WORSHIP_SERVICES")) return Promise.resolve({ data: null });
+      return Promise.reject(new Error("network error"));
+    });
+    const user = userEvent.setup();
+    render(<WorshipSectionEditor churchId="church-1" juboId={1} />);
+    await screen.findByDisplayValue("주일 오전예배");
+
+    await user.click(screen.getByRole("button", { name: "저장" }));
+
+    expect(
+      await screen.findByText("예배 목록은 저장됐지만 순서표 저장에 실패했습니다. 다시 시도해 주세요."),
+    ).toBeInTheDocument();
+  });
+
   it("이름을 유일하게 채우면 저장이 정상적으로 진행된다", async () => {
     api.put.mockResolvedValue({ data: null });
     const user = userEvent.setup();

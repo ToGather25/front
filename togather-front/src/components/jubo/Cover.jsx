@@ -24,11 +24,13 @@ export default function Cover() {
       {/* 헤더 */}
       <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-2">
         {juboInfoError?.response?.status === 404 ? (
-          <span className="text-caption text-grey-5">아직 발행된 주보가 없습니다.</span>
+          <span className="w-full text-center text-caption text-grey-5">
+            아직 발행된 주보가 없습니다.
+          </span>
         ) : juboInfoError ? (
           <button
             onClick={refetchJuboInfo}
-            className="text-caption text-primary underline"
+            className="w-full text-center text-caption text-primary underline"
           >
             주보 정보를 불러오지 못했습니다. 다시 시도
           </button>

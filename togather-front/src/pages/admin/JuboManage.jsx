@@ -53,6 +53,15 @@ export default function JuboManage() {
     }
   }
 
+  function handleCancelDraft() {
+    if (!window.confirm("작성 중인 주보를 닫으시겠습니까? 저장하지 않은 섹션 내용은 사라집니다."))
+      return;
+    setJuboId(null);
+    setIssueNo("");
+    setJuboDate("");
+    setPublished(false);
+  }
+
   async function handlePublish() {
     if (!window.confirm("주보를 발행하시겠습니까? 발행 즉시 공개 화면에 반영됩니다.")) return;
     setPublishing(true);
@@ -130,9 +139,18 @@ export default function JuboManage() {
         </div>
       ) : (
         <>
-          <div className="mb-5 px-4 py-3 rounded-xl bg-blue-1 border border-blue-3 text-caption text-blue-9">
-            작성 중 새로고침하면 저장하지 않은 내용은 유실됩니다. 섹션별로 저장 버튼을 눌러
-            진행 상황을 지켜주세요.
+          <div className="mb-5 flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-blue-1 border border-blue-3 text-caption text-blue-9">
+            <span>
+              작성 중 새로고침하면 저장하지 않은 내용은 유실됩니다. 섹션별로 저장 버튼을 눌러
+              진행 상황을 지켜주세요.
+            </span>
+            <button
+              onClick={handleCancelDraft}
+              className="shrink-0 text-caption font-semibold text-blue-9 underline"
+              type="button"
+            >
+              작성 취소
+            </button>
           </div>
 
           <div className="grid gap-5">

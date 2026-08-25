@@ -6,8 +6,24 @@ const inputCls =
   "w-full border border-grey-3 rounded-xl px-3 py-2 text-body-5 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
 export default function WorshipSectionEditor({ churchId, juboId }) {
-  const { data: initialServices } = useFetch(() => getWorshipServices(churchId), [churchId], null);
-  const { data: initialOrderMap } = useFetch(() => getWorshipOrder(churchId), [churchId], null);
+  const {
+    data: initialServices,
+    loading: servicesLoading,
+    error: servicesError,
+    refetch: refetchServices,
+  } = useFetch(() => getWorshipServices(churchId), [churchId], null);
+  const {
+    data: initialOrderMap,
+    loading: orderLoading,
+    error: orderError,
+    refetch: refetchOrder,
+  } = useFetch(() => getWorshipOrder(churchId), [churchId], null);
+  const prefillLoading = servicesLoading || orderLoading;
+  const prefillError = servicesError || orderError;
+  function refetchPrefill() {
+    refetchServices();
+    refetchOrder();
+  }
 
   // services는 {id, label, time} — id는 프론트 로컬 전용 키로, 라벨이 비어있거나
   // 중복되는 동안(편집 중)에도 순서표(orderMap)가 서로 덮어쓰지 않도록 라벨 대신 id로 관리한다.
@@ -95,6 +111,7 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
     }
     setSaving(true);
     setSaveError(false);
+    let servicesSaved = false;
     try {
       const servicesPayload = services.map(({ label, time }) => ({ label, time }));
       const orderPayload = {};
@@ -102,13 +119,18 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
         orderPayload[s.label] = orderMap[s.id] ?? [];
       });
       await updateJuboSection(churchId, juboId, "WORSHIP_SERVICES", servicesPayload);
+      servicesSaved = true;
       await updateJuboSection(churchId, juboId, "WORSHIP_ORDER", orderPayload);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error("[WorshipSectionEditor] 저장 실패:", err);
       setSaveError(true);
-      setSaveErrorMessage("저장 실패, 다시 시도해 주세요.");
+      setSaveErrorMessage(
+        servicesSaved
+          ? "예배 목록은 저장됐지만 순서표 저장에 실패했습니다. 다시 시도해 주세요."
+          : "저장 실패, 다시 시도해 주세요.",
+      );
     } finally {
       setSaving(false);
     }
@@ -122,6 +144,19 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
           + 예배 추가
         </button>
       </div>
+      {prefillLoading && <p className="text-caption text-grey-5 mb-3">불러오는 중...</p>}
+      {prefillError && (
+        <div className="mb-3 flex items-center gap-2">
+          <p className="text-caption text-grey-5">직전 발행본을 불러오지 못했습니다.</p>
+          <button
+            onClick={refetchPrefill}
+            className="text-caption text-primary underline"
+            type="button"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
       <div className="flex flex-col gap-2 mb-6">
         {services.map((s) => (
           <div key={s.id} className="flex items-center gap-2">

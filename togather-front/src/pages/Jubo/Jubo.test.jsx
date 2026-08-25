@@ -37,8 +37,8 @@ describe("Jubo — 탭 전환", () => {
   it("'헌금' 탭을 클릭하면 Giving 콘텐츠로 전환된다", () => {
     renderWithChurch(<Jubo />, { withRouter: true });
     fireEvent.click(screen.getByRole("button", { name: "헌금" }));
-    // 인쇄용 전체 렌더(.jubo-print-all)에도 Giving이 display:none 상태로 함께 렌더되므로,
-    // getByText는 화면에 보이는 단일 탭 영역(.jubo-single-tab)으로 범위를 좁혀 조회한다.
+    // 인쇄용 전체 렌더(.jubo-print-all)는 실제 인쇄 중(isPrinting)에만 마운트되므로
+    // 테스트 환경에서는 렌더되지 않지만, 단일 탭 영역으로 범위를 좁혀 조회하는 습관을 유지한다.
     const singleTab = document.querySelector(".jubo-single-tab");
     expect(within(singleTab).getByText(/연말정산/)).toBeInTheDocument();
   });

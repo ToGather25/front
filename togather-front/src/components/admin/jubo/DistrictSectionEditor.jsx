@@ -6,7 +6,12 @@ const inputCls =
   "w-full border border-grey-3 rounded-xl px-3 py-2 text-body-5 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
 export default function DistrictSectionEditor({ churchId, juboId }) {
-  const { data: initial } = useFetch(() => getDistricts(churchId), [churchId], null);
+  const {
+    data: initial,
+    loading: prefillLoading,
+    error: prefillError,
+    refetch: refetchPrefill,
+  } = useFetch(() => getDistricts(churchId), [churchId], null);
   const [rows, setRows] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -55,6 +60,19 @@ export default function DistrictSectionEditor({ churchId, juboId }) {
           + 행 추가
         </button>
       </div>
+      {prefillLoading && <p className="text-caption text-grey-5 mb-3">불러오는 중...</p>}
+      {prefillError && (
+        <div className="mb-3 flex items-center gap-2">
+          <p className="text-caption text-grey-5">직전 발행본을 불러오지 못했습니다.</p>
+          <button
+            onClick={refetchPrefill}
+            className="text-caption text-primary underline"
+            type="button"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
       <div className="flex flex-col gap-2 mb-4">
         {rows.map((row, i) => (
           <div key={i} className="flex items-center gap-2">
