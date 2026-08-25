@@ -52,4 +52,19 @@ describe("Worship — 예배", () => {
     expect(screen.getByText("오전 9:00")).toBeInTheDocument();
     expect(screen.getByText("오전 11:00")).toBeInTheDocument();
   });
+
+  it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
+    api.get.mockImplementation(() => Promise.reject(new Error("network error")));
+    renderWithChurch(<Worship />);
+    expect(await screen.findByText("예배 순서를 불러오지 못했습니다.")).toBeInTheDocument();
+
+    api.get.mockImplementation((url) => {
+      if (url.includes("worship-services")) return Promise.resolve({ data: { data: SERVICES } });
+      if (url.includes("worship-order")) return Promise.resolve({ data: { data: ORDER_MAP } });
+      return Promise.reject(new Error(`unexpected url: ${url}`));
+    });
+    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+
+    expect(await screen.findByText("예배 부름")).toBeInTheDocument();
+  });
 });

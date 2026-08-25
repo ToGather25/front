@@ -5,21 +5,29 @@ import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
 
 export default function Worship() {
   const { church } = useChurch();
-  const { data: services = [], loading: servicesLoading } = useFetch(
-    () => getWorshipServices(church.id),
-    [church.id],
-    [],
-  );
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
+  const {
+    data: services = [],
+    loading: servicesLoading,
+    error: servicesError,
+    refetch: refetchServices,
+  } = useFetch(() => getWorshipServices(church.id), [church.id], []);
+  const {
+    data: orderMap = {},
+    loading: orderLoading,
+    error: orderError,
+    refetch: refetchOrder,
+  } = useFetch(() => getWorshipOrder(church.id), [church.id], {});
   const [selected, setSelected] = useState(null);
 
   const activeLabel = selected ?? services[0]?.label ?? null;
   const order = activeLabel ? (orderMap[activeLabel] ?? []) : [];
   const loading = servicesLoading || orderLoading;
+  const error = servicesError || orderError;
+
+  function handleRetry() {
+    refetchServices();
+    refetchOrder();
+  }
 
   return (
     <div className="flex flex-col md:flex-row border border-bluegrey-2 rounded-xl overflow-hidden">
@@ -49,6 +57,13 @@ export default function Worship() {
         <div className="border-t border-grey-11 mb-1" />
         {loading ? (
           <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+        ) : error ? (
+          <div className="text-center py-10">
+            <p className="text-caption text-grey-5 mb-2">예배 순서를 불러오지 못했습니다.</p>
+            <button onClick={handleRetry} className="text-caption text-primary underline">
+              다시 시도
+            </button>
+          </div>
         ) : order.length === 0 ? (
           <p className="text-center text-caption text-grey-5 py-10">예배 순서가 없습니다.</p>
         ) : (
