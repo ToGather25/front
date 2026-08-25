@@ -11,19 +11,73 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
+function mockEmptyList() {
+  api.get.mockResolvedValue({
+    data: {
+      data: { content: [], pageInfo: { page: 0, size: 200, totalElements: 0, totalPages: 1 } },
+    },
+  });
+}
+
 describe("WorshipManage — 설교 관리자 CRUD", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEmptyList();
+  });
+
+  it("마운트 시 GET /church/sermons로 목록을 조회해 보여준다", async () => {
+    api.get.mockResolvedValue({
+      data: {
+        data: {
+          content: [
+            {
+              id: "s1",
+              sermonDate: "2026-05-25",
+              worshipType: "주일 1부",
+              title: "서버에서 온 설교",
+              preacher: "김영수 담임목사",
+              scripture: "롬 8:11",
+              youtubeVideoId: null,
+            },
+          ],
+          pageInfo: { page: 0, size: 200, totalElements: 1, totalPages: 1 },
+        },
+      },
+    });
+
+    renderWithChurch(<WorshipManage />);
+
+    expect(await screen.findByText("서버에서 온 설교")).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith("/church/sermons", {
+      params: { keyword: undefined, worshipType: undefined, page: 0, size: 200 },
+    });
+  });
+
+  it("목록 조회에 실패하면 재시도 버튼이 뜨고, 클릭하면 다시 조회한다", async () => {
+    api.get.mockRejectedValueOnce(new Error("network error"));
+    const user = userEvent.setup();
+    renderWithChurch(<WorshipManage />);
+
+    expect(
+      await screen.findByText("설교 목록을 불러오지 못했습니다. 다시 시도해 주세요."),
+    ).toBeInTheDocument();
+
+    mockEmptyList();
+    await user.click(screen.getByRole("button", { name: "다시 시도" }));
+
+    expect(await screen.findByText("등록된 설교가 없습니다.")).toBeInTheDocument();
   });
 
   it("조회수 컬럼이 없다", async () => {
     renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
     expect(screen.queryByText("조회")).not.toBeInTheDocument();
   });
 
   it("설교 등록 모달에 유튜브 영상 ID 입력 필드가 있다", async () => {
     const user = userEvent.setup();
     renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
 
@@ -46,6 +100,7 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     });
     const user = userEvent.setup();
     const { container } = renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "새 설교");
@@ -79,6 +134,7 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const user = userEvent.setup();
     const { container } = renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "삭제될 설교");
@@ -112,6 +168,7 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
       .mockResolvedValueOnce({ data: { data: { id: 1, status: "BEFORE" } } });
     const user = userEvent.setup();
     const { container } = renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "방송용 설교");
@@ -122,7 +179,10 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     await screen.findByText("방송용 설교");
 
     await user.click(screen.getByRole("button", { name: "방송" }));
-    await user.type(screen.getByPlaceholderText("https://youtube.com/live/..."), "https://youtube.com/live/xyz");
+    await user.type(
+      screen.getByPlaceholderText("https://youtube.com/live/..."),
+      "https://youtube.com/live/xyz",
+    );
     await user.type(screen.getByLabelText("예정 시각"), "2026-06-01T09:00");
     await user.click(screen.getByRole("button", { name: "예약" }));
 
@@ -159,6 +219,7 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     });
     const user = userEvent.setup();
     const { container } = renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "원래 제목");
@@ -209,6 +270,7 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
       .mockResolvedValueOnce({ data: { data: { id: 1, status: "ENDED" } } });
     const user = userEvent.setup();
     const { container } = renderWithChurch(<WorshipManage />);
+    await screen.findByText("등록된 설교가 없습니다.");
 
     await user.click(screen.getByRole("button", { name: "설교 등록" }));
     await user.type(screen.getByPlaceholderText("설교 제목 입력"), "방송용 설교");
@@ -219,24 +281,23 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     await screen.findByText("방송용 설교");
 
     await user.click(screen.getByRole("button", { name: "방송" }));
-    await user.type(screen.getByPlaceholderText("https://youtube.com/live/..."), "https://youtube.com/live/xyz");
+    await user.type(
+      screen.getByPlaceholderText("https://youtube.com/live/..."),
+      "https://youtube.com/live/xyz",
+    );
     await user.type(screen.getByLabelText("예정 시각"), "2026-06-01T09:00");
     await user.click(screen.getByRole("button", { name: "예약" }));
     await screen.findByText("예약됨");
 
     await user.click(screen.getByRole("button", { name: "방송 시작" }));
 
-    await waitFor(() =>
-      expect(api.post).toHaveBeenCalledWith("/church/admin/broadcasts/1/start"),
-    );
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith("/church/admin/broadcasts/1/start"));
     expect(await screen.findByText("방송 중")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "방송 종료" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "방송 종료" }));
 
-    await waitFor(() =>
-      expect(api.post).toHaveBeenCalledWith("/church/admin/broadcasts/1/end"),
-    );
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith("/church/admin/broadcasts/1/end"));
     expect(await screen.findByText("종료됨")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "방송 종료" })).not.toBeInTheDocument();
   });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import {
-  getAdminSermons,
+  searchSermons,
   createSermon,
   updateSermon,
   deleteSermon,
@@ -10,6 +10,11 @@ import {
   endBroadcast,
 } from "@/services/sermonService";
 import { SERVICE_TYPES } from "@/config/sermon.config";
+
+// 관리자 목록은 페이지네이션 UI 없이 전체를 한 번에 보여준다 — 교회 한 곳의
+// 설교 수가 이 상한을 넘으면 다시 짚어볼 필요가 있다(갤러리 사이클과 동일한
+// 임시방편, 정식 페이지네이션은 별도 과제로 남겨둔다).
+const ADMIN_LIST_SIZE = 200;
 
 const FILTER_TYPES = ["전체", ...SERVICE_TYPES];
 
@@ -20,7 +25,14 @@ const inputCls =
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
 function emptyForm() {
-  return { sermonDate: "", worshipType: SERVICE_TYPES[0], title: "", preacher: "", scripture: "", youtubeVideoId: "" };
+  return {
+    sermonDate: "",
+    worshipType: SERVICE_TYPES[0],
+    title: "",
+    preacher: "",
+    scripture: "",
+    youtubeVideoId: "",
+  };
 }
 
 function toFormState(sermon) {
@@ -202,9 +214,9 @@ function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd, schedu
               </button>
             )}
             <p className="text-body-5 text-grey-5">
-              이 방송 상태는 이 브라우저 세션에서만 추적됩니다. 새로고침하거나 이 설교를
-              삭제하면 화면에서 사라지지만, 이미 시작한 방송은 서버에서 계속 진행되며 다시
-              종료할 수 없습니다. 방송을 종료한 뒤 페이지를 벗어나 주세요.
+              이 방송 상태는 이 브라우저 세션에서만 추적됩니다. 새로고침하거나 이 설교를 삭제하면
+              화면에서 사라지지만, 이미 시작한 방송은 서버에서 계속 진행되며 다시 종료할 수
+              없습니다. 방송을 종료한 뒤 페이지를 벗어나 주세요.
             </p>
           </div>
         )}
@@ -230,16 +242,30 @@ export default function WorshipManage() {
   const [actionError, setActionError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [scheduling, setScheduling] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    getAdminSermons(church.id).then((list) => {
-      if (!cancelled) setSermons(list);
-    });
+    setLoading(true);
+    setLoadError(false);
+    searchSermons(church.id, { size: ADMIN_LIST_SIZE })
+      .then(({ sermons: list }) => {
+        if (cancelled) return;
+        setSermons(list);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("[WorshipManage] 설교 목록 조회 실패:", err);
+        setLoadError(true);
+        setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [church.id]);
+  }, [church.id, reloadToken]);
 
   const filtered = filter === "전체" ? sermons : sermons.filter((s) => s.worshipType === filter);
 
@@ -373,10 +399,6 @@ export default function WorshipManage() {
 
       {actionError && <p className="text-body-4 text-red-500 mb-4">{actionError}</p>}
 
-      <p className="text-body-5 text-grey-5 mb-4">
-        백엔드에 설교 목록 조회 API가 없어 새로고침하면 등록한 설교 목록이 초기화됩니다.
-      </p>
-
       {/* Filter */}
       <div className="flex gap-2 mb-4">
         {FILTER_TYPES.map((t) => (
@@ -403,7 +425,19 @@ export default function WorshipManage() {
           <span>본문 말씀</span>
           <span className="text-center">관리</span>
         </div>
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+        ) : loadError ? (
+          <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
+            <p>설교 목록을 불러오지 못했습니다. 다시 시도해 주세요.</p>
+            <button
+              onClick={() => setReloadToken((t) => t + 1)}
+              className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-grey-5 text-body-3">등록된 설교가 없습니다.</div>
         ) : (
           filtered.map((s, i) => (

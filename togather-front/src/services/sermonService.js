@@ -2,18 +2,6 @@ import api, { isDummy } from "./api";
 import { DUMMY_ADMIN_SERMONS, DUMMY_LIVE_SCREEN } from "@/data/dummy/sermons";
 
 /**
- * 설교 목록 조회 (관리자) — 백엔드에 목록 조회 API가 없어 더미 모드에서만 항목을 반환한다.
- * 실API 모드에서는 항상 빈 배열을 반환하며, 화면은 등록/수정/삭제 결과를 로컬로 누적해서 보여준다.
- * @param {string} churchId
- * @returns {Promise<object[]>}
- */
-// oxlint-disable-next-line no-unused-vars
-export async function getAdminSermons(churchId) {
-  if (isDummy("sermon")) return [...DUMMY_ADMIN_SERMONS];
-  return [];
-}
-
-/**
  * 설교 등록 (관리자)
  * @param {string} churchId
  * @param {{ title:string, scripture?:string, preacher?:string, worshipType?:string, youtubeVideoId?:string, sermonDate:string }} payload
@@ -161,7 +149,12 @@ export async function searchSermons(churchId, { keyword, worshipType, page = 1, 
     };
   }
   const res = await api.get(`/church/sermons`, {
-    params: { keyword: keyword || undefined, worshipType: worshipType || undefined, page: page - 1, size },
+    params: {
+      keyword: keyword || undefined,
+      worshipType: worshipType || undefined,
+      page: page - 1,
+      size,
+    },
   });
   return { sermons: res.data.data.content, pageInfo: res.data.data.pageInfo };
 }
