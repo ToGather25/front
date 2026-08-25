@@ -1,4 +1,6 @@
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getJuboInfo } from "@/services/juboService";
 import juboConfig from "@/config/jubo.config";
 import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import DefaultBanner from "@/assets/default_banner.png";
@@ -6,6 +8,11 @@ import DefaultBanner from "@/assets/default_banner.png";
 export default function Cover() {
   const { church } = useChurch();
   const { cover } = juboConfig;
+  const {
+    data: juboInfo,
+    error: juboInfoError,
+    refetch: refetchJuboInfo,
+  } = useFetch(() => getJuboInfo(church.id), [church.id], null);
   const { mainVerse, mainTitle, items, year } = church.vision;
 
   const churchPhoto = cover.photos?.church;
@@ -16,8 +23,21 @@ export default function Cover() {
     <div className="flex flex-col gap-2 p-2">
       {/* 헤더 */}
       <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-2">
-        <span className="text-caption text-grey-6">{cover.issueNumber}</span>
-        <span className="text-body-3 font-semibold text-grey-9">{cover.date}</span>
+        {juboInfoError?.response?.status === 404 ? (
+          <span className="text-caption text-grey-5">아직 발행된 주보가 없습니다.</span>
+        ) : juboInfoError ? (
+          <button
+            onClick={refetchJuboInfo}
+            className="text-caption text-primary underline"
+          >
+            주보 정보를 불러오지 못했습니다. 다시 시도
+          </button>
+        ) : (
+          <>
+            <span className="text-caption text-grey-6">{juboInfo?.issueNo ?? ""}</span>
+            <span className="text-body-3 font-semibold text-grey-9">{juboInfo?.date ?? ""}</span>
+          </>
+        )}
       </div>
 
       {/* 표어 + 교회 사진 */}

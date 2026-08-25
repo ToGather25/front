@@ -1,13 +1,48 @@
-import { describe, it, expect } from "vite-plus/test";
-import { render, screen } from "@testing-library/react";
-import juboConfig from "@/config/jubo.config";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, fireEvent } from "@testing-library/react";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import Service from "./Service";
 
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+  isDummy: () => false,
+}));
+
+import api from "@/services/api";
+
+const ROLES = [
+  { role: "예배인도", part1: "000", part2: "000" },
+  { role: "설교", part1: "000목사", part2: "000목사" },
+];
+
 describe("Service — 봉사", () => {
-  it("모든 봉사 역할 행을 렌더한다", () => {
-    render(<Service />);
-    juboConfig.serviceRoles.forEach(({ role }) => {
-      expect(screen.getByText(role)).toBeInTheDocument();
-    });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("모든 봉사 역할 행을 렌더한다", async () => {
+    api.get.mockResolvedValue({ data: { data: ROLES } });
+    renderWithChurch(<Service />);
+    for (const { role } of ROLES) {
+      expect(await screen.findByText(role)).toBeInTheDocument();
+    }
+  });
+
+  it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
+    api.get.mockRejectedValueOnce(new Error("network error"));
+    renderWithChurch(<Service />);
+    expect(await screen.findByText("봉사 안내를 불러오지 못했습니다.")).toBeInTheDocument();
+
+    api.get.mockResolvedValue({ data: { data: ROLES } });
+    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+
+    expect(await screen.findByText("예배인도")).toBeInTheDocument();
+  });
+
+  it("404 응답이면 발행된 주보가 없다는 안내를 보여주고 재시도 버튼은 없다", async () => {
+    api.get.mockRejectedValueOnce({ response: { status: 404 } });
+    renderWithChurch(<Service />);
+    expect(await screen.findByText("아직 발행된 주보가 없습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 });
