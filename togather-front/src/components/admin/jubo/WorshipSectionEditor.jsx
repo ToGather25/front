@@ -109,12 +109,14 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
             <input
               className={inputCls}
               placeholder="예배명 (예: 주일 오전예배)"
+              aria-label="예배명"
               value={s.label}
               onChange={(e) => updateService(i, "label", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="시간 (예: 오전 9:00)"
+              aria-label="시간"
               value={s.time}
               onChange={(e) => updateService(i, "time", e.target.value)}
             />
@@ -165,12 +167,14 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
                 <input
                   className={inputCls}
                   placeholder="역할 (예: 설교)"
+                  aria-label="역할"
                   value={row.role}
                   onChange={(e) => updateRow(i, "role", e.target.value)}
                 />
                 <input
                   className={inputCls}
                   placeholder="담당자"
+                  aria-label="담당자"
                   value={row.name}
                   onChange={(e) => updateRow(i, "name", e.target.value)}
                 />

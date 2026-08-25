@@ -88,6 +88,7 @@ export default function MinistersSectionEditor({ churchId, juboId }) {
               <input
                 className={inputCls}
                 placeholder="제목 (예: 교역자)"
+                aria-label="제목"
                 value={group.title}
                 onChange={(e) => updateGroupTitle(gi, e.target.value)}
               />
@@ -105,6 +106,7 @@ export default function MinistersSectionEditor({ churchId, juboId }) {
                   <input
                     className={inputCls}
                     placeholder="역할 | 이름 (예: 담임목사 | 홍길동)"
+                    aria-label="역할 | 이름"
                     value={item}
                     onChange={(e) => updateItem(gi, ii, e.target.value)}
                   />

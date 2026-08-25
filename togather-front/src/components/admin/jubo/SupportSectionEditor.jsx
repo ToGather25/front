@@ -61,18 +61,21 @@ export default function SupportSectionEditor({ churchId, juboId }) {
             <input
               className={inputCls}
               placeholder="기관 (예: 베트남 | 호치민)"
+              aria-label="기관"
               value={row.organization}
               onChange={(e) => updateRow(i, "organization", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="대상 (예: 선교사님 성함)"
+              aria-label="대상"
               value={row.target}
               onChange={(e) => updateRow(i, "target", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="후원구역"
+              aria-label="후원구역"
               value={row.region}
               onChange={(e) => updateRow(i, "region", e.target.value)}
             />

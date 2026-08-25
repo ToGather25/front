@@ -88,6 +88,7 @@ export default function OfferingSectionEditor({ churchId, juboId }) {
               <input
                 className={inputCls}
                 placeholder="제목 (예: 십일조)"
+                aria-label="제목"
                 value={group.title}
                 onChange={(e) => updateGroupTitle(gi, e.target.value)}
               />
@@ -105,6 +106,7 @@ export default function OfferingSectionEditor({ churchId, juboId }) {
                   <input
                     className={inputCls}
                     placeholder="예: OOO 외 00명"
+                    aria-label="세부 항목"
                     value={item}
                     onChange={(e) => updateItem(gi, ii, e.target.value)}
                   />

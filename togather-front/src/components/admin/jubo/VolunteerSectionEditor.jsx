@@ -61,18 +61,21 @@ export default function VolunteerSectionEditor({ churchId, juboId }) {
             <input
               className={inputCls}
               placeholder="구분 (예: 대표기도)"
+              aria-label="구분"
               value={row.role}
               onChange={(e) => updateRow(i, "role", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="1부 담당"
+              aria-label="1부 담당"
               value={row.part1}
               onChange={(e) => updateRow(i, "part1", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="2부 담당"
+              aria-label="2부 담당"
               value={row.part2}
               onChange={(e) => updateRow(i, "part2", e.target.value)}
             />

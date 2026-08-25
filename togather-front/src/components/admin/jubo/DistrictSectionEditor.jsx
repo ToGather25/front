@@ -61,24 +61,28 @@ export default function DistrictSectionEditor({ churchId, juboId }) {
             <input
               className={inputCls}
               placeholder="구역명 (예: 1구역)"
+              aria-label="구역명"
               value={row.name}
               onChange={(e) => updateRow(i, "name", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="모임 장소"
+              aria-label="모임 장소"
               value={row.location}
               onChange={(e) => updateRow(i, "location", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="모임 시간"
+              aria-label="모임 시간"
               value={row.time}
               onChange={(e) => updateRow(i, "time", e.target.value)}
             />
             <input
               className={inputCls}
               placeholder="구역장"
+              aria-label="구역장"
               value={row.leader}
               onChange={(e) => updateRow(i, "leader", e.target.value)}
             />
