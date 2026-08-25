@@ -6,8 +6,6 @@
 const juboConfig = {
   // ── 표지 ─────────────────────────────────────────────
   cover: {
-    issueNumber: "제10-7",
-    date: "2026년 2월 15일",
     photos: {
       church: null, // 교회 건물 사진 URL
       panorama: null, // 전체 예배 파노라마 사진 URL
