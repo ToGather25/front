@@ -70,10 +70,11 @@ describe("RegistrationButton", () => {
     expect(screen.getByRole("button", { name: "신청하기" })).toBeInTheDocument();
   });
 
-  it("이미 로컬에 신청 기록이 있으면 처음부터 신청완료로 렌더링된다", () => {
+  it("서버가 내려준 isRegistered가 true면 처음부터 신청완료로 렌더링된다", () => {
     localStorage.setItem("user", JSON.stringify({ email: "hong@example.com" }));
-    localStorage.setItem("event_registered_togather-church_e1_hong@example.com", "true");
-    renderWithChurch(<RegistrationButton event={OPEN_EVENT} />, { withAuth: true });
+    renderWithChurch(<RegistrationButton event={{ ...OPEN_EVENT, isRegistered: true }} />, {
+      withAuth: true,
+    });
 
     expect(screen.getByRole("button", { name: "신청완료" })).toBeDisabled();
     expect(api.post).not.toHaveBeenCalled();

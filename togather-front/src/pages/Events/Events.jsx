@@ -260,6 +260,11 @@ export default function Events() {
                       {formatTimeRange(evt.startTime, evt.endTime)}
                       {evt.location ? ` · ${evt.location}` : ""}
                     </p>
+                    {evt.canRegister && typeof evt.capacity === "number" && (
+                      <p className="text-body-5 text-bluegrey-5">
+                        신청 {evt.registeredCount ?? 0} / {evt.capacity}명
+                      </p>
+                    )}
                     <div className="flex gap-4 justify-end">
                       <Link
                         to={`/교회행사/${evt.id}`}

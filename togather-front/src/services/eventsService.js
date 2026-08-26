@@ -11,6 +11,12 @@
  * @property {string|null} description    - 상세 내용 (optional)
  * @property {string|null} imageUrl       - 대표 이미지. null이면 기본 배너 대체
  * @property {boolean} canRegister        - 신청을 받는 행사인지
+ * @property {number|null} capacity            - 정원. null이면 정원 제한 없음
+ * @property {string|null} registrationStart   - 신청 시작일 "YYYY-MM-DD" | null
+ * @property {string|null} registrationEnd     - 신청 마감일 "YYYY-MM-DD" | null
+ * @property {number} registeredCount           - 현재 신청 인원(목록/상세 조회 시 정확, 등록/수정 응답에서는 0 고정)
+ * @property {string} createdAt                 - 등록 일시 ISO 문자열, "최근 등록순" 정렬 기준
+ * @property {boolean|null} isRegistered        - 로그인한 사용자의 신청 여부. 비로그인 시 null
  */
 
 import api, { isDummy } from "./api";
@@ -26,8 +32,7 @@ const normalize = (s) => (s ?? "").replace(/\s/g, "").toLowerCase();
 function sortEvents(list, sort) {
   const arr = [...list];
   if (sort === "createdAt") {
-    // 백엔드에 createdAt 필드가 없어, 자동증가 id 내림차순을 "최근 등록순"의 근사치로 쓴다.
-    arr.sort((a, b) => (b.id > a.id ? 1 : b.id < a.id ? -1 : 0));
+    arr.sort((a, b) => (b.createdAt < a.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0));
     return arr;
   }
   // "date" (일정 빠른순): 오늘 이후를 오름차순으로 먼저, 지난 행사는 내림차순으로 뒤에
@@ -167,6 +172,18 @@ export async function updateEvent(churchId, eventId, payload) {
     return DUMMY_EVENTS[idx];
   }
   const res = await api.patch(`/church/admin/events/${eventId}`, payload);
+  return res.data.data;
+}
+
+/**
+ * 행사 신청자 명단 조회 (관리자)
+ * @param {string} churchId
+ * @param {number|string} eventId
+ * @returns {Promise<Array<{ name:string, phone:string|null }>>}
+ */
+export async function getEventRegistrations(churchId, eventId) {
+  if (isDummy("events")) return [];
+  const res = await api.get(`/church/admin/events/${eventId}/registrations`);
   return res.data.data;
 }
 

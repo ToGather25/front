@@ -43,25 +43,53 @@ describe("EventsManage — 관리자 CRUD", () => {
     expect(screen.queryByText(/더미 모드/)).not.toBeInTheDocument();
   });
 
-  it("신청현황 컬럼은 인원수 없이 '신청가능' 배지만 표시한다", async () => {
+  it("신청현황 컬럼에 '신청가능' 배지와 신청 인원/정원을 표시한다", async () => {
+    api.get.mockResolvedValue({
+      data: { data: [{ ...EVENT, capacity: 50, registeredCount: 12 }] },
+    });
     renderWithChurch(<EventsManage />);
     await screen.findByText("여름 수련회");
     expect(screen.getByText("신청가능")).toBeInTheDocument();
+    expect(screen.getByText("12 / 50명")).toBeInTheDocument();
   });
 
-  it("등록/수정 폼에 정원·신청기간 입력 필드가 없다", async () => {
+  it("정원이 없는 행사는 '명'만 표시한다", async () => {
+    renderWithChurch(<EventsManage />);
+    await screen.findByText("여름 수련회");
+    expect(screen.getByText("0명")).toBeInTheDocument();
+  });
+
+  it("등록 폼은 기본적으로 정원·신청기간 입력 필드를 숨기고, 신청 받기를 체크하면 보여준다", async () => {
     const user = userEvent.setup();
     renderWithChurch(<EventsManage />);
     await screen.findByText("여름 수련회");
 
     await user.click(screen.getByRole("button", { name: "행사 등록" }));
-
     expect(screen.queryByText("정원")).not.toBeInTheDocument();
-    expect(screen.queryByText("신청 시작일")).not.toBeInTheDocument();
-    expect(screen.queryByText("신청 마감일")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox", { name: "신청 받기" }));
+
+    expect(screen.getByText("정원")).toBeInTheDocument();
+    expect(screen.getByText("신청 시작일")).toBeInTheDocument();
+    expect(screen.getByText("신청 마감일")).toBeInTheDocument();
   });
 
-  it("삭제가 실패하면(신청 이력이 있는 행사) 에러 안내를 보여주고 목록은 유지된다", async () => {
+  it("신청 이력이 있는 행사를 삭제하면(409/EV003) 구체적인 에러 안내를 보여주고 목록은 유지된다", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    api.delete.mockRejectedValue({ response: { status: 409, data: { code: "EV003" } } });
+    const user = userEvent.setup();
+    renderWithChurch(<EventsManage />);
+    await screen.findByText("여름 수련회");
+
+    await user.click(screen.getByRole("button", { name: "삭제" }));
+
+    expect(
+      await screen.findByText("신청 이력이 있는 행사는 삭제할 수 없습니다."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("여름 수련회")).toBeInTheDocument();
+  });
+
+  it("그 외 삭제 실패는 일반 에러 안내를 보여준다", async () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
     api.delete.mockRejectedValue({ response: { status: 500, data: { code: "C004" } } });
     const user = userEvent.setup();
@@ -71,9 +99,25 @@ describe("EventsManage — 관리자 CRUD", () => {
     await user.click(screen.getByRole("button", { name: "삭제" }));
 
     expect(
-      await screen.findByText("삭제할 수 없습니다. 이미 신청 내역이 있는 행사일 수 있습니다."),
+      await screen.findByText("삭제에 실패했습니다. 잠시 후 다시 시도해 주세요."),
     ).toBeInTheDocument();
-    expect(screen.getByText("여름 수련회")).toBeInTheDocument();
+  });
+
+  it("신청자 버튼을 누르면 신청자 명단을 조회해 보여준다", async () => {
+    api.get
+      .mockResolvedValueOnce({ data: { data: [EVENT] } })
+      .mockResolvedValueOnce({
+        data: { data: [{ name: "홍길동", phone: "010-1234-5678" }] },
+      });
+    const user = userEvent.setup();
+    renderWithChurch(<EventsManage />);
+    await screen.findByText("여름 수련회");
+
+    await user.click(screen.getByRole("button", { name: "신청자" }));
+
+    expect(api.get).toHaveBeenCalledWith("/church/admin/events/1/registrations");
+    expect(await screen.findByText("홍길동")).toBeInTheDocument();
+    expect(screen.getByText("010-1234-5678")).toBeInTheDocument();
   });
 
   it("location이 null인 행사가 있어도 검색 시 크래시하지 않고 정상 렌더링된다", async () => {

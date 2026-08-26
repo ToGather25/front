@@ -2,20 +2,13 @@ import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useAuth } from "@/contexts/auth";
 import { registerForEvent } from "@/services/eventsService";
-import {
-  getRegistrationState,
-  getRegistrationMessage,
-  isLocallyRegistered,
-  markLocallyRegistered,
-  REG_BTN_TONE,
-  REG_STATUS,
-} from "@/utils/eventStatus";
+import { getRegistrationState, getRegistrationMessage, REG_BTN_TONE, REG_STATUS } from "@/utils/eventStatus";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 
 /**
  * 행사 신청 버튼. canRegister:false인 행사는 아무것도 렌더링하지 않는다.
- * 클릭 시 신청 API를 직접 호출하고, 성공하면 이 브라우저에 로컬로 "신청완료"를 기록한다
- * (백엔드에 신청 여부 조회 API가 없어 다른 기기/브라우저에서는 초기화됨).
+ * 신청 여부는 event.isRegistered(서버가 로그인한 사용자 기준으로 내려줌)로 판단하고,
+ * 신청 성공 직후에는 낙관적으로 로컬 state만 갱신한다.
  * @param {{
  *   event: import('@/services/eventsService').Event,
  *   size?: "sm"|"lg",       // sm: 캘린더 사이드바(flex-1 pill) / lg: 상세페이지·sticky bar
@@ -26,9 +19,7 @@ export default function RegistrationButton({ event, size = "lg", className = "" 
   const { church } = useChurch();
   const { currentUser } = useAuth();
   const state = getRegistrationState(event);
-  const [registered, setRegistered] = useState(
-    () => !!event && isLocallyRegistered(church.id, event.id, currentUser?.email),
-  );
+  const [registered, setRegistered] = useState(() => !!event?.isRegistered);
   const [submitting, setSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [error, setError] = useState(null);
@@ -46,7 +37,6 @@ export default function RegistrationButton({ event, size = "lg", className = "" 
     setError(null);
     try {
       await registerForEvent(church.id, event.id);
-      markLocallyRegistered(church.id, event.id, currentUser.email);
       setRegistered(true);
     } catch {
       setError("신청에 실패했습니다. 잠시 후 다시 시도해 주세요.");

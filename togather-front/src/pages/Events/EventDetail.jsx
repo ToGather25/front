@@ -70,6 +70,11 @@ export default function EventDetail() {
           {event.startTime ? ` · ${formatTimeRange(event.startTime, event.endTime)}` : ""}
         </span>
       </div>
+      {event.canRegister && typeof event.capacity === "number" && (
+        <p className="text-body-4 text-grey-7 mb-6">
+          신청 인원 : {event.registeredCount ?? 0} / {event.capacity}명
+        </p>
+      )}
       <hr className="border-bluegrey-2 mb-6" />
 
       {/* Event Image */}

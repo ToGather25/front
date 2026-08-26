@@ -13,6 +13,7 @@ import {
   searchEvents,
   getRecentEvents,
   registerForEvent,
+  getEventRegistrations,
 } from "./eventsService";
 
 const EVENTS = [
@@ -27,6 +28,7 @@ const EVENTS = [
     description: "청년부 여름 수련회 안내",
     imageUrl: null,
     canRegister: true,
+    createdAt: "2026-01-01T00:00:00",
   },
   {
     id: 2,
@@ -39,6 +41,7 @@ const EVENTS = [
     description: "알뜰 바자회",
     imageUrl: null,
     canRegister: false,
+    createdAt: "2026-01-05T00:00:00",
   },
 ];
 
@@ -94,14 +97,14 @@ describe("eventsService — 실 API 경로", () => {
     expect(result).toHaveLength(2);
   });
 
-  it("getRecentEvents는 전체 목록을 id 내림차순으로 정렬해 limit만큼 반환한다", async () => {
+  it("getRecentEvents는 전체 목록을 createdAt 내림차순으로 정렬해 limit만큼 반환한다", async () => {
     api.get.mockResolvedValue({ data: { data: EVENTS } });
 
     const result = await getRecentEvents("1", 1);
 
     expect(api.get).toHaveBeenCalledWith("/churches/1/events");
     expect(result).toHaveLength(1);
-    // id가 더 큰(=더 나중에 등록된) 이벤트가 먼저 와야 한다
+    // createdAt이 더 늦은(=더 나중에 등록된) 이벤트가 먼저 와야 한다
     expect(result[0].id).toBe(2);
   });
 
@@ -112,5 +115,15 @@ describe("eventsService — 실 API 경로", () => {
 
     expect(api.post).toHaveBeenCalledWith("/churches/1/events/1/register");
     expect(result).toEqual({ registered: true });
+  });
+
+  it("getEventRegistrations는 GET /church/admin/events/{eventId}/registrations를 호출한다", async () => {
+    const registrations = [{ name: "홍길동", phone: "010-1234-5678" }];
+    api.get.mockResolvedValue({ data: { data: registrations } });
+
+    const result = await getEventRegistrations("1", 1);
+
+    expect(api.get).toHaveBeenCalledWith("/church/admin/events/1/registrations");
+    expect(result).toEqual(registrations);
   });
 });
