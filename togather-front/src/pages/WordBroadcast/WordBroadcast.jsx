@@ -18,8 +18,7 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-2.5">
           {isLive && (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-body-5 font-bold rounded-full animate-pulse">
-              <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            <span className="px-2.5 py-1 bg-red-500 text-white text-body-5 font-bold rounded-full">
               LIVE
             </span>
           )}
@@ -28,12 +27,16 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
               {sermon.worshipType}
             </span>
           )}
-          {sermon.sermonDate && <span className="text-body-5 text-grey-5">{sermon.sermonDate}</span>}
+          {sermon.sermonDate && (
+            <span className="text-body-5 text-grey-5">{sermon.sermonDate}</span>
+          )}
         </div>
         <h2 className="text-sub-tit-3 font-bold text-grey-11 leading-snug mb-2">{sermon.title}</h2>
         {(sermon.scripture || sermon.preacher) && (
           <div className="flex items-center gap-2 text-body-4 text-grey-6">
-            {sermon.scripture && <span className="text-primary font-medium">{sermon.scripture}</span>}
+            {sermon.scripture && (
+              <span className="text-primary font-medium">{sermon.scripture}</span>
+            )}
             {sermon.scripture && sermon.preacher && <span className="text-grey-4">·</span>}
             {sermon.preacher && <span>{sermon.preacher}</span>}
           </div>
@@ -48,10 +51,12 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
   );
 }
 
-function NoServiceCard({message = "오늘 예정된 예배가 없습니다" }) {
+// 방송 중일 때의 aspect-video 플레이어와 가로/세로 크기를 똑같이 맞춘다 — 상태가
+// 바뀔 때마다 페이지 높이가 들쭉날쭉하지 않도록.
+function NoServiceCard({ message = "오늘 예정된 예배가 없습니다" }) {
   return (
-    <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-      <p className="text-sub-tit-4 font-semibold text-grey-7">{message}</p>
+    <div className="w-full aspect-video rounded-2xl bg-grey-11 flex items-center justify-center">
+      <p className="text-body-3 font-medium text-grey-5">{message}</p>
     </div>
   );
 }
@@ -291,7 +296,13 @@ function SmartJuboButton({ onClick }) {
       onClick={onClick}
       className="mt-4 flex items-center gap-2 px-5 py-2.5 border border-blue-3 text-blue-7 text-body-3 font-medium rounded-full hover:bg-blue-1 transition-colors"
     >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
