@@ -3,7 +3,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useSearch } from "@/contexts/SearchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import ChurchLogo from "@/components/common/ChurchLogo";
 import defaultBanner from "@/assets/default_banner.png";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
@@ -157,7 +157,7 @@ function MobileFooter({ church }) {
   return (
     <footer className="bg-bluegrey-1 px-5 py-8">
       <div className="flex items-center gap-2 mb-3">
-        <img src={LogoIcon} alt={`${church.name} 로고`} className="w-8 h-8 object-contain" />
+        <ChurchLogo alt={`${church.name} 로고`} className="w-8 h-8 object-contain" />
         <span className="text-[15px] font-bold text-grey-11">{church.name}</span>
       </div>
       <div className="flex gap-4 mb-4">

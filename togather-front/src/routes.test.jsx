@@ -47,7 +47,12 @@ describe("routes — 말씀 읽기/필사 라우트의 AuthProvider 존재 확�
     localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
     localStorage.setItem("bible-tutorial-seen", "true");
     const router = createMemoryRouter(routes, { initialEntries: ["/말씀/읽기"] });
-    render(<RouterProvider router={router} />);
+    // 로그인 상태에서는 BibleSidebar(ChurchLogo 포함)까지 렌더되어 useChurch()가 필요하다.
+    render(
+      <ChurchProvider>
+        <RouterProvider router={router} />
+      </ChurchProvider>,
+    );
     expect(await screen.findByText("창세기")).toBeInTheDocument();
   });
 });

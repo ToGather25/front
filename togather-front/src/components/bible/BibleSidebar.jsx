@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import ChurchLogo from "@/components/common/ChurchLogo";
 
 /**
  * 성경 읽기/쓰기 공통 좌측 사이드바
@@ -33,7 +33,7 @@ export default function BibleSidebar({
           sidebarOpen ? "justify-between pl-3 pr-3" : "justify-center"
         }`}
       >
-        {sidebarOpen && <img src={LogoIcon} className="h-6 w-auto pl-2 object-contain" alt="" />}
+        {sidebarOpen && <ChurchLogo className="h-6 w-auto pl-2 object-contain" alt="" />}
         <button
           onClick={onToggle}
           className="w-8 h-8 flex flex-col items-center justify-center gap-[5px] shrink-0 text-grey-6 hover:text-grey-9"

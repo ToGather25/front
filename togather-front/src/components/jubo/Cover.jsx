@@ -2,7 +2,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getJuboInfo } from "@/services/juboService";
 import juboConfig from "@/config/jubo.config";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import ChurchLogo from "@/components/common/ChurchLogo";
 import DefaultBanner from "@/assets/default_banner.png";
 
 export default function Cover() {
@@ -65,7 +65,7 @@ export default function Cover() {
             </div>
           )}
           <div className="absolute top-4 left-4">
-            <img src={LogoIcon} className="h-10 w-auto object-contain" alt={church.name} />
+            <ChurchLogo className="h-10 w-auto object-contain" alt={church.name} />
           </div>
         </div>
       </div>

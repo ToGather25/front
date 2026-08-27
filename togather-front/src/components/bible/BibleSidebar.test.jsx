@@ -1,24 +1,23 @@
 import { describe, it, expect, vi } from "vite-plus/test";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import BibleSidebar from "./BibleSidebar";
 
 const MENUS = ["성경읽기", "랭킹", "내 구절", "내 현황"];
 
 function renderSidebar(props = {}) {
-  return render(
-    <MemoryRouter>
-      <BibleSidebar
-        sidebarOpen={true}
-        onToggle={vi.fn()}
-        menus={MENUS}
-        activeMenu="성경읽기"
-        onMenuChange={vi.fn()}
-        switchTo={{ to: "/말씀/필사", label: "쓰기로 전환" }}
-        {...props}
-      />
-    </MemoryRouter>,
+  return renderWithChurch(
+    <BibleSidebar
+      sidebarOpen={true}
+      onToggle={vi.fn()}
+      menus={MENUS}
+      activeMenu="성경읽기"
+      onMenuChange={vi.fn()}
+      switchTo={{ to: "/말씀/필사", label: "쓰기로 전환" }}
+      {...props}
+    />,
+    { withRouter: true },
   );
 }
 
@@ -44,10 +43,7 @@ describe("BibleSidebar", () => {
 
   it("switchTo prop으로 전달한 전환 링크를 렌더한다", () => {
     renderSidebar();
-    expect(screen.getByRole("link", { name: "쓰기로 전환" })).toHaveAttribute(
-      "href",
-      "/말씀/필사",
-    );
+    expect(screen.getByRole("link", { name: "쓰기로 전환" })).toHaveAttribute("href", "/말씀/필사");
   });
 
   it("switchTo가 없으면 전환 링크를 렌더하지 않는다", () => {
