@@ -1,11 +1,14 @@
 import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getChurchProfile } from "@/services/churchProfileService";
 import defaultBanner from "@/assets/default_banner.png";
 
 export default function MainBanner() {
   const { church } = useChurch();
-  const { url, title, subtitle } = church.mainBanner;
-  const bgImage = url || defaultBanner;
+  const { data: profile } = useFetch(() => getChurchProfile(church.id), [church.id], null);
+  const { title, subtitle } = church.mainBanner;
+  const bgImage = profile?.representativeImageUrl || defaultBanner;
 
   return (
     <section

@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getChurchProfile, updateChurchProfile } from "@/services/churchProfileService";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
@@ -16,6 +19,45 @@ function Section({ title, children }) {
 }
 
 export default function Settings() {
+  const { church } = useChurch();
+  const {
+    data: initialProfile,
+    loading: profileLoading,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useFetch(() => getChurchProfile(church.id), [church.id], null);
+  const [profile, setProfile] = useState({ representativeImageUrl: "", slogan: "" });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileSaveError, setProfileSaveError] = useState(false);
+
+  useEffect(() => {
+    if (initialProfile) {
+      setProfile({
+        representativeImageUrl: initialProfile.representativeImageUrl ?? "",
+        slogan: initialProfile.slogan ?? "",
+      });
+    }
+  }, [initialProfile]);
+
+  async function handleProfileSave() {
+    setProfileSaving(true);
+    setProfileSaveError(false);
+    try {
+      await updateChurchProfile(church.id, {
+        representativeImageUrl: profile.representativeImageUrl || null,
+        slogan: profile.slogan || null,
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2000);
+    } catch (err) {
+      console.error("[Settings] 교회 프로필 저장 실패:", err);
+      setProfileSaveError(true);
+    } finally {
+      setProfileSaving(false);
+    }
+  }
+
   const [info, setInfo] = useState({
     name: "알곡교회",
     nameEn: "Algok Church",
@@ -58,6 +100,68 @@ export default function Settings() {
       </div>
 
       <div className="flex flex-col gap-5">
+        {/* Main banner (실API 연동 — 홈 화면 히어로 배너의 대표이미지/슬로건) */}
+        <Section title="홈 화면 메인 배너">
+          {profileLoading ? (
+            <p className="text-body-4 text-grey-5">불러오는 중...</p>
+          ) : profileError ? (
+            <div className="flex items-center gap-2">
+              <p className="text-body-4 text-grey-5">불러오지 못했습니다.</p>
+              <button
+                onClick={refetchProfile}
+                className="text-body-5 text-primary underline"
+                type="button"
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-5">
+                <div className="col-span-2">
+                  <label className={labelCls} htmlFor="profile-image-url">
+                    대표 이미지 URL
+                  </label>
+                  <input
+                    id="profile-image-url"
+                    className={inputCls}
+                    value={profile.representativeImageUrl}
+                    onChange={(e) =>
+                      setProfile((p) => ({ ...p, representativeImageUrl: e.target.value }))
+                    }
+                    placeholder="비워두면 기본 배너 이미지가 표시됩니다"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className={labelCls} htmlFor="profile-slogan">
+                    슬로건
+                  </label>
+                  <input
+                    id="profile-slogan"
+                    className={inputCls}
+                    value={profile.slogan}
+                    onChange={(e) => setProfile((p) => ({ ...p, slogan: e.target.value }))}
+                    placeholder="아직 화면에는 표시되지 않습니다"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3 mt-5">
+                <button
+                  onClick={handleProfileSave}
+                  disabled={profileSaving}
+                  className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold disabled:opacity-50 transition-colors"
+                >
+                  {profileSaving ? "저장 중..." : "저장"}
+                </button>
+                {profileSaved && <span className="text-body-5 text-blue-7">저장됨</span>}
+                {profileSaveError && (
+                  <span className="text-body-5 text-red-500">저장 실패, 다시 시도해 주세요.</span>
+                )}
+              </div>
+            </>
+          )}
+        </Section>
+
         {/* Church basic info */}
         <Section title="교회 기본 정보">
           <div className="grid grid-cols-2 gap-5">
