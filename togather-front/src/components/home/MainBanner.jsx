@@ -51,7 +51,7 @@ export default function MainBanner() {
       />
 
       {/* Content */}
-      <div className="relative h-full max-w-[1400px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
+      <div className="relative h-full max-w-[1400px] mx-auto px-[120px] flex flex-col justify-center">
         {/* Verse */}
         <p
           className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"
