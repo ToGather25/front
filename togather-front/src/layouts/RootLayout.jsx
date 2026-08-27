@@ -1,6 +1,5 @@
 import { Outlet, Link, NavLink, useLocation } from "react-router";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import FooterLocation from "@/assets/icon-svg/footer-location.svg";
@@ -8,6 +7,7 @@ import FooterPhone from "@/assets/icon-svg/footer-phone.svg";
 import FooterEmail from "@/assets/icon-svg/footer-email.svg";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import ChurchLogo from "@/components/common/ChurchLogo";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -103,19 +103,66 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
+  const menuItems = NAV_ITEMS.filter((item) => item.children);
   const [openMenu, setOpenMenu] = useState(null);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const rowRef = useRef(null);
+  const itemRefs = useRef({});
+  const colRefs = useRef({});
+  const [colCenters, setColCenters] = useState({});
+  const [panelHeight, setPanelHeight] = useState(0);
 
-  const navLinkCls = (active) =>
-    transparent
-      ? active
-        ? "text-white font-bold border-b-2 border-white pb-0.5"
-        : "text-white hover:text-white/70"
-      : active
-        ? "text-primary font-bold border-b-2 border-primary pb-0.5"
-        : "text-grey-10 hover:text-primary";
+  // 메가 메뉴 각 열의 중심이 상단 메뉴 항목의 중심과 같은 x축 위치에 오도록, 메뉴
+  // 항목의 실제 렌더 위치(중심 좌표)를 측정해둔다. 열의 왼쪽 끝을 메뉴 항목의 왼쪽
+  // 끝에 맞추고 그 안에서 하위 항목들을 가운데 정렬하면, 하위 항목 중 가장 긴
+  // 것이 열의 폭을 정하면서 짧은 항목들이 메뉴 항목 기준에서 오른쪽으로 밀려
+  // 보인다 — 그래서 왼쪽 끝이 아니라 중심끼리 맞춰야 한다.
+  useLayoutEffect(() => {
+    function measure() {
+      const rowEl = rowRef.current;
+      if (!rowEl) return;
+      const rowLeft = rowEl.getBoundingClientRect().left;
+      const next = {};
+      NAV_ITEMS.forEach((item) => {
+        const el = itemRefs.current[item.label];
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        next[item.label] = rect.left - rowLeft + rect.width / 2;
+      });
+      setColCenters(next);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [openMenu, NAV_ITEMS]);
 
-  const authBtnOutlineCls = transparent
+  // 각 열은 position:absolute + translateX(-50%)로 중심을 고정하므로 문서 흐름에서
+  // 빠진다 — 패널이 가장 긴 열의 높이만큼 자기 높이를 확보하도록 렌더 후 별도로 측정.
+  useLayoutEffect(() => {
+    if (!openMenu) return;
+    const heights = Object.values(colRefs.current)
+      .filter(Boolean)
+      .map((el) => el.offsetHeight);
+    setPanelHeight(heights.length ? Math.max(...heights) : 0);
+  }, [openMenu, colCenters]);
+
+  // 메가 메뉴가 열려 있는 동안은 히어로 배경이 뒤에 비치는 투명 헤더 대신
+  // 흰 배경으로 전환한다 — 드롭다운 아래로 배경 사진이 겹쳐 보이지 않도록.
+  const effectiveTransparent = transparent && !openMenu;
+
+  const navLinkCls = (active) => {
+    const base = "border-b-2 pb-0.5 transition-colors";
+    if (effectiveTransparent) {
+      return active
+        ? `${base} text-white font-bold border-white`
+        : `${base} text-white border-transparent hover:border-white/70 hover:text-white/90`;
+    }
+    return active
+      ? `${base} text-primary font-bold border-primary`
+      : `${base} text-grey-10 border-transparent hover:border-primary hover:text-primary`;
+  };
+
+  const authBtnOutlineCls = effectiveTransparent
     ? "border-white/60 text-white hover:bg-white/10 hover:border-white"
     : "border-bluegrey-2 text-grey-9 hover:text-primary hover:border-blue-5";
 
@@ -137,41 +184,40 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
         <div
           ref={barRef}
           className={`py-2 transition-colors duration-300 ${
-            transparent
+            effectiveTransparent
               ? "bg-transparent border-b border-white/20"
               : "bg-white border-b border-bluegrey-1"
           }`}
         >
-          <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
+          <div
+            ref={rowRef}
+            className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16"
+          >
             <Link
               to="/"
               className="flex items-center gap-2.5 shrink-0 w-[180px]"
               onMouseEnter={() => setOpenMenu(null)}
             >
-              <img
-                src={church.logoUrl ?? LogoIcon}
+              <ChurchLogo
                 className="h-22 w-22 object-contain transition-[filter] duration-300"
-                style={{ filter: transparent ? "brightness(0) invert(1)" : "none" }}
+                style={{ filter: effectiveTransparent ? "brightness(0) invert(1)" : "none" }}
                 alt={`${church.name} 로고`}
               />
             </Link>
 
-            <nav className="flex items-center gap-10 h-full">
+            <nav className="flex items-center gap-14 h-full">
               {NAV_ITEMS.map((item) => (
                 <div
                   key={item.label}
+                  ref={(el) => (itemRefs.current[item.label] = el)}
                   className="flex items-center h-full"
                   onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
                 >
                   {item.children ? (
                     <button
-                      className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
-                        openMenu === item.label
-                          ? navLinkCls(true)
-                          : transparent
-                            ? "text-white hover:text-white/70"
-                            : "text-grey-10 hover:text-primary"
-                      }`}
+                      className={`text-body-2 font-medium whitespace-nowrap py-2 ${navLinkCls(
+                        openMenu === item.label,
+                      )}`}
                     >
                       {item.label}
                     </button>
@@ -180,7 +226,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                       to={item.to}
                       end
                       className={({ isActive }) =>
-                        `text-body-2 font-medium transition-colors whitespace-nowrap ${navLinkCls(isActive)}`
+                        `text-body-2 font-medium whitespace-nowrap py-2 ${navLinkCls(isActive)}`
                       }
                     >
                       {item.label}
@@ -219,7 +265,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                   </Link>
                   <Link
                     to="/login"
-                    className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
+                    className="px-4 py-2 rounded-full bg-blue-9 text-white text-body-3 font-semibold hover:bg-blue-6 active:scale-95 transition-all whitespace-nowrap"
                   >
                     로그인
                   </Link>
@@ -252,45 +298,42 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
               to   { opacity: 1; transform: translateY(0); }
             }
           `}</style>
-          <div className="max-w-[1440px] mx-auto px-8 py-8">
+          <div className="max-w-[1440px] mx-auto py-5" style={{ paddingRight: "2rem" }}>
+            {/* 각 열은 position:absolute + translateX(-50%)로 열의 "중심"을 상위 메뉴
+                항목의 중심(colCenters)에 정확히 맞춘다. 폭이 트랙 크기에 좌우되는
+                grid 대신 이 방식을 쓰는 이유: 하위 항목 중 가장 긴 것이 열 폭을
+                정하는 한, 어떤 정렬 기준을 쓰든 "열의 왼쪽 끝"과 "상위 메뉴의 왼쪽
+                끝"을 맞추면 짧은 하위 항목들이 상위 메뉴 기준에서 오른쪽으로 밀려
+                보인다 — 중심끼리 맞춰야 열 폭과 무관하게 항상 상위 메뉴 아래 온다.
+                absolute로 빼면 문서 흐름에서 높이가 사라지므로, 위 useLayoutEffect가
+                실제 렌더된 열 높이를 측정해 panelHeight로 되돌려준다. */}
             <div
-              className="grid divide-x divide-bluegrey-2"
-              style={{
-                gridTemplateColumns: `repeat(${NAV_ITEMS.filter((n) => n.children).length}, minmax(0, 1fr))`,
-              }}
+              data-testid="mega-menu-columns"
+              className="relative"
+              style={{ height: panelHeight || undefined }}
             >
-              {NAV_ITEMS.filter((item) => item.children).map((item) => {
-                const active = openMenu === item.label;
-                return (
-                  <div
-                    key={item.label}
-                    className={`px-6 py-6 flex flex-col gap-1 rounded-md transition-colors ${
-                      active ? "bg-blue-1" : ""
-                    }`}
-                  >
+              {menuItems.map((item) => (
+                <div
+                  key={item.label}
+                  ref={(el) => (colRefs.current[item.label] = el)}
+                  className="absolute top-0 flex flex-col items-center"
+                  style={{
+                    left: colCenters[item.label] ?? 0,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  {item.children.map((child) => (
                     <Link
-                      to={item.to ?? item.children[0].to}
+                      key={child.label}
+                      to={child.to}
                       onClick={() => setOpenMenu(null)}
-                      className={`text-sub-tit-4 font-bold mb-2 transition-colors ${
-                        active ? "text-primary" : "text-grey-10"
-                      }`}
+                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap hover:text-primary hover:font-semibold transition-colors"
                     >
-                      {item.label}
+                      {child.label}
                     </Link>
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.label}
-                        to={child.to}
-                        onClick={() => setOpenMenu(null)}
-                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors"
-                      >
-                        <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -309,11 +352,7 @@ function DesktopFooter() {
       <div className="max-w-[1440px] mx-auto px-8 pt-10 pb-16 flex items-end justify-between gap-8">
         <div className="flex gap-16 items-start">
           <div className="flex items-center gap-2.5 h-[52px]">
-            <img
-              src={church.logoUrl ?? LogoIcon}
-              className="w-30 object-contain"
-              alt={`${church.name} 로고`}
-            />
+            <ChurchLogo className="w-30 object-contain" alt={`${church.name} 로고`} />
           </div>
           <div className="flex flex-col gap-5 py-2">
             <div className="flex items-center gap-10 text-body-2 font-bold text-grey-10">
@@ -403,11 +442,7 @@ function MobileFooter() {
       <div className="flex flex-col items-center gap-5 px-6 py-8">
         {/* 로고 */}
         <Link to="/">
-          <img
-            src={church.logoUrl ?? LogoIcon}
-            className="h-10 w-auto object-contain"
-            alt={`${church.name} 로고`}
-          />
+          <ChurchLogo className="h-10 w-auto object-contain" alt={`${church.name} 로고`} />
         </Link>
 
         {/* 약관 */}
@@ -492,11 +527,7 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
         className="bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
         <Link to="/" className="flex items-center">
-          <img
-            src={church.logoUrl ?? LogoIcon}
-            className="h-8 w-auto object-contain"
-            alt={`${church.name} 로고`}
-          />
+          <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
         </Link>
         <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
           <svg

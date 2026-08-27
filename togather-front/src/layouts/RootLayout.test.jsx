@@ -34,7 +34,9 @@ const NAV_WITH_CHILDREN = churchConfig.nav.filter((item) => item.children);
 // 같은 라벨이 다른 컬럼에도 남아 있어 getByText가 모호해진다. church.config.js는
 // 이번 태스크에서 변경하지 않으므로, nav 전체에서 유일하게 등장하는 라벨을 골라
 // "다른 컬럼" 대표값으로 사용한다.
-const ALL_CHILD_LABELS = churchConfig.nav.flatMap((item) => item.children?.map((c) => c.label) ?? []);
+const ALL_CHILD_LABELS = churchConfig.nav.flatMap(
+  (item) => item.children?.map((c) => c.label) ?? [],
+);
 function uniqueChild(item) {
   return item.children.find(
     (child) => ALL_CHILD_LABELS.filter((label) => label === child.label).length === 1,
@@ -54,37 +56,11 @@ describe("RootLayout — DesktopHeader 메가메뉴", () => {
     expect(within(header).getByText(uniqueChild(lastTab).label)).toBeInTheDocument();
   });
 
-  it("마우스오버한 컬럼에만 하이라이트 배경 클래스가 적용된다", () => {
-    const { header } = renderRootLayout();
-    const firstTab = NAV_WITH_CHILDREN[0];
-    const secondTab = NAV_WITH_CHILDREN[1];
-
-    fireEvent.mouseEnter(within(header).getByRole("button", { name: firstTab.label }));
-
-    const activeHeader = within(header).getByRole("link", { name: firstTab.label });
-    const inactiveHeader = within(header).getByRole("link", { name: secondTab.label });
-    // 컬럼 wrapper는 헤더 링크의 부모.
-    expect(activeHeader.closest("div").className).toContain("bg-blue-1");
-    expect(inactiveHeader.closest("div").className).not.toContain("bg-blue-1");
-  });
-
-  // 두 테스트 모두 클릭한 컬럼이 아니라 "다른" 컬럼(lastTab)의 하위 항목이 사라지는지로
-  // 검증한다 — 클릭한 컬럼 자신의 라벨로 검증하면, 이동한 목적지 페이지(예: /교회소개)가
-  // 자체 탭 바에 동일한 라벨들을 계속 표시하고 있어 "패널이 안 닫혀도 텍스트가 남아있는"
+  // 클릭한 컬럼이 아니라 "다른" 컬럼(lastTab)의 하위 항목이 사라지는지로 검증한다 —
+  // 클릭한 컬럼 자신의 라벨로 검증하면, 이동한 목적지 페이지(예: /교회소개)가 자체
+  // 탭 바에 동일한 라벨들을 계속 표시하고 있어 "패널이 안 닫혀도 텍스트가 남아있는"
   // 오탐이 날 수 있다. lastTab(교회소식)의 하위 항목은 firstTab의 목적지 페이지와
   // 무관하므로, 사라졌다면 그건 확실히 드롭다운이 닫혔기 때문이다.
-  it("컬럼 헤더 링크를 클릭하면 패널이 닫힌다", () => {
-    const { header } = renderRootLayout();
-    const firstTab = NAV_WITH_CHILDREN[0];
-    const lastTab = NAV_WITH_CHILDREN[NAV_WITH_CHILDREN.length - 1];
-    fireEvent.mouseEnter(within(header).getByRole("button", { name: firstTab.label }));
-    expect(within(header).getByText(uniqueChild(lastTab).label)).toBeInTheDocument();
-
-    fireEvent.click(within(header).getByRole("link", { name: firstTab.label }));
-
-    expect(within(header).queryByText(uniqueChild(lastTab).label)).not.toBeInTheDocument();
-  });
-
   it("하위 항목 링크를 클릭하면 패널이 닫힌다", () => {
     const { header } = renderRootLayout();
     const firstTab = NAV_WITH_CHILDREN[0];
@@ -112,11 +88,16 @@ describe("RootLayout — DesktopHeader 메가메뉴", () => {
     const { header } = renderRootLayout();
     fireEvent.mouseEnter(within(header).getByRole("button", { name: NAV_WITH_CHILDREN[0].label }));
 
-    NAV_WITH_CHILDREN.forEach((item) => {
-      const headerLink = within(header).getByRole("link", { name: item.label });
-      const column = headerLink.closest("div");
-      item.children.forEach((child) => {
-        expect(within(column).getByText(child.label)).toBeInTheDocument();
+    // 컬럼에는 더 이상 상위 메뉴명을 표시하는 헤더 링크가 없으므로(하위 항목만 나열),
+    // 컬럼 컨테이너의 각 자식 div를 순서대로 하나의 컬럼으로 보고 그 안의 링크 개수/순서로 검증한다.
+    const container = within(header).getByTestId("mega-menu-columns");
+    const columns = container.children;
+    expect(columns).toHaveLength(NAV_WITH_CHILDREN.length);
+    NAV_WITH_CHILDREN.forEach((item, i) => {
+      const links = within(columns[i]).getAllByRole("link");
+      expect(links).toHaveLength(item.children.length);
+      item.children.forEach((child, j) => {
+        expect(links[j]).toHaveTextContent(child.label);
       });
     });
   });
