@@ -26,7 +26,7 @@ export default function DeptTab() {
                 <ReadonlyField
                   label="직분"
                   value={MOCK_DEPT.position}
-                  note="사무국 문의로 변경 가능합니다."
+                  note="사무실 문의로 변경 가능합니다."
                 />
                 <ReadonlyField label="소속 부서" value={MOCK_DEPT.department} />
               </div>
@@ -55,7 +55,7 @@ export default function DeptTab() {
               <ReadonlyField
                 label="직분"
                 value={MOCK_DEPT.position}
-                note="사무국 문의로 변경 가능합니다."
+                note="사무실 문의로 변경 가능합니다."
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ReadonlyField label="직책" value={MOCK_DEPT.duty} />

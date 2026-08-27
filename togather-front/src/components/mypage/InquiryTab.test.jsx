@@ -17,7 +17,7 @@ const INQUIRIES = [
     title: "주소 변경 요청",
     content: "이사했습니다",
     status: "답변 완료",
-    answer: "사무국 — 반영 완료했습니다.",
+    answer: "사무실 — 반영 완료했습니다.",
     createdAt: "2026-02-12T09:00:00",
   },
 ];
@@ -29,7 +29,7 @@ describe("InquiryTab", () => {
 
   it("answer 필드를 답변으로 표시한다", () => {
     renderWithChurch(<InquiryTab inquiries={INQUIRIES} setInquiries={() => {}} />);
-    expect(screen.getByText("사무국 — 반영 완료했습니다.")).toBeInTheDocument();
+    expect(screen.getByText("사무실 — 반영 완료했습니다.")).toBeInTheDocument();
   });
 
   it("문의를 등록하면 addMyInquiry를 호출한다", async () => {

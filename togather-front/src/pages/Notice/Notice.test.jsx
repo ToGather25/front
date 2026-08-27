@@ -19,12 +19,12 @@ function makeNotices(count) {
     title: `공지 ${i + 1}`,
     body: "내용",
     date: "2026-08-01",
-    author: "사무국",
+    author: "사무실",
   }));
 }
 
 const MIXED = [
-  { id: 1, type: "공지", featured: false, title: "공지 1", body: "내용", date: "2026-08-01", author: "사무국" },
+  { id: 1, type: "공지", featured: false, title: "공지 1", body: "내용", date: "2026-08-01", author: "사무실" },
   { id: 2, type: "행사", featured: false, title: "행사 공지", body: "내용", date: "2026-08-02", author: "교역자실" },
 ];
 

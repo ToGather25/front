@@ -1551,7 +1551,7 @@ export default function Giving() {
         )}
       </div>
       <p className="mt-6 text-caption text-grey-6">
-        헌금 영수증은 연말정산 시 자동 반영되며, 별도 발급이 필요한 경우 사무국으로 문의해 주세요.
+        헌금 영수증은 연말정산 시 자동 반영되며, 별도 발급이 필요한 경우 사무실으로 문의해 주세요.
       </p>
     </>
   );

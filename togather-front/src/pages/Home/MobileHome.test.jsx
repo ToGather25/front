@@ -30,7 +30,7 @@ describe("MobileHome — 모바일 홈", () => {
             title: "테스트 공지",
             body: "내용",
             date: "2026-08-01",
-            author: "사무국",
+            author: "사무실",
           },
         ],
       },

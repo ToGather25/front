@@ -42,7 +42,7 @@ describe("noticeService — 실 API 경로", () => {
       type: "공지",
       title: "제목",
       body: "내용",
-      author: "사무국",
+      author: "사무실",
       featured: true,
     });
 
@@ -51,7 +51,7 @@ describe("noticeService — 실 API 경로", () => {
       content: "내용",
       type: "공지",
       featured: true,
-      author: "사무국",
+      author: "사무실",
     });
     expect(result).toEqual({ noticeId: 1, title: "제목", content: "내용", createdAt: "2026-08-14" });
   });

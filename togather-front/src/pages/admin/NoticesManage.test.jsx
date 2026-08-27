@@ -18,7 +18,7 @@ const NOTICE = {
   title: "기존 공지",
   body: "기존 내용",
   date: "2026-08-01",
-  author: "사무국",
+  author: "사무실",
 };
 
 describe("NoticesManage — 관리자 CRUD", () => {

@@ -79,7 +79,7 @@ describe("noticeService — 실 API 경로", () => {
       type: "공지",
       title: "제목",
       body: "내용",
-      author: "사무국",
+      author: "사무실",
       featured: true,
     });
 
@@ -88,7 +88,7 @@ describe("noticeService — 실 API 경로", () => {
       content: "내용",
       type: "공지",
       featured: true,
-      author: "사무국",
+      author: "사무실",
     });
     expect(result).toEqual({ noticeId: 1, title: "제목", content: "내용", createdAt: "2026-08-14" });
   });
@@ -269,7 +269,7 @@ describe("NoticeSection — 홈 위젯", () => {
             title: "테스트 공지",
             body: "내용",
             date: "2026-08-01",
-            author: "사무국",
+            author: "사무실",
           },
         ],
       },
@@ -600,12 +600,12 @@ function makeNotices(count) {
     title: `공지 ${i + 1}`,
     body: "내용",
     date: "2026-08-01",
-    author: "사무국",
+    author: "사무실",
   }));
 }
 
 const MIXED = [
-  { id: 1, type: "공지", featured: false, title: "공지 1", body: "내용", date: "2026-08-01", author: "사무국" },
+  { id: 1, type: "공지", featured: false, title: "공지 1", body: "내용", date: "2026-08-01", author: "사무실" },
   { id: 2, type: "행사", featured: false, title: "행사 공지", body: "내용", date: "2026-08-02", author: "교역자실" },
 ];
 
@@ -954,7 +954,7 @@ const NOTICE = {
   title: "기존 공지",
   body: "기존 내용",
   date: "2026-08-01",
-  author: "사무국",
+  author: "사무실",
 };
 
 describe("NoticesManage — 관리자 CRUD", () => {

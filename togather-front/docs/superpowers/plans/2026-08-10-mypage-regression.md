@@ -360,7 +360,7 @@ export const INITIAL_INQUIRIES = [
     title: "교적 정보 수정 요청 (주소 변경)",
     date: "2026.02.12",
     status: "답변 완료",
-    reply: "사무국 — 주소 변경 완료되었습니다. 다음 주보부터 반영됩니다.",
+    reply: "사무실 — 주소 변경 완료되었습니다. 다음 주보부터 반영됩니다.",
   },
   { id: 2, title: "새가족부 신청", date: "2026.02.05", status: "진행 중", reply: null },
   {
@@ -382,14 +382,14 @@ export const INITIAL_INQUIRIES = [
     title: "성가대 악보 신청",
     date: "2025.12.28",
     status: "답변 완료",
-    reply: "사무국 — 악보 준비되었습니다. 연습 전 수령해 주세요.",
+    reply: "사무실 — 악보 준비되었습니다. 연습 전 수령해 주세요.",
   },
   {
     id: 6,
     title: "헌금 영수증 발급 요청",
     date: "2025.12.15",
     status: "답변 완료",
-    reply: "사무국 — 이메일로 발송드렸습니다.",
+    reply: "사무실 — 이메일로 발송드렸습니다.",
   },
   { id: 7, title: "구역 변경 신청", date: "2025.11.30", status: "진행 중", reply: null },
   {
@@ -397,7 +397,7 @@ export const INITIAL_INQUIRIES = [
     title: "봉사 일정 문의",
     date: "2025.11.20",
     status: "답변 완료",
-    reply: "사무국 — 다음 달 봉사 일정표를 공유드렸습니다.",
+    reply: "사무실 — 다음 달 봉사 일정표를 공유드렸습니다.",
   },
 ];
 ```
@@ -761,7 +761,7 @@ export default function DeptTab() {
                 <ReadonlyField
                   label="직분"
                   value={MOCK_DEPT.position}
-                  note="사무국 문의로 변경 가능합니다."
+                  note="사무실 문의로 변경 가능합니다."
                 />
                 <ReadonlyField label="소속 부서" value={MOCK_DEPT.department} />
               </div>
@@ -790,7 +790,7 @@ export default function DeptTab() {
               <ReadonlyField
                 label="직분"
                 value={MOCK_DEPT.position}
-                note="사무국 문의로 변경 가능합니다."
+                note="사무실 문의로 변경 가능합니다."
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
