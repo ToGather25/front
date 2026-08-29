@@ -42,26 +42,8 @@ export default function FindId() {
       {/* 왼쪽 브랜드 패널 */}
       <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
-        <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
 
         <div className="relative">
-          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
-            </svg>
-          </div>
           <h1 className="text-headline-4 font-bold text-white mb-3">
             {church?.name ?? "ToGather"}
           </h1>
@@ -125,9 +107,7 @@ export default function FindId() {
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div>
-                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
-                    이름
-                  </label>
+                  <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">이름</label>
                   <input
                     name="name"
                     type="text"

@@ -128,28 +128,8 @@ export default function Register() {
         {/* 왼쪽 브랜드 패널 */}
         <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-          <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
 
           <div className="relative">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
             <h1 className="text-headline-4 font-bold text-white mb-3">
               {church?.name ?? "ToGather"}
             </h1>
