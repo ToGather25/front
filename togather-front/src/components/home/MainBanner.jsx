@@ -23,9 +23,9 @@ export default function MainBanner() {
           from { transform: scale(1.04) translateX(-1%); }
           to   { transform: scale(1.04) translateX(1%); }
         }
-        @keyframes scrollPulse {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 0.3; }
+        @keyframes scrollBounce {
+          0%, 100% { transform: translateY(0); opacity: 0.6; }
+          50% { transform: translateY(6px); opacity: 1; }
         }
       `}</style>
 
@@ -109,18 +109,23 @@ export default function MainBanner() {
 
       {/* Scroll hint */}
       <div
-        className="absolute right-[60px] bottom-[60px] flex flex-col items-center gap-3.5 text-[11px] font-semibold tracking-[0.3em]"
+        className="absolute left-1/2 -translate-x-1/2 bottom-[40px] flex flex-col items-center gap-2 text-[11px] font-semibold tracking-[0.3em]"
         style={{ color: "rgba(255,255,255,.7)" }}
       >
         <span>SCROLL</span>
-        <div
-          className="w-px h-[60px]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%)",
-            animation: "scrollPulse 2s ease-in-out infinite",
-          }}
-        />
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ animation: "scrollBounce 1.6s ease-in-out infinite" }}
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </div>
     </section>
   );
