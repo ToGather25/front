@@ -150,21 +150,34 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
   // 흰 배경으로 전환한다 — 드롭다운 아래로 배경 사진이 겹쳐 보이지 않도록.
   const effectiveTransparent = transparent && !openMenu;
 
-  const navLinkCls = (active) => {
-    const base = "border-b-2 pb-0.5 transition-colors";
+  // 텍스트는 항상 세로 중앙(items-center)에 두고, 밑줄만 별도 요소로 분리해
+  // 메뉴 항목 wrapper(h-full, 72px)의 맨 아래에 고정한다 — 그래야 글자 위치는
+  // 그대로인 채 밑줄만 드롭다운 배경 상단에 딱 붙는다.
+  const navTextCls = (active) => {
     if (effectiveTransparent) {
-      return active
-        ? `${base} text-white font-bold border-white`
-        : `${base} text-white border-transparent hover:border-white/70 hover:text-white/90`;
+      return active ? "text-white font-bold" : "text-white hover:text-white/90";
     }
-    return active
-      ? `${base} text-primary font-bold border-primary`
-      : `${base} text-grey-10 border-transparent hover:border-primary hover:text-primary`;
+    return active ? "text-blue-12 font-bold" : "text-grey-10 hover:text-blue-12";
+  };
+  const navUnderlineCls = (active) => {
+    if (effectiveTransparent) {
+      return active ? "bg-white" : "bg-transparent group-hover:bg-white/70";
+    }
+    return active ? "bg-blue-12" : "bg-transparent group-hover:bg-blue-12";
   };
 
   const authBtnOutlineCls = effectiveTransparent
     ? "border-white/60 text-white hover:bg-white/10 hover:border-white"
     : "border-bluegrey-2 text-grey-9 hover:text-primary hover:border-blue-5";
+
+  // 회원가입은 배경 없는 텍스트 링크로, 로그인은 히어로 배경 위(투명 헤더)에서는
+  // 흰 배경, 그 외(흰 헤더)에서는 진한 남색 배경으로 — 헤더 배경과 항상 대비되게.
+  const registerLinkCls = effectiveTransparent
+    ? "text-white hover:text-white/70"
+    : "text-grey-9 hover:text-primary";
+  const loginBtnCls = effectiveTransparent
+    ? "bg-white text-primary hover:bg-blue-1"
+    : "bg-blue-9 text-white hover:bg-blue-6";
 
   return (
     <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
@@ -183,7 +196,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
       >
         <div
           ref={barRef}
-          className={`py-2 transition-colors duration-300 ${
+          className={`pt-2 transition-colors duration-300 ${
             effectiveTransparent
               ? "bg-transparent border-b border-white/20"
               : "bg-white border-b border-bluegrey-1"
@@ -210,26 +223,40 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                 <div
                   key={item.label}
                   ref={(el) => (itemRefs.current[item.label] = el)}
-                  className="flex items-center h-full"
+                  className="group relative flex items-center h-full"
                   onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
                 >
                   {item.children ? (
-                    <button
-                      className={`text-body-2 font-medium whitespace-nowrap py-2 ${navLinkCls(
-                        openMenu === item.label,
-                      )}`}
-                    >
-                      {item.label}
-                    </button>
+                    <>
+                      <button
+                        className={`text-body-2 font-medium whitespace-nowrap py-2 transition-colors ${navTextCls(
+                          openMenu === item.label,
+                        )}`}
+                      >
+                        {item.label}
+                      </button>
+                      <span
+                        className={`absolute bottom-0 -left-7 -right-7 h-0.5 transition-colors ${navUnderlineCls(
+                          openMenu === item.label,
+                        )}`}
+                      />
+                    </>
                   ) : (
                     <NavLink
                       to={item.to}
                       end
                       className={({ isActive }) =>
-                        `text-body-2 font-medium whitespace-nowrap py-2 ${navLinkCls(isActive)}`
+                        `text-body-2 font-medium whitespace-nowrap py-2 transition-colors ${navTextCls(isActive)}`
                       }
                     >
-                      {item.label}
+                      {({ isActive }) => (
+                        <>
+                          {item.label}
+                          <span
+                            className={`absolute bottom-0 -left-3 -right-3 h-0.5 transition-colors ${navUnderlineCls(isActive)}`}
+                          />
+                        </>
+                      )}
                     </NavLink>
                   )}
                 </div>
@@ -259,13 +286,13 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                 <>
                   <Link
                     to="/register"
-                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
+                    className={`px-4 py-2 text-body-3 font-semibold transition-colors whitespace-nowrap ${registerLinkCls}`}
                   >
                     회원가입
                   </Link>
                   <Link
                     to="/login"
-                    className="px-4 py-2 rounded-full bg-blue-9 text-white text-body-3 font-semibold hover:bg-blue-6 active:scale-95 transition-all whitespace-nowrap"
+                    className={`px-4 py-2 rounded-full shadow-sm text-body-3 font-semibold active:scale-95 transition-all whitespace-nowrap ${loginBtnCls}`}
                   >
                     로그인
                   </Link>
@@ -286,7 +313,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
 
       {openMenu && (
         <div
-          className="absolute left-0 right-0 bg-white shadow-xl"
+          className="absolute left-0 right-0 bg-white/90 shadow-xl"
           style={{
             animation: "megaFadeIn 0.15s ease-out",
             borderBottom: "2px solid var(--color-primary)",
@@ -312,6 +339,38 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
               className="relative"
               style={{ height: panelHeight || undefined }}
             >
+              {/* 현재 호버 중인 상위 메뉴의 열 배경만 흰색으로 도드라지게 강조 —
+                  이웃 메뉴 중심까지의 절반 지점을 경계로 삼아 폭을 정한다. */}
+              {(() => {
+                const activeIndex = menuItems.findIndex((item) => item.label === openMenu);
+                if (activeIndex === -1) return null;
+                const activeCenter = colCenters[openMenu] ?? 0;
+                const prevCenter =
+                  activeIndex > 0 ? (colCenters[menuItems[activeIndex - 1].label] ?? null) : null;
+                const nextCenter =
+                  activeIndex < menuItems.length - 1
+                    ? (colCenters[menuItems[activeIndex + 1].label] ?? null)
+                    : null;
+                const leftGap =
+                  prevCenter !== null
+                    ? activeCenter - prevCenter
+                    : nextCenter !== null
+                      ? nextCenter - activeCenter
+                      : 160;
+                const rightGap = nextCenter !== null ? nextCenter - activeCenter : leftGap;
+                return (
+                  <div
+                    aria-hidden="true"
+                    className="absolute bg-white"
+                    style={{
+                      top: "-1.25rem",
+                      bottom: "-1.25rem",
+                      left: activeCenter - leftGap / 2,
+                      width: (leftGap + rightGap) / 2,
+                    }}
+                  />
+                );
+              })()}
               {menuItems.map((item) => (
                 <div
                   key={item.label}
@@ -327,7 +386,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                       key={child.label}
                       to={child.to}
                       onClick={() => setOpenMenu(null)}
-                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap hover:text-primary hover:font-semibold transition-colors"
+                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap hover:text-blue-12 hover:font-semibold transition-colors"
                     >
                       {child.label}
                     </Link>

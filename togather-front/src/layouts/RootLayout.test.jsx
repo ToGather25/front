@@ -90,8 +90,11 @@ describe("RootLayout — DesktopHeader 메가메뉴", () => {
 
     // 컬럼에는 더 이상 상위 메뉴명을 표시하는 헤더 링크가 없으므로(하위 항목만 나열),
     // 컬럼 컨테이너의 각 자식 div를 순서대로 하나의 컬럼으로 보고 그 안의 링크 개수/순서로 검증한다.
+    // aria-hidden 배경 강조 div는 실제 컬럼이 아니므로 제외한다.
     const container = within(header).getByTestId("mega-menu-columns");
-    const columns = container.children;
+    const columns = Array.from(container.children).filter(
+      (el) => el.getAttribute("aria-hidden") !== "true",
+    );
     expect(columns).toHaveLength(NAV_WITH_CHILDREN.length);
     NAV_WITH_CHILDREN.forEach((item, i) => {
       const links = within(columns[i]).getAllByRole("link");
