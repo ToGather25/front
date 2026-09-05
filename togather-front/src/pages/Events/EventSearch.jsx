@@ -12,7 +12,7 @@ function EventResultRow({ event, query }) {
   return (
     <Link
       to={`/교회행사/${event.id}`}
-      className="flex items-start gap-4 px-1 py-4 hover:bg-bluegrey-1 transition-colors"
+      className="flex items-start gap-4 -mx-3 px-3 py-4 rounded-xl hover:bg-bluegrey-1 transition-colors"
     >
       <div className="flex-1 min-w-0">
         <span className={`text-body-5 font-semibold ${ds.text}`}>{event.department}</span>
@@ -53,7 +53,10 @@ export default function EventSearch() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 md:px-8 md:py-10">
-      <div className="sticky top-14 md:top-[72px] z-30 bg-white border-b border-bluegrey-2 py-3 mb-6">
+      <div
+        className="sticky z-30 bg-white border-b border-bluegrey-2 py-3 mb-6 transition-[top] duration-300 ease-in-out"
+        style={{ top: "var(--header-offset)" }}
+      >
         <EventSearchBar defaultValue={q} onSubmit={handleSearch} autoFocus />
       </div>
 

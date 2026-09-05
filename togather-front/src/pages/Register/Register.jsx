@@ -1,19 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useAuth } from "@/contexts/auth";
+import { getErrorMessage } from "@/utils/apiErrors";
 import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
 const ADMIN_CONTACT = "02-2615-4067";
-
-// 중복 신청 모달 테스트용 — 승인 대기 중(아직 미승인)인 경우
-const PENDING_TEST_MEMBER = { name: "홍길동", birthYear: "1999", birthMonth: "1", birthDay: "1" };
-// 이미 승인은 됐지만 계정(아이디/비번)을 아직 만들지 않은 경우 — 계정 생성 화면으로 바로 이동
-const APPROVED_TEST_MEMBER = {
-  name: "알곡교회",
-  birthYear: "1999",
-  birthMonth: "1",
-  birthDay: "1",
-};
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => CURRENT_YEAR - i);
@@ -26,7 +18,7 @@ function daysInMonth(year, month) {
 
 export default function Register() {
   const { church } = useChurch();
-  const navigate = useNavigate();
+  const { register } = useAuth();
   const [form, setForm] = useState({
     name: "",
     birthYear: "",
@@ -39,6 +31,7 @@ export default function Register() {
   const [status, setStatus] = useState("idle");
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   async function handleCopyContact() {
     try {
@@ -65,34 +58,27 @@ export default function Register() {
     });
   };
 
-  const matchesTestMember = (member) =>
-    form.name.trim() === member.name &&
-    form.birthYear === member.birthYear &&
-    form.birthMonth === member.birthMonth &&
-    form.birthDay === member.birthDay;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
+    setSubmitError("");
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      // TODO: API 연동 — 휴대폰 번호로 회원 상태 확인 (PENDING/APPROVED/없음). 지금은 테스트용으로 이름+생년월일만 비교
-      if (matchesTestMember(APPROVED_TEST_MEMBER)) {
-        // 이미 승인된 성도 — 대기 없이 바로 계정 생성 화면으로 이동
-        void navigate(
-          `/register/next?token=test-token-approved&name=${encodeURIComponent(form.name)}`,
-        );
-        return;
-      }
-      if (matchesTestMember(PENDING_TEST_MEMBER)) {
-        setStatus("idle");
-        setShowDuplicateModal(true);
-        return;
-      }
+      const birthdate = `${form.birthYear}-${String(form.birthMonth).padStart(2, "0")}-${String(form.birthDay).padStart(2, "0")}`;
+      await register({
+        name: form.name,
+        birthdate,
+        phone: form.phone,
+        isNewcomer: form.isNewcomer,
+        agreePrivacy: form.agreePrivacy,
+      });
       setStatus("done");
-    } catch {
+    } catch (err) {
       setStatus("idle");
-      setShowDuplicateModal(true);
+      if (err.response?.data?.code === "SU001") {
+        setShowDuplicateModal(true);
+      } else {
+        setSubmitError(getErrorMessage(err));
+      }
     }
   };
 
@@ -131,12 +117,6 @@ export default function Register() {
           >
             로그인으로 돌아가기
           </Link>
-          <Link
-            to={`/register/next?token=test-token&name=${encodeURIComponent(form.name || "홍길동")}`}
-            className="block mt-4 text-body-4 text-grey-5 hover:text-grey-7 transition-colors"
-          >
-            테스트: 승인 후 계정 생성 화면 보기
-          </Link>
         </div>
       </div>
     );
@@ -148,28 +128,8 @@ export default function Register() {
         {/* 왼쪽 브랜드 패널 */}
         <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-          <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
 
           <div className="relative">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
             <h1 className="text-headline-4 font-bold text-white mb-3">
               {church?.name ?? "ToGather"}
             </h1>
@@ -362,6 +322,11 @@ export default function Register() {
               >
                 {status === "submitting" ? "신청 중..." : "가입 신청하기"}
               </button>
+              {submitError && (
+                <p className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3">
+                  {submitError}
+                </p>
+              )}
             </form>
 
             <p className="text-center text-body-4 text-grey-6 mt-8 border-t border-grey-2 pt-6">

@@ -31,9 +31,6 @@ export default function DirectionsSection() {
   return (
     <Section className="py-[120px] bg-white">
       <div className="mb-8">
-        <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-          DIRECTIONS
-        </p>
         <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0 mb-8">
           찾아오시는 길
         </h3>

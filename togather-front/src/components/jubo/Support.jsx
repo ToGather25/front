@@ -1,8 +1,17 @@
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getSupport } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
 export default function Support() {
-  const { support } = juboConfig;
+  const { church } = useChurch();
+  const {
+    data: support = [],
+    loading,
+    error,
+    refetch,
+  } = useFetch(() => getSupport(church.id), [church.id], []);
+
   return (
     <>
       <SectionTitle
@@ -21,24 +30,37 @@ export default function Support() {
       >
         우리 교회가 돕고 있는 곳
       </SectionTitle>
-      <table className="w-full text-body-4 mt-1 border-collapse">
-        <thead>
-          <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-            <th className="py-3 px-6 text-grey-7 font-semibold text-center">기관</th>
-            <th className="py-3 px-6 text-grey-7 font-semibold text-center">대상</th>
-            <th className="py-3 px-6 text-grey-7 font-semibold text-center">후원구역</th>
-          </tr>
-        </thead>
-        <tbody>
-          {support.map(({ organization, target, region }, i) => (
-            <tr key={i} className="border-b border-grey-3 last:border-b-0">
-              <td className="py-5 px-6 text-grey-9 text-center">{organization}</td>
-              <td className="py-5 px-6 text-grey-7 text-center">{target}</td>
-              <td className="py-5 px-6 text-grey-7 text-center">{region}</td>
+      {loading ? (
+        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+      ) : error?.response?.status === 404 ? (
+        <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
+      ) : error ? (
+        <div className="text-center py-10">
+          <p className="text-caption text-grey-5 mb-2">후원 안내를 불러오지 못했습니다.</p>
+          <button onClick={refetch} className="text-caption text-primary underline">
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <table className="w-full text-body-4 mt-1 border-collapse">
+          <thead>
+            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+              <th className="py-3 px-6 text-grey-7 font-semibold text-center">기관</th>
+              <th className="py-3 px-6 text-grey-7 font-semibold text-center">대상</th>
+              <th className="py-3 px-6 text-grey-7 font-semibold text-center">후원구역</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {support.map(({ organization, target, region }, i) => (
+              <tr key={i} className="border-b border-grey-3 last:border-b-0">
+                <td className="py-5 px-6 text-grey-9 text-center">{organization}</td>
+                <td className="py-5 px-6 text-grey-7 text-center">{target}</td>
+                <td className="py-5 px-6 text-grey-7 text-center">{region}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
   );
 }

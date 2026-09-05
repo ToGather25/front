@@ -1,39 +1,72 @@
-import { describe, it, expect } from "vite-plus/test";
-import { useState } from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { INITIAL_SCHEDULES } from "./mockData";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import ScheduleTab from "./ScheduleTab";
 
-const PAGE_SIZE = 5;
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
+  isDummy: () => false,
+}));
 
-function Wrapper() {
-  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
-  return <ScheduleTab schedules={schedules} setSchedules={setSchedules} />;
-}
+import api from "@/services/api";
 
-describe("ScheduleTab — 일정", () => {
-  it("첫 페이지에 최대 5개 일정이 표시되고 총 개수가 헤더에 보인다", () => {
-    render(<Wrapper />);
-    expect(screen.getByText(`내 일정 (${INITIAL_SCHEDULES.length})`)).toBeInTheDocument();
-    expect(screen.getByText(INITIAL_SCHEDULES[0].title)).toBeInTheDocument();
-    expect(screen.queryByText(INITIAL_SCHEDULES[PAGE_SIZE].title)).not.toBeInTheDocument();
+const SCHEDULES = [
+  {
+    id: 1,
+    title: "1구역 모임",
+    date: "2026-02-18",
+    memo: "옥길동 · 19:30",
+    status: "참석 예정",
+  },
+];
+
+describe("ScheduleTab", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("페이지네이션 2페이지를 클릭하면 다음 일정이 보인다", () => {
-    render(<Wrapper />);
-    fireEvent.click(screen.getByRole("button", { name: "2" }));
-    expect(screen.getByText(INITIAL_SCHEDULES[PAGE_SIZE].title)).toBeInTheDocument();
+  it("요일 입력 필드와 상태 배지가 없다", async () => {
+    const user = userEvent.setup();
+    renderWithChurch(<ScheduleTab schedules={SCHEDULES} setSchedules={() => {}} />);
+
+    // "요일"은 원래 일정 추가 모달 안에 있던 필드였다. 모달을 열어야 실제로 검증된다.
+    await user.click(screen.getByRole("button", { name: "+ 일정 추가" }));
+    expect(screen.queryByText("요일")).not.toBeInTheDocument();
+    // fixture에 status 필드가 있어도 StatusBadge가 되살아나지 않아야 한다.
+    expect(screen.queryByText("참석 예정")).not.toBeInTheDocument();
   });
 
-  it("일정을 추가하면 목록에 반영된다", () => {
-    render(<Wrapper />);
-
-    fireEvent.click(screen.getByRole("button", { name: "+ 일정 추가" }));
-    fireEvent.change(screen.getByPlaceholderText("예) 새가족 모임"), {
-      target: { value: "테스트 일정" },
+  it("일정을 추가하면 addMySchedule을 호출한다", async () => {
+    api.post.mockResolvedValue({
+      data: { data: { id: 2, title: "새 일정", date: "2026-03-15", memo: "본당" } },
     });
-    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    const setSchedules = vi.fn();
+    const user = userEvent.setup();
+    renderWithChurch(<ScheduleTab schedules={SCHEDULES} setSchedules={setSchedules} />);
 
-    expect(screen.getByText(`내 일정 (${INITIAL_SCHEDULES.length + 1})`)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "+ 일정 추가" }));
+    await user.type(screen.getByPlaceholderText("03.15"), "2026-03-15");
+    await user.type(screen.getByPlaceholderText("예) 새가족 모임"), "새 일정");
+    await user.click(screen.getByRole("button", { name: "추가" }));
+
+    await waitFor(() =>
+      expect(api.post).toHaveBeenCalledWith(
+        "/my/schedules",
+        expect.objectContaining({ title: "새 일정" }),
+      ),
+    );
+  });
+
+  it("일정을 삭제하면 deleteMySchedule을 호출한다", async () => {
+    api.delete.mockResolvedValue({ data: null });
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const setSchedules = vi.fn();
+    const user = userEvent.setup();
+    renderWithChurch(<ScheduleTab schedules={SCHEDULES} setSchedules={setSchedules} />);
+
+    await user.click(screen.getByRole("button", { name: "삭제" }));
+
+    await waitFor(() => expect(api.delete).toHaveBeenCalledWith("/my/schedules/1"));
   });
 });

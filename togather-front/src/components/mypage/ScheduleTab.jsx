@@ -1,28 +1,50 @@
 import { useState } from "react";
-import { StatusBadge, Pagination, InputField, ModalOverlay } from "./shared";
+import { useChurch } from "@/contexts/ChurchContext";
+import { addMySchedule, deleteMySchedule } from "@/services/myPageService";
+import { formatMonthDay, getWeekdayLabel, parseLocalDate } from "@/utils/date";
+import { Pagination, InputField, ModalOverlay } from "./shared";
 
 const PAGE_SIZE = 5;
 
-export default function ScheduleTab({ schedules, setSchedules }) {
-  const [scheduleForm, setScheduleForm] = useState({ date: "", day: "", title: "", info: "" });
+export default function ScheduleTab({ schedules, setSchedules, loadError, onRetry }) {
+  const { church } = useChurch();
+  const [scheduleForm, setScheduleForm] = useState({ date: "", title: "", memo: "" });
   const [schedulePage, setSchedulePage] = useState(1);
   const [modal, setModal] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [addError, setAddError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
-  function handleAddSchedule() {
-    if (!scheduleForm.title) return;
-    setSchedules((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        date: scheduleForm.date || "MM.DD",
-        day: scheduleForm.day,
-        title: scheduleForm.title,
-        info: scheduleForm.info,
-        status: "참석 예정",
-      },
-    ]);
-    setScheduleForm({ date: "", day: "", title: "", info: "" });
-    setModal(null);
+  async function handleAddSchedule() {
+    if (!scheduleForm.title || !scheduleForm.date) return;
+    setSubmitting(true);
+    setAddError("");
+    try {
+      const created = await addMySchedule(church.id, scheduleForm);
+      setSchedules((prev) => [...prev, created]);
+      setScheduleForm({ date: "", title: "", memo: "" });
+      setSchedulePage(1);
+      setModal(null);
+    } catch {
+      setAddError("일정 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDeleteSchedule(id) {
+    if (!confirm("삭제하시겠습니까?")) return;
+    setDeleteError("");
+    setDeletingId(id);
+    try {
+      await deleteMySchedule(church.id, id);
+      setSchedules((prev) => prev.filter((s) => s.id !== id));
+    } catch {
+      setDeleteError("일정 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   const pagedSchedules = schedules.slice((schedulePage - 1) * PAGE_SIZE, schedulePage * PAGE_SIZE);
@@ -38,50 +60,70 @@ export default function ScheduleTab({ schedules, setSchedules }) {
           + 일정 추가
         </button>
       </div>
-      <div className="space-y-3">
-        {pagedSchedules.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4"
+
+      {loadError ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+          <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다. 다시 시도해 주세요.</p>
+          <button
+            onClick={onRetry}
+            className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
           >
-            <div className="shrink-0 w-12 text-center">
-              <p className="text-body-4 font-bold text-primary">{item.date}</p>
-              <p className="text-body-5 text-grey-6">{item.day}</p>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
-              {item.info && <p className="text-body-5 text-grey-6 mt-0.5">{item.info}</p>}
-            </div>
-            <StatusBadge status={item.status} />
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <>
+          {deleteError && <p className="text-body-5 text-red-500 mb-3">{deleteError}</p>}
+          <div className="space-y-3">
+            {pagedSchedules.map((item) => {
+              const d = parseLocalDate(item.date);
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 border border-grey-3 rounded-xl px-5 py-4"
+                >
+                  <div className="shrink-0 w-12 text-center">
+                    <p className="text-body-4 font-bold text-primary">
+                      {formatMonthDay(item.date)}
+                    </p>
+                    <p className="text-body-5 text-grey-6">{d ? getWeekdayLabel(d.getDay()) : ""}</p>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-body-4 font-semibold text-grey-10">{item.title}</p>
+                    {item.memo && <p className="text-body-5 text-grey-6 mt-0.5">{item.memo}</p>}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteSchedule(item.id)}
+                    disabled={deletingId === item.id}
+                    className="text-body-5 text-grey-5 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deletingId === item.id ? "삭제 중..." : "삭제"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
-      <div className="flex-1" />
-      <Pagination
-        total={schedules.length}
-        perPage={PAGE_SIZE}
-        current={schedulePage}
-        onChange={setSchedulePage}
-      />
+          <div className="flex-1" />
+          <Pagination
+            total={schedules.length}
+            perPage={PAGE_SIZE}
+            current={schedulePage}
+            onChange={setSchedulePage}
+          />
+        </>
+      )}
 
       {modal === "add-schedule" && (
         <ModalOverlay onClose={() => setModal(null)}>
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">일정 추가</h3>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField
-                label="날짜 (MM.DD)"
-                value={scheduleForm.date}
-                onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
-                placeholder="03.15"
-              />
-              <InputField
-                label="요일"
-                value={scheduleForm.day}
-                onChange={(e) => setScheduleForm((f) => ({ ...f, day: e.target.value }))}
-                placeholder="주"
-              />
-            </div>
+            <InputField
+              label="날짜"
+              type="date"
+              value={scheduleForm.date}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
+              placeholder="03.15"
+            />
             <InputField
               label="제목"
               value={scheduleForm.title}
@@ -90,11 +132,12 @@ export default function ScheduleTab({ schedules, setSchedules }) {
             />
             <InputField
               label="시간 · 장소"
-              value={scheduleForm.info}
-              onChange={(e) => setScheduleForm((f) => ({ ...f, info: e.target.value }))}
+              value={scheduleForm.memo}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, memo: e.target.value }))}
               placeholder="예) 본당 · 14:00"
             />
           </div>
+          {addError && <p className="text-body-5 text-red-500 mt-3">{addError}</p>}
           <div className="flex justify-end gap-3 mt-6">
             <button
               onClick={() => setModal(null)}
@@ -104,9 +147,10 @@ export default function ScheduleTab({ schedules, setSchedules }) {
             </button>
             <button
               onClick={handleAddSchedule}
-              className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
+              disabled={submitting}
+              className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              추가
+              {submitting ? "추가 중..." : "추가"}
             </button>
           </div>
         </ModalOverlay>

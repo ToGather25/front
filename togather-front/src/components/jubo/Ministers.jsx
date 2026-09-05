@@ -1,9 +1,18 @@
 import { Link } from "react-router";
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getMinisters } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
 export default function Ministers() {
-  const { ministers } = juboConfig;
+  const { church } = useChurch();
+  const {
+    data: ministers = [],
+    loading,
+    error,
+    refetch,
+  } = useFetch(() => getMinisters(church.id), [church.id], []);
+
   return (
     <>
       <SectionTitle
@@ -23,53 +32,66 @@ export default function Ministers() {
       >
         섬기는 분들
       </SectionTitle>
-      <div className="mt-5 flex flex-col gap-6">
-        {ministers.map(({ title, items }) => (
-          <div key={title}>
-            <p className="text-caption font-bold text-grey-9 mb-2 px-1">{title}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-              {items.map((item) => {
-                const [role, name] = item.split("|").map((s) => s.trim());
-                return (
-                  <Link
-                    key={item}
-                    to="/교적부"
-                    className="group flex items-center gap-2.5 p-3 rounded-xl border border-bluegrey-2 bg-white hover:border-primary hover:bg-blue-1 transition-all print:pointer-events-none"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-bluegrey-2 group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
+      {loading ? (
+        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+      ) : error?.response?.status === 404 ? (
+        <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
+      ) : error ? (
+        <div className="text-center py-10">
+          <p className="text-caption text-grey-5 mb-2">섬기는 분들 정보를 불러오지 못했습니다.</p>
+          <button onClick={refetch} className="text-caption text-primary underline">
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <div className="mt-5 flex flex-col gap-6">
+          {ministers.map(({ title, items }) => (
+            <div key={title}>
+              <p className="text-caption font-bold text-grey-9 mb-2 px-1">{title}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                {items.map((item) => {
+                  const [role, name] = item.split("|").map((s) => s.trim());
+                  return (
+                    <Link
+                      key={item}
+                      to="/교적부"
+                      className="group flex items-center gap-2.5 p-3 rounded-xl border border-bluegrey-2 bg-white hover:border-primary hover:bg-blue-1 transition-all print:pointer-events-none"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-bluegrey-2 group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
+                        <svg
+                          className="w-4 h-4 text-grey-6 group-hover:text-primary transition-colors"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle cx="12" cy="8" r="4" />
+                          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-grey-6 truncate mb-1">{role}</p>
+                        <p className="text-caption font-semibold text-grey-10 group-hover:text-primary transition-colors truncate">
+                          {name || role}
+                        </p>
+                      </div>
                       <svg
-                        className="w-4 h-4 text-grey-6 group-hover:text-primary transition-colors"
+                        className="w-3.5 h-3.5 text-grey-4 group-hover:text-primary ml-auto shrink-0 transition-colors print:hidden"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.8"
+                        strokeWidth="2"
                         viewBox="0 0 24 24"
                       >
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        <path d="M9 18l6-6-6-6" />
                       </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] text-grey-6 truncate mb-1">{role}</p>
-                      <p className="text-caption font-semibold text-grey-10 group-hover:text-primary transition-colors truncate">
-                        {name || role}
-                      </p>
-                    </div>
-                    <svg
-                      className="w-3.5 h-3.5 text-grey-4 group-hover:text-primary ml-auto shrink-0 transition-colors print:hidden"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }

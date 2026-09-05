@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
+import { getMySchedules, getMyPrayers, getMyInquiries } from "@/services/myPageService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import UserBlue from "@/assets/icon-svg/mypage-user-blue.svg";
 import UserWhite from "@/assets/icon-svg/mypage-user-white.svg";
@@ -11,12 +13,7 @@ import HeartHandBlue from "@/assets/icon-svg/mypage-heart-hand-blue.svg";
 import HeartHandWhite from "@/assets/icon-svg/mypage-heart-hand-white.svg";
 import ChatBlue from "@/assets/icon-svg/mypage-chat-blue.svg";
 import ChatWhite from "@/assets/icon-svg/mypage-chat-white.svg";
-import {
-  MOCK_USER,
-  INITIAL_SCHEDULES,
-  INITIAL_PRAYERS,
-  INITIAL_INQUIRIES,
-} from "@/components/mypage/mockData";
+import { MOCK_USER } from "@/components/mypage/mockData";
 import InfoTab from "@/components/mypage/InfoTab";
 import DeptTab from "@/components/mypage/DeptTab";
 import ScheduleTab from "@/components/mypage/ScheduleTab";
@@ -34,6 +31,7 @@ const TABS = [
 export default function MyPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { church } = useChurch();
   const [activeTab, setActiveTab] = useState("info");
 
   // 탭을 벗어났다가 돌아와도 사용자가 입력·추가한 내용이 유지되도록(원본
@@ -49,9 +47,78 @@ export default function MyPage() {
     currentPw: "",
     newPw: "",
   });
-  const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
-  const [prayers, setPrayers] = useState(INITIAL_PRAYERS);
-  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
+  const [schedules, setSchedules] = useState([]);
+  const [prayers, setPrayers] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
+  const [scheduleError, setScheduleError] = useState(false);
+  const [prayerError, setPrayerError] = useState(false);
+  const [inquiryError, setInquiryError] = useState(false);
+
+  // 각 fetch는 마운트 시 useEffect에서 한 번, "다시 시도" 버튼 클릭 시 한 번 더
+  // 호출된다. cancelledRef는 useEffect의 cleanup(언마운트/의존성 변경) 시점에만
+  // 넘겨 stale response로 인한 setState를 막고, 재시도 호출에서는 생략한다.
+  function fetchSchedules(cancelledRef) {
+    setScheduleError(false);
+    return getMySchedules(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setSchedules(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setScheduleError(true);
+      });
+  }
+
+  function fetchPrayers(cancelledRef) {
+    setPrayerError(false);
+    return getMyPrayers(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setPrayers(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setPrayerError(true);
+      });
+  }
+
+  function fetchInquiries(cancelledRef) {
+    setInquiryError(false);
+    return getMyInquiries(church.id)
+      .then((list) => {
+        if (!cancelledRef?.current) setInquiries(list);
+      })
+      .catch(() => {
+        if (!cancelledRef?.current) setInquiryError(true);
+      });
+  }
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const cancelledRef = { current: false };
+    fetchSchedules(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [church.id, currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const cancelledRef = { current: false };
+    fetchPrayers(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [church.id, currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const cancelledRef = { current: false };
+    fetchInquiries(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [church.id, currentUser]);
 
   if (!currentUser) {
     return (
@@ -120,11 +187,28 @@ export default function MyPage() {
             )}
             {activeTab === "dept" && <DeptTab />}
             {activeTab === "schedule" && (
-              <ScheduleTab schedules={schedules} setSchedules={setSchedules} />
+              <ScheduleTab
+                schedules={schedules}
+                setSchedules={setSchedules}
+                loadError={scheduleError}
+                onRetry={() => fetchSchedules()}
+              />
             )}
-            {activeTab === "prayer" && <PrayerTab prayers={prayers} setPrayers={setPrayers} />}
+            {activeTab === "prayer" && (
+              <PrayerTab
+                prayers={prayers}
+                setPrayers={setPrayers}
+                loadError={prayerError}
+                onRetry={() => fetchPrayers()}
+              />
+            )}
             {activeTab === "inquiry" && (
-              <InquiryTab inquiries={inquiries} setInquiries={setInquiries} />
+              <InquiryTab
+                inquiries={inquiries}
+                setInquiries={setInquiries}
+                loadError={inquiryError}
+                onRetry={() => fetchInquiries()}
+              />
             )}
           </main>
         </div>

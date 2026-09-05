@@ -8,7 +8,6 @@ import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
 import EventSearch from "@/pages/Events/EventSearch";
-import EventApply from "@/pages/Events/EventApply";
 import Gallery from "@/pages/Gallery/Gallery";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
@@ -38,6 +37,7 @@ import NoticesManage from "@/pages/admin/NoticesManage";
 import EventsManage from "@/pages/admin/EventsManage";
 import MembersManage from "@/pages/admin/MembersManage";
 import JuboManage from "@/pages/admin/JuboManage";
+import GalleryManage from "@/pages/admin/GalleryManage";
 import AdminSettings from "@/pages/admin/Settings";
 
 // 라우트 트리를 App.jsx에서 분리 — App.jsx는 컴포넌트만 export해야 Fast Refresh가 동작하므로
@@ -61,7 +61,6 @@ export const routes = [
       { path: "교회행사", element: <Events /> },
       { path: "교회행사/검색", element: <EventSearch /> },
       { path: "교회행사/:id", element: <EventDetail /> },
-      { path: "교회행사/:id/신청", element: <EventApply /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송
       { path: "말씀", element: <Navigate to="/말씀/방송" replace /> },
@@ -104,6 +103,7 @@ export const routes = [
       { path: "events", element: <EventsManage /> },
       { path: "members", element: <MembersManage /> },
       { path: "jubo", element: <JuboManage /> },
+      { path: "gallery", element: <GalleryManage /> },
       { path: "settings", element: <AdminSettings /> },
     ],
   },

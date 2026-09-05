@@ -1,4 +1,5 @@
 /**
+ * 백엔드 계약상 필수 필드는 title, date뿐이다. location, description은 optional이며 null일 수 있다.
  * @typedef {Object} Event
  * @property {number|string} id           - 더미는 number, 실 API는 uuid string. 비교는 항상 String() 캐스팅
  * @property {string}  title              - 행사명
@@ -6,18 +7,19 @@
  * @property {string}  date               - 행사일 "YYYY-MM-DD"
  * @property {string|null} startTime      - "HH:mm" | null
  * @property {string|null} endTime        - "HH:mm" | null
- * @property {string}  location           - 장소
- * @property {string}  description        - 상세 내용
+ * @property {string|null} location       - 장소 (optional)
+ * @property {string|null} description    - 상세 내용 (optional)
  * @property {string|null} imageUrl       - 대표 이미지. null이면 기본 배너 대체
- * @property {string}  createdAt          - 등록일 "YYYY-MM-DD"
  * @property {boolean} canRegister        - 신청을 받는 행사인지
- * @property {string|null} registrationStart - 신청 시작일 "YYYY-MM-DD"
- * @property {string|null} registrationEnd   - 신청 마감일 "YYYY-MM-DD" (당일까지 포함)
- * @property {number|null} capacity       - 정원(명). null = 무제한
- * @property {number}  registeredCount    - 현재 신청 인원
+ * @property {number|null} capacity            - 정원. null이면 정원 제한 없음
+ * @property {string|null} registrationStart   - 신청 시작일 "YYYY-MM-DD" | null
+ * @property {string|null} registrationEnd     - 신청 마감일 "YYYY-MM-DD" | null
+ * @property {number} registeredCount           - 현재 신청 인원(목록/상세 조회 시 정확, 등록/수정 응답에서는 0 고정)
+ * @property {string} createdAt                 - 등록 일시 ISO 문자열, "최근 등록순" 정렬 기준
+ * @property {boolean|null} isRegistered        - 로그인한 사용자의 신청 여부. 비로그인 시 null
  */
 
-import api, { USE_DUMMY } from "./api";
+import api, { isDummy } from "./api";
 import { DUMMY_EVENTS } from "@/data/dummy/events";
 
 const todayIso = () => {
@@ -30,9 +32,7 @@ const normalize = (s) => (s ?? "").replace(/\s/g, "").toLowerCase();
 function sortEvents(list, sort) {
   const arr = [...list];
   if (sort === "createdAt") {
-    arr.sort((a, b) =>
-      a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : a.date < b.date ? -1 : 1,
-    );
+    arr.sort((a, b) => (b.createdAt < a.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0));
     return arr;
   }
   // "date" (일정 빠른순): 오늘 이후를 오름차순으로 먼저, 지난 행사는 내림차순으로 뒤에
@@ -49,7 +49,7 @@ function sortEvents(list, sort) {
  * @returns {Promise<Event[]>}
  */
 export async function getEvents(churchId, params = {}) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     if (!params.year || !params.month) return [...DUMMY_EVENTS];
     const prefix = `${params.year}-${String(params.month).padStart(2, "0")}`;
     return DUMMY_EVENTS.filter((e) => e.date.startsWith(prefix));
@@ -65,7 +65,7 @@ export async function getEvents(churchId, params = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const key = normalize(q);
     const list = key
       ? DUMMY_EVENTS.filter((e) =>
@@ -76,8 +76,15 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
       : [...DUMMY_EVENTS];
     return sortEvents(list, sort);
   }
-  const res = await api.get(`/churches/${churchId}/events/search`, { params: { q, sort } });
-  return res.data.data;
+  // 백엔드에 검색 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 필터링한다.
+  const res = await api.get(`/churches/${churchId}/events`);
+  const key = normalize(q);
+  const list = key
+    ? res.data.data.filter((e) =>
+        [e.title, e.description, e.location, e.department].some((f) => normalize(f).includes(key)),
+      )
+    : res.data.data;
+  return sortEvents(list, sort);
 }
 
 /**
@@ -87,11 +94,12 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function getRecentEvents(churchId, limit = 5) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     return sortEvents(DUMMY_EVENTS, "createdAt").slice(0, limit);
   }
-  const res = await api.get(`/churches/${churchId}/events/recent`, { params: { limit } });
-  return res.data.data;
+  // 백엔드에 최근순 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 정렬한다.
+  const res = await api.get(`/churches/${churchId}/events`);
+  return sortEvents(res.data.data, "createdAt").slice(0, limit);
 }
 
 /**
@@ -101,7 +109,7 @@ export async function getRecentEvents(churchId, limit = 5) {
  * @returns {Promise<Event|null>}
  */
 export async function getEventById(churchId, eventId) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     return DUMMY_EVENTS.find((e) => String(e.id) === String(eventId)) ?? null;
   }
   const res = await api.get(`/churches/${churchId}/events/${eventId}`);
@@ -109,18 +117,16 @@ export async function getEventById(churchId, eventId) {
 }
 
 /**
- * 행사 신청
+ * 행사 신청 — 백엔드가 요청 바디를 받지 않는다(로그인한 사용자 식별만으로 처리).
  * @param {string} churchId
  * @param {number|string} eventId
- * @param {{ name?:string, phone?:string, attendeeCount?:number, note?:string }} payload
+ * @returns {Promise<{registered:boolean}>}
  */
-export async function registerForEvent(churchId, eventId, payload = {}) {
-  if (USE_DUMMY) {
-    const event = DUMMY_EVENTS.find((e) => String(e.id) === String(eventId));
-    if (event) event.registeredCount = (event.registeredCount ?? 0) + (payload.attendeeCount ?? 1);
-    return { success: true, registration: { ...payload, eventId, status: "PENDING" } };
+export async function registerForEvent(churchId, eventId) {
+  if (isDummy("events")) {
+    return { registered: true };
   }
-  const res = await api.post(`/churches/${churchId}/events/${eventId}/register`, payload);
+  const res = await api.post(`/churches/${churchId}/events/${eventId}/register`);
   return res.data;
 }
 
@@ -131,7 +137,7 @@ export async function registerForEvent(churchId, eventId, payload = {}) {
  * @returns {Promise<Event>}
  */
 export async function createEvent(churchId, payload) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const created = {
       id: Date.now(),
       startTime: null,
@@ -147,7 +153,7 @@ export async function createEvent(churchId, payload) {
     DUMMY_EVENTS.unshift(created);
     return created;
   }
-  const res = await api.post(`/churches/${churchId}/events`, payload);
+  const res = await api.post(`/church/admin/events`, payload);
   return res.data.data;
 }
 
@@ -159,13 +165,25 @@ export async function createEvent(churchId, payload) {
  * @returns {Promise<Event|null>}
  */
 export async function updateEvent(churchId, eventId, payload) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
     if (idx === -1) return null;
     DUMMY_EVENTS[idx] = { ...DUMMY_EVENTS[idx], ...payload };
     return DUMMY_EVENTS[idx];
   }
-  const res = await api.put(`/churches/${churchId}/events/${eventId}`, payload);
+  const res = await api.patch(`/church/admin/events/${eventId}`, payload);
+  return res.data.data;
+}
+
+/**
+ * 행사 신청자 명단 조회 (관리자)
+ * @param {string} churchId
+ * @param {number|string} eventId
+ * @returns {Promise<Array<{ name:string, phone:string|null }>>}
+ */
+export async function getEventRegistrations(churchId, eventId) {
+  if (isDummy("events")) return [];
+  const res = await api.get(`/church/admin/events/${eventId}/registrations`);
   return res.data.data;
 }
 
@@ -175,11 +193,11 @@ export async function updateEvent(churchId, eventId, payload) {
  * @param {number|string} eventId
  */
 export async function deleteEvent(churchId, eventId) {
-  if (USE_DUMMY) {
+  if (isDummy("events")) {
     const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
     if (idx !== -1) DUMMY_EVENTS.splice(idx, 1);
     return { success: true };
   }
-  const res = await api.delete(`/churches/${churchId}/events/${eventId}`);
+  const res = await api.delete(`/church/admin/events/${eventId}`);
   return res.data;
 }

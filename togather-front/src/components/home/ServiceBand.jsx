@@ -11,9 +11,6 @@ export default function ServiceBand() {
       {/* Header */}
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3">
-            SERVICES
-          </p>
           <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
             예배 안내
           </h3>
@@ -43,10 +40,10 @@ export default function ServiceBand() {
         {services.slice(0, 5).map((s, i) => (
           <div
             key={s.name}
-            className={`pt-7 pb-4 pr-10 ${i > 0 ? "pl-10 border-l border-grey-4" : ""}`}
+            className={`pt-7 pb-4 pr-10 ${i > 0 ? "pl-6 border-l border-grey-4" : ""}`}
           >
             <p className="text-caption text-grey-6 mb-4 tracking-[0.04em]">{s.name}</p>
-            <p className="text-headline-4 font-bold text-primary tracking-[-0.5px] leading-none mb-2">
+            <p className="text-sub-tit-2 font-bold text-primary tracking-[-0.5px] leading-none mb-2">
               {s.time}
             </p>
             {s.location && <p className="text-body-5 text-grey-5">{s.location}</p>}

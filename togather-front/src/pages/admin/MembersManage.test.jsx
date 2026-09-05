@@ -1,52 +1,118 @@
-import { describe, it, expect } from "vite-plus/test";
-import { render, screen, fireEvent } from "@testing-library/react";
-import MEMBERS from "@/config/members.config";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import MembersManage from "./MembersManage";
 
-describe("MembersManage — 교인 목록", () => {
-  it("members.config의 실제 교인이 목록에 표시된다", () => {
-    render(<MembersManage />);
-    expect(screen.getByText(MEMBERS[0].name)).toBeInTheDocument();
-    expect(screen.getByText(`(${MEMBERS.length})`)).toBeInTheDocument();
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
+  isDummy: () => false,
+}));
+
+import api from "@/services/api";
+
+const PAGE_RESPONSE = {
+  content: [
+    {
+      id: "abc-123",
+      name: "김은혜",
+      birthDate: "1985-03-12",
+      phone: "010-****-2222",
+      newcomer: false,
+      registeredAt: "2021-02-01T09:00:00",
+    },
+  ],
+  pageInfo: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+};
+
+describe("MembersManage — 교인 목록 탭", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.get.mockResolvedValue({ data: { data: PAGE_RESPONSE } });
   });
 
-  it("부서 필터를 선택하면 해당 부서 교인만 표시된다", () => {
-    render(<MembersManage />);
-    const target = MEMBERS.find((m) => m.department === "청년부 1부");
-    const other = MEMBERS.find((m) => m.department !== "청년부 1부");
-
-    expect(target).toBeDefined();
-    expect(other).toBeDefined();
-
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "청년부 1부" } });
-
-    expect(screen.getByText(target.name)).toBeInTheDocument();
-    expect(screen.queryByText(other.name)).not.toBeInTheDocument();
+  it("목록을 불러와 렌더링한다", async () => {
+    renderWithChurch(<MembersManage />);
+    expect(await screen.findByText("김은혜")).toBeInTheDocument();
   });
 
-  it("직책 필터를 선택하면 해당 직책 교인만 표시된다(복합 직분 포함)", () => {
-    render(<MembersManage />);
-    const targets = MEMBERS.filter((m) => m.role.includes("권사"));
-    const other = MEMBERS.find((m) => !m.role.includes("권사"));
+  it("부서/직책 필터, 교인 등록, 엑셀 다운로드, 삭제 버튼이 존재하지 않는다", async () => {
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
 
-    expect(targets.length).toBeGreaterThan(1); // "권사 · 1구역장" 같은 복합 직분이 실제로 존재하는지 전제 확인
-
-    fireEvent.change(screen.getAllByRole("combobox")[1], { target: { value: "권사" } });
-
-    targets.forEach((t) => expect(screen.getByText(t.name)).toBeInTheDocument());
-    expect(screen.queryByText(other.name)).not.toBeInTheDocument();
+    expect(screen.queryByText("부서")).not.toBeInTheDocument();
+    expect(screen.queryByText("직책")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "교인 등록" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "엑셀 다운로드" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "삭제" })).not.toBeInTheDocument();
   });
 
-  it("이메일이 없는 교인도 검색 시 크래시 없이 정상 필터링된다", () => {
-    render(<MembersManage />);
-    const target = MEMBERS.find((m) => !m.email);
-    const other = MEMBERS.find((m) => m.id !== target.id);
+  it("검색어를 입력하면 디바운스 후 keyword로 서버 검색을 호출한다", async () => {
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+    vi.clearAllMocks();
+    api.get.mockResolvedValue({ data: { data: PAGE_RESPONSE } });
 
-    fireEvent.change(screen.getByPlaceholderText("이름 / 연락처 / 이메일 검색"), {
-      target: { value: target.name },
-    });
+    await user.type(screen.getByPlaceholderText("이름 / 연락처 검색"), "김은혜");
 
-    expect(screen.getByText(target.name)).toBeInTheDocument();
-    expect(screen.queryByText(other.name)).not.toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(api.get).toHaveBeenCalledWith(
+          "/church/admin/members",
+          expect.objectContaining({ params: expect.objectContaining({ keyword: "김은혜" }) }),
+        ),
+      { timeout: 1000 },
+    );
+  });
+
+  it("상세 버튼을 클릭하면 getMemberDetail을 호출해 모달에 상세 정보를 보여준다", async () => {
+    const detail = {
+      id: "abc-123",
+      name: "김은혜",
+      birthDate: "1985-03-12",
+      phone: "010-1111-2222",
+      newcomer: false,
+      registeredAt: "2021-02-01T09:00:00",
+      hasAccount: true,
+    };
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+    api.get.mockResolvedValue({ data: { data: detail } });
+
+    await user.click(screen.getByRole("button", { name: "상세" }));
+
+    expect(await screen.findByText("010-1111-2222")).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith("/church/admin/members/abc-123");
+  });
+
+  it("승인 대기 탭은 기존 더미 동작 그대로 유지된다", async () => {
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+
+    await user.click(screen.getByText("승인 대기"));
+
+    expect(screen.getByText("홍길동")).toBeInTheDocument();
+    // DUMMY_PENDING에 승인 대기자가 3명이라 "승인" 버튼도 3개 렌더링된다(원본 더미 로직 그대로).
+    expect(screen.getAllByRole("button", { name: "승인" }).length).toBeGreaterThan(0);
+  });
+
+  it("상세 조회 중 에러가 발생하면 모달이 '정보를 찾을 수 없습니다.'로 표시되고 로딩 상태에 영원히 머무르지 않는다", async () => {
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+
+    // getMemberDetail이 reject하도록 모킹
+    api.get.mockRejectedValueOnce(new Error("network error"));
+
+    await user.click(screen.getByRole("button", { name: "상세" }));
+
+    // 에러 시 "정보를 찾을 수 없습니다."가 표시되어야 함
+    expect(await screen.findByText("정보를 찾을 수 없습니다.")).toBeInTheDocument();
+
+    // "불러오는 중..."은 사라져야 함
+    expect(screen.queryByText("불러오는 중...")).not.toBeInTheDocument();
   });
 });

@@ -79,13 +79,10 @@ const MENU_ITEMS = [
 
 export default function SubMenu() {
   return (
-    <section className="w-full bg-bluegrey-1 py-[100px]">
-      <div className="max-w-[1576px] mx-auto px-[clamp(1.5rem,5vw,6rem)]">
+    <section className="w-full bg-bluegrey-1 py-[120px]">
+      <div className="max-w-[1400px] mx-auto px-[clamp(1.5rem,5vw,6rem)]">
         {/* Section head */}
         <div className="mb-8">
-          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-            SHORTCUTS
-          </p>
           <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
             바로가기 메뉴
           </h3>

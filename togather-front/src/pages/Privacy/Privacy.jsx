@@ -65,7 +65,7 @@ export default function Privacy() {
     <div>
       <div className="relative h-[160px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">개인정보취급방침</h1>
         </div>
       </div>

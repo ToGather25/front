@@ -1,30 +1,39 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-import { getPastSermons } from "@/services/sermonService";
+import { getSermonDetail, searchSermons } from "@/services/sermonService";
+
+const NEIGHBOR_FETCH_SIZE = 50;
 
 export default function WordSermonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { church } = useChurch();
-  const channelId = church.social?.youtubeChannelId;
-  const [sermons, setSermons] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [sermon, setSermon] = useState(undefined); // undefined=로딩중, null=없음
+  const [neighbors, setNeighbors] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
-    getPastSermons(channelId, 50).then((data) => {
-      if (!cancelled) {
-        setSermons(data);
-        setLoading(false);
+    setSermon(undefined);
+    void Promise.allSettled([
+      getSermonDetail(church.id, id),
+      searchSermons(church.id, { page: 1, size: NEIGHBOR_FETCH_SIZE }),
+    ]).then(([detailResult, neighborsResult]) => {
+      if (cancelled) return;
+      if (detailResult.status === "rejected") {
+        console.error("[WordSermonDetail] 설교 상세 조회 실패:", detailResult.reason);
+        setSermon(null);
+        return;
       }
+      setSermon(detailResult.value);
+      setNeighbors(neighborsResult.status === "fulfilled" ? neighborsResult.value.sermons : []);
     });
     return () => {
       cancelled = true;
     };
-  }, [channelId]);
+  }, [church.id, id]);
 
-  if (loading) {
+  if (sermon === undefined) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-24 md:px-8">
         <div
@@ -35,9 +44,7 @@ export default function WordSermonDetail() {
     );
   }
 
-  const sermon = sermons.find((s) => s.id === id);
-
-  if (!sermon) {
+  if (sermon === null) {
     return (
       <div className="max-w-3xl mx-auto px-8 py-24 text-center">
         <p className="text-sub-tit-4 text-grey-6">설교를 찾을 수 없습니다.</p>
@@ -51,17 +58,17 @@ export default function WordSermonDetail() {
     );
   }
 
-  // 이전/다음 설교 (목록 순서 기준 — 최신순으로 조회되므로 다음 인덱스가 더 과거)
-  const currentIdx = sermons.findIndex((s) => s.id === sermon.id);
-  const prev = sermons[currentIdx + 1] ?? null;
-  const next = sermons[currentIdx - 1] ?? null;
+  // 이전/다음 설교 (검색 결과 순서 기준 — 최신순으로 조회되므로 다음 인덱스가 더 과거)
+  const currentIdx = neighbors.findIndex((s) => s.id === sermon.id);
+  const prev = currentIdx === -1 ? null : (neighbors[currentIdx + 1] ?? null);
+  const next = currentIdx === -1 ? null : (neighbors[currentIdx - 1] ?? null);
 
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
+      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <button
             onClick={() => navigate("/말씀/설교")}
             className="flex items-center gap-1.5 text-blue-3 hover:text-white transition-colors text-body-4 mb-3"
@@ -86,9 +93,9 @@ export default function WordSermonDetail() {
           className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-8"
           style={{ aspectRatio: "16/9" }}
         >
-          {sermon.videoId ? (
+          {sermon.youtubeVideoId ? (
             <iframe
-              src={`https://www.youtube.com/embed/${sermon.videoId}`}
+              src={`https://www.youtube.com/embed/${sermon.youtubeVideoId}`}
               title={sermon.title}
               className="w-full h-full"
               allowFullScreen
@@ -113,8 +120,20 @@ export default function WordSermonDetail() {
         </div>
 
         {/* 설교 정보 */}
-        <p className="text-body-4 text-grey-5 mb-3">{sermon.date}</p>
-        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-6">{sermon.title}</h2>
+        <p className="text-body-4 text-grey-5 mb-3">{sermon.sermonDate}</p>
+        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-4">{sermon.title}</h2>
+        {(sermon.scripture || sermon.preacher || sermon.worshipType) && (
+          <div className="flex items-center gap-2 text-body-3 text-grey-6 mb-6">
+            {sermon.worshipType && (
+              <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">
+                {sermon.worshipType}
+              </span>
+            )}
+            {sermon.scripture && <span className="text-primary font-medium">{sermon.scripture}</span>}
+            {sermon.scripture && sermon.preacher && <span className="text-grey-4">·</span>}
+            {sermon.preacher && <span>{sermon.preacher}</span>}
+          </div>
+        )}
 
         {/* 이전/다음 네비게이션 */}
         <div className="flex gap-4 mt-12 pt-8 border-t border-bluegrey-2">

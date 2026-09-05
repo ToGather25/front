@@ -26,14 +26,14 @@ ToGather는 여러 교회에 동일한 플랫폼을 제공하는 SaaS 서비스�
 const churchConfig = {
   id: "togather-church",     // API 요청 시 churchId
   slug: "togather",          // 서브도메인/URL 슬러그
-  name: "투게더교회",
+  name: "알곡교회",
 
   // 연락처
-  address: "경기도 부천시 …",
+  address: "서울 관악구 난곡로24길 42 (신림동)",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
   email: "algok@gmail.com",
-  pastor: "김함께",
+  pastor: "유상현",
   denomination: "대한예수교장로회 고신교단",
 
   // 브랜드
@@ -88,20 +88,25 @@ const churchConfig = {
 const { church, loading } = useChurch();
 ```
 
-### 운영 환경 전환 방법
+### 실제 동작 (`ChurchProvider`)
 
-`ChurchProvider`의 `useEffect` 내부만 수정하면 됩니다:
+부팅 시 `getTenant(domain)`으로 `/api/tenant`를 호출하고, 응답을 `church.config.js`(`defaultConfig`) 위에 얕게 병합한다. `nav`(GNB 메뉴 구조)는 프론트 전용 라우팅 데이터라 병합 대상에서 제외하고 항상 `defaultConfig.nav`를 쓴다.
 
 ```js
-// 현재 (개발): 로컬 config 파일 사용
-setLoading(false);
-
-// 운영: 서브도메인 기반 API 호출로 교체
-const domain = window.location.hostname;
-fetchChurchByDomain(domain)
-  .then(setChurch)
-  .finally(() => setLoading(false));
+getTenant(domain)
+  .then((data) => {
+    setCurrentChurchId(data.id);
+    setState({ church: { ...defaultConfig, ...data, nav: defaultConfig.nav }, status: "ready" });
+  })
+  .catch((err) => {
+    // 백엔드 미배포, 도메인 미등록 등으로 실패해도 에러 화면을 띄우지 않고
+    // defaultConfig(이 배포의 기본 교회 데이터)를 그대로 보여준다.
+    console.warn("[ChurchProvider] 테넌트 조회 실패 — 로컬 기본 설정으로 표시합니다.", err);
+    setState({ church: defaultConfig, status: "ready" });
+  });
 ```
+
+`domain`은 `VITE_DEV_CHURCH_DOMAIN` 환경변수가 있으면 그 값을, 없으면 `window.location.hostname`을 쓴다(로컬 개발은 `localhost`가 어떤 교회에도 안 매핑되므로 `.env`에서 override).
 
 ---
 
@@ -142,7 +147,7 @@ nav: [
 
 ---
 
-## 테넌트 식별 흐름 (운영)
+## 테넌트 식별 흐름
 
 ```
 사용자 접속 (a.togather.church)
@@ -151,10 +156,12 @@ ChurchProvider useEffect
     ↓
 GET /api/tenant?domain=a.togather.church
     ↓
-{ id, name, features, nav, … } 응답
-    ↓
-setChurch(config) → 전체 앱에 반영
+   성공 ──→ { id, name, features, nav, … } 응답 → defaultConfig 위에 병합 → 전체 앱에 반영
+    │
+   실패 ──→ (백엔드 미배포·도메인 미등록 등) → defaultConfig 그대로 사용 → 전체 앱에 반영
 ```
+
+**폴백 동작**: 지금 `togather-front` 저장소는 `church.config.js`가 곧 알곡교회 데이터라, `/api/tenant` 호출이 실패해도(예: 백엔드가 아직 배포되지 않은 환경에 프론트만 먼저 배포한 경우) 에러 화면 대신 알곡교회 데이터로 정상 렌더링된다. 새 교회를 실제로 온보딩해 이 폴백에 의존하면 안 되는 시점이 오면(설정 누락을 조용히 가려버리는 부작용), 폴백 허용 여부를 환경별로 재검토해야 한다.
 
 ---
 

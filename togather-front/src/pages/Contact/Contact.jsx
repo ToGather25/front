@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
+import { submitContact } from "@/services/contactService";
+import { getErrorMessage } from "@/utils/apiErrors";
 import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
 export default function Contact() {
   const { church } = useChurch();
   const [form, setForm] = useState({ name: "", phone: "", email: "", category: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const categories = ["예배 및 행사", "교회 등록", "차량 운행", "시설 대여", "기타 문의"];
 
@@ -13,23 +17,32 @@ export default function Contact() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // TODO: API 연동
-    setSubmitted(true);
+    if (submitting) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      await submitContact(church.id, form);
+      setSubmitted(true);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
+      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1576px] mx-auto px-8 pb-8 w-full">
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">문의하기</h1>
         </div>
       </div>
 
-      <div className="max-w-[1576px] mx-auto px-4 py-8 md:px-8 md:py-14">
+      <div className="max-w-[1400px] mx-auto px-4 py-8 md:px-8 md:py-14">
         <div className="grid gap-12 grid-cols-1 md:grid-cols-[1fr_400px]">
           {/* 문의 양식 */}
           {submitted ? (
@@ -65,10 +78,11 @@ export default function Contact() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-body-4 font-semibold text-grey-9">
+                  <label htmlFor="contact-name" className="text-body-4 font-semibold text-grey-9">
                     이름 <span className="text-blue-7">*</span>
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     name="name"
                     value={form.name}
@@ -79,10 +93,11 @@ export default function Contact() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-body-4 font-semibold text-grey-9">
+                  <label htmlFor="contact-phone" className="text-body-4 font-semibold text-grey-9">
                     연락처 <span className="text-blue-7">*</span>
                   </label>
                   <input
+                    id="contact-phone"
                     type="tel"
                     name="phone"
                     value={form.phone}
@@ -95,8 +110,11 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-body-4 font-semibold text-grey-9">이메일</label>
+                <label htmlFor="contact-email" className="text-body-4 font-semibold text-grey-9">
+                  이메일
+                </label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
                   value={form.email}
@@ -107,10 +125,11 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-body-4 font-semibold text-grey-9">
+                <label htmlFor="contact-category" className="text-body-4 font-semibold text-grey-9">
                   문의 유형 <span className="text-blue-7">*</span>
                 </label>
                 <select
+                  id="contact-category"
                   name="category"
                   value={form.category}
                   onChange={handleChange}
@@ -127,10 +146,11 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-body-4 font-semibold text-grey-9">
+                <label htmlFor="contact-message" className="text-body-4 font-semibold text-grey-9">
                   문의 내용 <span className="text-blue-7">*</span>
                 </label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   value={form.message}
                   onChange={handleChange}
@@ -141,11 +161,18 @@ export default function Contact() {
                 />
               </div>
 
+              {error && (
+                <p role="alert" className="text-body-4 text-red-500">
+                  {error}
+                </p>
+              )}
+
               <button
                 type="submit"
-                className="mt-2 py-4 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all"
+                disabled={submitting}
+                className="mt-2 py-4 rounded-xl bg-primary text-white font-bold text-body-2 hover:bg-blue-8 active:scale-[0.99] transition-all disabled:bg-blue-3 disabled:cursor-not-allowed"
               >
-                문의 보내기
+                {submitting ? "전송 중..." : "문의 보내기"}
               </button>
             </form>
           )}

@@ -1,8 +1,8 @@
 import { Link } from "react-router";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import SectionTitle from "@/components/common/SectionTitle";
+import ChurchLogo from "@/components/common/ChurchLogo";
 
 export default function JuboPreviewSection() {
   const { church } = useChurch();
@@ -45,7 +45,7 @@ export default function JuboPreviewSection() {
           </button>
 
           {/* 주보 내용 */}
-          <div className="flex-1 flex gap-5 items-stretch min-h-[200px]">
+          <div className="flex-1 flex gap-5 items-stretch min-h-[150px]">
             {/* 표어 카드 */}
             <div className="bg-blue-1 rounded-xl flex flex-col items-center justify-center gap-5 px-10 py-8">
               <div className="w-24 h-24 rounded-full bg-primary flex flex-col items-center justify-center text-white shadow-md">
@@ -61,7 +61,7 @@ export default function JuboPreviewSection() {
             {/* 교회 이미지 */}
             <div className="flex-1 rounded-xl bg-bluegrey-2 overflow-hidden relative">
               <div className="absolute inset-0 flex items-center justify-center">
-                <img src={LogoIcon} className="w-22 h-22 opacity-20" alt="" />
+                <ChurchLogo className="w-22 h-22 opacity-20 text-[13px]" alt="" />
               </div>
               <div className="absolute bottom-4 left-4">
                 <p className="text-body-5 text-grey-5">주보 이미지</p>

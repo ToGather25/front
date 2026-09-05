@@ -1,11 +1,20 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
-import { screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import MyPage from "./MyPage";
+
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
+  isDummy: () => false,
+}));
+
+import api from "@/services/api";
 
 describe("MyPage — 로그인 가드 + 탭 전환", () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
+    api.get.mockResolvedValue({ data: { data: [] } });
   });
 
   it("비로그인 상태면 로그인 필요 모달을 보여주고 탭 콘텐츠는 렌더되지 않는다", () => {
@@ -37,21 +46,29 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
     expect(screen.queryByText("내 프로필")).not.toBeInTheDocument();
   });
 
-  it("일정 탭에서 일정을 추가하고 다른 탭으로 이동했다가 돌아오면 추가한 일정이 유지된다", () => {
+  it("일정 탭에서 일정을 추가하고 다른 탭으로 이동했다가 돌아오면 추가한 일정이 유지된다", async () => {
     localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
+    api.post.mockResolvedValue({
+      data: { data: { id: 999, title: "지속성 테스트 일정", date: "2026-03-15", memo: "" } },
+    });
     renderWithChurch(<MyPage />, { withAuth: true });
 
     fireEvent.click(screen.getByRole("button", { name: "일정" }));
     const before = screen.getByText(/^내 일정 \(\d+\)$/).textContent;
 
     fireEvent.click(screen.getByRole("button", { name: "+ 일정 추가" }));
+    fireEvent.change(screen.getByPlaceholderText("03.15"), {
+      target: { value: "2026-03-15" },
+    });
     fireEvent.change(screen.getByPlaceholderText("예) 새가족 모임"), {
       target: { value: "지속성 테스트 일정" },
     });
     fireEvent.click(screen.getByRole("button", { name: "추가" }));
 
+    await waitFor(() => {
+      expect(screen.getByText(/^내 일정 \(\d+\)$/).textContent).not.toBe(before);
+    });
     const afterAdd = screen.getByText(/^내 일정 \(\d+\)$/).textContent;
-    expect(afterAdd).not.toBe(before);
 
     fireEvent.click(screen.getByRole("button", { name: "문의하기" }));
     fireEvent.click(screen.getByRole("button", { name: "일정" }));

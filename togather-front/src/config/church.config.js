@@ -4,7 +4,9 @@
  * SaaS 환경에서는 이 설정이 서브도메인/도메인 기반으로 서버에서 주입됩니다.
  * 예: GET /api/tenant?domain=togather.church
  *
- * 현재는 로컬 설정 파일 사용 (개발 단계)
+ * 이 파일 자체가 이 배포(이 저장소)의 기본 교회 데이터(알곡교회)이기도 하다 —
+ * ChurchProvider는 위 API 호출이 실패해도(백엔드 미배포 등) 이 값을 그대로 보여준다
+ * (ChurchContext.jsx 참고). 즉 이 저장소를 그대로 배포하면 "알곡교회 프론트"로 동작한다.
  */
 
 import floor1 from "@/assets/floors/1.png";
@@ -39,8 +41,8 @@ const churchConfig = {
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube: "https://www.youtube.com/channel/UCEqVXU3lm5RbDRWbTSPc_yg", // 채널 URL (푸터 링크용)
-    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg", // UC로 시작하는 채널 ID (예: UCxxxxxxxxxxxxxxxxxx)
+    youtube: "https://www.youtube.com/channel/UCHKLbKQ17ZXo735AaWugkiA", // 채널 URL (푸터 링크용) — 서울알곡교회
+    youtubeChannelId: "UCHKLbKQ17ZXo735AaWugkiA", // UC로 시작하는 채널 ID (서울알곡교회)
     instagram: null,
     facebook: null,
   },
@@ -118,9 +120,8 @@ const churchConfig = {
     mypage: true, // 마이페이지
   },
 
-  // ── 히어로 배너 텍스트 ────────────────────────────────
+  // ── 히어로 배너 텍스트 (배경 이미지는 churchProfileService의 실API로 대체됨) ──
   mainBanner: {
-    url: "",
     title: "하나님의 사랑이 우리에게\n이렇게 나타난 바 되었으니",
     subtitle:
       "하나님의 자기의 독생자를 세상에 보내심은\n저로 말미암아 우리를 살리려 하심이니라 (요일 4:9)",
@@ -400,7 +401,6 @@ const churchConfig = {
   // ── 주차 안내 ─────────────────────────────────────────
   parking: {
     details: [
-      { label: "주차 가능 대수", value: "00대" },
       { label: "주차 요금", value: "무료" },
       { label: "주차 가능 시간", value: "주일 오전 9시 ~ 오후 2시" },
       { label: "안내", value: "주차 공간이 협소하니 가급적 대중교통을 이용해 주세요." },

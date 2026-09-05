@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getEvents, createEvent, updateEvent, deleteEvent } from "@/services/eventsService";
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  getEventRegistrations,
+} from "@/services/eventsService";
 import { EVENT_CATEGORIES, getDepartmentStyle } from "@/config/events.config";
 import { formatDotDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
@@ -22,9 +28,9 @@ function emptyForm() {
     description: "",
     imageUrl: "",
     canRegister: false,
+    capacity: "",
     registrationStart: "",
     registrationEnd: "",
-    capacity: "",
   };
 }
 
@@ -35,9 +41,9 @@ function toFormState(event) {
     startTime: event.startTime ?? "",
     endTime: event.endTime ?? "",
     imageUrl: event.imageUrl ?? "",
+    capacity: event.capacity ?? "",
     registrationStart: event.registrationStart ?? "",
     registrationEnd: event.registrationEnd ?? "",
-    capacity: event.capacity ?? "",
   };
 }
 
@@ -58,9 +64,9 @@ function EventFormModal({ event, onClose, onSave, saving }) {
       startTime: form.startTime || null,
       endTime: form.endTime || null,
       imageUrl: form.imageUrl || null,
-      capacity: form.canRegister && form.capacity !== "" ? Number(form.capacity) : null,
-      registrationStart: form.canRegister && form.registrationStart ? form.registrationStart : null,
-      registrationEnd: form.canRegister && form.registrationEnd ? form.registrationEnd : null,
+      capacity: form.capacity === "" ? null : Number(form.capacity),
+      registrationStart: form.registrationStart || null,
+      registrationEnd: form.registrationEnd || null,
     });
   };
 
@@ -166,12 +172,23 @@ function EventFormModal({ event, onClose, onSave, saving }) {
           </label>
 
           {form.canRegister && (
-            <div className="grid grid-cols-3 gap-4 bg-grey-1 rounded-xl p-4">
+            <div className="grid grid-cols-3 gap-4 pl-6 border-l-2 border-grey-2">
+              <div>
+                <label className={labelCls}>정원</label>
+                <input
+                  type="number"
+                  min="0"
+                  className={inputCls}
+                  value={form.capacity}
+                  onChange={set("capacity")}
+                  placeholder="비우면 제한 없음"
+                />
+              </div>
               <div>
                 <label className={labelCls}>신청 시작일</label>
                 <input
                   type="date"
-                  className={`${inputCls} bg-white`}
+                  className={inputCls}
                   value={form.registrationStart}
                   onChange={set("registrationStart")}
                 />
@@ -180,20 +197,9 @@ function EventFormModal({ event, onClose, onSave, saving }) {
                 <label className={labelCls}>신청 마감일</label>
                 <input
                   type="date"
-                  className={`${inputCls} bg-white`}
+                  className={inputCls}
                   value={form.registrationEnd}
                   onChange={set("registrationEnd")}
-                />
-              </div>
-              <div>
-                <label className={labelCls}>정원</label>
-                <input
-                  type="number"
-                  min={1}
-                  className={`${inputCls} bg-white`}
-                  value={form.capacity}
-                  onChange={set("capacity")}
-                  placeholder="비워두면 무제한"
                 />
               </div>
             </div>
@@ -220,12 +226,74 @@ function EventFormModal({ event, onClose, onSave, saving }) {
   );
 }
 
-const GRID_COLS = "48px 90px 1fr 130px 120px 150px 100px 110px";
+function EventRegistrationsModal({ event, onClose }) {
+  const { church } = useChurch();
+  const {
+    data: registrations = [],
+    loading,
+    error,
+    refetch,
+  } = useFetch(() => getEventRegistrations(church.id, event.id), [church.id, event.id], []);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,.45)" }}
+    >
+      <div className="bg-white rounded-2xl p-8 w-[480px] max-h-[80vh] overflow-y-auto shadow-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-sub-tit-4 font-bold text-grey-11">{event.title} 신청자 명단</h3>
+          <button onClick={onClose} className="text-grey-5 hover:text-grey-8" type="button">
+            닫기
+          </button>
+        </div>
+        {loading ? (
+          <p className="text-body-4 text-grey-5 text-center py-8">불러오는 중...</p>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-body-4 text-grey-5 mb-2">신청자 명단을 불러오지 못했습니다.</p>
+            <button
+              onClick={refetch}
+              className="text-body-5 text-primary underline"
+              type="button"
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : registrations.length === 0 ? (
+          <p className="text-body-4 text-grey-5 text-center py-8">신청자가 없습니다.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {registrations.map((r, i) => (
+              <li
+                key={i}
+                className="flex items-center justify-between px-4 py-2.5 rounded-xl border border-grey-2"
+              >
+                <span className="text-body-4 text-grey-9">{r.name}</span>
+                <span className="text-body-5 text-grey-6">{r.phone ?? "-"}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const GRID_COLS = "48px 90px 1fr 130px 120px 110px 150px";
 
 const STATUS_BADGE = {
   open: "bg-blue-1 text-blue-8",
-  upcoming: "bg-grey-2 text-grey-7",
+  not_yet_open: "bg-grey-2 text-grey-6",
+  full: "bg-grey-2 text-grey-6",
   closed: "bg-grey-2 text-grey-6",
+};
+
+const ADMIN_STATUS_LABEL = {
+  open: "신청가능",
+  not_yet_open: "신청예정",
+  full: "정원마감",
+  closed: "신청마감",
 };
 
 export default function EventsManage() {
@@ -239,10 +307,12 @@ export default function EventsManage() {
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(null); // null | "new" | event
   const [saving, setSaving] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [registrationsFor, setRegistrationsFor] = useState(null); // null | event
 
   const filtered = events
     .filter((e) => tab === "전체" || e.department === tab)
-    .filter((e) => e.title.includes(search) || e.location.includes(search))
+    .filter((e) => (e.title ?? "").includes(search) || (e.location ?? "").includes(search))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
   async function handleSave(form) {
@@ -261,8 +331,17 @@ export default function EventsManage() {
 
   async function handleDelete(id) {
     if (!confirm("삭제하시겠습니까?")) return;
-    await deleteEvent(church.id, id);
-    await refetch();
+    setDeleteError(null);
+    try {
+      await deleteEvent(church.id, id);
+      await refetch();
+    } catch (err) {
+      if (err.response?.data?.code === "EV003") {
+        setDeleteError("신청 이력이 있는 행사는 삭제할 수 없습니다.");
+      } else {
+        setDeleteError("삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+    }
   }
 
   return (
@@ -275,8 +354,14 @@ export default function EventsManage() {
           saving={saving}
         />
       )}
+      {registrationsFor && (
+        <EventRegistrationsModal
+          event={registrationsFor}
+          onClose={() => setRegistrationsFor(null)}
+        />
+      )}
 
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-headline-5 font-bold text-grey-11">교회행사 관리</h1>
         <button
           onClick={() => setModal("new")}
@@ -296,7 +381,7 @@ export default function EventsManage() {
           행사 등록
         </button>
       </div>
-      <p className="text-body-5 text-grey-5 mb-6">더미 모드: 새로고침 시 초기화됩니다.</p>
+      {deleteError && <p className="text-body-4 text-red-500 mb-4">{deleteError}</p>}
 
       {/* Filter row */}
       <div className="flex items-center gap-3 mb-4">
@@ -341,7 +426,6 @@ export default function EventsManage() {
           <span className="pl-2">행사명</span>
           <span>장소</span>
           <span className="text-center">행사일시</span>
-          <span className="text-center">신청기간</span>
           <span className="text-center">신청현황</span>
           <span className="text-center">관리</span>
         </div>
@@ -379,23 +463,17 @@ export default function EventsManage() {
                     </>
                   )}
                 </span>
-                <span className="text-body-5 text-grey-6 text-center">
-                  {e.canRegister
-                    ? `${formatDotDate(e.registrationStart)} ~ ${formatDotDate(e.registrationEnd)}`
-                    : "-"}
-                </span>
                 <span className="text-center">
                   {e.canRegister ? (
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-body-5 text-grey-7">
-                        {e.capacity != null
-                          ? `${e.registeredCount}/${e.capacity}`
-                          : `${e.registeredCount}명`}
-                      </span>
                       <span
                         className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[regState.status] ?? STATUS_BADGE.closed}`}
                       >
-                        {regState.label}
+                        {ADMIN_STATUS_LABEL[regState.status] ?? "-"}
+                      </span>
+                      <span className="text-[11px] text-grey-5">
+                        {e.registeredCount ?? 0}
+                        {typeof e.capacity === "number" ? ` / ${e.capacity}명` : "명"}
                       </span>
                     </div>
                   ) : (
@@ -403,6 +481,14 @@ export default function EventsManage() {
                   )}
                 </span>
                 <div className="flex gap-1.5 justify-center">
+                  {e.canRegister && (
+                    <button
+                      onClick={() => setRegistrationsFor(e)}
+                      className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
+                    >
+                      신청자
+                    </button>
+                  )}
                   <button
                     onClick={() => setModal(e)}
                     className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"

@@ -1,6 +1,5 @@
 import { Outlet, Link, NavLink, useLocation } from "react-router";
-import { useState, useEffect } from "react";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import FooterLocation from "@/assets/icon-svg/footer-location.svg";
@@ -8,6 +7,7 @@ import FooterPhone from "@/assets/icon-svg/footer-phone.svg";
 import FooterEmail from "@/assets/icon-svg/footer-email.svg";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import ChurchLogo from "@/components/common/ChurchLogo";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -18,130 +18,315 @@ function ScrollToTop() {
 }
 
 // ─────────────────────────────────────────────────────
+// 스크롤 방향에 따라 헤더 노출 여부를 결정하는 훅
+// 페이지 최상단 근처(threshold 이내)에서는 항상 노출, 마지막으로 방향이
+// 확정된 지점(anchor) 대비 아래로 delta 이상 스크롤하면 숨김, 위로 delta
+// 이상 스크롤하면 다시 노출한다.
+//
+// anchor는 "방향이 확정될 때만" 갱신한다(매 프레임 갱신하지 않음) — 그래야
+// 트랙패드/마우스의 미세한 스크롤 노이즈에 흔들리지 않고 진짜 방향 전환만
+// 반영된다. (참고: 헤더를 숨길 때 max-height 같은 레이아웃 속성을 썼던
+// 이전 구현은 헤더 높이만큼 문서 전체 높이가 줄면서, 콘텐츠가 짧은
+// 페이지에서 스크롤 가능 범위 자체가 줄어 브라우저가 scrollY를 강제로
+// 당겨버렸다(clamp) — 이걸 "위로 스크롤함"으로 오인해 헤더를 다시 켜고,
+// 문서가 다시 늘어나 또 꺼지는 진동이 반짝임의 진짜 원인이었다. 지금은
+// 레이아웃에 영향을 주지 않는 transform으로 숨기므로 이 되먹임 자체가
+// 발생할 수 없다.)
+//
+// atTop은 "최상단 근처" 여부만 별도로 노출한다 — 아래로 스크롤했다가 다시 위로
+// 올려 visible이 true가 된 경우와 구분하기 위함(예: 히어로 위 투명 헤더는
+// visible이 아니라 atTop 기준으로 켜져야 한다).
+// ─────────────────────────────────────────────────────
+function useHideHeaderOnScroll({ threshold = 80, delta = 16 } = {}) {
+  const [visible, setVisible] = useState(true);
+  const [atTop, setAtTop] = useState(true);
+
+  useEffect(() => {
+    let anchorY = window.scrollY;
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const currentY = Math.max(0, window.scrollY);
+        setAtTop(currentY <= threshold);
+        if (currentY <= threshold) {
+          setVisible(true);
+          anchorY = currentY;
+        } else if (currentY - anchorY > delta) {
+          setVisible(false);
+          anchorY = currentY;
+        } else if (anchorY - currentY > delta) {
+          setVisible(true);
+          anchorY = currentY;
+        }
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold, delta]);
+
+  return { visible, atTop };
+}
+
+/**
+ * 엘리먼트의 실제(축소되지 않은) 높이를 마운트 시 한 번만 측정해 픽셀 값으로
+ * 반환한다. display:none인 브레이크포인트에서는 0을 반환 — 데스크탑/모바일
+ * 헤더 중 현재 화면에 실제로 보이는 쪽만 값을 갖게 되므로 별도 매체쿼리
+ * 분기 없이 두 값을 더하기만 해도 "현재 보이는 헤더의 높이"가 된다.
+ *
+ * 의도적으로 ResizeObserver/resize 리스너로 계속 재측정하지 않는다 — 이
+ * 훅이 측정한 높이가 다시 헤더의 max-height(레이아웃)에 쓰이므로, 재측정을
+ * 계속하면 "측정→렌더→레이아웃 변화→재측정"이 맞물려 헤더가 빠르게
+ * 켜졌다 꺼졌다 반복하는 깜빡임의 원인이 될 수 있다. 헤더 콘텐츠 자체가
+ * 런타임에 크기를 바꿀 일이 없으므로 최초 1회 측정으로 충분하다.
+ */
+function useMeasuredHeight(ref) {
+  const [height, setHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setHeight(el.offsetHeight);
+  }, [ref]);
+
+  return height;
+}
+
+// ─────────────────────────────────────────────────────
 // Desktop Header (md 이상에서만 표시)
 // ─────────────────────────────────────────────────────
-function DesktopHeader() {
+function DesktopHeader({ visible, barRef, transparent = false }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
   const NAV_ITEMS = church.nav;
+  const menuItems = NAV_ITEMS.filter((item) => item.children);
   const [openMenu, setOpenMenu] = useState(null);
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const rowRef = useRef(null);
+  const itemRefs = useRef({});
+  const colRefs = useRef({});
+  const [colCenters, setColCenters] = useState({});
+  const [panelHeight, setPanelHeight] = useState(0);
+
+  // 메가 메뉴 각 열의 중심이 상단 메뉴 항목의 중심과 같은 x축 위치에 오도록, 메뉴
+  // 항목의 실제 렌더 위치(중심 좌표)를 측정해둔다. 열의 왼쪽 끝을 메뉴 항목의 왼쪽
+  // 끝에 맞추고 그 안에서 하위 항목들을 가운데 정렬하면, 하위 항목 중 가장 긴
+  // 것이 열의 폭을 정하면서 짧은 항목들이 메뉴 항목 기준에서 오른쪽으로 밀려
+  // 보인다 — 그래서 왼쪽 끝이 아니라 중심끼리 맞춰야 한다.
+  useLayoutEffect(() => {
+    function measure() {
+      const rowEl = rowRef.current;
+      if (!rowEl) return;
+      const rowLeft = rowEl.getBoundingClientRect().left;
+      const next = {};
+      NAV_ITEMS.forEach((item) => {
+        const el = itemRefs.current[item.label];
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        next[item.label] = rect.left - rowLeft + rect.width / 2;
+      });
+      setColCenters(next);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [openMenu, NAV_ITEMS]);
+
+  // 각 열은 position:absolute + translateX(-50%)로 중심을 고정하므로 문서 흐름에서
+  // 빠진다 — 패널이 가장 긴 열의 높이만큼 자기 높이를 확보하도록 렌더 후 별도로 측정.
+  useLayoutEffect(() => {
+    if (!openMenu) return;
+    const heights = Object.values(colRefs.current)
+      .filter(Boolean)
+      .map((el) => el.offsetHeight);
+    setPanelHeight(heights.length ? Math.max(...heights) : 0);
+  }, [openMenu, colCenters]);
+
+  // 메뉴가 열린 채로 스크롤하면 헤더는 translateY로 숨는데 드롭다운 패널은 헤더와
+  // 무관하게 별도로 떠 있어서 화면에 그대로 남는다 — 스크롤이 시작되면 닫는다.
+  useEffect(() => {
+    if (!openMenu) return;
+    function closeOnScroll() {
+      setOpenMenu(null);
+    }
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+    return () => window.removeEventListener("scroll", closeOnScroll);
+  }, [openMenu]);
+
+  // 메가 메뉴가 열려 있는 동안은 히어로 배경이 뒤에 비치는 투명 헤더 대신
+  // 흰 배경으로 전환한다 — 드롭다운 아래로 배경 사진이 겹쳐 보이지 않도록.
+  const effectiveTransparent = transparent && !openMenu;
+
+  // 텍스트는 항상 세로 중앙(items-center)에 두고, 밑줄만 별도 요소로 분리해
+  // 메뉴 항목 wrapper(h-full, 72px)의 맨 아래에 고정한다 — 그래야 글자 위치는
+  // 그대로인 채 밑줄만 드롭다운 배경 상단에 딱 붙는다.
+  const navTextCls = (active) => {
+    if (effectiveTransparent) {
+      return active ? "text-white font-bold" : "text-white hover:text-white/90";
+    }
+    return active ? "text-blue-12 font-bold" : "text-grey-10 hover:text-blue-12";
+  };
+  const navUnderlineCls = (active) => {
+    if (effectiveTransparent) {
+      return active ? "bg-white" : "bg-transparent group-hover:bg-white/70";
+    }
+    return active ? "bg-blue-12" : "bg-transparent group-hover:bg-blue-12";
+  };
+
+  const authBtnOutlineCls = effectiveTransparent
+    ? "border-white/60 text-white hover:bg-white/10 hover:border-white"
+    : "border-bluegrey-2 text-grey-9 hover:text-primary hover:border-blue-5";
+
+  // 회원가입은 배경 없는 텍스트 링크로, 로그인은 히어로 배경 위(투명 헤더)에서는
+  // 흰 배경, 그 외(흰 헤더)에서는 진한 남색 배경으로 — 헤더 배경과 항상 대비되게.
+  const registerLinkCls = effectiveTransparent
+    ? "text-white hover:text-white/70"
+    : "text-grey-9 hover:text-primary";
+  const loginBtnCls = effectiveTransparent
+    ? "bg-white text-primary hover:bg-blue-1"
+    : "bg-blue-9 text-white hover:bg-blue-6";
 
   return (
-    <header
-      className="sticky top-0 z-50 bg-white border-b border-bluegrey-2 hidden md:block"
-      onMouseLeave={() => setOpenMenu(null)}
-    >
-      <div className="max-w-[1920px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16">
-        <Link
-          to="/"
-          className="flex items-center gap-2.5 shrink-0 w-[180px]"
-          onMouseEnter={() => setOpenMenu(null)}
+    <header className="sticky top-0 z-50 hidden md:block" onMouseLeave={() => setOpenMenu(null)}>
+      <div
+        className="overflow-hidden transition-transform duration-300 ease-in-out"
+        style={{
+          // max-height 등 레이아웃에 영향을 주는 속성으로 숨기면, 헤더 높이만큼
+          // 문서 전체 높이가 실시간으로 줄어든다 — 콘텐츠가 짧은 페이지에서는
+          // 이게 스크롤 가능 범위 자체를 줄여서 브라우저가 scrollY를 강제로
+          // 당겨버렸고(clamp), 스크롤 리스너가 이를 "위로 스크롤함"으로 오인해
+          // 헤더를 다시 켰다 — 그러면 문서가 다시 늘어나 또 꺼지는 조건이
+          // 충족되고... 이 진동이 반짝임의 진짜 원인이었다. transform은
+          // 레이아웃에 전혀 영향을 주지 않으므로 이 되먹임 자체가 불가능하다.
+          transform: visible ? "translateY(0)" : "translateY(-100%)",
+        }}
+      >
+        <div
+          ref={barRef}
+          className={`pt-2 transition-colors duration-300 ${
+            effectiveTransparent
+              ? "bg-transparent border-b border-white/20"
+              : "bg-white border-b border-bluegrey-1"
+          }`}
         >
-          <img
-            src={church.logoUrl ?? LogoIcon}
-            className="h-22 w-22 object-contain"
-            alt={`${church.name} 로고`}
-          />
-        </Link>
-
-        <nav className="flex items-center gap-10 h-full">
-          {NAV_ITEMS.map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center h-full"
-              onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
+          <div
+            ref={rowRef}
+            className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between gap-16"
+          >
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 shrink-0 w-[180px]"
+              onMouseEnter={() => setOpenMenu(null)}
             >
-              {item.children ? (
-                <button
-                  className={`text-body-2 font-medium transition-colors whitespace-nowrap py-2 ${
-                    openMenu === item.label ? "text-primary" : "text-grey-10 hover:text-primary"
-                  }`}
+              <ChurchLogo
+                className="h-22 w-22 object-contain transition-[filter] duration-300"
+                style={{ filter: effectiveTransparent ? "brightness(0) invert(1)" : "none" }}
+                alt={`${church.name} 로고`}
+              />
+            </Link>
+
+            <nav className="flex items-center gap-14 h-full">
+              {NAV_ITEMS.map((item) => (
+                <div
+                  key={item.label}
+                  ref={(el) => (itemRefs.current[item.label] = el)}
+                  className="group relative flex items-center h-full"
+                  onMouseEnter={() => setOpenMenu(item.children ? item.label : null)}
                 >
-                  {item.label}
-                </button>
+                  {item.children ? (
+                    <>
+                      <button
+                        className={`text-body-2 font-medium whitespace-nowrap py-2 transition-colors ${navTextCls(
+                          openMenu === item.label,
+                        )}`}
+                      >
+                        {item.label}
+                      </button>
+                      <span
+                        className={`absolute bottom-0 -left-7 -right-7 h-0.5 transition-colors ${navUnderlineCls(
+                          openMenu === item.label,
+                        )}`}
+                      />
+                    </>
+                  ) : (
+                    <NavLink
+                      to={item.to}
+                      end
+                      className={({ isActive }) =>
+                        `text-body-2 font-medium whitespace-nowrap py-2 transition-colors ${navTextCls(isActive)}`
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          {item.label}
+                          <span
+                            className={`absolute bottom-0 -left-3 -right-3 h-0.5 transition-colors ${navUnderlineCls(isActive)}`}
+                          />
+                        </>
+                      )}
+                    </NavLink>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            <div
+              className="flex items-center gap-2.5 shrink-0 justify-end"
+              onMouseEnter={() => setOpenMenu(null)}
+            >
+              {currentUser ? (
+                <>
+                  <Link
+                    to="/mypage"
+                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
+                  >
+                    마이페이지
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
+                  >
+                    로그아웃
+                  </button>
+                </>
               ) : (
-                <NavLink
-                  to={item.to}
-                  end
-                  className={({ isActive }) =>
-                    `text-body-2 font-medium transition-colors whitespace-nowrap ${
-                      isActive
-                        ? "text-primary font-bold border-b-2 border-primary pb-0.5"
-                        : "text-grey-10 hover:text-primary"
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
+                <>
+                  <Link
+                    to="/register"
+                    className={`px-4 py-2 text-body-3 font-semibold transition-colors whitespace-nowrap ${registerLinkCls}`}
+                  >
+                    회원가입
+                  </Link>
+                  <Link
+                    to="/login"
+                    className={`px-4 py-2 rounded-full shadow-sm text-body-3 font-semibold active:scale-95 transition-all whitespace-nowrap ${loginBtnCls}`}
+                  >
+                    로그인
+                  </Link>
+                </>
               )}
             </div>
-          ))}
-        </nav>
 
-        <div
-          className="flex items-center gap-2.5 shrink-0 justify-end"
-          onMouseEnter={() => setOpenMenu(null)}
-        >
-          {currentUser ? (
-            <>
-              <Link
-                to="/교적부"
-                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
-              >
-                교적부
-              </Link>
-              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
-              <Link
-                to="/mypage"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                마이페이지
-              </Link>
-              <button
-                onClick={logout}
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => setShowLoginRequired(true)}
-                className="px-4 py-2 rounded-full bg-grey-4 text-grey-6 text-body-3 font-semibold cursor-default whitespace-nowrap"
-              >
-                교적부
-              </button>
-              <span className="w-px h-[18px] bg-bluegrey-3 shrink-0" />
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-3 font-semibold text-grey-9 hover:text-primary hover:border-blue-5 transition-colors whitespace-nowrap"
-              >
-                회원가입
-              </Link>
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-full bg-primary text-white text-body-3 font-semibold hover:bg-blue-8 active:scale-95 transition-all whitespace-nowrap"
-              >
-                로그인
-              </Link>
-            </>
-          )}
+            {/* 로그인 필요 모달 */}
+            {showLoginRequired && (
+              <LoginRequiredModal
+                message="교적부를 이용하려면 로그인해 주세요."
+                onCancel={() => setShowLoginRequired(false)}
+              />
+            )}
+          </div>
         </div>
-
-        {/* 로그인 필요 모달 */}
-        {showLoginRequired && (
-          <LoginRequiredModal
-            message="교적부를 이용하려면 로그인해 주세요."
-            onCancel={() => setShowLoginRequired(false)}
-          />
-        )}
       </div>
 
       {openMenu && (
         <div
-          className="absolute left-0 right-0 bg-white shadow-xl"
+          className={`absolute left-0 right-0 shadow-xl ${
+            transparent ? "bg-white/90" : "bg-bluegrey-1"
+          }`}
           style={{
             animation: "megaFadeIn 0.15s ease-out",
             borderBottom: "2px solid var(--color-primary)",
@@ -153,39 +338,77 @@ function DesktopHeader() {
               to   { opacity: 1; transform: translateY(0); }
             }
           `}</style>
-          <div className="max-w-[1920px] mx-auto px-8 py-8">
-            {(() => {
-              const item = NAV_ITEMS.find((n) => n.label === openMenu);
-              if (!item) return null;
-              const count = item.children?.length ?? 0;
-              const columnsClass = count > 6 ? "columns-3" : count > 3 ? "columns-2" : "columns-1";
-              return (
-                <div className="flex gap-12">
-                  <div className="w-[160px] shrink-0 border-r border-bluegrey-2 pr-8 flex flex-col justify-center">
+          <div className="max-w-[1440px] mx-auto py-5" style={{ paddingRight: "2rem" }}>
+            {/* 각 열은 position:absolute + translateX(-50%)로 열의 "중심"을 상위 메뉴
+                항목의 중심(colCenters)에 정확히 맞춘다. 폭이 트랙 크기에 좌우되는
+                grid 대신 이 방식을 쓰는 이유: 하위 항목 중 가장 긴 것이 열 폭을
+                정하는 한, 어떤 정렬 기준을 쓰든 "열의 왼쪽 끝"과 "상위 메뉴의 왼쪽
+                끝"을 맞추면 짧은 하위 항목들이 상위 메뉴 기준에서 오른쪽으로 밀려
+                보인다 — 중심끼리 맞춰야 열 폭과 무관하게 항상 상위 메뉴 아래 온다.
+                absolute로 빼면 문서 흐름에서 높이가 사라지므로, 위 useLayoutEffect가
+                실제 렌더된 열 높이를 측정해 panelHeight로 되돌려준다. */}
+            <div
+              data-testid="mega-menu-columns"
+              className="relative"
+              style={{ height: panelHeight || undefined }}
+            >
+              {/* 현재 호버 중인 상위 메뉴의 열 배경을 흰색으로 강조 — 패널 자체를 히어로
+                  위에서는 반투명 흰색(bg-white/90), 일반 페이지에서는 불투명 회색
+                  (bg-bluegrey-1)으로 깔아두므로 흰색 하이라이트가 항상 도드라진다.
+                  이웃 메뉴 중심까지의 절반 지점을 경계로 삼아 폭을 정한다. */}
+              {(() => {
+                const activeIndex = menuItems.findIndex((item) => item.label === openMenu);
+                if (activeIndex === -1) return null;
+                const activeCenter = colCenters[openMenu] ?? 0;
+                const prevCenter =
+                  activeIndex > 0 ? (colCenters[menuItems[activeIndex - 1].label] ?? null) : null;
+                const nextCenter =
+                  activeIndex < menuItems.length - 1
+                    ? (colCenters[menuItems[activeIndex + 1].label] ?? null)
+                    : null;
+                const leftGap =
+                  prevCenter !== null
+                    ? activeCenter - prevCenter
+                    : nextCenter !== null
+                      ? nextCenter - activeCenter
+                      : 160;
+                const rightGap = nextCenter !== null ? nextCenter - activeCenter : leftGap;
+                return (
+                  <div
+                    aria-hidden="true"
+                    className="absolute bg-white"
+                    style={{
+                      top: "-1.25rem",
+                      bottom: "-1.25rem",
+                      left: activeCenter - leftGap / 2,
+                      width: (leftGap + rightGap) / 2,
+                    }}
+                  />
+                );
+              })()}
+              {menuItems.map((item) => (
+                <div
+                  key={item.label}
+                  ref={(el) => (colRefs.current[item.label] = el)}
+                  className="absolute top-0 flex flex-col items-center"
+                  style={{
+                    left: colCenters[item.label] ?? 0,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  {item.children.map((child) => (
                     <Link
-                      to={item.to ?? item.children[0].to}
+                      key={child.label}
+                      to={child.to}
                       onClick={() => setOpenMenu(null)}
-                      className="text-sub-tit-4 font-bold text-primary transition-colors"
+                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap hover:text-blue-12 hover:font-semibold transition-colors"
                     >
-                      {item.label}
+                      {child.label}
                     </Link>
-                  </div>
-                  <div className={`flex-1 ${columnsClass} gap-x-10`}>
-                    {item.children?.map((child) => (
-                      <Link
-                        key={child.label}
-                        to={child.to}
-                        onClick={() => setOpenMenu(null)}
-                        className="group flex items-center gap-2 px-2 py-2 rounded-md text-body-3 text-grey-7 hover:text-primary hover:bg-blue-1 transition-colors whitespace-nowrap break-inside-avoid"
-                      >
-                        <span className="w-1 h-1 rounded-full bg-bluegrey-3 group-hover:bg-primary transition-colors shrink-0" />
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              );
-            })()}
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -200,14 +423,10 @@ function DesktopFooter() {
   const { church } = useChurch();
   return (
     <footer className="bg-bluegrey-1 border-t border-bluegrey-2 hidden md:block">
-      <div className="max-w-[1920px] mx-auto px-8 py-14 flex items-end justify-between gap-8">
+      <div className="max-w-[1440px] mx-auto px-8 pt-10 pb-16 flex items-end justify-between gap-8">
         <div className="flex gap-16 items-start">
           <div className="flex items-center gap-2.5 h-[52px]">
-            <img
-              src={church.logoUrl ?? LogoIcon}
-              className="w-30 object-contain"
-              alt={`${church.name} 로고`}
-            />
+            <ChurchLogo className="w-30 object-contain" alt={`${church.name} 로고`} />
           </div>
           <div className="flex flex-col gap-5 py-2">
             <div className="flex items-center gap-10 text-body-2 font-bold text-grey-10">
@@ -297,11 +516,7 @@ function MobileFooter() {
       <div className="flex flex-col items-center gap-5 px-6 py-8">
         {/* 로고 */}
         <Link to="/">
-          <img
-            src={church.logoUrl ?? LogoIcon}
-            className="h-10 w-auto object-contain"
-            alt={`${church.name} 로고`}
-          />
+          <ChurchLogo className="h-10 w-auto object-contain" alt={`${church.name} 로고`} />
         </Link>
 
         {/* 약관 */}
@@ -374,28 +589,32 @@ function MobileFooter() {
 // ─────────────────────────────────────────────────────
 // Mobile Header (md 미만에서만 표시)
 // ─────────────────────────────────────────────────────
-function MobileHeader({ onMenuOpen }) {
+function MobileHeader({ onMenuOpen, visible, barRef }) {
   const { church } = useChurch();
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-bluegrey-2 flex items-center justify-between px-5 h-14 md:hidden">
-      <Link to="/" className="flex items-center">
-        <img
-          src={church.logoUrl ?? LogoIcon}
-          className="h-8 w-auto object-contain"
-          alt={`${church.name} 로고`}
-        />
-      </Link>
-      <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+    <header
+      className="sticky top-0 z-50 overflow-hidden transition-transform duration-300 ease-in-out md:hidden"
+      style={{ transform: visible ? "translateY(0)" : "translateY(-100%)" }}
+    >
+      <div
+        ref={barRef}
+        className="bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
+      >
+        <Link to="/" className="flex items-center">
+          <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
+        </Link>
+        <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
     </header>
   );
 }
@@ -701,17 +920,47 @@ const BIBLE_PAGES = ["/말씀/읽기", "/말씀/필사"];
 function Layout() {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
+  const desktopBarRef = useRef(null);
+  const mobileBarRef = useRef(null);
+  const desktopBarHeight = useMeasuredHeight(desktopBarRef);
+  const mobileBarHeight = useMeasuredHeight(mobileBarRef);
+  // display:none인 브레이크포인트 쪽은 항상 0이 측정되므로, 둘을 더하기만 해도
+  // "현재 화면에 실제로 보이는 헤더의 높이"가 된다 — sticky 서브탭이 이 값을 참조한다.
+  const headerHeight = desktopBarHeight + mobileBarHeight;
 
   const showBottomNav = !HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p));
   const isBiblePage = BIBLE_PAGES.some((p) => pathname.startsWith(p));
+  const isHome = pathname === "/";
+  // 홈 히어로 배너 위에서만(맨 위 근처) 헤더를 투명하게 — 배너가 헤더 뒤까지 차오르는 연출.
+  const headerTransparent = isHome && atTop;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{
+        // sticky 서브탭용 — 헤더가 숨김 상태면 0(서브탭이 자리를 메우며 위로 붙음).
+        "--header-offset": `${headerVisible ? headerHeight : 0}px`,
+        // 홈 히어로 배너가 헤더 아래로 파고들 때 쓰는 고정값 — 숨김 상태와 무관하게
+        // 항상 "완전히 펼쳐진" 헤더 높이를 유지해야 스크롤 중 레이아웃이 튀지 않는다.
+        "--header-height": `${headerHeight}px`,
+      }}
+    >
       {/* 데스크탑 헤더 (bible 전체화면 페이지 제외) */}
-      {!isBiblePage && <DesktopHeader />}
+      {!isBiblePage && (
+        <DesktopHeader
+          visible={headerVisible}
+          barRef={desktopBarRef}
+          transparent={headerTransparent}
+        />
+      )}
 
       {/* 모바일 헤더 */}
-      <MobileHeader onMenuOpen={() => setDrawerOpen(true)} />
+      <MobileHeader
+        onMenuOpen={() => setDrawerOpen(true)}
+        visible={headerVisible}
+        barRef={mobileBarRef}
+      />
 
       {/* 모바일 드로어 */}
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />

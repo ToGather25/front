@@ -17,6 +17,8 @@ function getAvatarGradient(id) {
   return AVATAR_GRADIENTS[id % AVATAR_GRADIENTS.length];
 }
 
+const PHOTO_FETCH_LIMIT = 200;
+
 function ChevronIcon({ direction = "left", className = "w-5 h-5" }) {
   return (
     <svg
@@ -177,7 +179,7 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
 
 function PhotoGrid({ church, community, onBack }) {
   const { data: photos = [], loading } = useFetch(
-    () => getPhotos(church.id, { communityId: community.id }),
+    () => getPhotos(church.id, { communityId: community.id, limit: PHOTO_FETCH_LIMIT }),
     [church.id, community.id],
     [],
   );
@@ -300,7 +302,7 @@ export default function Gallery() {
   }, [searchParams, communities]);
 
   return (
-    <div className="max-w-[1576px] mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-20">
+    <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
       {!selected ? (
         /* Community List */
         loading ? (

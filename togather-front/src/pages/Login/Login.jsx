@@ -38,27 +38,8 @@ export default function LoginPage() {
       {/* 왼쪽 브랜드 패널 */}
       <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
-        {/* 장식 원 */}
-        <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
 
         <div className="relative">
-          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-          </div>
           <h1 className="text-headline-4 font-bold text-white mb-3">
             {church?.name ?? "ToGather"}
           </h1>
@@ -184,10 +165,6 @@ export default function LoginPage() {
               회원가입
             </Link>
           </div>
-
-          <p className="text-center text-body-5 text-grey-4 mt-8 border-t border-grey-2 pt-6">
-            테스트 계정: test@togather.com / test1234
-          </p>
         </div>
       </div>
     </div>

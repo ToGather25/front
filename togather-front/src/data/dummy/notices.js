@@ -7,7 +7,7 @@ export const DUMMY_NOTICES = [
     title: "2026년 교회 달력 및 연간 행사 안내",
     body: "2026년 한 해 동안의 주요 교회 행사 일정을 안내드립니다. 자세한 내용은 주보 또는 교회 홈페이지를 확인해 주세요.",
     date: "2026-01-01",
-    author: "사무국",
+    author: "사무실",
   },
   {
     id: 2,
@@ -16,7 +16,7 @@ export const DUMMY_NOTICES = [
     title: "예배 좌석 배치 변경 안내",
     body: "5월부터 본당 좌석 배치가 변경됩니다. 안내 데스크에 문의해 주세요.",
     date: "2026-04-20",
-    author: "사무국",
+    author: "사무실",
   },
   {
     id: 3,
@@ -88,7 +88,7 @@ export const DUMMY_NOTICES = [
     title: "구역 재편성 결과 안내",
     body: "2026년 구역 재편성 결과를 안내드립니다. 구역 배정표는 교회 게시판을 확인해 주세요.",
     date: "2026-02-28",
-    author: "사무국",
+    author: "사무실",
   },
   {
     id: 11,

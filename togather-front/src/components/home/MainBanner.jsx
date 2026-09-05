@@ -1,22 +1,27 @@
 import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getChurchProfile } from "@/services/churchProfileService";
 import defaultBanner from "@/assets/default_banner.png";
 
 export default function MainBanner() {
   const { church } = useChurch();
-  const { url, title, subtitle } = church.mainBanner;
-  const bgImage = url || defaultBanner;
+  const { data: profile } = useFetch(() => getChurchProfile(church.id), [church.id], null);
+  const { title, subtitle } = church.mainBanner;
+  const bgImage = profile?.representativeImageUrl || defaultBanner;
 
   return (
-    <section className="relative h-[820px] bg-black overflow-hidden">
+    <section
+      className="relative bg-black overflow-hidden"
+      style={{
+        marginTop: "calc(-1 * var(--header-height, 0px))",
+        height: "calc(95vh + var(--header-height, 0px))",
+      }}
+    >
       <style>{`
         @keyframes heroPan {
           from { transform: scale(1.04) translateX(-1%); }
           to   { transform: scale(1.04) translateX(1%); }
-        }
-        @keyframes scrollPulse {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 0.3; }
         }
       `}</style>
 
@@ -41,24 +46,19 @@ export default function MainBanner() {
         }}
       />
 
-      {/* Content */}
-      <div className="relative h-full max-w-[1576px] mx-auto px-[120px] flex flex-col justify-end pb-[100px]">
-        {/* Eyebrow badge */}
-        <div
-          className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full mb-7 text-sm font-medium"
-          style={{
-            border: "1px solid rgba(255,255,255,.35)",
-            backdropFilter: "blur(6px)",
-            color: "rgba(255,255,255,.92)",
-          }}
-        >
-          <span
-            className="w-1.5 h-1.5 rounded-full bg-blue-4"
-            style={{ boxShadow: "0 0 0 4px rgba(160,196,107,.25)" }}
-          />
-          <span>2026년 — 함께 드리는 예배</span>
-        </div>
+      {/* Header scrim — 배너 이미지가 밝은 계열이어도 그 위 투명 헤더의 흰색
+          메뉴 글자가 항상 구분되도록, 위 비네트와 별개로 헤더 높이만큼만
+          확실하게 어둡게 깐다. 이미지 밝기에 의존하지 않는 고정 대비. */}
+      <div
+        className="absolute inset-x-0 top-0 pointer-events-none"
+        style={{
+          height: "var(--header-height, 88px)",
+          background: "linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 75%, rgba(0,0,0,0) 100%)",
+        }}
+      />
 
+      {/* Content */}
+      <div className="relative h-full max-w-[1400px] mx-auto px-[120px] flex flex-col justify-center">
         {/* Verse */}
         <p
           className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"
@@ -112,22 +112,6 @@ export default function MainBanner() {
             </svg>
           </Link>
         </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div
-        className="absolute right-[60px] bottom-[60px] flex flex-col items-center gap-3.5 text-[11px] font-semibold tracking-[0.3em]"
-        style={{ color: "rgba(255,255,255,.7)" }}
-      >
-        <span>SCROLL</span>
-        <div
-          className="w-px h-[60px]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%)",
-            animation: "scrollPulse 2s ease-in-out infinite",
-          }}
-        />
       </div>
     </section>
   );

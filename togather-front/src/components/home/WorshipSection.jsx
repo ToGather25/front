@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import defaultBanner from "@/assets/default_banner.png";
-import { getLiveSermon } from "@/services/sermonService";
+import { getLiveScreen } from "@/services/sermonService";
 
 function VideoThumb({ isLive, onClick }) {
   return (
@@ -39,15 +39,14 @@ function VideoThumb({ isLive, onClick }) {
 export default function WorshipSection() {
   const { church } = useChurch();
   const navigate = useNavigate();
-  const channelId = church.social?.youtubeChannelId;
-  const [liveSermon, setLiveSermon] = useState(null);
+  const [screen, setScreen] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     const fetchLiveStatus = async () => {
       try {
-        const live = await getLiveSermon(channelId);
-        if (!cancelled) setLiveSermon(live);
+        const live = await getLiveScreen(church.id);
+        if (!cancelled) setScreen(live);
       } catch (err) {
         console.error("[WorshipSection] 라이브 예배 상태 조회 실패:", err);
       }
@@ -58,13 +57,13 @@ export default function WorshipSection() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [channelId]);
+  }, [church.id]);
 
-  const isLive = !!liveSermon;
+  const isLive = screen?.state === "LIVE";
 
   const sermon = {
     date: "2026년 3월 17일 · 주일 1부 예배",
-    title: isLive ? liveSermon.title : "사랑으로 부르신\n그 자리에서",
+    title: isLive ? (screen.sermon?.title ?? "사랑으로 부르신\n그 자리에서") : "사랑으로 부르신\n그 자리에서",
     verse: `요한일서 4:7–12 · ${church.pastor || "담임목사"}`,
   };
 
@@ -73,9 +72,6 @@ export default function WorshipSection() {
       <div className="grid gap-14 items-center" style={{ gridTemplateColumns: "560px 1fr" }}>
         {/* Sermon info */}
         <div className="py-2">
-          <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-            THIS WEEK
-          </p>
           <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0 mb-2">
             이번 주 말씀
           </h3>

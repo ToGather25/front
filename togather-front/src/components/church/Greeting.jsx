@@ -1,6 +1,6 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import FallbackImage from "./FallbackImage";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import ChurchLogo from "@/components/common/ChurchLogo";
 import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
 
 export default function Greeting() {
@@ -32,11 +32,7 @@ export default function Greeting() {
               alt="서명"
               className="h-10 w-auto object-contain"
               fallback={
-                <img
-                  src={church.logoUrl ?? LogoIcon}
-                  alt="교회 로고"
-                  className="h-10 w-auto object-contain opacity-40"
-                />
+                <ChurchLogo alt="교회 로고" className="h-10 w-auto object-contain opacity-40" />
               }
             />
           </div>

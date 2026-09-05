@@ -70,6 +70,11 @@ export default function EventDetail() {
           {event.startTime ? ` · ${formatTimeRange(event.startTime, event.endTime)}` : ""}
         </span>
       </div>
+      {event.canRegister && typeof event.capacity === "number" && (
+        <p className="text-body-4 text-grey-7 mb-6">
+          신청 인원 : {event.registeredCount ?? 0} / {event.capacity}명
+        </p>
+      )}
       <hr className="border-bluegrey-2 mb-6" />
 
       {/* Event Image */}
@@ -87,7 +92,7 @@ export default function EventDetail() {
 
       {/* 신청 버튼 — 데스크탑 인라인 */}
       <div className="hidden md:flex flex-col items-center gap-2">
-        <RegistrationButton event={event} size="lg" showRemaining />
+        <RegistrationButton event={event} size="lg" />
       </div>
 
       {/* 신청 버튼 — 모바일 sticky bar (BottomNav 위, canRegister:false면 미노출) */}

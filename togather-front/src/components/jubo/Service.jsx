@@ -1,8 +1,17 @@
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getVolunteer } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
 export default function Service() {
-  const { serviceRoles } = juboConfig;
+  const { church } = useChurch();
+  const {
+    data: serviceRoles = [],
+    loading,
+    error,
+    refetch,
+  } = useFetch(() => getVolunteer(church.id), [church.id], []);
+
   return (
     <>
       <SectionTitle
@@ -22,24 +31,37 @@ export default function Service() {
       >
         다음 주 봉사 안내
       </SectionTitle>
-      <table className="w-full text-caption mt-1">
-        <thead>
-          <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-            <th className="text-left py-2 px-4 text-grey-7 font-semibold">구분</th>
-            <th className="text-center py-2 px-4 text-grey-7 font-semibold">1부</th>
-            <th className="text-center py-2 px-4 text-grey-7 font-semibold">2부</th>
-          </tr>
-        </thead>
-        <tbody>
-          {serviceRoles.map(({ role, part1, part2 }) => (
-            <tr key={role} className="border-b border-grey-3">
-              <td className="py-3 px-4 text-grey-8">{role}</td>
-              <td className="py-3 px-4 text-center text-grey-9">{part1}</td>
-              <td className="py-3 px-4 text-center text-grey-9">{part2}</td>
+      {loading ? (
+        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+      ) : error?.response?.status === 404 ? (
+        <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
+      ) : error ? (
+        <div className="text-center py-10">
+          <p className="text-caption text-grey-5 mb-2">봉사 안내를 불러오지 못했습니다.</p>
+          <button onClick={refetch} className="text-caption text-primary underline">
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <table className="w-full text-caption mt-1">
+          <thead>
+            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+              <th className="text-left py-2 px-4 text-grey-7 font-semibold">구분</th>
+              <th className="text-center py-2 px-4 text-grey-7 font-semibold">1부</th>
+              <th className="text-center py-2 px-4 text-grey-7 font-semibold">2부</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {serviceRoles.map(({ role, part1, part2 }) => (
+              <tr key={role} className="border-b border-grey-3">
+                <td className="py-3 px-4 text-grey-8">{role}</td>
+                <td className="py-3 px-4 text-center text-grey-9">{part1}</td>
+                <td className="py-3 px-4 text-center text-grey-9">{part2}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
   );
 }

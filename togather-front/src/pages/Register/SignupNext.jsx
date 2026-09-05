@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useAuth } from "@/contexts/auth";
+import { getErrorMessage } from "@/utils/apiErrors";
 
 const PW_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignupNext() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const navigate = useNavigate();
   const { church } = useChurch();
+  const { completeRegistration, login } = useAuth();
 
-  // TODO: 토큰으로 서버에서 이름 조회 후 대체
   const memberName = searchParams.get("name") ?? null;
 
   const [form, setForm] = useState({ username: "", password: "", confirm: "" });
   const [errors, setErrors] = useState({});
-  const [idChecked, setIdChecked] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | checking | submitting | done | invalid
+  const [status, setStatus] = useState("idle"); // idle | submitting | done | invalid
   const [showModal, setShowModal] = useState(false);
+  const [completeError, setCompleteError] = useState("");
 
   useEffect(() => {
     if (!token) setStatus("invalid");
-    // TODO: GET /api/register/verify?token=... → 유효성 검증 + 이름 조회
   }, [token]);
 
   const handleChange = (e) => {
@@ -30,8 +31,13 @@ export default function SignupNext() {
     setForm(nextForm);
 
     if (name === "username") {
-      setIdChecked(false);
-      setErrors((prev) => ({ ...prev, username: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        username:
+          value && !EMAIL_RULE.test(value)
+            ? "이메일 형식으로 입력해 주세요 (예: hong@example.com)."
+            : "",
+      }));
       return;
     }
 
@@ -54,31 +60,10 @@ export default function SignupNext() {
     }
   };
 
-  const handleCheckId = async () => {
-    if (!form.username || form.username.length < 4) {
-      setErrors((prev) => ({ ...prev, username: "아이디는 4자 이상이어야 합니다." }));
-      return;
-    }
-    setStatus("checking");
-    try {
-      // TODO: GET /api/register/check-username?username=...
-      await new Promise((r) => setTimeout(r, 500));
-      const isDuplicate = false;
-      if (isDuplicate) {
-        setErrors((prev) => ({ ...prev, username: "이미 사용 중인 아이디입니다." }));
-        setIdChecked(false);
-      } else {
-        setErrors((prev) => ({ ...prev, username: "" }));
-        setIdChecked(true);
-      }
-    } finally {
-      setStatus("idle");
-    }
-  };
-
   const validate = () => {
     const errs = {};
-    if (!idChecked) errs.username = "아이디 중복 확인을 해주세요.";
+    if (!EMAIL_RULE.test(form.username))
+      errs.username = "이메일 형식으로 입력해 주세요 (예: hong@example.com).";
     if (!PW_RULE.test(form.password))
       errs.password = "영문·숫자·특수문자 조합 8자 이상이어야 합니다.";
     if (form.password !== form.confirm) errs.confirm = "비밀번호가 일치하지 않습니다.";
@@ -86,7 +71,10 @@ export default function SignupNext() {
   };
 
   const canSubmit =
-    idChecked && form.password.length >= 8 && form.password === form.confirm && status === "idle";
+    EMAIL_RULE.test(form.username) &&
+    form.password.length >= 8 &&
+    form.password === form.confirm &&
+    status === "idle";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,21 +86,24 @@ export default function SignupNext() {
 
     setStatus("submitting");
     try {
-      // TODO: POST /api/register/complete { token, username, password }
-      await new Promise((r) => setTimeout(r, 800));
+      await completeRegistration({ token, username: form.username, password: form.password });
       setStatus("done");
       setShowModal(true);
-    } catch {
-      setErrors({ submit: "가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요." });
+    } catch (err) {
+      setErrors({ submit: getErrorMessage(err) });
       setStatus("idle");
     }
   };
 
   const handleComplete = async () => {
     setShowModal(false);
-    // TODO: POST /api/auth/login { username, password } → 자동 로그인
-    // await login({ username: form.username, password: form.password });
-    void navigate("/");
+    try {
+      await login({ email: form.username, password: form.password });
+    } catch {
+      setCompleteError(
+        "가입은 완료됐지만 자동 로그인에 실패했습니다. 아래 로그인 페이지에서 다시 시도해 주세요.",
+      );
+    }
   };
 
   const inputCls = (field) =>
@@ -161,28 +152,8 @@ export default function SignupNext() {
         {/* 왼쪽 브랜드 패널 */}
         <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-          <div className="absolute bottom-40 right-8 w-40 h-40 rounded-full bg-blue-7/40" />
 
           <div className="relative">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-6">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
             <h1 className="text-headline-4 font-bold text-white mb-3">
               {church?.name ?? "ToGather"}
             </h1>
@@ -255,50 +226,30 @@ export default function SignupNext() {
               )}
             </div>
 
+            {completeError && (
+              <div className="text-body-4 text-red-500 bg-red-50 rounded-xl px-4 py-3 mb-4">
+                {completeError}{" "}
+                <Link to="/login" className="underline font-semibold">
+                  로그인 페이지로 이동
+                </Link>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* 아이디 */}
+              {/* 아이디(이메일) */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-body-4 font-semibold text-grey-8">
-                    아이디 <span className="text-red-400">*</span>
-                  </label>
-                  {idChecked && (
-                    <span className="text-body-5 text-green-600 font-medium flex items-center gap-1">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      사용 가능
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    name="username"
-                    type="text"
-                    required
-                    value={form.username}
-                    onChange={handleChange}
-                    placeholder="4자 이상 영문/숫자"
-                    className={inputCls("username")}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleCheckId}
-                    disabled={status === "checking"}
-                    className="shrink-0 w-[92px] px-4 py-3 rounded-xl border border-blue-3 text-blue-7 text-body-4 font-medium hover:bg-blue-1 disabled:opacity-50 transition-colors whitespace-nowrap"
-                  >
-                    {status === "checking" ? "확인 중" : "중복 확인"}
-                  </button>
-                </div>
+                <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
+                  아이디(이메일) <span className="text-red-400">*</span>
+                </label>
+                <input
+                  name="username"
+                  type="text"
+                  required
+                  value={form.username}
+                  onChange={handleChange}
+                  placeholder="이메일 형식으로 입력해 주세요 (예: hong@example.com)"
+                  className={inputCls("username")}
+                />
                 <p className="mt-1 h-[18px] text-body-5 text-red-500">{errors.username}</p>
               </div>
 

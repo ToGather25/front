@@ -15,6 +15,9 @@ const TAG_STYLES = {
 
 const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
+const MAX_NOTICE_ROWS = 5;
+const MAX_UPCOMING_EVENTS = 4;
+
 const UPCOMING_EVENTS = [
   { id: 1, dateISO: "2026-07-12", title: "구역장 모임", time: "14:00 본당" },
   { id: 2, dateISO: "2026-07-19", title: "새 가족 환영회", time: "예배 후 친교실" },
@@ -33,15 +36,25 @@ function formatEventDate(dateISO) {
 function getUpcomingEvents() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return UPCOMING_EVENTS.filter((e) => new Date(e.dateISO + "T00:00:00") >= today).slice(0, 4);
+  return UPCOMING_EVENTS.filter((e) => new Date(e.dateISO + "T00:00:00") >= today).slice(
+    0,
+    MAX_UPCOMING_EVENTS,
+  );
 }
 
 export default function NoticeSection() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(() => getNotices(church.id), [church.id], []);
+  const { data: notices = [] } = useFetch(
+    () => getNotices(church.id, { limit: 30 }),
+    [church.id],
+    [],
+  );
   const [tab, setTab] = useState("전체");
 
-  const rows = (tab === "전체" ? notices : notices.filter((n) => n.type === tab)).slice(0, 5);
+  const rows = (tab === "전체" ? notices : notices.filter((n) => n.type === tab)).slice(
+    0,
+    MAX_NOTICE_ROWS,
+  );
   const upcomingEvents = getUpcomingEvents();
 
   return (
@@ -50,9 +63,6 @@ export default function NoticeSection() {
         {/* Left: notices */}
         <div className="flex flex-col">
           <div className="mb-8">
-            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-              UPDATES
-            </p>
             <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
               공지 ∙ 소식
             </h3>
@@ -92,53 +102,68 @@ export default function NoticeSection() {
             </Link>
           </div>
 
-          {/* Notice list */}
-          <div className="flex-1 flex flex-col bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
-            {rows.length === 0 ? (
-              <div className="py-16 text-center text-grey-5 text-[15px]">공지사항이 없습니다.</div>
-            ) : (
-              rows.map((n, i) => {
-                const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
-                return (
-                  <Link
-                    key={n.id ?? i}
-                    to={`/공지사항?id=${n.id}`}
-                    className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2 last:border-b-0`}
+          {/* Notice list — 실제 항목이 MAX_NOTICE_ROWS보다 적어도(0건 포함) 빈 자리를
+              투명 placeholder 행으로 채워 카드 높이가 항상 5행분으로 고정되게 한다. */}
+          <div className="flex-1 relative bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
+            {rows.map((n, i) => {
+              const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
+              return (
+                <Link
+                  key={n.id ?? i}
+                  to={`/공지사항?id=${n.id}`}
+                  className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2 last:border-b-0`}
+                >
+                  <span
+                    className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
+                    style={tagStyle}
                   >
-                    <span
-                      className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
-                      style={tagStyle}
-                    >
-                      {n.type}
-                    </span>
-                    <span
-                      className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}
-                    >
-                      {n.featured && (
-                        <span className="inline-flex items-center justify-center shrink-0 mr-3 align-middle rounded-[5px] w-[22px] h-[22px] bg-blue-7">
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <line x1="12" y1="17" x2="12" y2="22" />
-                            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
-                          </svg>
-                        </span>
-                      )}
-                      {n.title}
-                    </span>
-                    <span className="text-body-3 text-grey-6 shrink-0 tracking-[0.02em]">
-                      {n.date}
-                    </span>
-                  </Link>
-                );
-              })
+                    {n.type}
+                  </span>
+                  <span
+                    className={`flex-1 text-sub-tit-4 leading-[1.4] text-grey-11 tracking-[-0.3px] truncate ${n.featured ? "font-semibold" : "font-medium"}`}
+                  >
+                    {n.featured && (
+                      <span className="inline-flex items-center justify-center shrink-0 mr-3 align-middle rounded-[5px] w-[22px] h-[22px] bg-blue-7">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="12" y1="17" x2="12" y2="22" />
+                          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+                        </svg>
+                      </span>
+                    )}
+                    {n.title}
+                  </span>
+                  <span className="text-body-3 text-grey-6 shrink-0 tracking-[0.02em]">
+                    {n.date}
+                  </span>
+                </Link>
+              );
+            })}
+            {Array.from({ length: MAX_NOTICE_ROWS - rows.length }).map((_, i) => (
+              <div
+                key={`notice-pad-${i}`}
+                aria-hidden="true"
+                className="invisible flex items-center gap-5 px-7 py-[22px] border-b border-bluegrey-2 last:border-b-0"
+              >
+                <span className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0">
+                  -
+                </span>
+                <span className="flex-1 text-sub-tit-4">-</span>
+                <span className="text-body-3 shrink-0">-</span>
+              </div>
+            ))}
+            {rows.length === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center text-center text-grey-5 text-[15px]">
+                공지사항이 없습니다.
+              </div>
             )}
           </div>
         </div>
@@ -146,39 +171,55 @@ export default function NoticeSection() {
         {/* Right: upcoming events */}
         <aside className="flex flex-col">
           <div className="mb-8">
-            <p className="text-caption font-semibold tracking-[0.22em] text-blue-6 uppercase mb-3 ml-1">
-              CALENDAR
-            </p>
             <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
               다가오는 일정
             </h3>
           </div>
 
-          <ul className="flex-1 flex flex-col gap-3 list-none m-0 p-0">
-            {upcomingEvents.length === 0 ? (
-              <li className="py-16 text-center text-grey-5 text-[15px]">예정된 일정이 없습니다.</li>
-            ) : (
-              upcomingEvents.map((e) => {
-                const { d, w } = formatEventDate(e.dateISO);
-                return (
-                  <Link
-                    key={e.id}
-                    to={`/교회행사/${e.id}`}
-                    className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all"
-                  >
-                    <div className="shrink-0 min-w-[52px] mt-[2px]">
-                      <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{d}</div>
-                      <div className="text-body-5 font-medium text-grey-6 mt-0.5">{w}요일</div>
+          {/* 실제 일정이 MAX_UPCOMING_EVENTS보다 적어도(0건 포함) 빈 자리를 투명
+              placeholder 카드로 채워 리스트 높이가 항상 4건분으로 고정되게 한다. */}
+          <ul className="flex-1 relative flex flex-col gap-3 list-none m-0 p-0 bg-white rounded-2xl border border-bluegrey-2">
+            {upcomingEvents.map((e) => {
+              const { d, w } = formatEventDate(e.dateISO);
+              return (
+                <Link
+                  key={e.id}
+                  to={`/교회행사/${e.id}`}
+                  className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all"
+                >
+                  <div className="shrink-0 min-w-[52px] mt-[2px]">
+                    <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{d}</div>
+                    <div className="text-body-5 font-medium text-grey-6 mt-0.5">{w}요일</div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">
+                      {e.title}
                     </div>
-                    <div className="min-w-0">
-                      <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">
-                        {e.title}
-                      </div>
-                      <div className="text-caption text-grey-6 mt-1">{e.time}</div>
-                    </div>
-                  </Link>
-                );
-              })
+                    <div className="text-caption text-grey-6 mt-1">{e.time}</div>
+                  </div>
+                </Link>
+              );
+            })}
+            {Array.from({ length: MAX_UPCOMING_EVENTS - upcomingEvents.length }).map((_, i) => (
+              <li
+                key={`upcoming-pad-${i}`}
+                aria-hidden="true"
+                className="invisible flex items-start gap-4 p-5 rounded-2xl border border-bluegrey-2"
+              >
+                <div className="shrink-0 min-w-[52px] mt-[2px]">
+                  <div className="text-[15px] font-bold">00.00</div>
+                  <div className="text-body-5 font-medium mt-0.5">월요일</div>
+                </div>
+                <div className="min-w-0">
+                  <div className="text-body-2 font-semibold leading-snug truncate">-</div>
+                  <div className="text-caption mt-1">-</div>
+                </div>
+              </li>
+            ))}
+            {upcomingEvents.length === 0 && (
+              <li className="absolute inset-0 flex items-center justify-center text-center text-grey-5 text-[15px] list-none">
+                예정된 일정이 없습니다.
+              </li>
             )}
           </ul>
 
