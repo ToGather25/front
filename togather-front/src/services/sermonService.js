@@ -116,8 +116,23 @@ export function extractYoutubeVideoId(url) {
 // oxlint-disable-next-line no-unused-vars
 export async function getLiveScreen(churchId) {
   if (isDummy("sermon")) return DUMMY_LIVE_SCREEN;
-  const res = await api.get(`/church/sermons/live`);
-  return res.data.data;
+  const screen = (await api.get(`/church/sermons/live`)).data.data;
+
+  // 자동 라이브 감지: 백엔드가 교회 유튜브 채널을 조회(키 보호+캐시)해 현재 라이브 여부를 판정한다.
+  // 라이브면 수동 방송 상태와 무관하게 LIVE로 덮어쓴다. 감지 실패 시 기존(수동) 화면을 그대로 사용.
+  try {
+    const broadcast = (await api.get(`/church/broadcast/live`)).data.data;
+    if (broadcast?.live && broadcast.videoId) {
+      return {
+        ...screen,
+        state: "LIVE",
+        youtubeLiveUrl: `https://www.youtube.com/watch?v=${broadcast.videoId}`,
+      };
+    }
+  } catch {
+    // 자동 감지 실패 → 수동 화면 유지(그레이스풀)
+  }
+  return screen;
 }
 
 /**
