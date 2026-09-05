@@ -23,10 +23,6 @@ export default function MainBanner() {
           from { transform: scale(1.04) translateX(-1%); }
           to   { transform: scale(1.04) translateX(1%); }
         }
-        @keyframes scrollBounce {
-          0%, 100% { transform: translateY(0); opacity: 0.6; }
-          50% { transform: translateY(6px); opacity: 1; }
-        }
       `}</style>
 
       {/* Background image */}
@@ -47,6 +43,17 @@ export default function MainBanner() {
             "linear-gradient(180deg, rgba(0,0,0,.20) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.85) 100%)",
             "radial-gradient(80% 60% at 80% 30%, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 100%)",
           ].join(","),
+        }}
+      />
+
+      {/* Header scrim — 배너 이미지가 밝은 계열이어도 그 위 투명 헤더의 흰색
+          메뉴 글자가 항상 구분되도록, 위 비네트와 별개로 헤더 높이만큼만
+          확실하게 어둡게 깐다. 이미지 밝기에 의존하지 않는 고정 대비. */}
+      <div
+        className="absolute inset-x-0 top-0 pointer-events-none"
+        style={{
+          height: "var(--header-height, 88px)",
+          background: "linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 75%, rgba(0,0,0,0) 100%)",
         }}
       />
 
@@ -105,27 +112,6 @@ export default function MainBanner() {
             </svg>
           </Link>
         </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 bottom-[40px] flex flex-col items-center gap-2 text-[11px] font-semibold tracking-[0.3em]"
-        style={{ color: "rgba(255,255,255,.7)" }}
-      >
-        <span>SCROLL</span>
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ animation: "scrollBounce 1.6s ease-in-out infinite" }}
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
       </div>
     </section>
   );
