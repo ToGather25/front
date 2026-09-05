@@ -81,7 +81,7 @@ describe("ChurchContext", () => {
     expect(screen.getByTestId("navCount").textContent).toBe(String(defaultConfig.nav.length));
   });
 
-  it("tenant 조회 실패 시 에러 화면을 보여준다", async () => {
+  it("tenant 조회 실패 시 에러 화면 대신 defaultConfig로 폴백한다(백엔드 미배포 환경 대응)", async () => {
     api.get.mockRejectedValue(new Error("network error"));
     render(
       <ChurchProvider>
@@ -89,10 +89,9 @@ describe("ChurchContext", () => {
       </ChurchProvider>,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("교회 정보를 찾을 수 없습니다.")).toBeInTheDocument(),
-    );
-    expect(screen.queryByTestId("name")).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("name").textContent).toBe(defaultConfig.name);
+    expect(screen.queryByText("교회 정보를 찾을 수 없습니다.")).not.toBeInTheDocument();
   });
 
   it("initialChurch가 주어지면 fetch를 생략하고 즉시 ready 상태다(테스트 주입용)", () => {

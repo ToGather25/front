@@ -1,448 +1,98 @@
 # ToGather 백엔드 아키텍처
 
+> 이 문서는 프론트 개발자가 API를 연동할 때 참고하는 요약이다. 상세 구현은 `togather-back` 저장소가
+> 원본이며, 이 문서는 그걸 따라가는 요약본이므로 어긋나면 백엔드 코드가 항상 맞다.
+
 ## 기술 스택
 
-| 항목      | 버전           | 비고                      |
-| --------- | -------------- | ------------------------- |
-| Runtime   | Node.js 22 LTS |                           |
-| Framework | Fastify v5     | 고성능 REST API           |
-| ORM       | Prisma 5       | 타입 안전 쿼리            |
-| DB        | PostgreSQL 16  | 멀티테넌트 Row-level 격리 |
-| Cache     | Redis 7        | 세션·피드 캐싱            |
-| Storage   | AWS S3         | 이미지·파일 업로드        |
-| Auth      | JWT RS256      | Access 15분 / Refresh 7일 |
-| 이메일    | AWS SES        | 비밀번호 재설정·알림      |
+| 항목      | 버전                        | 비고                                          |
+| --------- | --------------------------- | --------------------------------------------- |
+| Language  | Java 21                     |                                                |
+| Framework | Spring Boot 3.5             | Web, Data JPA, Security, Validation, Actuator |
+| DB        | PostgreSQL                  | Flyway로 마이그레이션 관리                    |
+| Cache     | Redis                       | 리프레시 토큰 저장, 유튜브 라이브 조회 캐싱   |
+| Auth      | JWT (HS256)                 | Access 1시간 / Refresh 7일, jjwt 라이브러리   |
+| 아키텍처  | 헥사고날(포트-어댑터)        | 도메인별 `domain/application/adapter` 3계층   |
+
+배포: 현재는 프론트(`togather-front`)만 Vercel에 올라가 있고, 백엔드는 아직 로컬에서만 실행 중이다(2026-09 기준).
 
 ---
 
 ## 멀티테넌트 전략
 
-- **Row-level isolation**: 모든 비즈니스 테이블에 `church_id` FK 필수
-- 쿼리 레이어에서 `WHERE church_id = ?` 자동 주입 (Prisma middleware)
-- PostgreSQL RLS 보조 적용 가능: `SET LOCAL app.current_church_id = ?`
-- 테넌트 식별: `subdomain` (e.g. `togather.church/{slug}`) 또는 커스텀 도메인
+- **Row-level isolation**: 비즈니스 테이블에 `church_id` FK.
+- **테넌트 식별 우선순위** (`ChurchContextFilter`):
+  1. 경로 기반 — `/api/churches/{churchId}/**` (프론트 공개 API 계약)
+  2. 개발용 `X-Church-Id` 헤더 — 프론트가 `/api/tenant` 조회로 얻은 churchId를 실어 보낸다(`api.js` 요청 인터셉터)
+  3. **최종 목표(아직 미구현)**: host(`getServerName()`) → `church_domain` 테이블 조회. 교회마다 커스텀 도메인을 연결하기 전까지는 1·2번 경로만 쓴다.
+- `/api/tenant?domain=<host>` 는 `church_domain.host`를 정확히 일치시켜 조회한다 — 일치하는 행이 없으면 404(`TENANT_NOT_FOUND`). 로컬 개발은 `.env`의 `VITE_DEV_CHURCH_DOMAIN`으로 이 값을 override한다.
 
 ---
 
-## RBAC (5단계 권한)
+## 인증 — 세 가지 로그인 표면
 
-| Role           | 설명                                 |
-| -------------- | ------------------------------------ |
-| `SUPER_ADMIN`  | 플랫폼 운영자 (Anthropic 측)         |
-| `CHURCH_ADMIN` | 교회 대표 관리자 (담임목사·행정간사) |
-| `PASTOR`       | 부교역자·전도사                      |
-| `LEADER`       | 구역장·셀리더·부서장                 |
-| `MEMBER`       | 일반 교인                            |
+같은 백엔드 안에 서로 다른 사용자 풀을 쓰는 로그인이 세 개 있다. 프론트(이 저장소)는 이 중 **①**만 사용한다.
+
+| # | 엔드포인트 | 사용자 풀 | 로그인 필드 | 용도 |
+|---|---|---|---|---|
+| ① | `POST /api/auth/login` | `account` (Role: `MEMBER` / `CHURCH_ADMIN`) | `email` | **프론트가 실제 사용하는 경로.** 일반 성도·교회 관리자 로그인 |
+| ② | `POST /api/church/auth/login` | `account` (동일 테이블) | `loginId` | ①과 같은 계정을 아이디 기반으로도 조회 가능(현재 프론트 미사용) |
+| ③ | `POST /api/admin/auth/login` | `admin_staff` (AdminRole: `STAFF` / `SUPER_ADMIN`) | `loginId` | ToGather 운영사 직원용 — 교회 계정과 완전히 별개 |
+
+- 비밀번호: Spring Security `BCryptPasswordEncoder`.
+- 토큰: Access(1시간) + Refresh(7일, Redis 저장, 회전형 — `/token/refresh` 호출 시 기존 토큰 폐기 후 새 쌍 발급, 재사용 감지 시 401).
+- 회원가입은 자격증명 없이 신청만 받고(`POST /api/auth/register`), 관리팀이 승인하면 완결 토큰으로 비밀번호를 설정한다(`POST /api/auth/register/complete`) — 3단계 플로우.
+- 계정(`account`) 롤은 `MEMBER`/`CHURCH_ADMIN` 두 가지뿐이다. 원래 이 문서에 있던 `SUPER_ADMIN`/`PASTOR`/`LEADER` 5단계 RBAC은 실제로 구현된 적 없다.
 
 ---
 
-## DB 테이블 설계
+## 도메인 구성
 
-### TENANT
+각 도메인은 대체로 "공개 조회용 `Churches*Controller`"와 "교회 관리자 CRUD용 `ChurchAdmin*Controller`" 한 쌍으로 이뤄진다.
 
-```
-churches
-  id            UUID PK
-  slug          TEXT UNIQUE          -- URL 식별자 (e.g. "togather")
-  name          TEXT
-  logo_url      TEXT
-  address       TEXT
-  tel           TEXT
-  fax           TEXT
-  email         TEXT
-  plan_id       UUID FK → church_plans
-  created_at    TIMESTAMPTZ
+| 도메인 | 공개(front) | 관리자(admin) |
+|---|---|---|
+| 교회 프로필/소개 | `GET /api/church/profile`, `/api/church/worship-guides` | `PUT /api/church/admin/profile`, `worship-guides` CRUD |
+| 공지 | `GET /api/church/notices`, `/api/churches/{id}/notices` | `/api/church/admin/notices` CRUD |
+| 행사 | `GET /api/churches/{id}/events`, 참가신청 | `/api/church/admin/events` CRUD + 신청자 목록 |
+| 주보 | `GET /api/churches/{id}/jubo/**` (섹션별 세분화) | `/api/church/admin/jubo` CRUD + 발행 |
+| 갤러리 | `GET /api/churches/{id}/{communities,gallery}` | `/api/church/admin/{communities,gallery}` CRUD |
+| 설교/방송 | `GET /api/church/sermons`, `/api/church/broadcast/live` | `/api/church/admin/sermons`, `/broadcasts` (start/end) |
+| 찬양 | `GET /api/church/praises` | `/api/church/admin/praises` CRUD |
+| 회보(bulletin) | `GET /api/church/bulletins`, `/latest` | `PUT /api/church/admin/bulletins` |
+| 교적부 | — | `GET /api/church/admin/members`, `/{publicId}` |
+| 문의(연락처) | `POST /api/churches/{id}/contact` | — |
+| 마이페이지 | `/api/my/{schedules,prayers,inquiries}` CRUD, `DELETE /api/my/account`(회원탈퇴) | — |
+| 회원가입 승인 | — | `GET /api/church/admin/signup-requests`, `/approve`, `/reject` |
+| 회사 문의(랜딩) | `POST /api/company/inquiries` | `GET/PATCH/DELETE /api/admin/inquiries` |
+| SaaS 교회 관리 | — | `/api/admin/churches` — 목록/생성/상태변경/도메인 등록/설정(운영사 전용, `admin_staff` 권한) |
 
-church_plans
-  id            UUID PK
-  name          TEXT                 -- free / standard / premium
-  max_members   INT
-  price_monthly INT
-```
+이 표는 요약이며, 정확한 파라미터·요청/응답 바디는 각 컨트롤러(`togather-back/src/main/java/com/togather/**/adapter/in/web/*Controller.java`)를 직접 확인한다.
 
-### AUTH
+---
 
-```
-users
-  id            UUID PK
-  church_id     UUID FK → churches
-  email         TEXT UNIQUE
-  password_hash TEXT
-  name          TEXT
-  role          ENUM(SUPER_ADMIN, CHURCH_ADMIN, PASTOR, LEADER, MEMBER)
-  is_active     BOOLEAN DEFAULT true
-  created_at    TIMESTAMPTZ
+## DB 스키마 개요
 
-refresh_tokens
-  id            UUID PK
-  user_id       UUID FK → users
-  family_id     UUID                 -- 재사용 감지용 family 그룹
-  token_hash    TEXT
-  expires_at    TIMESTAMPTZ
-  revoked_at    TIMESTAMPTZ
-
-password_resets
-  id            UUID PK
-  user_id       UUID FK → users
-  token_hash    TEXT
-  expires_at    TIMESTAMPTZ
-  used_at       TIMESTAMPTZ
-```
-
-### MEMBER (교적부)
+Flyway 마이그레이션(`src/main/resources/db/migration/V*.sql`)이 스키마의 유일한 출처다. 주요 테이블(V2 기준 핵심 + 이후 도메인별 추가):
 
 ```
-members
-  id              UUID PK
-  church_id       UUID FK → churches
-  user_id         UUID FK → users (nullable, 앱 계정 연결)
-  name            TEXT
-  name_roman      TEXT
-  gender          ENUM(M, F)
-  birth_date      DATE
-  phone           TEXT
-  email           TEXT
-  address         TEXT
-  district_id     UUID FK → districts
-  small_group_id  UUID FK → small_groups
-  role            TEXT               -- 장로·집사·청년 등 자유 입력
-  department      TEXT
-  baptism_date    DATE
-  registered_at   DATE
-  notes           TEXT
-  avatar_tone     INT                -- 아바타 색조 (1~8)
-  is_active       BOOLEAN DEFAULT true
-  created_at      TIMESTAMPTZ
-
-districts                            -- 구역
-  id          UUID PK
-  church_id   UUID FK
-  name        TEXT
-  leader_id   UUID FK → members
-
-small_groups                         -- 셀·다락방
-  id          UUID PK
-  church_id   UUID FK
-  name        TEXT
-  leader_id   UUID FK → members
-
-member_families
-  id          UUID PK
-  member_id   UUID FK → members
-  rel         TEXT                   -- 배우자·부·모·자녀 등
-  name        TEXT
-  phone       TEXT
-  linked_id   UUID FK → members (nullable)
-
-member_history
-  id          UUID PK
-  member_id   UUID FK → members
-  year        SMALLINT
-  content     TEXT
-
-member_attendance
-  id          UUID PK
-  church_id   UUID FK
-  member_id   UUID FK → members
-  service_id  UUID FK → worship_schedules
-  attended_at TIMESTAMPTZ
-  note        TEXT
-```
-
-### JUBO (주보)
-
-```
-jubo
-  id            UUID PK
-  church_id     UUID FK
-  date          DATE UNIQUE PER CHURCH
-  title         TEXT
-  cover_image   TEXT
-  published     BOOLEAN DEFAULT false
-  created_at    TIMESTAMPTZ
-
-jubo_worship_order                   -- 예배 순서
-  id          UUID PK
-  jubo_id     UUID FK → jubo
-  seq         INT
-  role        TEXT                   -- 사회·기도·찬양 등
-  content     TEXT
-  person      TEXT
-
-jubo_volunteers                      -- 봉사자
-  id          UUID PK
-  jubo_id     UUID FK → jubo
-  dept        TEXT
-  person      TEXT
-
-jubo_news                            -- 교회 소식
-  id          UUID PK
-  jubo_id     UUID FK → jubo
-  seq         INT
-  content     TEXT
-
-jubo_offering                        -- 예물
-  id          UUID PK
-  jubo_id     UUID FK → jubo
-  category    TEXT
-  amount      INT
-  person      TEXT
-
-jubo_support                         -- 후원·선교
-  id          UUID PK
-  jubo_id     UUID FK → jubo
-  target      TEXT
-  amount      INT
-  note        TEXT
-
-worship_schedules                    -- 정기 예배 시간표
-  id          UUID PK
-  church_id   UUID FK
-  name        TEXT                   -- 주일오전·주일오후·수요예배 등
-  day_of_week SMALLINT               -- 0=일 ~ 6=토
-  time        TIME
-  location    TEXT
-  is_active   BOOLEAN DEFAULT true
-```
-
-### CONTENT (공지·행사·갤러리)
-
-```
-notices
-  id          UUID PK
-  church_id   UUID FK
-  author_id   UUID FK → users
-  category    ENUM(NOTICE, EVENT, NEWS)
-  title       TEXT
-  body        TEXT
-  pinned      BOOLEAN DEFAULT false
-  published_at TIMESTAMPTZ
-  created_at  TIMESTAMPTZ
-
-events
-  id           UUID PK
-  church_id    UUID FK
-  author_id    UUID FK → users
-  title        TEXT
-  description  TEXT
-  location     TEXT
-  start_at     TIMESTAMPTZ
-  end_at       TIMESTAMPTZ
-  cover_image  TEXT
-  created_at   TIMESTAMPTZ
-
-event_attachments
-  id        UUID PK
-  event_id  UUID FK → events
-  url       TEXT
-  filename  TEXT
-
-event_registrations
-  id         UUID PK
-  event_id   UUID FK → events
-  member_id  UUID FK → members
-  status     ENUM(PENDING, CONFIRMED, CANCELLED)
-  created_at TIMESTAMPTZ
-
-gallery_communities                  -- 공동체 분류 (전체·청년부·찬양팀 등)
-  id        UUID PK
-  church_id UUID FK
-  name      TEXT
-  order_idx INT
-
-gallery_albums
-  id              UUID PK
-  church_id       UUID FK
-  community_id    UUID FK → gallery_communities
-  title           TEXT
-  cover_photo_id  UUID (circular → set after insert)
-  date            DATE
-  created_at      TIMESTAMPTZ
-
-gallery_photos
-  id          UUID PK
-  album_id    UUID FK → gallery_albums
-  url         TEXT                   -- S3 URL
-  thumb_url   TEXT
-  caption     TEXT
-  order_idx   INT
-  uploaded_by UUID FK → users
-  created_at  TIMESTAMPTZ
-```
-
-### BIBLE (성경 읽기·필사)
-
-```
-bible_read_logs
-  id          UUID PK
-  church_id   UUID FK
-  user_id     UUID FK → users
-  book        TEXT                   -- e.g. "창세기"
-  chapter     SMALLINT
-  verse       SMALLINT
-  checked_at  TIMESTAMPTZ
-
-bible_write_logs
-  id          UUID PK
-  church_id   UUID FK
-  user_id     UUID FK → users
-  book        TEXT
-  chapter     SMALLINT
-  verse       SMALLINT
-  content     TEXT                   -- 필사 내용
-  created_at  TIMESTAMPTZ
-
-bible_favorites
-  id          UUID PK
-  user_id     UUID FK → users
-  book        TEXT
-  chapter     SMALLINT
-  verse       SMALLINT
-  note        TEXT
-  created_at  TIMESTAMPTZ
-```
-
-### STATIC (교회 소개)
-
-```
-church_staff                         -- 섬기는 분들
-  id          UUID PK
-  church_id   UUID FK
-  name        TEXT
-  title       TEXT                   -- 담임목사·부목사 등
-  photo_url   TEXT
-  order_idx   INT
-
-church_history                       -- 연혁
-  id          UUID PK
-  church_id   UUID FK
-  year        SMALLINT
-  month       SMALLINT
-  content     TEXT
+church, church_domain, church_profile, church_contact         -- 테넌트/프로필
+plan, subscription                                            -- SaaS 플랜(틀만 있음, 미사용)
+account, member_registry, admin_staff, signup_request          -- 계정/교적부/운영사 직원/가입신청
+worship, worship_guide, sermon, live_broadcast, praise, bulletin -- 예배·설교·찬양·회보
+jubo, jubo_section                                             -- 주보(섹션 구조화)
+church_notice                                                  -- 공지
+church_event, event_registration                               -- 행사·참가신청
+gallery_community, gallery_photo                                -- 갤러리
+my_schedule, prayer_request, member_inquiry                     -- 마이페이지
+inquiry                                                          -- 회사(랜딩) 문의
+bible_book, bible_verse, reading_record, verse_like, last_read_position -- 성경(현재 프론트는 로컬 bible.json 사용, 미연동)
 ```
 
 ---
 
-## API 엔드포인트 목록
+## 프론트 연동 시 참고
 
-### Auth
-
-```
-POST   /api/auth/register
-POST   /api/auth/login
-POST   /api/auth/refresh
-DELETE /api/auth/logout
-POST   /api/auth/password-reset/request
-POST   /api/auth/password-reset/confirm
-```
-
-### Churches
-
-```
-GET    /api/churches/:slug           -- 퍼블릭 교회 정보
-PUT    /api/churches/:id             -- CHURCH_ADMIN 이상
-GET    /api/churches/:id/worship-schedules
-PUT    /api/churches/:id/worship-schedules
-```
-
-### Jubo
-
-```
-GET    /api/jubo                     -- 목록 (최신순)
-GET    /api/jubo/:id
-POST   /api/jubo                     -- PASTOR 이상
-PUT    /api/jubo/:id
-DELETE /api/jubo/:id
-POST   /api/jubo/:id/publish
-```
-
-### Members (교적부)
-
-```
-GET    /api/members                  -- LEADER 이상
-GET    /api/members/:id
-POST   /api/members                  -- PASTOR 이상
-PUT    /api/members/:id
-DELETE /api/members/:id
-GET    /api/members/:id/attendance
-POST   /api/members/:id/attendance
-GET    /api/districts
-POST   /api/districts
-GET    /api/small-groups
-POST   /api/small-groups
-```
-
-### Notices
-
-```
-GET    /api/notices
-GET    /api/notices/:id
-POST   /api/notices                  -- LEADER 이상
-PUT    /api/notices/:id
-DELETE /api/notices/:id
-```
-
-### Events
-
-```
-GET    /api/events
-GET    /api/events/:id
-POST   /api/events                   -- LEADER 이상
-PUT    /api/events/:id
-DELETE /api/events/:id
-POST   /api/events/:id/register      -- MEMBER
-DELETE /api/events/:id/register
-```
-
-### Gallery
-
-```
-GET    /api/gallery/communities
-GET    /api/gallery/albums
-GET    /api/gallery/albums/:id
-POST   /api/gallery/albums           -- LEADER 이상
-POST   /api/gallery/albums/:id/photos
-DELETE /api/gallery/photos/:id
-```
-
-### Bible
-
-```
-GET    /api/bible/read-logs
-POST   /api/bible/read-logs
-GET    /api/bible/write-logs
-POST   /api/bible/write-logs
-GET    /api/bible/favorites
-POST   /api/bible/favorites
-DELETE /api/bible/favorites/:id
-```
-
-### Upload
-
-```
-POST   /api/upload/presign            -- S3 presigned URL 발급
-```
-
----
-
-## 인증 플로우
-
-```
-로그인 → Access Token (15분 JWT RS256) + Refresh Token (7일, DB 저장)
-         ↓
-Access 만료 → POST /auth/refresh (Refresh Token 검증 + rotation)
-              새 Refresh Token 발급, 기존 무효화 (family_id 재사용 감지)
-         ↓
-Refresh 재사용 감지 → family 전체 revoke (계정 탈취 방어)
-```
-
----
-
-## 구현 단계
-
-| Phase    | 범위                                 |
-| -------- | ------------------------------------ |
-| 1 MVP    | Auth + Church + Jubo + Notices       |
-| 2 목양   | Members + Attendance + Districts     |
-| 3 콘텐츠 | Events + Gallery + Bible             |
-| 4 SaaS   | 플랜 관리 + 온보딩 + 관리자 대시보드 |
+- 모든 응답은 `{ success, data }` 봉투(`ApiResponse`)로 오되, `/api/auth/**`(①)만 프론트 전용 계약이라 `{ success, data, token, refreshToken }` 형태로 다르다(`FrontLoginResponse` 등).
+- 프론트 `api.js`는 로그인 성공 시 받은 `token`을 `localStorage`에 저장하고, 이후 모든 요청에 `Authorization: Bearer` + `X-Church-Id` 헤더를 자동으로 붙인다.
+- 401 응답은 원인(계정 없음/미승인/비밀번호 불일치)을 구분하지 않고 통일한다(계정 열거 공격 방지).

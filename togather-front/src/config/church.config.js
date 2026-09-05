@@ -4,7 +4,9 @@
  * SaaS 환경에서는 이 설정이 서브도메인/도메인 기반으로 서버에서 주입됩니다.
  * 예: GET /api/tenant?domain=togather.church
  *
- * 현재는 로컬 설정 파일 사용 (개발 단계)
+ * 이 파일 자체가 이 배포(이 저장소)의 기본 교회 데이터(알곡교회)이기도 하다 —
+ * ChurchProvider는 위 API 호출이 실패해도(백엔드 미배포 등) 이 값을 그대로 보여준다
+ * (ChurchContext.jsx 참고). 즉 이 저장소를 그대로 배포하면 "알곡교회 프론트"로 동작한다.
  */
 
 import floor1 from "@/assets/floors/1.png";

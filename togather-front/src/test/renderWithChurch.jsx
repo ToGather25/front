@@ -11,9 +11,9 @@ import defaultConfig from "@/config/church.config";
  * (일부 필드만 넘겨도 되며, 컴포넌트가 실제로 읽는 필드만 채우면 됩니다).
  *
  * church를 넘기지 않으면 defaultConfig를 initialChurch로 주입해 ChurchProvider의
- * /api/tenant fetch 자체를 건너뜁니다 — 이 헬퍼를 쓰는 테스트들은 테넌트 로딩/에러 흐름을
+ * /api/tenant fetch 자체를 건너뜁니다 — 이 헬퍼를 쓰는 테스트들은 테넌트 로딩/폴백 흐름을
  * 검증 대상으로 삼지 않으므로(그건 ChurchContext.test.jsx의 몫), 모킹되지 않은 실제
- * 네트워크 호출이 비동기로 실패해 TenantErrorScreen이 뜨는 것을 막기 위함입니다.
+ * 네트워크 호출이 비동기로 지연/실패해 렌더 타이밍이 흔들리는 것을 막기 위함입니다.
  */
 export function renderWithChurch(
   ui,
