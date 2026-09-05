@@ -170,7 +170,8 @@ describe("WordBroadcast — 실시간 예배", () => {
 
     renderWithChurch(<WordBroadcast />, { initialEntries: ["/말씀/방송"] });
 
-    expect(await screen.findByText("LIVE")).toBeInTheDocument();
+    // 자동 감지 라이브 → LIVE 섹션(영상 + 진행중 안내). sermon 메타가 없으면 LIVE 배지는 없다.
+    expect(await screen.findByText("지금 예배가 진행중입니다")).toBeInTheDocument();
     expect(
       document.querySelector('iframe[src="https://www.youtube.com/embed/auto1234567?autoplay=1"]'),
     ).toBeInTheDocument();
