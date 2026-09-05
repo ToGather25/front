@@ -39,8 +39,8 @@ const churchConfig = {
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube: "https://www.youtube.com/channel/UCEqVXU3lm5RbDRWbTSPc_yg", // 채널 URL (푸터 링크용)
-    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg", // UC로 시작하는 채널 ID (예: UCxxxxxxxxxxxxxxxxxx)
+    youtube: "https://www.youtube.com/channel/UCHKLbKQ17ZXo735AaWugkiA", // 채널 URL (푸터 링크용) — 서울알곡교회
+    youtubeChannelId: "UCHKLbKQ17ZXo735AaWugkiA", // UC로 시작하는 채널 ID (서울알곡교회)
     instagram: null,
     facebook: null,
   },
