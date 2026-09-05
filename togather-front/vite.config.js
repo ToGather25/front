@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
@@ -1339,6 +1340,7 @@ export default defineConfig({
     }),
   ]),
   resolve: {
-    alias: [{ find: "@", replacement: new URL("src", import.meta.url).pathname }],
+    // fileURLToPath로 디코드(경로에 비ASCII 문자가 있어도 안전 — .pathname은 퍼센트 인코딩되어 깨짐)
+    alias: [{ find: "@", replacement: fileURLToPath(new URL("src", import.meta.url)) }],
   },
 });
