@@ -79,7 +79,7 @@ const MENU_ITEMS = [
 
 export default function SubMenu() {
   return (
-    <section className="w-full bg-bluegrey-1 py-[100px]">
+    <section className="w-full bg-bluegrey-1 py-[120px]">
       <div className="max-w-[1400px] mx-auto px-[clamp(1.5rem,5vw,6rem)]">
         {/* Section head */}
         <div className="mb-8">
