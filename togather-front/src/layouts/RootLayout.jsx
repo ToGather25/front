@@ -146,6 +146,17 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
     setPanelHeight(heights.length ? Math.max(...heights) : 0);
   }, [openMenu, colCenters]);
 
+  // 메뉴가 열린 채로 스크롤하면 헤더는 translateY로 숨는데 드롭다운 패널은 헤더와
+  // 무관하게 별도로 떠 있어서 화면에 그대로 남는다 — 스크롤이 시작되면 닫는다.
+  useEffect(() => {
+    if (!openMenu) return;
+    function closeOnScroll() {
+      setOpenMenu(null);
+    }
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+    return () => window.removeEventListener("scroll", closeOnScroll);
+  }, [openMenu]);
+
   // 메가 메뉴가 열려 있는 동안은 히어로 배경이 뒤에 비치는 투명 헤더 대신
   // 흰 배경으로 전환한다 — 드롭다운 아래로 배경 사진이 겹쳐 보이지 않도록.
   const effectiveTransparent = transparent && !openMenu;
@@ -313,7 +324,9 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
 
       {openMenu && (
         <div
-          className="absolute left-0 right-0 bg-white/90 shadow-xl"
+          className={`absolute left-0 right-0 shadow-xl ${
+            transparent ? "bg-white/90" : "bg-bluegrey-1"
+          }`}
           style={{
             animation: "megaFadeIn 0.15s ease-out",
             borderBottom: "2px solid var(--color-primary)",
@@ -339,7 +352,9 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
               className="relative"
               style={{ height: panelHeight || undefined }}
             >
-              {/* 현재 호버 중인 상위 메뉴의 열 배경만 흰색으로 도드라지게 강조 —
+              {/* 현재 호버 중인 상위 메뉴의 열 배경을 흰색으로 강조 — 패널 자체를 히어로
+                  위에서는 반투명 흰색(bg-white/90), 일반 페이지에서는 불투명 회색
+                  (bg-bluegrey-1)으로 깔아두므로 흰색 하이라이트가 항상 도드라진다.
                   이웃 메뉴 중심까지의 절반 지점을 경계로 삼아 폭을 정한다. */}
               {(() => {
                 const activeIndex = menuItems.findIndex((item) => item.label === openMenu);
