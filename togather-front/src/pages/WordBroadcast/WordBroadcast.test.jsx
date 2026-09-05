@@ -148,4 +148,31 @@ describe("WordBroadcast — 실시간 예배", () => {
     fireEvent.click(screen.getByRole("button", { name: "스마트 주보 보기" }));
     expect(screen.getByText("이번 주 주보")).toBeInTheDocument();
   });
+
+  it("수동 방송이 없어도(NONE) 유튜브 자동 감지가 라이브면 LIVE로 표시한다", async () => {
+    api.get.mockImplementation((url) =>
+      url.includes("/broadcast/live")
+        ? Promise.resolve({
+            data: { data: { live: true, videoId: "auto1234567", title: "자동 라이브" } },
+          })
+        : Promise.resolve({
+            data: {
+              data: {
+                state: "NONE",
+                youtubeLiveUrl: null,
+                sermon: null,
+                bulletinAvailable: false,
+                recentSermons: [],
+              },
+            },
+          }),
+    );
+
+    renderWithChurch(<WordBroadcast />, { initialEntries: ["/말씀/방송"] });
+
+    expect(await screen.findByText("LIVE")).toBeInTheDocument();
+    expect(
+      document.querySelector('iframe[src="https://www.youtube.com/embed/auto1234567?autoplay=1"]'),
+    ).toBeInTheDocument();
+  });
 });
