@@ -12,7 +12,7 @@ function EventResultRow({ event, query }) {
   return (
     <Link
       to={`/교회행사/${event.id}`}
-      className="flex items-start gap-4 px-1 py-4 hover:bg-bluegrey-1 transition-colors"
+      className="flex items-start gap-4 -mx-3 px-3 py-4 rounded-xl hover:bg-bluegrey-1 transition-colors"
     >
       <div className="flex-1 min-w-0">
         <span className={`text-body-5 font-semibold ${ds.text}`}>{event.department}</span>

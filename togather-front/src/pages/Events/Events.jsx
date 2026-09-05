@@ -16,12 +16,13 @@ import RegistrationButton from "@/components/events/RegistrationButton";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-/** 이전/당월/다음달을 합쳐 6주(42칸) 또는 5주(35칸) 그리드 셀 배열을 만든다 */
+/** 이전/당월/다음달을 합쳐 항상 6주(42칸) 그리드 셀 배열을 만든다 — 달마다 실제 주
+ * 수(5주/6주)가 달라 캘린더 전체 높이가 오락가락하지 않도록 행 수를 고정한다. */
 function buildCalendarCells(year, month) {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
   const daysInPrevMonth = getDaysInMonth(year, month - 1);
-  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  const totalCells = 42;
 
   const cells = [];
   for (let i = 0; i < firstDay; i++) {
@@ -79,14 +80,14 @@ export default function Events() {
 
   const selectedEvents = selectedDate ? eventsForDate(selectedDate) : [];
 
-  const monthName = `${year}년 ${month + 1}월`;
-
   return (
     <div className="max-w-[1400px] mx-auto px-4 pt-6 pb-20 md:px-8 md:pt-10">
       {/* Header Row */}
       <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-sub-tit-1 font-bold text-grey-12">{monthName}</h1>
+          <h1 className="text-sub-tit-1 font-bold text-grey-12 whitespace-nowrap">
+            {year}년 <span className="inline-block min-w-[1.4em] text-center tabular-nums">{month + 1}</span>월
+          </h1>
           <button
             onClick={prevMonth}
             className="w-8 h-8 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors"
@@ -120,23 +121,20 @@ export default function Events() {
           </button>
         </div>
 
-        <EventSearchBar className="w-full md:w-[300px]" />
+        <EventSearchBar className="w-full md:flex-1" />
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 flex-1 min-w-0">
+        <select
+          value={activeCategory ?? ""}
+          onChange={(e) => setActiveCategory(e.target.value || null)}
+          className="w-full md:w-auto shrink-0 border border-bluegrey-3 rounded-full px-4 py-2 text-body-4 text-grey-8 bg-white focus:outline-none focus:border-blue-5"
+        >
+          <option value="">전체 카테고리</option>
           {EVENT_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`px-4 py-1.5 border rounded-full text-body-4 transition-colors shrink-0 ${
-                activeCategory === cat
-                  ? "bg-blue-8 text-white border-blue-10"
-                  : "border-bluegrey-3 text-grey-8 hover:border-blue-5 hover:text-blue-5"
-              }`}
-            >
+            <option key={cat} value={cat}>
               {cat}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
