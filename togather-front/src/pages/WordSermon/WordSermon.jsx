@@ -105,7 +105,7 @@ export default function WordSermon() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="설교 제목 검색"
-              className="w-full pl-10 pr-10 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
+              className="w-full h-[46px] pl-10 pr-10 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
             />
             {inputVal && (
               <button
@@ -123,7 +123,7 @@ export default function WordSermon() {
               setWorshipType(e.target.value);
               setPage(1);
             }}
-            className="px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all shrink-0"
+            className="h-[46px] px-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all shrink-0"
           >
             <option value="">예배 전체</option>
             {SERVICE_TYPES.map((type) => (
@@ -134,7 +134,7 @@ export default function WordSermon() {
           </select>
           <button
             type="submit"
-            className="px-5 py-3 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0"
+            className="h-[46px] px-5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0"
           >
             검색
           </button>

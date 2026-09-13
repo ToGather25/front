@@ -1587,18 +1587,18 @@ cat src/main/resources/db/migration/V5__front_alignment.sql
 --   psql "postgresql://togather:togather@localhost:5432/togather" -f scripts/seed-local.sql
 -- ============================================================================
 
--- 교회 1곳 (church.config.js의 알곡교회 설정을 근접하게 반영)
+-- 교회 1곳 (church.config.js의 옥길교회 설정을 근접하게 반영)
 INSERT INTO church (name, status, settings, created_at, updated_at)
 VALUES (
-  '알곡교회',
+  '옥길교회',
   'ACTIVE',
   '{
     "shortName": "알곡",
-    "address": "서울 관악구 난곡로24길 42 (신림동)",
+    "address": "경기도 부천시 양지로 166번길 34 (옥길동)",
     "tel": "02) 2615-4067",
     "fax": "02) 2683-4326",
     "email": "algok@gmail.com",
-    "pastor": "유상현",
+    "pastor": "임재호",
     "denomination": "대한예수교장로회 고신교단",
     "logoUrl": null,
     "social": { "youtube": null, "youtubeChannelId": null, "instagram": null, "facebook": null },
@@ -1615,7 +1615,7 @@ DO $$
 DECLARE
   v_church_id BIGINT;
 BEGIN
-  SELECT id INTO v_church_id FROM church WHERE name = '알곡교회' LIMIT 1;
+  SELECT id INTO v_church_id FROM church WHERE name = '옥길교회' LIMIT 1;
 
   -- 로컬 개발용 도메인 (프론트 .env의 VITE_DEV_CHURCH_DOMAIN과 일치해야 함)
   INSERT INTO church_domain (church_id, domain, created_at)

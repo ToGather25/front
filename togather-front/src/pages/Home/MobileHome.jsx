@@ -1,24 +1,36 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-import { useSearch } from "@/contexts/SearchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
-import ChurchLogo from "@/components/common/ChurchLogo";
 import defaultBanner from "@/assets/default_banner.png";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 function MobileSearchBar() {
-  const { setOpen } = useSearch();
+  const navigate = useNavigate();
+  const [value, setValue] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmed = value.trim();
+    if (trimmed) void navigate(`/검색?q=${encodeURIComponent(trimmed)}`);
+  };
+
   return (
-    <div className="px-4 pt-5 py-3">
-      <button
-        onClick={() => setOpen(true)}
-        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-bluegrey-1 border border-bluegrey-2 text-left"
-      >
-        <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
-        <span className="text-[14px] text-grey-5 flex-1">검색어를 입력하세요.</span>
-      </button>
-    </div>
+    <form onSubmit={handleSearch} className="px-4 pt-5 py-3">
+      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-bluegrey-1 border border-bluegrey-2">
+        <button type="submit" aria-label="검색" className="shrink-0">
+          <img src={IcoSearch} className="w-4 h-4" alt="" />
+        </button>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="검색어를 입력하세요."
+          className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[14px] text-grey-10 placeholder:text-grey-5"
+        />
+      </div>
+    </form>
   );
 }
 
@@ -153,36 +165,6 @@ function VideoSection({ youtubeUrl, pastor, title, isLive }) {
   );
 }
 
-function MobileFooter({ church }) {
-  return (
-    <footer className="bg-bluegrey-1 px-5 py-8">
-      <div className="flex items-center gap-2 mb-3">
-        <ChurchLogo alt={`${church.name} 로고`} className="w-8 h-8 object-contain" />
-        <span className="text-[15px] font-bold text-grey-11">{church.name}</span>
-      </div>
-      <div className="flex gap-4 mb-4">
-        <a href="#" className="text-[12px] text-grey-7 underline underline-offset-2">
-          개인정보취급방침
-        </a>
-        <a href="#" className="text-[12px] text-grey-7 underline underline-offset-2">
-          이용약관
-        </a>
-      </div>
-      <div className="flex flex-col gap-1 mb-4">
-        <p className="text-[12px] text-grey-6">주소: {church.address}</p>
-        <p className="text-[12px] text-grey-6">
-          TEL: {church.tel}
-          {church.fax && `  |  FAX: ${church.fax}`}
-        </p>
-      </div>
-      <p className="text-[11px] text-grey-6">
-        Copyright © {church.name.startsWith("Togather") ? church.name : "Togather"} All rights
-        reserved.
-      </p>
-    </footer>
-  );
-}
-
 export default function MobileHome() {
   const { church } = useChurch();
   const { data: notices = [] } = useFetch(
@@ -221,7 +203,6 @@ export default function MobileHome() {
         title={sermon.title.replace(/^"|"$/g, "")}
         isLive={false}
       />
-      <MobileFooter church={church} />
     </div>
   );
 }

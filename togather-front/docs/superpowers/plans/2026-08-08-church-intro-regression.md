@@ -1009,7 +1009,7 @@ Expected: FAIL — `./Greeting` 모듈 없음
 // src/components/church/Greeting.jsx
 import { useChurch } from "@/contexts/ChurchContext";
 import FallbackImage from "./FallbackImage";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import LogoIcon from "@/assets/icons/옥길교회_logo.png";
 import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
 
 export default function Greeting() {

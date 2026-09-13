@@ -271,6 +271,55 @@ function InfoRow({ label, value, mono }) {
   );
 }
 
+/* ── Mobile card row ── */
+function MemberCard({ m, isSelected, searchQ, onClick }) {
+  const highlight = (text) => {
+    if (!searchQ || !text || !text.includes(searchQ)) return text;
+    const i = text.indexOf(searchQ);
+    return (
+      <>
+        {text.slice(0, i)}
+        <span className="text-blue-6 font-bold">{searchQ}</span>
+        {text.slice(i + searchQ.length)}
+      </>
+    );
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-3.5 border-b border-bluegrey-1 text-left transition-colors ${
+        isSelected ? "bg-blue-1" : "active:bg-bluegrey-1"
+      }`}
+    >
+      <Avatar name={m.name} tone={m.avatarTone} />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-body-3 font-semibold text-grey-12">{highlight(m.name)}</span>
+          <RoleChip role={m.role} />
+        </div>
+        <div className="flex items-center gap-1.5 text-body-5 text-grey-5">
+          <span>
+            {m.region}
+            {m.smallGroup ? ` · ${m.smallGroup}` : ""}
+          </span>
+          <span>·</span>
+          <span className="font-mono">{highlight(m.phone)}</span>
+        </div>
+      </div>
+      <svg
+        className="w-4 h-4 text-grey-4 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path d="M9 6l6 6-6 6" />
+      </svg>
+    </button>
+  );
+}
+
 /* ── Table row ── */
 function MemberRow({ m, isSelected, searchQ, onClick }) {
   const highlight = (text) => {
@@ -569,77 +618,94 @@ export default function Gyojeokbu() {
           </div>
         </div>
 
-        {/* Table */}
+        {/* Table (desktop) / Card list (mobile) */}
         <div
           className="bg-white rounded-2xl border border-bluegrey-2 overflow-hidden transition-all duration-200"
           style={{ marginRight: member ? "clamp(0px, 536px, calc(100vw - 320px))" : "0" }}
         >
-          <div className="overflow-x-auto">
-            {matches.length === 0 ? (
-              <div className="py-24 text-center">
-                <div className="w-[72px] h-[72px] rounded-[18px] bg-blue-1 flex items-center justify-center mx-auto mb-5">
-                  <svg
-                    className="w-8 h-8 text-blue-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="m20 20-3.5-3.5" />
-                  </svg>
-                </div>
-                <div className="text-sub-tit-3 font-bold text-grey-12 tracking-[-0.5px] mb-2">
-                  검색 결과가 없습니다
-                </div>
-                <div className="text-body-3 text-grey-5">
-                  이름 또는 휴대폰 번호 뒷자리를 다시 확인해 주세요.
-                </div>
+          {matches.length === 0 ? (
+            <div className="py-24 text-center">
+              <div className="w-[72px] h-[72px] rounded-[18px] bg-blue-1 flex items-center justify-center mx-auto mb-5">
+                <svg
+                  className="w-8 h-8 text-blue-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.5-3.5" />
+                </svg>
               </div>
-            ) : (
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-bluegrey-1 border-b border-bluegrey-2">
-                    {[
-                      "이름",
-                      "직분",
-                      "구역 / 소그룹",
-                      "생년월일",
-                      "휴대폰",
-                      "최근 출석",
-                      "출석률",
-                      "",
-                    ].map((h, i) => (
-                      <th
-                        key={i}
-                        className="text-left text-body-5 font-bold text-grey-6 uppercase tracking-[0.04em] px-4 py-4 whitespace-nowrap"
-                        style={
-                          i === 0
-                            ? { paddingLeft: "24px" }
-                            : i === 7
-                              ? { paddingRight: "24px", width: "36px" }
-                              : {}
-                        }
-                      >
-                        {h}
-                      </th>
+              <div className="text-sub-tit-3 font-bold text-grey-12 tracking-[-0.5px] mb-2">
+                검색 결과가 없습니다
+              </div>
+              <div className="text-body-3 text-grey-5">
+                이름 또는 휴대폰 번호 뒷자리를 다시 확인해 주세요.
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* 모바일: 카드 리스트 — 컬럼이 많은 테이블은 좁은 화면에서 텍스트가
+                  세로로 깨져 읽을 수 없다 */}
+              <div className="md:hidden">
+                {matches.map((m) => (
+                  <MemberCard
+                    key={m.id}
+                    m={m}
+                    isSelected={m.id === selectedId}
+                    searchQ={q}
+                    onClick={() => setSelectedId((prev) => (prev === m.id ? null : m.id))}
+                  />
+                ))}
+              </div>
+
+              {/* 데스크탑: 테이블 */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-bluegrey-1 border-b border-bluegrey-2">
+                      {[
+                        "이름",
+                        "직분",
+                        "구역 / 소그룹",
+                        "생년월일",
+                        "휴대폰",
+                        "최근 출석",
+                        "출석률",
+                        "",
+                      ].map((h, i) => (
+                        <th
+                          key={i}
+                          className="text-left text-body-5 font-bold text-grey-6 uppercase tracking-[0.04em] px-4 py-4 whitespace-nowrap"
+                          style={
+                            i === 0
+                              ? { paddingLeft: "24px" }
+                              : i === 7
+                                ? { paddingRight: "24px", width: "36px" }
+                                : {}
+                          }
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {matches.map((m) => (
+                      <MemberRow
+                        key={m.id}
+                        m={m}
+                        isSelected={m.id === selectedId}
+                        searchQ={q}
+                        onClick={() => setSelectedId((prev) => (prev === m.id ? null : m.id))}
+                      />
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches.map((m) => (
-                    <MemberRow
-                      key={m.id}
-                      m={m}
-                      isSelected={m.id === selectedId}
-                      searchQ={q}
-                      onClick={() => setSelectedId((prev) => (prev === m.id ? null : m.id))}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

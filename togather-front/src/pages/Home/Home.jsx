@@ -1,6 +1,5 @@
 import MainBanner from "@/components/home/MainBanner";
 import SearchSection from "@/components/home/SearchSection";
-import SubMenu from "@/components/home/SubMenu";
 import WorshipSection from "@/components/home/WorshipSection";
 import ServiceBand from "@/components/home/ServiceBand";
 import NoticeSection from "@/components/home/NoticeSection";
@@ -18,15 +17,14 @@ export default function Home() {
         <div data-home-section>
           <MainBanner />
         </div>
-        <div data-home-section className="min-h-screen flex flex-col justify-center">
+        <div data-home-section className="min-h-screen flex flex-col justify-center bg-bluegrey-1">
           <SearchSection />
-          <SubMenu />
         </div>
         <div data-home-section className="min-h-screen flex flex-col justify-center">
           <WorshipSection />
           <ServiceBand />
         </div>
-        <div data-home-section className="min-h-screen flex flex-col justify-center">
+        <div data-home-section className="min-h-screen flex flex-col justify-center bg-bluegrey-1">
           <NoticeSection />
         </div>
         <div data-home-section className="min-h-screen flex flex-col justify-center">

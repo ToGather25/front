@@ -59,7 +59,7 @@ export default function Settings() {
   }
 
   const [info, setInfo] = useState({
-    name: "알곡교회",
+    name: "옥길교회",
     nameEn: "Algok Church",
     denomination: "대한예수교장로회 (합동)",
     pastor: "김영수 담임목사",

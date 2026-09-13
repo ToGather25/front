@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 
 const SECTION_TAB_MAP = {
@@ -73,6 +74,15 @@ const DISCIPLE_TRAINING = [
     desc: "실제 사역 현장에서 봉사하며 훈련받는 과정입니다.",
   },
 ];
+
+const DISCIPLE_TRAINING_INFO = [
+  { label: "교재", value: "국제제자훈련원 교재(1, 2, 3권)" },
+  { label: "대상", value: "평신도지도자" },
+  { label: "시간", value: "주일 오후예배 후 (목양실)" },
+];
+
+const DISCIPLE_TRAINING_NOTE =
+  "제자훈련은 성경공부 프로그램이 아닙니다.\n제자훈련은 본교회에서 시행하는 바이블키 성경공부를 수료한 분들을 대상으로 실시합니다.";
 
 const NURTURE_PROGRAMS = [
   {
@@ -150,6 +160,8 @@ const BOARD_POSTS = [
   },
 ];
 
+const BOARD_PAGE_SIZE = 5;
+
 const LEVEL_COLORS = {
   기초: "bg-point-1 text-point-7",
   초급: "bg-blue-1 text-blue-7",
@@ -166,8 +178,15 @@ const CATEGORY_COLORS = {
 export default function Nurture() {
   const { section } = useParams();
   const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
+  const { church } = useChurch();
   const { currentUser } = useAuth();
   const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const [boardPage, setBoardPage] = useState(1);
+  const boardTotalPages = Math.max(1, Math.ceil(BOARD_POSTS.length / BOARD_PAGE_SIZE));
+  const boardPosts = BOARD_POSTS.slice(
+    (boardPage - 1) * BOARD_PAGE_SIZE,
+    boardPage * BOARD_PAGE_SIZE,
+  );
 
   function handleBibleCardClick(e) {
     if (!currentUser) {
@@ -223,7 +242,7 @@ export default function Nurture() {
             <p className="text-body-2 text-grey-7 mb-8">
               지역별로 모여 말씀을 나누고 서로를 섬기는 구역 공동체입니다.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {ZONES.map((zone) => (
                 <div key={zone.name} className="border border-bluegrey-2 rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -312,23 +331,48 @@ export default function Nurture() {
             <p className="text-body-2 text-grey-7 mb-8">
               그리스도의 제자로 세워지기 위한 체계적인 훈련 과정입니다.
             </p>
-            <div className="grid grid-cols-1 gap-4 max-w-2xl">
-              {DISCIPLE_TRAINING.map(({ name, schedule, location, desc }) => (
-                <div key={name} className="border border-bluegrey-2 rounded-2xl p-6">
-                  <h3 className="text-sub-tit-5 font-bold text-grey-11 mb-1">{name}</h3>
-                  <p className="text-body-4 text-grey-6 mb-3">{desc}</p>
-                  <div className="flex flex-col gap-1 text-body-4">
-                    <div className="flex gap-2">
-                      <span className="text-grey-5 w-12 shrink-0">일정</span>
-                      <span className="text-grey-9">{schedule}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="text-grey-5 w-12 shrink-0">장소</span>
-                      <span className="text-grey-9">{location}</span>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {/* 안내 배너 */}
+              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-blue-9 via-blue-8 to-blue-6 px-8 py-10 h-full flex flex-col justify-center gap-8">
+                <div>
+                  <h3 className="text-sub-tit-2 font-bold text-white mb-6">
+                    {church.name} 제자훈련학교
+                  </h3>
+                  <dl className="flex flex-col gap-2.5">
+                    {DISCIPLE_TRAINING_INFO.map(({ label, value }) => (
+                      <div key={label} className="flex gap-3 text-body-3">
+                        <dt className="text-blue-2 font-semibold w-12 shrink-0">· {label}</dt>
+                        <dd className="text-white">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <p className="text-body-4 text-blue-1 leading-relaxed whitespace-pre-line border-t border-white/15 pt-6">
+                  {DISCIPLE_TRAINING_NOTE}
+                </p>
+              </div>
+
+              {/* 단계별 과정 */}
+              <div className="grid grid-cols-1 gap-4">
+                {DISCIPLE_TRAINING.map(({ name, schedule, location, desc }) => (
+                  <div key={name} className="border border-bluegrey-2 rounded-2xl p-6">
+                    <h3 className="text-sub-tit-5 font-bold text-grey-11 mb-1">{name}</h3>
+                    <p className="text-body-4 text-grey-6 mb-3">{desc}</p>
+                    <div className="flex flex-col gap-1 text-body-4">
+                      <div className="flex gap-2">
+                        <span className="text-grey-5 w-12 shrink-0">일정</span>
+                        <span className="text-grey-9">{schedule}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-grey-5 w-12 shrink-0">장소</span>
+                        <span className="text-grey-9">{location}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -340,7 +384,7 @@ export default function Nurture() {
             <p className="text-body-2 text-grey-7 mb-8">
               단계별 신앙 성장을 위한 양육 프로그램을 운영합니다.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {NURTURE_PROGRAMS.map((prog) => (
                 <div key={prog.title} className="border border-bluegrey-2 rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-3">
@@ -370,7 +414,7 @@ export default function Nurture() {
             <p className="text-body-2 text-grey-7 mb-8">
               양육과 훈련에 관한 공지 및 나눔 게시판입니다.
             </p>
-            <div className="border border-bluegrey-2 rounded-2xl overflow-hidden max-w-4xl">
+            <div className="border border-bluegrey-2 rounded-2xl overflow-hidden max-w-4xl mx-auto">
               {/* 헤더 */}
               <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
                 <span>분류</span>
@@ -378,7 +422,7 @@ export default function Nurture() {
                 <span className="hidden md:block text-center">작성자</span>
                 <span className="hidden md:block text-center">날짜</span>
               </div>
-              {BOARD_POSTS.map((post) => (
+              {boardPosts.map((post) => (
                 <div
                   key={post.id}
                   className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors cursor-pointer items-center"
@@ -398,6 +442,29 @@ export default function Nurture() {
                 </div>
               ))}
             </div>
+
+            {boardTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-1 mt-6">
+                <PageBtn
+                  onClick={() => setBoardPage((p) => Math.max(1, p - 1))}
+                  disabled={boardPage === 1}
+                  label="‹"
+                />
+                {Array.from({ length: boardTotalPages }, (_, i) => i + 1).map((p) => (
+                  <PageBtn
+                    key={p}
+                    onClick={() => setBoardPage(p)}
+                    active={p === boardPage}
+                    label={String(p)}
+                  />
+                ))}
+                <PageBtn
+                  onClick={() => setBoardPage((p) => Math.min(boardTotalPages, p + 1))}
+                  disabled={boardPage === boardTotalPages}
+                  label="›"
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -460,5 +527,23 @@ export default function Nurture() {
         />
       )}
     </div>
+  );
+}
+
+function PageBtn({ onClick, disabled, active, label }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-9 h-9 rounded-lg text-body-3 font-medium transition-colors ${
+        active
+          ? "bg-blue-7 text-white"
+          : disabled
+            ? "text-grey-4 cursor-not-allowed"
+            : "text-grey-8 hover:bg-blue-1 hover:text-blue-7"
+      }`}
+    >
+      {label}
+    </button>
   );
 }

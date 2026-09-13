@@ -94,7 +94,7 @@ Jubo.jsx 자체는 아직 건드리지 않음(Task 15에서 교체)."
 ```jsx
 import { useChurch } from "@/contexts/ChurchContext";
 import juboConfig from "@/config/jubo.config";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import LogoIcon from "@/assets/icons/옥길교회_logo.png";
 import DefaultBanner from "@/assets/default_banner.png";
 
 export default function Cover() {
@@ -1244,7 +1244,7 @@ export default juboConfig;
     bankAccount: {
       bank: "국민은행",
       accountNumber: "123456-78-901234",
-      holder: "알곡교회",
+      holder: "옥길교회",
     },
     qrCodeUrl: null,
   },

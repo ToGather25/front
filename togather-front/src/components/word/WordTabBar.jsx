@@ -1,10 +1,10 @@
 import { NavLink } from "react-router";
 
 const TABS = [
+  { label: "예배 안내", to: "/말씀/안내" },
   { label: "실시간 예배", to: "/말씀/방송" },
   { label: "예배 목록", to: "/말씀/설교" },
-  { label: "예배 안내", to: "/말씀/안내" },
-  { label: "스마트 주보", to: "/주보" },
+  { label: "스마트 주보", to: "/주보/목록" },
 ];
 
 export default function WordTabBar() {

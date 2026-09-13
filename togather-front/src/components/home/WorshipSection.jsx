@@ -37,11 +37,14 @@ function VideoThumb({ isLive, onClick }) {
 }
 
 export default function WorshipSection() {
-  const { church } = useChurch();
+  const { church, loading } = useChurch();
   const navigate = useNavigate();
   const [screen, setScreen] = useState(null);
 
   useEffect(() => {
+    // church context가 아직 로딩 중이면(테넌트 조회 완료 전) X-Church-Id 헤더가
+    // 아직 안 실려 있어 401이 난다 — 로딩 완료까지 기다린다.
+    if (loading) return;
     let cancelled = false;
     const fetchLiveStatus = async () => {
       try {
@@ -57,7 +60,7 @@ export default function WorshipSection() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [church.id]);
+  }, [church.id, loading]);
 
   const isLive = screen?.state === "LIVE";
 

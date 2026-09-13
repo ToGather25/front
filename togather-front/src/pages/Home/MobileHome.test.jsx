@@ -8,10 +8,6 @@ vi.mock("@/services/api", () => ({
   isDummy: () => false,
 }));
 
-vi.mock("@/contexts/SearchContext", () => ({
-  useSearch: () => ({ setOpen: vi.fn() }),
-}));
-
 import api from "@/services/api";
 
 describe("MobileHome — 모바일 홈", () => {

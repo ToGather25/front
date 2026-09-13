@@ -44,6 +44,30 @@ function buildCalendarCells(year, month) {
   return cells;
 }
 
+/** 주일예배는 실제 행사(DB)로 등록돼 있지 않지만 캘린더엔 항상 기본으로 잡혀야
+ * 하므로, 교회 예배 시간표(주일 오전/오후 예배)를 참고해 매주 일요일에 합성해서
+ * 끼워 넣는다. synthetic: true로 표시해 상세보기/신청 같은 실제 행사 전용
+ * 액션은 붙이지 않는다. */
+function buildSundayWorshipEvents(year, month, sundayServices) {
+  if (sundayServices.length === 0) return [];
+  const daysInMonth = getDaysInMonth(year, month);
+  const timeLabel = sundayServices.map((s) => s.time.replace("주일 ", "")).join(" · ");
+  const events = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    if (new Date(year, month, day).getDay() !== 0) continue;
+    events.push({
+      id: `sunday-worship-${toDateKey(year, month, day)}`,
+      date: toDateKey(year, month, day),
+      department: "예배",
+      title: "주일예배",
+      startTime: timeLabel,
+      location: sundayServices[0].location,
+      synthetic: true,
+    });
+  }
+  return events;
+}
+
 export default function Events() {
   const { church } = useChurch();
   const today = new Date();
@@ -64,6 +88,12 @@ export default function Events() {
     [],
   );
 
+  const sundayServices = (church.worshipSchedule?.regular ?? []).filter((s) =>
+    s.time?.startsWith("주일"),
+  );
+  const sundayWorshipEvents = buildSundayWorshipEvents(year, month, sundayServices);
+  const allEvents = [...events, ...sundayWorshipEvents];
+
   const prevMonth = () => {
     setSelectedDate(null);
     setCurrentDate(new Date(year, month - 1, 1));
@@ -74,7 +104,7 @@ export default function Events() {
   };
 
   const eventsForDate = (dateStr) =>
-    events.filter(
+    allEvents.filter(
       (e) => e.date === dateStr && (activeCategory === null || e.department === activeCategory),
     );
 
@@ -121,7 +151,7 @@ export default function Events() {
           </button>
         </div>
 
-        <EventSearchBar className="w-full md:flex-1" />
+        <EventSearchBar className="w-full md:w-134" />
 
         <select
           value={activeCategory ?? ""}
@@ -220,24 +250,15 @@ export default function Events() {
 
         {/* Sidebar */}
         <div className="border border-bluegrey-2 rounded-xl overflow-y-auto md:w-[400px] md:shrink-0 md:max-h-[calc(100vh-220px)]">
-          <div className="px-6 py-4 border-b border-bluegrey-2 bg-bluegrey-1 sticky top-0 z-10">
-            <p className="text-body-2 font-semibold text-bluegrey-10">
-              {selectedDate ? `${formatKoreanDate(selectedDate)} 일정` : "날짜를 선택하세요"}
-            </p>
-            {selectedDate && (
-              <p className="text-body-5 text-bluegrey-6 mt-0.5">총 {selectedEvents.length}건</p>
-            )}
+          <div className="flex items-center justify-center border-b border-bluegrey-2 bg-bluegrey-1 sticky top-0 z-10 h-[50.5px] text-body-4 font-semibold text-bluegrey-10">
+            {selectedDate ? `${formatKoreanDate(selectedDate)} 일정` : "날짜를 선택하세요"}
           </div>
           <div className="flex flex-col divide-y divide-bluegrey-2">
             {loading ? (
               <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
                 불러오는 중...
               </div>
-            ) : !selectedDate ? (
-              <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
-                날짜를 선택하세요.
-              </div>
-            ) : selectedEvents.length === 0 ? (
+            ) : !selectedDate ? null : selectedEvents.length === 0 ? (
               <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
                 일정이 없습니다.
               </div>
@@ -263,15 +284,17 @@ export default function Events() {
                         신청 {evt.registeredCount ?? 0} / {evt.capacity}명
                       </p>
                     )}
-                    <div className="flex gap-4 justify-end">
-                      <Link
-                        to={`/교회행사/${evt.id}`}
-                        className="flex-1 py-2.5 bg-blue-1 border border-bluegrey-4 rounded-full text-body-5 font-medium text-bluegrey-7 hover:bg-blue-2 transition-colors text-center"
-                      >
-                        상세보기
-                      </Link>
-                      <RegistrationButton event={evt} size="sm" />
-                    </div>
+                    {!evt.synthetic && (
+                      <div className="flex gap-4 justify-end">
+                        <Link
+                          to={`/교회행사/${evt.id}`}
+                          className="flex-1 py-2.5 bg-blue-1 border border-bluegrey-4 rounded-full text-body-5 font-medium text-bluegrey-7 hover:bg-blue-2 transition-colors text-center"
+                        >
+                          상세보기
+                        </Link>
+                        <RegistrationButton event={evt} size="sm" />
+                      </div>
+                    )}
                   </div>
                 );
               })

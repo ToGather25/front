@@ -36,7 +36,7 @@ export default function FloorGuide() {
         </table>
       </div>
 
-      <div className="w-full md:w-[420px] md:shrink-0">
+      <div className="w-full md:w-[42%] md:max-w-[550px]">
         <div
           key={selected.floor}
           className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-bluegrey-2"

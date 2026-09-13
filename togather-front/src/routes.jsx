@@ -4,10 +4,12 @@ import AdminLayout from "@/layouts/AdminLayout";
 import AuthOnlyLayout from "@/layouts/AuthOnlyLayout";
 import Home from "@/pages/Home/Home";
 import Jubo from "@/pages/Jubo/Jubo";
+import JuboList from "@/pages/JuboList/JuboList";
 import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
 import EventSearch from "@/pages/Events/EventSearch";
+import Search from "@/pages/Search/Search";
 import Gallery from "@/pages/Gallery/Gallery";
 import BibleRead from "@/pages/BibleRead/BibleRead";
 import BibleWrite from "@/pages/BibleWrite/BibleWrite";
@@ -57,9 +59,11 @@ export const routes = [
     children: [
       { index: true, element: <Home /> },
       { path: "주보", element: <Jubo /> },
+      { path: "주보/목록", element: <JuboList /> },
       { path: "교회소개", element: <Church /> },
       { path: "교회행사", element: <Events /> },
       { path: "교회행사/검색", element: <EventSearch /> },
+      { path: "검색", element: <Search /> },
       { path: "교회행사/:id", element: <EventDetail /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송

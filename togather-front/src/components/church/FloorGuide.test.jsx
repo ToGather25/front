@@ -1,13 +1,15 @@
 import { describe, it, expect } from "vite-plus/test";
 import { screen, fireEvent } from "@testing-library/react";
 import { renderWithChurch } from "@/test/renderWithChurch";
+import defaultConfig from "@/config/church.config";
 import FloorGuide from "./FloorGuide";
 
 describe("FloorGuide", () => {
   it("층 목록을 렌더하고 기본으로 첫 번째 층 사진을 보여준다", () => {
     renderWithChurch(<FloorGuide />);
-    expect(screen.getByText("청년부실, 사무실")).toBeInTheDocument();
-    expect(screen.getByAltText("4층 사진")).toBeInTheDocument();
+    const first = defaultConfig.floorGuide[0];
+    expect(screen.getByText(first.rooms)).toBeInTheDocument();
+    expect(screen.getByAltText(`${first.floor} 사진`)).toBeInTheDocument();
   });
 
   it("다른 층 행을 클릭하면 우측 사진이 전환된다", () => {

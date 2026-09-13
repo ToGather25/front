@@ -16,7 +16,9 @@ describe("Staff", () => {
   it("칩을 클릭하면 해당 그룹으로 전환된다", async () => {
     const user = userEvent.setup();
     renderWithChurch(<Staff />, { withRouter: true });
-    await user.click(screen.getByRole("button", { name: "시무장로" }));
+    // 모바일 칩 + 데스크톱 세로 리스트 두 벌이 함께 렌더되므로(반응형 CSS로만 전환되고
+    // jsdom엔 그 구분이 없음) 첫 번째(모바일 칩)를 클릭한다. 둘 다 같은 onClick을 쓴다.
+    await user.click(screen.getAllByRole("button", { name: "시무장로" })[0]);
     expect(screen.getByText(churchConfig.staff.elders[0].name)).toBeInTheDocument();
     expect(screen.queryByText(churchConfig.staff.headPastor.name)).not.toBeInTheDocument();
   });
@@ -25,7 +27,7 @@ describe("Staff", () => {
     const user = userEvent.setup();
     renderWithChurch(<Staff />, { withRouter: true });
     await user.type(
-      screen.getByPlaceholderText("이름으로 검색"),
+      screen.getByPlaceholderText("이름 또는 직책으로 검색하세요."),
       churchConfig.staff.clergy[1].name,
     );
     expect(screen.getByText(churchConfig.staff.clergy[1].name)).toBeInTheDocument();
@@ -35,7 +37,10 @@ describe("Staff", () => {
   it("검색 결과가 없으면 안내 문구를 보여준다", async () => {
     const user = userEvent.setup();
     renderWithChurch(<Staff />, { withRouter: true });
-    await user.type(screen.getByPlaceholderText("이름으로 검색"), "존재하지않는이름");
+    await user.type(
+      screen.getByPlaceholderText("이름 또는 직책으로 검색하세요."),
+      "존재하지않는이름",
+    );
     expect(screen.getByText("해당하는 교역자가 없습니다.")).toBeInTheDocument();
   });
 

@@ -16,9 +16,9 @@ describe("WordTabBar", () => {
     renderTabBar();
     const links = screen.getAllByRole("link");
     expect(links.map((l) => l.textContent)).toEqual([
+      "예배 안내",
       "실시간 예배",
       "예배 목록",
-      "예배 안내",
       "스마트 주보",
     ]);
   });
@@ -37,7 +37,10 @@ describe("WordTabBar", () => {
       "href",
       "/말씀/안내",
     );
-    expect(screen.getByRole("link", { name: "스마트 주보" })).toHaveAttribute("href", "/주보");
+    expect(screen.getByRole("link", { name: "스마트 주보" })).toHaveAttribute(
+      "href",
+      "/주보/목록",
+    );
   });
 
   it("현재 경로와 일치하는 탭만 활성 스타일을 갖는다", () => {

@@ -6,11 +6,11 @@
 
 원인: `ChurchProvider`가 부팅 시 `GET /api/tenant?domain=<현재 호스트>`로 교회 설정을 조회하는데, 백엔드(`togather-back`)가 아직 로컬에서만 실행 중이라 배포된 프론트가 호출할 수 있는 API가 없다. 로컬 개발은 `.env`의 `VITE_DEV_CHURCH_DOMAIN=algok.togather.local` + 로컬 DB 시드로 우회하고 있어 이 문제를 못 느꼈을 뿐이다.
 
-`src/config/church.config.js`는 이미 알곡교회 실데이터로 채워져 있고, `ChurchProvider`는 정상 경로에서 이 파일을 기본값으로 API 응답과 얕게 병합한다. 즉 API가 없어도 보여줄 데이터는 이미 갖고 있는데, 실패 시 처리만 에러 화면으로 막아뒀다.
+`src/config/church.config.js`는 이미 옥길교회 실데이터로 채워져 있고, `ChurchProvider`는 정상 경로에서 이 파일을 기본값으로 API 응답과 얕게 병합한다. 즉 API가 없어도 보여줄 데이터는 이미 갖고 있는데, 실패 시 처리만 에러 화면으로 막아뒀다.
 
 ## 목표 / 범위
 
-- **목표**: 백엔드 API가 없거나 실패해도 `church.config.js` 기본값으로 정상적인 화면을 보여준다. 이 저장소를 배포하면 "알곡교회 프론트"로 동작하게 하는 것이 1단계 목표.
+- **목표**: 백엔드 API가 없거나 실패해도 `church.config.js` 기본값으로 정상적인 화면을 보여준다. 이 저장소를 배포하면 "옥길교회 프론트"로 동작하게 하는 것이 1단계 목표.
 - **범위**: 프론트엔드만. 백엔드 배포, production DB에 테넌트 도메인 등록, Vercel 프로젝트 설정은 이번 범위 밖.
 - **비목표(지금 안 함)**: 저장소를 `algok-front`로 rename/분리, 재사용 가능한 "base 템플릿" 추출. 저장소명은 `togather-front`로 유지.
 

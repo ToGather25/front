@@ -4,8 +4,12 @@ import IcoHeartStroke from "@/assets/icon-svg/heart-stroke.svg";
 import juboConfig from "@/config/jubo.config";
 import { SectionTitle } from "./shared";
 
-export default function Sermon() {
-  const { sermon } = juboConfig;
+export default function Sermon({ issue }) {
+  const { sermon: currentSermon } = juboConfig;
+  // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호의 설교 제목/본문을, 아니면 현재 주보 설정값을 쓴다.
+  const sermon = issue
+    ? { title: issue.sermonTitle, scripture: issue.verse, outline: [] }
+    : currentSermon;
   const [liked, setLiked] = useState(false);
 
   return (

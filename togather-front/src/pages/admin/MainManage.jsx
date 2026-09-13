@@ -15,7 +15,7 @@ const RECENT_NOTICES = [
 
 export default function MainManage() {
   const [headline, setHeadline] = useState("하나님과 함께하는 공동체");
-  const [subline, setSubline] = useState("ToGather 알곡교회에 오신 것을 환영합니다");
+  const [subline, setSubline] = useState("ToGather 옥길교회에 오신 것을 환영합니다");
   const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/@algok-church");
   const [worshipTimes, setWorshipTimes] = useState(WORSHIP_TIMES);
   const [saved, setSaved] = useState(false);

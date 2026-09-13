@@ -1237,7 +1237,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getJuboInfo } from "@/services/juboService";
 import juboConfig from "@/config/jubo.config";
-import LogoIcon from "@/assets/icons/알곡교회_logo.png";
+import LogoIcon from "@/assets/icons/옥길교회_logo.png";
 import DefaultBanner from "@/assets/default_banner.png";
 
 export default function Cover() {

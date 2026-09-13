@@ -77,9 +77,9 @@ export default function BibleRankingView({ neighbors, monthly, total, unit = "�
   const isNewUser = !neighbors || neighbors.every((u) => u.count === 0);
 
   return (
-    <div className="flex-1 overflow-y-auto px-10 py-8">
+    <div className="flex-1 overflow-y-auto px-4 md:px-10 py-8">
       {/* 포디움 */}
-      <div className="flex items-end justify-center gap-8 mb-10">
+      <div className="flex items-end justify-center gap-3 md:gap-8 mb-10">
         {isNewUser ? (
           <div className="flex flex-col items-center gap-3 py-8">
             <div className="w-28 h-28 rounded-full bg-blue-1 border-2 border-blue-3 flex items-center justify-center text-4xl">
@@ -98,8 +98,8 @@ export default function BibleRankingView({ neighbors, monthly, total, unit = "�
                 <div
                   className={`rounded-full flex items-center justify-center font-bold ${
                     isMe
-                      ? "w-36 h-36 bg-blue-7 text-white text-sub-tit-2 shadow-lg shadow-blue-3"
-                      : "w-24 h-24 bg-grey-2 text-grey-9 text-sub-tit-3"
+                      ? "w-24 h-24 md:w-36 md:h-36 bg-blue-7 text-white text-sub-tit-4 md:text-sub-tit-2 shadow-lg shadow-blue-3"
+                      : "w-16 h-16 md:w-24 md:h-24 bg-grey-2 text-grey-9 text-body-2 md:text-sub-tit-3"
                   }`}
                 >
                   {u.name}
@@ -119,8 +119,8 @@ export default function BibleRankingView({ neighbors, monthly, total, unit = "�
         )}
       </div>
 
-      {/* 순위표 2열 */}
-      <div className="flex gap-6">
+      {/* 순위표 2열 (모바일에서는 세로로 쌓는다) */}
+      <div className="flex flex-col md:flex-row gap-6">
         <RankTable title="월간 순위표" rows={monthly} unit={unit} />
         <RankTable title="전체 순위표" rows={total} unit={unit} />
       </div>

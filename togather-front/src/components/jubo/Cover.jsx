@@ -5,14 +5,16 @@ import juboConfig from "@/config/jubo.config";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import DefaultBanner from "@/assets/default_banner.png";
 
-export default function Cover() {
+export default function Cover({ issue }) {
   const { church } = useChurch();
   const { cover } = juboConfig;
   const {
-    data: juboInfo,
+    data: currentInfo,
     error: juboInfoError,
     refetch: refetchJuboInfo,
-  } = useFetch(() => getJuboInfo(church.id), [church.id], null);
+  } = useFetch(() => (issue ? Promise.resolve(null) : getJuboInfo(church.id)), [church.id, issue], null);
+  // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호 정보를, 아니면 현재 발행 주보 정보를 쓴다.
+  const juboInfo = issue ? { issueNo: issue.issueNo, date: issue.dateLabel } : currentInfo;
   const { mainVerse, mainTitle, items, year } = church.vision;
 
   const churchPhoto = cover.photos?.church;

@@ -86,7 +86,6 @@ export default function Notice() {
     <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
       {/* 헤더 */}
       <div className="mb-8">
-        <p className="text-body-5 text-grey-6 mb-1">교회소식</p>
         <h1 className="text-headline-4 font-bold text-grey-11">공지사항</h1>
       </div>
 

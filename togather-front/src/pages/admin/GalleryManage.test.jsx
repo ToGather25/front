@@ -18,7 +18,7 @@ describe("GalleryManage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.get.mockImplementation((url) => {
-      if (url === "/churches/togather-church/communities") {
+      if (url === "/churches/1/communities") {
         return Promise.resolve({ data: { data: COMMUNITIES } });
       }
       return Promise.resolve({ data: { data: PHOTOS } });
@@ -55,7 +55,7 @@ describe("GalleryManage", () => {
     await user.click(screen.getByText("청년부"));
 
     expect(await screen.findByText("여름 수련회")).toBeInTheDocument();
-    expect(api.get).toHaveBeenCalledWith("/churches/togather-church/gallery", {
+    expect(api.get).toHaveBeenCalledWith("/churches/1/gallery", {
       params: { communityId: 1, limit: 200 },
     });
   });
@@ -153,7 +153,7 @@ describe("GalleryManage", () => {
     expect(await screen.findByText("불러오지 못했습니다. 다시 시도해 주세요.")).toBeInTheDocument();
 
     api.get.mockImplementation((url) => {
-      if (url === "/churches/togather-church/communities") {
+      if (url === "/churches/1/communities") {
         return Promise.resolve({ data: { data: COMMUNITIES } });
       }
       return Promise.resolve({ data: { data: PHOTOS } });

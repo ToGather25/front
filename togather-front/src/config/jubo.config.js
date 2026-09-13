@@ -38,7 +38,7 @@ const juboConfig = {
     bankAccount: {
       bank: "국민은행",
       accountNumber: "123456-78-901234",
-      holder: "알곡교회",
+      holder: "옥길교회",
     },
     qrCodeUrl: null,
   },
