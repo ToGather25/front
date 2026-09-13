@@ -117,7 +117,7 @@ export default function WordBroadcast() {
 
         {/* ── 실시간 중 ── */}
         {status === "LIVE" && (
-          <section className="mb-14 max-w-3xl mx-auto">
+          <section className="mb-14 max-w-5xl mx-auto">
             <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
             <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
               {liveVideoId ? (
@@ -201,13 +201,13 @@ export default function WordBroadcast() {
 
         {/* ── 오늘 예배 없음 ── */}
         {status === "NONE" && (
-          <section className="mb-14 max-w-3xl mx-auto">
+          <section className="mb-14 max-w-5xl mx-auto">
             <NoServiceCard />
           </section>
         )}
 
         {/* ── 지난 설교 가로 스크롤 ── */}
-        <section className="max-w-6xl mx-auto">
+        <section className="max-w-5xl mx-auto">
           <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
           {recentSermons.length === 0 ? (
             <p className="text-body-4 text-grey-5">등록된 지난 설교가 없습니다.</p>

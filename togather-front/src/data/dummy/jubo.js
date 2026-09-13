@@ -16,6 +16,95 @@ export const DUMMY_JUBO_INFO = {
   date: "2026년 2월 15일",
 };
 
+/**
+ * 발행된 주보 목록(최신순) — 백엔드에 과거 발행 이력 목록/개별 조회 API가 아직 없어
+ * 더미 모드 전용으로만 존재한다. 실 API 연동 시 계약에 맞춰 응답 매핑을 다시 확인해야 한다.
+ * @type {import('@/services/juboService').JuboIssue[]}
+ */
+export const DUMMY_JUBO_ISSUES = [
+  {
+    id: 10,
+    issueNo: "제10-8",
+    date: "2026-08-09",
+    dateLabel: "2026년 8월 9일",
+    sermonTitle: "이러한 율법을 행하는 이방인이 정죄하리라",
+    verse: "로마서 2장 27절",
+    current: true,
+  },
+  {
+    id: 9,
+    issueNo: "제10-7",
+    date: "2026-08-02",
+    dateLabel: "2026년 8월 2일",
+    sermonTitle: "믿음으로 사는 의인",
+    verse: "로마서 1장 17절",
+  },
+  {
+    id: 8,
+    issueNo: "제10-6",
+    date: "2026-07-26",
+    dateLabel: "2026년 7월 26일",
+    sermonTitle: "하나님의 진노가 나타나나니",
+    verse: "로마서 1장 18절",
+  },
+  {
+    id: 7,
+    issueNo: "제10-5",
+    date: "2026-07-19",
+    dateLabel: "2026년 7월 19일",
+    sermonTitle: "복음을 부끄러워하지 아니하노니",
+    verse: "로마서 1장 16절",
+  },
+  {
+    id: 6,
+    issueNo: "제10-4",
+    date: "2026-07-12",
+    dateLabel: "2026년 7월 12일",
+    sermonTitle: "하나님의 부르심",
+    verse: "로마서 1장 7절",
+  },
+  {
+    id: 5,
+    issueNo: "제10-3",
+    date: "2026-07-05",
+    dateLabel: "2026년 7월 5일",
+    sermonTitle: "이방인과 유대인 모두에게",
+    verse: "로마서 1장 14절",
+  },
+  {
+    id: 4,
+    issueNo: "제10-2",
+    date: "2026-06-28",
+    dateLabel: "2026년 6월 28일",
+    sermonTitle: "복음을 부끄러워하지 않음",
+    verse: "로마서 1장 16절",
+  },
+  {
+    id: 3,
+    issueNo: "제10-1",
+    date: "2026-06-21",
+    dateLabel: "2026년 6월 21일",
+    sermonTitle: "은혜로 받은 사도직",
+    verse: "로마서 1장 5절",
+  },
+  {
+    id: 2,
+    issueNo: "제9-12",
+    date: "2026-06-14",
+    dateLabel: "2026년 6월 14일",
+    sermonTitle: "복음 안에서 나타난 하나님의 의",
+    verse: "로마서 1장 17절",
+  },
+  {
+    id: 1,
+    issueNo: "제9-11",
+    date: "2026-06-07",
+    dateLabel: "2026년 6월 7일",
+    sermonTitle: "성령 안에서 하나님을 섬김",
+    verse: "로마서 1장 9절",
+  },
+];
+
 export const DUMMY_WORSHIP_SERVICES = [
   { label: "주일 오전예배", time: "오전 9:00" },
   { label: "주일 오후예배", time: "오후 2:00" },

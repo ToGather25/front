@@ -14,12 +14,12 @@ describe("galleryService — 실 API 경로", () => {
   });
 
   it("getCommunities는 GET /churches/{churchId}/communities를 호출한다", async () => {
-    api.get.mockResolvedValue({ data: { data: [{ id: 1, name: "알곡교회", desc: "" }] } });
+    api.get.mockResolvedValue({ data: { data: [{ id: 1, name: "옥길교회", desc: "" }] } });
 
     const result = await getCommunities("1");
 
     expect(api.get).toHaveBeenCalledWith("/churches/1/communities");
-    expect(result).toEqual([{ id: 1, name: "알곡교회", desc: "" }]);
+    expect(result).toEqual([{ id: 1, name: "옥길교회", desc: "" }]);
   });
 
   it("getPhotos는 GET /churches/{churchId}/gallery를 params와 함께 호출한다", async () => {

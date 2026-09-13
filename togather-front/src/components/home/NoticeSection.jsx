@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
+import { getEvents } from "@/services/eventsService";
+import { getDaysInMonth, getFirstDayOfMonth } from "@/utils/date";
 import Section from "@/components/common/Section";
 
 const TABS = ["전체", "공지", "행사", "소식"];
@@ -16,29 +18,99 @@ const TAG_STYLES = {
 const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const MAX_NOTICE_ROWS = 5;
-const MAX_UPCOMING_EVENTS = 4;
 
-const UPCOMING_EVENTS = [
-  { id: 1, dateISO: "2026-07-12", title: "구역장 모임", time: "14:00 본당" },
-  { id: 2, dateISO: "2026-07-19", title: "새 가족 환영회", time: "예배 후 친교실" },
-  { id: 3, dateISO: "2026-07-26", title: "성가대 여름 특별 연습", time: "20:00 4층" },
-  { id: 4, dateISO: "2026-08-02", title: "여름 연합 예배", time: "11:00 본당" },
-  { id: 5, dateISO: "2026-08-15", title: "광복절 특별 예배", time: "10:30 본당" },
-];
-
-function formatEventDate(dateISO) {
-  const d = new Date(dateISO + "T00:00:00");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return { d: `${mm}.${dd}`, w: WEEK_LABELS[d.getDay()] };
+/** 이전/당월/다음달을 합쳐 5주 또는 6주 그리드 셀 배열을 만든다(달력 미리보기용). */
+function buildMiniCalendarCells(year, month) {
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstDay = getFirstDayOfMonth(year, month);
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day++) cells.push(day);
+  while (cells.length < totalCells) cells.push(null);
+  return cells;
 }
 
-function getUpcomingEvents() {
+/** 실제 행사 + 주일예배(교회 예배 시간표 기준)를 날짜별 건수/설명으로 집계한다. */
+function buildEventCountByDay(events, year, month, sundayServices) {
+  const daysInMonth = getDaysInMonth(year, month);
+  const countByDay = {};
+  const detailByDay = {};
+
+  events.forEach((e) => {
+    const day = Number(e.date?.slice(8, 10));
+    if (!day) return;
+    countByDay[day] = (countByDay[day] ?? 0) + 1;
+    detailByDay[day] = [...(detailByDay[day] ?? []), e.title];
+  });
+
+  if (sundayServices.length > 0) {
+    const label = `주일예배 · ${sundayServices[0].time}`;
+    for (let day = 1; day <= daysInMonth; day++) {
+      if (new Date(year, month, day).getDay() !== 0) continue;
+      countByDay[day] = (countByDay[day] ?? 0) + 1;
+      detailByDay[day] = [label, ...(detailByDay[day] ?? [])];
+    }
+  }
+
+  return { countByDay, detailByDay };
+}
+
+function MiniCalendar({ year, month, countByDay, detailByDay }) {
+  const cells = buildMiniCalendarCells(year, month);
+  const weeks = cells.length / 7;
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return UPCOMING_EVENTS.filter((e) => new Date(e.dateISO + "T00:00:00") >= today).slice(
-    0,
-    MAX_UPCOMING_EVENTS,
+
+  return (
+    <div className="flex-1 flex flex-col bg-white rounded-2xl border border-bluegrey-2 p-4">
+      <div className="grid grid-cols-7 mb-1">
+        {WEEK_LABELS.map((w, i) => (
+          <span
+            key={w}
+            className={`text-center text-caption font-medium ${
+              i === 0 ? "text-red-400" : i === 6 ? "text-blue-6" : "text-grey-5"
+            }`}
+          >
+            {w}
+          </span>
+        ))}
+      </div>
+      <div
+        className="grid grid-cols-7 flex-1"
+        style={{ gridTemplateRows: `repeat(${weeks}, 1fr)` }}
+      >
+        {cells.map((day, i) => {
+          if (!day) return <div key={`blank-${i}`} />;
+          const count = countByDay[day] ?? 0;
+          const isToday =
+            today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+          const label =
+            count > 0 ? `${month + 1}월 ${day}일 — ${detailByDay[day].join(", ")}` : undefined;
+          return (
+            <div key={day} className="flex flex-col items-center pt-1" aria-label={label}>
+              <span
+                className={`w-5 h-5 flex items-center justify-center rounded-full text-body-4 ${
+                  isToday ? "bg-primary text-white font-bold" : "text-grey-9"
+                }`}
+              >
+                {day}
+              </span>
+              {/* 일정이 없는 날짜도 점 자리를 invisible로 그대로 차지해서, 날짜
+                  숫자 위치가 일정 유무와 무관하게 항상 같은 줄에 오게 한다. */}
+              <span
+                className={`mt-0.5 flex items-center gap-[3px] ${count > 0 ? "" : "invisible"}`}
+                aria-hidden="true"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-6 shrink-0" />
+                <span className="text-[10px] leading-none text-blue-6 font-semibold">
+                  {count || 1}
+                </span>
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -55,10 +127,34 @@ export default function NoticeSection() {
     0,
     MAX_NOTICE_ROWS,
   );
-  const upcomingEvents = getUpcomingEvents();
+
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  const goToPrevMonth = () => setCalendarDate(new Date(year, month - 1, 1));
+  const goToNextMonth = () => setCalendarDate(new Date(year, month + 1, 1));
+  const goToToday = () => setCalendarDate(new Date());
+  const isFirstMonth = month === 0;
+  const isLastMonth = month === 11;
+
+  const { data: events = [] } = useFetch(
+    () => getEvents(church.id, { year, month: month + 1 }),
+    [church.id, year, month],
+    [],
+  );
+  // 주일예배는 실제 행사로 등록돼 있지 않지만 "다가오는 일정"엔 항상 기본으로 잡혀야 하므로,
+  // 교회 예배 시간표(주일 오전/오후 예배)를 참고해 매주 일요일에 얹는다.
+  const sundayServices = (church.worshipSchedule?.regular ?? []).filter((s) =>
+    s.time?.startsWith("주일"),
+  );
+  const { countByDay, detailByDay } = buildEventCountByDay(events, year, month, sundayServices);
 
   return (
-    <Section className="py-[100px] bg-bluegrey-1">
+    <Section className="py-[100px]">
+      {/* 왼쪽 카드는 flex-1을 빼 placeholder로 채운 5행 높이 그대로 고정하고, 오른쪽
+          미니 캘린더만 flex-1로 남겨둔다 — 그리드(items-stretch, 기본값)가 두 컬럼을
+          같은 높이로 맞출 때, 캘린더 내부 행(1fr)들이 남는 높이를 고르게 나눠 가져서
+          왼쪽 카드 높이에 자연스럽게 맞춰지고 빈 공간이 생기지 않는다. */}
       <div className="grid gap-10 grid-cols-1 lg:grid-cols-[1fr_460px]">
         {/* Left: notices */}
         <div className="flex flex-col">
@@ -104,7 +200,7 @@ export default function NoticeSection() {
 
           {/* Notice list — 실제 항목이 MAX_NOTICE_ROWS보다 적어도(0건 포함) 빈 자리를
               투명 placeholder 행으로 채워 카드 높이가 항상 5행분으로 고정되게 한다. */}
-          <div className="flex-1 relative bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
+          <div className="relative bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
             {rows.map((n, i) => {
               const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
               return (
@@ -168,7 +264,7 @@ export default function NoticeSection() {
           </div>
         </div>
 
-        {/* Right: upcoming events */}
+        {/* Right: upcoming events → 축소된 달력 미리보기 */}
         <aside className="flex flex-col">
           <div className="mb-8">
             <h3 className="text-section-title font-bold tracking-[-1.2px] text-grey-12 m-0">
@@ -176,68 +272,84 @@ export default function NoticeSection() {
             </h3>
           </div>
 
-          {/* 실제 일정이 MAX_UPCOMING_EVENTS보다 적어도(0건 포함) 빈 자리를 투명
-              placeholder 카드로 채워 리스트 높이가 항상 4건분으로 고정되게 한다. */}
-          <ul className="flex-1 relative flex flex-col gap-3 list-none m-0 p-0 bg-white rounded-2xl border border-bluegrey-2">
-            {upcomingEvents.map((e) => {
-              const { d, w } = formatEventDate(e.dateISO);
-              return (
-                <Link
-                  key={e.id}
-                  to={`/교회행사/${e.id}`}
-                  className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all"
-                >
-                  <div className="shrink-0 min-w-[52px] mt-[2px]">
-                    <div className="text-[15px] font-bold text-blue-6 tracking-[0.02em]">{d}</div>
-                    <div className="text-body-5 font-medium text-grey-6 mt-0.5">{w}요일</div>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-body-2 font-semibold text-grey-12 leading-snug truncate">
-                      {e.title}
-                    </div>
-                    <div className="text-caption text-grey-6 mt-1">{e.time}</div>
-                  </div>
-                </Link>
-              );
-            })}
-            {Array.from({ length: MAX_UPCOMING_EVENTS - upcomingEvents.length }).map((_, i) => (
-              <li
-                key={`upcoming-pad-${i}`}
-                aria-hidden="true"
-                className="invisible flex items-start gap-4 p-5 rounded-2xl border border-bluegrey-2"
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={goToPrevMonth}
+                disabled={isFirstMonth}
+                aria-label="이전 달"
+                className="w-7 h-7 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors disabled:opacity-30 disabled:pointer-events-none"
               >
-                <div className="shrink-0 min-w-[52px] mt-[2px]">
-                  <div className="text-[15px] font-bold">00.00</div>
-                  <div className="text-body-5 font-medium mt-0.5">월요일</div>
-                </div>
-                <div className="min-w-0">
-                  <div className="text-body-2 font-semibold leading-snug truncate">-</div>
-                  <div className="text-caption mt-1">-</div>
-                </div>
-              </li>
-            ))}
-            {upcomingEvents.length === 0 && (
-              <li className="absolute inset-0 flex items-center justify-center text-center text-grey-5 text-[15px] list-none">
-                예정된 일정이 없습니다.
-              </li>
-            )}
-          </ul>
-
-          <Link
-            to="/교회행사"
-            className="mt-4 w-full flex items-center justify-center gap-2 py-4 bg-white rounded-2xl border border-bluegrey-2 text-[15px] font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-6 transition-colors"
-          >
-            캘린더로 보기
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+                <svg
+                  className="w-3.5 h-3.5 text-grey-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <span className="text-[15px] font-semibold text-grey-9 tracking-[0.02em] w-20 text-center tabular-nums">
+                {year}년 {month + 1}월
+              </span>
+              <button
+                type="button"
+                onClick={goToNextMonth}
+                disabled={isLastMonth}
+                aria-label="다음 달"
+                className="w-7 h-7 rounded-full border border-bluegrey-3 flex items-center justify-center hover:bg-bluegrey-1 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <svg
+                  className="w-3.5 h-3.5 text-grey-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={goToToday}
+                className="ml-1 px-2.5 py-1 rounded-full border border-bluegrey-3 text-caption font-medium text-grey-7 hover:bg-bluegrey-1 transition-colors"
+              >
+                오늘
+              </button>
+            </div>
+            <Link
+              to="/교회행사"
+              className="inline-flex items-center gap-1.5 py-2.5 text-[15px] font-medium text-grey-7 hover:text-blue-6 transition-colors"
             >
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </Link>
+              전체보기
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
+
+          <MiniCalendar
+            year={year}
+            month={month}
+            countByDay={countByDay}
+            detailByDay={detailByDay}
+          />
         </aside>
       </div>
     </Section>

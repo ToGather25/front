@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithChurch } from "@/test/renderWithChurch";
+import defaultConfig from "@/config/church.config";
 import MainBanner from "./MainBanner";
 
 vi.mock("@/services/api", () => ({
@@ -43,7 +44,7 @@ describe("MainBanner — 홈 히어로 배너", () => {
     renderWithChurch(<MainBanner />, { withRouter: true });
 
     expect(
-      screen.getByText((_, el) => el?.textContent === "하나님의 사랑이 우리에게\n이렇게 나타난 바 되었으니"),
+      screen.getByText((_, el) => el?.textContent === defaultConfig.mainBanner.subtitle),
     ).toBeInTheDocument();
   });
 });

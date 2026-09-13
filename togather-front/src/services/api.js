@@ -1,4 +1,5 @@
 import axios from "axios";
+import defaultConfig from "@/config/church.config";
 
 /**
  * Base API client
@@ -15,7 +16,10 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-let currentChurchId = null;
+// ChurchProvider가 /api/tenant 응답으로 덮어쓰기 전까지, 이 배포의 기본 교회(church.config.js)
+// id로 시작한다 — null로 두면 부팅 직후(테넌트 조회가 끝나기 전) 나가는 요청들이 X-Church-Id
+// 없이/잘못된 churchId로 나가 401·500이 난다.
+let currentChurchId = defaultConfig.id;
 
 /** ChurchProvider가 /api/tenant 조회 성공 시 호출 — 이후 모든 요청에 X-Church-Id로 실린다. */
 export function setCurrentChurchId(id) {

@@ -26,14 +26,14 @@ ToGather는 여러 교회에 동일한 플랫폼을 제공하는 SaaS 서비스�
 const churchConfig = {
   id: "togather-church",     // API 요청 시 churchId
   slug: "togather",          // 서브도메인/URL 슬러그
-  name: "알곡교회",
+  name: "옥길교회",
 
   // 연락처
-  address: "서울 관악구 난곡로24길 42 (신림동)",
+  address: "경기도 부천시 양지로 166번길 34 (옥길동)",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
   email: "algok@gmail.com",
-  pastor: "유상현",
+  pastor: "임재호",
   denomination: "대한예수교장로회 고신교단",
 
   // 브랜드
@@ -161,7 +161,7 @@ GET /api/tenant?domain=a.togather.church
    실패 ──→ (백엔드 미배포·도메인 미등록 등) → defaultConfig 그대로 사용 → 전체 앱에 반영
 ```
 
-**폴백 동작**: 지금 `togather-front` 저장소는 `church.config.js`가 곧 알곡교회 데이터라, `/api/tenant` 호출이 실패해도(예: 백엔드가 아직 배포되지 않은 환경에 프론트만 먼저 배포한 경우) 에러 화면 대신 알곡교회 데이터로 정상 렌더링된다. 새 교회를 실제로 온보딩해 이 폴백에 의존하면 안 되는 시점이 오면(설정 누락을 조용히 가려버리는 부작용), 폴백 허용 여부를 환경별로 재검토해야 한다.
+**폴백 동작**: 지금 `togather-front` 저장소는 `church.config.js`가 곧 옥길교회 데이터라, `/api/tenant` 호출이 실패해도(예: 백엔드가 아직 배포되지 않은 환경에 프론트만 먼저 배포한 경우) 에러 화면 대신 옥길교회 데이터로 정상 렌더링된다. 새 교회를 실제로 온보딩해 이 폴백에 의존하면 안 되는 시점이 오면(설정 누락을 조용히 가려버리는 부작용), 폴백 허용 여부를 환경별로 재검토해야 한다.
 
 ---
 

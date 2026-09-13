@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getJuboIssue } from "@/services/juboService";
 import { JuboPage } from "@/components/jubo/shared";
 import Cover from "@/components/jubo/Cover";
 import Worship from "@/components/jubo/Worship";
@@ -30,12 +33,12 @@ const TABS = [
 ];
 
 // ── 탭별 렌더 ──────────────────────────────────────────
-function renderTab(tab) {
+function renderTab(tab, issue) {
   switch (tab) {
     case "표지":
       return (
         <JuboPage noPadding>
-          <Cover />
+          <Cover issue={issue} />
         </JuboPage>
       );
     case "예배":
@@ -89,7 +92,7 @@ function renderTab(tab) {
     case "말씀":
       return (
         <JuboPage>
-          <Sermon />
+          <Sermon issue={issue} />
         </JuboPage>
       );
     case "헌금":
@@ -111,9 +114,19 @@ function renderTab(tab) {
 
 // ── 메인 ───────────────────────────────────────────────
 export default function Jubo() {
+  const { church } = useChurch();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPrinting, setIsPrinting] = useState(false);
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "표지";
+  const issueId = searchParams.get("issue");
+  // issueId가 없으면(=현재 발행 주보로 바로 들어온 경우) 조회를 건너뛰고 각 탭이 기존처럼
+  // "현재 주보" 데이터를 직접 조회하게 둔다 — /주보/목록에서 과거 발행호를 골라 들어왔을 때만
+  // 표지/말씀 탭에 해당 발행호 정보를 내려준다.
+  const { data: issue } = useFetch(
+    () => (issueId ? getJuboIssue(church.id, issueId) : Promise.resolve(null)),
+    [church.id, issueId],
+    null,
+  );
 
   useEffect(() => {
     function handleBeforePrint() {
@@ -173,7 +186,7 @@ export default function Jubo() {
               {TABS.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setSearchParams({ tab })}
+                  onClick={() => setSearchParams(issueId ? { tab, issue: issueId } : { tab })}
                   className={`shrink-0 px-5 py-2 rounded-full text-body-3 border transition-colors font-medium ${
                     activeTab === tab
                       ? "bg-primary border-primary text-white font-semibold"
@@ -209,13 +222,13 @@ export default function Jubo() {
         </div>
 
         {/* 화면: 현재 탭만 표시 */}
-        <div className="jubo-single-tab">{renderTab(activeTab)}</div>
+        <div className="jubo-single-tab">{renderTab(activeTab, issue)}</div>
 
         {/* 인쇄 전용: 모든 탭을 순서대로 렌더 (화면에서는 숨김) — 실제 인쇄 중에만 마운트해 useFetch 중복 호출을 막는다 */}
         {isPrinting && (
           <div className="jubo-print-all" style={{ display: "none" }}>
             <JuboPage noPadding>
-              <Cover />
+              <Cover issue={issue} />
             </JuboPage>
             <JuboPage>
               <Worship />
@@ -242,7 +255,7 @@ export default function Jubo() {
               <Direction />
             </JuboPage>
             <JuboPage>
-              <Sermon />
+              <Sermon issue={issue} />
             </JuboPage>
             <JuboPage>
               <Giving />

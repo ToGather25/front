@@ -1,6 +1,8 @@
 import api, { isDummy } from "./api";
+import { formatKoreanDate } from "@/utils/date";
 import {
   DUMMY_JUBO_INFO,
+  DUMMY_JUBO_ISSUES,
   DUMMY_WORSHIP_SERVICES,
   DUMMY_WORSHIP_ORDER,
   DUMMY_VOLUNTEER,
@@ -12,6 +14,7 @@ import {
 
 /**
  * @typedef {{ issueNo: string, date: string }} JuboInfo
+ * @typedef {{ id: string|number, issueNo: string, date: string, dateLabel: string, sermonTitle: string, verse: string, current?: boolean }} JuboIssue
  * @typedef {{ label: string, time: string }} WorshipService
  * @typedef {{ role: string, name: string }} OrderRow
  * @typedef {Record<string, OrderRow[]>} WorshipOrderMap
@@ -27,6 +30,55 @@ export async function getJuboInfo(churchId) {
   if (isDummy("jubo")) return DUMMY_JUBO_INFO;
   const res = await api.get(`/churches/${churchId}/jubo/current`);
   return res.data.data;
+}
+
+/** 백엔드 아카이브 요약(title/scripture/juboDate)을 프론트 JuboIssue shape으로 변환한다. */
+function toJuboIssue(summary, currentIssueNo) {
+  return {
+    id: summary.id,
+    issueNo: summary.issueNo,
+    date: summary.juboDate,
+    dateLabel: formatKoreanDate(summary.juboDate),
+    sermonTitle: summary.title,
+    verse: summary.scripture,
+    current: currentIssueNo != null && summary.issueNo === currentIssueNo,
+  };
+}
+
+/**
+ * 발행된 주보 목록(최신순).
+ * @returns {Promise<JuboIssue[]>}
+ */
+export async function getJuboIssues(churchId) {
+  if (isDummy("jubo")) return DUMMY_JUBO_ISSUES;
+  const [{ data: archive }, current] = await Promise.all([
+    api.get(`/churches/${churchId}/jubo`),
+    getJuboInfo(churchId).catch(() => null),
+  ]);
+  return archive.data.map((summary) => toJuboIssue(summary, current?.issueNo));
+}
+
+/**
+ * 발행된 특정 주보 1건 — issueNo/dateLabel만 채워진다. 백엔드 상세 응답은
+ * sermonTitle/verse에 대응하는 flat 필드가 없고 sections(SERMON_NOTE)로만
+ * 내려오는데, 그 섹션 콘텐츠 shape이 프론트 어디에도 아직 안 쓰이고 있어
+ * 확인된 필드명이 없다 — 확인 전까지 비워둔다(Cover.jsx는 issueNo/dateLabel만
+ * 쓰므로 표지 탭은 정상 동작, Sermon.jsx가 쓰는 sermonTitle/verse만 비어 보임).
+ * @returns {Promise<JuboIssue|null>}
+ */
+export async function getJuboIssue(churchId, issueId) {
+  if (isDummy("jubo"))
+    return DUMMY_JUBO_ISSUES.find((issue) => String(issue.id) === String(issueId)) ?? null;
+  const res = await api.get(`/churches/${churchId}/jubo/${issueId}`);
+  const d = res.data.data;
+  return {
+    id: d.id,
+    issueNo: d.issueNo,
+    date: d.juboDate,
+    dateLabel: formatKoreanDate(d.juboDate),
+    sermonTitle: "",
+    verse: "",
+  };
 }
 
 /** @returns {Promise<WorshipService[]>} */

@@ -6,7 +6,8 @@ const SECTION_SELECTOR = "[data-home-section]";
  * 홈 화면 섹션을 한 화면 단위로 넘겨주는 플로팅 버튼.
  * 히어로(첫 섹션) 위에서는 흰색, 그 아래 밝은 섹션들 위에서는 어두운 색으로
  * 헤더와 같은 방식으로 대비를 맞춘다. 마지막 섹션(푸터 바로 위)에 도달하면
- * 더 넘어갈 화면이 없으므로 숨긴다.
+ * 더 넘어갈 화면이 없으므로, 대신 화면 오른쪽 아래에 맨 위로 이동하는
+ * 버튼을 보여준다.
  */
 export default function ScrollDownButton() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,8 +47,38 @@ export default function ScrollDownButton() {
     window.scrollTo({ top: next.offsetTop, behavior: "smooth" });
   }, [currentIndex]);
 
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const isLastSection = sectionCount > 0 && currentIndex >= sectionCount - 1;
-  if (isLastSection) return null;
+
+  // 마지막 섹션(더 내려갈 화면이 없는 지점)에서는 아래로 가는 화살표 대신
+  // 맨 위로 돌아가는 버튼을 오른쪽 아래에 보여준다.
+  if (isLastSection) {
+    return (
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="맨 위로 이동"
+        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center gap-1.5 px-4 py-2.5 rounded-full bg-white border border-bluegrey-3 shadow-lg text-grey-8 text-body-4 font-semibold hover:border-blue-5 hover:text-primary transition-colors"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+        TOP
+      </button>
+    );
+  }
 
   const isOverHero = currentIndex === 0;
 

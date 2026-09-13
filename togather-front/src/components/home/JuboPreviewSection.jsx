@@ -14,7 +14,7 @@ export default function JuboPreviewSection() {
         <div className="flex items-center justify-between">
           <SectionTitle>스마트 주보</SectionTitle>
           <Link
-            to="/주보"
+            to="/주보/목록"
             className="flex items-center gap-1 text-body-3 font-medium text-grey-7 hover:text-blue-6 transition-colors"
           >
             전체 보기

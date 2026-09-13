@@ -431,9 +431,9 @@ export default function BibleRead() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Bar — 성경읽기 메뉴에서만 표시 */}
           {activeMenu === "성경읽기" && (
-            <div className="h-[60px] shrink-0 flex items-center gap-3 px-6 border-b border-bluegrey-2 bg-white">
+            <div className="shrink-0 flex items-center gap-3 px-6 pt-3 md:pt-0 md:h-[60px] md:border-b md:border-bluegrey-2 bg-white overflow-x-auto">
               {/* 글씨 크기 */}
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => {
                     setFontSizeOpen((v) => !v);
@@ -481,7 +481,7 @@ export default function BibleRead() {
               {/* 전체 선택 */}
               <button
                 onClick={toggleCheckAll}
-                className={`h-9 flex items-center gap-1.5 px-4 rounded-full text-body-4 border transition-colors ${
+                className={`h-9 shrink-0 flex items-center gap-1.5 px-4 rounded-full text-body-4 border transition-colors ${
                   allChecked
                     ? "bg-primary border-primary text-white"
                     : "border-bluegrey-2 text-grey-7 hover:border-blue-5"
@@ -502,7 +502,7 @@ export default function BibleRead() {
               {allChecked && (
                 <button
                   onClick={goNextChapter}
-                  className="h-9 flex items-center gap-1.5 px-4 rounded-full bg-blue-7 text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
+                  className="h-9 shrink-0 flex items-center gap-1.5 px-4 rounded-full bg-blue-7 text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
                 >
                   다음 장으로
                   <svg
@@ -521,10 +521,10 @@ export default function BibleRead() {
                 </button>
               )}
 
-              <div className="flex-1" />
+              <div className="flex-1 min-w-4" />
 
               {/* 책 선택 */}
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => {
                     setBookOpen((v) => !v);
@@ -532,14 +532,14 @@ export default function BibleRead() {
                     setFontSizeOpen(false);
                     setBookTab(OT.includes(BOOK_ABBREV[selectedBook]) ? "OT" : "NT");
                   }}
-                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors"
+                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors whitespace-nowrap"
                 >
                   {selectedBook}
                 </button>
                 {bookOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setBookOpen(false)} />
-                    <div className="absolute top-full right-0 mt-2 z-20 bg-white rounded-2xl shadow-xl p-5 w-[500px]">
+                    <div className="absolute top-full right-0 mt-2 z-20 bg-white rounded-2xl shadow-xl p-5 w-[92vw] max-w-[500px]">
                       <div className="flex justify-end gap-2 mb-4">
                         {["OT", "NT"].map((t) => (
                           <button
@@ -555,7 +555,7 @@ export default function BibleRead() {
                           </button>
                         ))}
                       </div>
-                      <div className="grid grid-cols-7 gap-2">
+                      <div className="grid grid-cols-5 sm:grid-cols-7 gap-2">
                         {(bookTab === "OT" ? OT : NT).map((abbr) => {
                           const fullName = BOOK_MAP[abbr];
                           const isSelected = selectedBook === fullName;
@@ -588,14 +588,14 @@ export default function BibleRead() {
               </div>
 
               {/* 장 선택 */}
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => {
                     setChapterOpen((v) => !v);
                     setBookOpen(false);
                     setFontSizeOpen(false);
                   }}
-                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center"
+                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
                 >
                   {chapter}
                   {selectedBook === "시편" ? "편" : "장"}
@@ -629,10 +629,10 @@ export default function BibleRead() {
               </div>
 
               {/* 장 이동 < > */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={goPrevChapter}
-                  className="w-8 h-8 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
                   title="이전 장"
                 >
                   <svg
@@ -651,7 +651,7 @@ export default function BibleRead() {
                 </button>
                 <button
                   onClick={goNextChapter}
-                  className="w-8 h-8 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
                   title="다음 장"
                 >
                   <svg
@@ -673,7 +673,7 @@ export default function BibleRead() {
               {/* 검색 — 클릭 시 오른쪽 사이드 모달 오픈 */}
               <button
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 text-left hover:border-blue-4 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 shrink-0 text-left hover:border-blue-4 transition-colors"
               >
                 <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
                 <span className="text-body-4 text-grey-5">검색할 내용을 입력하세요.</span>
@@ -762,6 +762,12 @@ export default function BibleRead() {
                   return rest;
                 })
               }
+              onSelect={(v) => {
+                setSelectedBook(v.book);
+                setChapter(v.chapter);
+                setCheckedVerses({});
+                setActiveMenu("성경읽기");
+              }}
             />
           )}
           {activeMenu === "내 현황" && (

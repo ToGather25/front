@@ -4,9 +4,9 @@
  * SaaS 환경에서는 이 설정이 서브도메인/도메인 기반으로 서버에서 주입됩니다.
  * 예: GET /api/tenant?domain=togather.church
  *
- * 이 파일 자체가 이 배포(이 저장소)의 기본 교회 데이터(알곡교회)이기도 하다 —
+ * 이 파일 자체가 이 배포(이 저장소)의 기본 교회 데이터(옥길교회)이기도 하다 —
  * ChurchProvider는 위 API 호출이 실패해도(백엔드 미배포 등) 이 값을 그대로 보여준다
- * (ChurchContext.jsx 참고). 즉 이 저장소를 그대로 배포하면 "알곡교회 프론트"로 동작한다.
+ * (ChurchContext.jsx 참고). 즉 이 저장소를 그대로 배포하면 "옥길교회 프론트"로 동작한다.
  */
 
 import floor1 from "@/assets/floors/1.png";
@@ -14,20 +14,21 @@ import floor2 from "@/assets/floors/2.png";
 import floor3 from "@/assets/floors/3.png";
 import floor4 from "@/assets/floors/4.png";
 import floorB1 from "@/assets/floors/B1.png";
+import okcLogo from "@/assets/icons/옥길교회_logo.png";
 
 const churchConfig = {
   // ── 식별자 ────────────────────────────────────────────
-  id: "togather-church", // API 요청 시 churchId로 사용
+  id: 1, // API 요청 시 churchId로 사용 — 백엔드 tenant 테이블의 실제 PK(옥길교회)와 일치해야 한다
   slug: "togather", // 서브도메인/URL 슬러그
 
   // ── 교회 기본 정보 ────────────────────────────────────
-  name: "알곡교회",
+  name: "옥길교회",
   shortName: "알곡",
-  address: "서울 관악구 난곡로24길 42 (신림동)",
+  address: "경기도 부천시 양지로 166번길 34 (옥길동)",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
   email: "algok@gmail.com",
-  pastor: "유상현",
+  pastor: "임재호",
   denomination: "대한예수교장로회 고신교단",
 
   // ── 지도 설정 (카카오맵) ──────────────────────────────
@@ -36,13 +37,12 @@ const churchConfig = {
   },
 
   // ── 브랜드 ────────────────────────────────────────────
-  // logoUrl: "/icons/512x512.png"  // CDN URL로 교체 가능
-  logoUrl: null, // null이면 기본 로고 사용
+  logoUrl: okcLogo,
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube: "https://www.youtube.com/channel/UCHKLbKQ17ZXo735AaWugkiA", // 채널 URL (푸터 링크용) — 서울알곡교회
-    youtubeChannelId: "UCHKLbKQ17ZXo735AaWugkiA", // UC로 시작하는 채널 ID (서울알곡교회)
+    youtube: "https://www.youtube.com/channel/UCHKLbKQ17ZXo735AaWugkiA", // 채널 URL (푸터 링크용) — 서울옥길교회
+    youtubeChannelId: "UCHKLbKQ17ZXo735AaWugkiA", // UC로 시작하는 채널 ID (서울옥길교회)
     instagram: null,
     facebook: null,
   },
@@ -65,10 +65,10 @@ const churchConfig = {
     {
       label: "예배·방송",
       children: [
+        { label: "예배 안내", to: "/말씀/안내" },
         { label: "실시간 예배", to: "/말씀/방송" },
         { label: "예배 목록", to: "/말씀/설교" },
-        { label: "예배 안내", to: "/말씀/안내" },
-        { label: "스마트 주보", to: "/주보" },
+        { label: "스마트 주보", to: "/주보/목록" },
       ],
     },
     {
@@ -92,9 +92,9 @@ const churchConfig = {
     {
       label: "양육·훈련",
       children: [
-        { label: "제자훈련", to: "/양육훈련/제자훈련" },
         { label: "구역 모임", to: "/양육훈련/구역" },
         { label: "오늘의 묵상", to: "/양육훈련/묵상" },
+        { label: "제자훈련", to: "/양육훈련/제자훈련" },
         { label: "양육 프로그램", to: "/양육훈련/프로그램" },
         { label: "양육·훈련 게시판", to: "/양육훈련/게시판" },
         { label: "성경 읽기·쓰기", to: "/양육훈련" },
@@ -103,7 +103,6 @@ const churchConfig = {
     {
       label: "교회소식",
       children: [
-        { label: "스마트 주보", to: "/주보" },
         { label: "공지사항", to: "/공지사항" },
         { label: "교회행사", to: "/교회행사" },
         { label: "갤러리", to: "/갤러리" },
@@ -122,26 +121,26 @@ const churchConfig = {
 
   // ── 히어로 배너 텍스트 (배경 이미지는 churchProfileService의 실API로 대체됨) ──
   mainBanner: {
-    title: "하나님의 사랑이 우리에게\n이렇게 나타난 바 되었으니",
+    title: "거기서 나오라",
     subtitle:
-      "하나님의 자기의 독생자를 세상에 보내심은\n저로 말미암아 우리를 살리려 하심이니라 (요일 4:9)",
+      "또 내가 들으니 하늘로부터 다른 음성이 나서 이르되 내 백성아,\n거기서 나와 그의 죄에 참여하지 말고 그가 받을 재앙들을 받지 말라 (계 18:4)",
   },
 
   // ── 인사말 ────────────────────────────────────────────
   greeting: {
     title: "할렐루야!",
     paragraphs: [
-      "알곡교회 홈페이지를 방문해 주셔서 감사합니다.",
+      "옥길교회 홈페이지를 방문해 주셔서 감사합니다.",
       "저희 교회를 소개하겠습니다.",
       "첫째, 저희 교회는 대한예수교장로회 고신교단에 속한 보수적인 교회입니다.\n1938년 9월 10일 대한예수교장로회 제27차 총회는 일제의 악랄하여 신사참배를 가결하였고 한상동 목사, 주남선 목사, 손명복 전도사 등 신실한 형들은 신사참배를 반대하여 투옥되었습니다. 그들은 해방 후 출옥하여 한국교회를 재건하기 위해 1946년 9월 20일에 개혁주의 보수인 신학교를 개교하였고, 이 학교는 후에 고려신학대학교로 발전하여 현재는 고신교단으로 발전하였습니다.",
       "둘째, 저희 교회는 순수한 복음을 선포하고 가르치는 교회입니다.\n개혁주의 신앙과 신학의 기초 위에 그리스도 중심의 말씀을 선포하며, 순수한 복음을 가르치는 교회입니다.",
       "셋째, 저희 교회는 다음세대를 길러내는 교회입니다.\n저희 교회는 유치부, 초등부, 중·고등부, 대학부, 청년부들에게 하나님의 말씀인 성경을 가르치고, 보수적인 신앙을 전수하고 또 받아 자라도록 노력하는 주님의 교회입니다.",
-      "이렇게 저희 알곡교회는 주의 복음과 사랑을 자녀들에게 전수하고, 이곳과 세계에 전파 하기 위해 노력하는 주님의 교회입니다. 감사합니다.",
+      "이렇게 저희 옥길교회는 주의 복음과 사랑을 자녀들에게 전수하고, 이곳과 세계에 전파 하기 위해 노력하는 주님의 교회입니다. 감사합니다.",
     ],
     signature: {
-      church: "알곡교회",
+      church: "옥길교회",
       title: "담임목사",
-      name: "김함께",
+      name: "임재호",
       signatureImage: null, // 직인/캘리그라피 서명 이미지 URL — 없으면 교회 로고로 대체
     },
   },
@@ -149,7 +148,7 @@ const churchConfig = {
   // ── 교회 비전 ─────────────────────────────────────────
   vision: {
     year: 2026,
-    mainTitle: "알곡교회 공동체 비전 ToGather",
+    mainTitle: "옥길교회 공동체 비전 ToGather",
     mainVerse: '"함께 모여 하나님 아버지께로"',
     items: [
       { label: "Together", description: "첫번째 비전에 대한 내용을 입력하세요." },
@@ -180,7 +179,7 @@ const churchConfig = {
   staff: {
     filterTags: ["#담임목사", "#간사", "#행정장로", "#부목사"],
     headPastor: {
-      name: "김함께 목사",
+      name: "임재호 목사",
       tel: "02-1234-5678",
       email: "gather@gmail.com",
       role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
@@ -190,28 +189,28 @@ const churchConfig = {
     },
     clergy: [
       {
-        name: "김무리 목사",
+        name: "박보아스 목사",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
         image: null,
       },
       {
-        name: "김모두 전도사",
+        name: "문건민 목사",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
         image: null,
       },
       {
-        name: "임축복 목사",
+        name: "금진섭 목사",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
         image: null,
       },
       {
-        name: "이행복 전도사",
+        name: "김정희 간사",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "교회 내 역할 및 소속 부서 등을 입력하세요.",
@@ -220,28 +219,28 @@ const churchConfig = {
     ],
     elders: [
       {
-        name: "홍길동 장로",
+        name: "유철선 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "시무장로",
         image: null,
       },
       {
-        name: "박성실 장로",
+        name: "변세건 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "시무장로",
         image: null,
       },
       {
-        name: "최믿음 장로",
+        name: "이영실 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "시무장로",
         image: null,
       },
       {
-        name: "정소망 장로",
+        name: "이홍섭 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "시무장로",
@@ -250,21 +249,21 @@ const churchConfig = {
     ],
     associateElders: [
       {
-        name: "김사랑 장로",
+        name: "김종칠 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "협동장로",
         image: null,
       },
       {
-        name: "이은혜 장로",
+        name: "안현민 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "사역장로",
         image: null,
       },
       {
-        name: "박기쁨 장로",
+        name: "권길만 장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "협동장로",
@@ -273,14 +272,21 @@ const churchConfig = {
     ],
     retiredElders: [
       {
-        name: "윤경건 원로장로",
+        name: "김봉석 은퇴장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "은퇴장로",
         image: null,
       },
       {
-        name: "강진리 은퇴장로",
+        name: "임대순 은퇴장로",
+        tel: "02-1234-5678",
+        email: "gather@gmail.com",
+        role: "은퇴장로",
+        image: null,
+      },
+      {
+        name: "손철기 은퇴장로",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "은퇴장로",
@@ -289,27 +295,11 @@ const churchConfig = {
     ],
     missionaries: [
       {
-        name: "오복음 선교사",
+        name: "오범석(정양숙) 선교사",
         tel: "02-1234-5678",
         email: "gather@gmail.com",
         role: "태국 방콕 파송",
         location: "태국",
-        image: null,
-      },
-      {
-        name: "서열방 선교사",
-        tel: "02-1234-5678",
-        email: "gather@gmail.com",
-        role: "캄보디아 프놈펜 파송",
-        location: "캄보디아",
-        image: null,
-      },
-      {
-        name: "문선교 선교사",
-        tel: "02-1234-5678",
-        email: "gather@gmail.com",
-        role: "몽골 울란바토르 파송",
-        location: "몽골",
         image: null,
       },
     ],
@@ -373,7 +363,7 @@ const churchConfig = {
 
   // ── 층별 안내 ─────────────────────────────────────────
   floorGuide: [
-    { floor: "4층", rooms: "청년부실, 사무실", image: floor4 },
+    { floor: "4층", rooms: "사택, 테라스", image: floor4 },
     { floor: "3층", rooms: "목양실, 당회실, 방송실, 재정부실", image: floor3 },
     { floor: "2층", rooms: "본당, 자모실", image: floor2 },
     { floor: "1층", rooms: "식당, 새가족실, 카페, 유치부실", image: floor1 },
@@ -386,7 +376,7 @@ const churchConfig = {
 
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
   communities: [
-    "알곡교회",
+    "옥길교회",
     "청년부",
     "유치부",
     "초등부",
@@ -399,50 +389,75 @@ const churchConfig = {
   ],
 
   // ── 주차 안내 ─────────────────────────────────────────
+  // 주차장이 여러 곳이면 lots 배열에 항목을 추가한다 — 각 항목의 name이 소제목으로 표시된다.
   parking: {
-    details: [
-      { label: "주차 요금", value: "무료" },
-      { label: "주차 가능 시간", value: "주일 오전 9시 ~ 오후 2시" },
-      { label: "안내", value: "주차 공간이 협소하니 가급적 대중교통을 이용해 주세요." },
+    lots: [
+      {
+        name: "교회 주차장",
+        details: [
+          { label: "주차 요금", value: "무료" },
+          { label: "주차 가능 시간", value: "종일" },
+          { label: "안내", value: "주차 공간이 협소하니 가급적 대중교통을 이용해 주세요." },
+        ],
+      },
+      {
+        name: "옥길새길중학교 주차장",
+        details: [
+          { label: "주차 요금", value: "무료" },
+          { label: "주차 가능 시간", value: "오전 9시 ~ 오후 3시" },
+          { label: "안내", value: "이용 가능 시간 외에는 주차할 수 없습니다." },
+        ],
+      },
+      {
+        name: "옥길 유치원 주차장",
+        details: [
+          { label: "주차 요금", value: "무료" },
+          { label: "주차 가능 시간", value: "오전 9시 ~ 오후 5시" },
+          { label: "안내", value: "이용 가능 시간 외에는 주차할 수 없습니다." },
+        ],
+      },
     ],
   },
 
+  // ── 대중교통 안내 (오시는 길) ──────────────────────────
+  publicTransit: [
+    { subway: "1호선 역곡역 1번출구", bus: "19번 버스", dropoff: "LH 8단지 하차" },
+    { subway: "7호선 광명사거리역 6번출구", bus: "2번 버스", dropoff: "옥길단독2블록 상업지역 하차" },
+    { subway: "7호선 천왕역 3번출구", bus: "56-1번 버스", dropoff: "별빛마루도서관.소사경찰서 하차" },
+  ],
+
   // ── 차량운행 안내 ─────────────────────────────────────
-  // waypoints: 각 경유지의 위도(lat)·경도(lng)·표시명(label) 입력 시 지도에 경로가 표시됩니다.
+  // waypoints: 각 경유지의 위도(lat)·경도(lng)·표시명(label)·출발시각(time) —
+  // lat/lng/label을 입력하면 지도에 경로가 표시되고, 표에는 label(위치)과 time(시간)이 열로 나온다.
   // 좌표는 카카오맵(map.kakao.com)에서 원하는 지점 우클릭 → "이 위치" 로 확인 가능합니다.
   transportGuide: {
     routes: [
       {
         name: "운행코스 1",
-        schedule: "시간을 입력하세요.",
         color: "#3B5280",
         waypoints: [
-          { lat: 37.4847, lng: 126.9291, label: "신림역" },
-          { lat: 37.4814, lng: 126.9407, label: "신림사거리" },
-          { lat: 37.479, lng: 126.931, label: "난곡사거리" },
+          { lat: 37.4847, lng: 126.9291, label: "신림역", time: "06:00" },
+          { lat: 37.4814, lng: 126.9407, label: "신림사거리", time: "06:20" },
+          { lat: 37.479, lng: 126.931, label: "난곡사거리", time: "06:55" },
         ],
       },
       {
         name: "운행코스 2",
-        schedule: "시간을 입력하세요.",
         color: "#E05C2D",
         waypoints: [],
       },
       {
         name: "운행코스 3",
-        schedule: "시간을 입력하세요.",
         color: "#2D9E6B",
         waypoints: [],
       },
       {
         name: "운행코스 4",
-        schedule: "시간을 입력하세요.",
         color: "#9B51E0",
         waypoints: [],
       },
       {
         name: "운행코스 5",
-        schedule: "시간을 입력하세요.",
         color: "#E0A82D",
         waypoints: [],
       },

@@ -6,7 +6,6 @@ import FooterLocation from "@/assets/icon-svg/footer-location.svg";
 import FooterPhone from "@/assets/icon-svg/footer-phone.svg";
 import FooterEmail from "@/assets/icon-svg/footer-email.svg";
 import SearchOverlay from "@/components/common/SearchOverlay";
-import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import ChurchLogo from "@/components/common/ChurchLogo";
 
 function ScrollToTop() {
@@ -105,7 +104,6 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
   const NAV_ITEMS = church.nav;
   const menuItems = NAV_ITEMS.filter((item) => item.children);
   const [openMenu, setOpenMenu] = useState(null);
-  const [showLoginRequired, setShowLoginRequired] = useState(false);
   const rowRef = useRef(null);
   const itemRefs = useRef({});
   const colRefs = useRef({});
@@ -223,7 +221,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
               onMouseEnter={() => setOpenMenu(null)}
             >
               <ChurchLogo
-                className="h-22 w-22 object-contain transition-[filter] duration-300"
+                className="h-26 w-26 object-contain transition-[filter] duration-300"
                 style={{ filter: effectiveTransparent ? "brightness(0) invert(1)" : "none" }}
                 alt={`${church.name} 로고`}
               />
@@ -310,14 +308,6 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                 </>
               )}
             </div>
-
-            {/* 로그인 필요 모달 */}
-            {showLoginRequired && (
-              <LoginRequiredModal
-                message="교적부를 이용하려면 로그인해 주세요."
-                onCancel={() => setShowLoginRequired(false)}
-              />
-            )}
           </div>
         </div>
       </div>
@@ -598,9 +588,24 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
     >
       <div
         ref={barRef}
-        className="bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
+        className="relative bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
-        <Link to="/" className="flex items-center">
+        <Link to="/교적부" className="p-1.5 -ml-1 text-grey-10" aria-label="교적부">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.5 19.5A2.5 2.5 0 017 17h11M4.5 19.5A2.5 2.5 0 007 22h11a1 1 0 001-1V4a1 1 0 00-1-1H7a2.5 2.5 0 00-2.5 2.5v14z"
+            />
+          </svg>
+        </Link>
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
           <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
         </Link>
         <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
@@ -849,7 +854,7 @@ function BottomNav() {
     },
     {
       label: "주보",
-      to: "/주보",
+      to: "/주보/목록",
       icon: (a) => <IconJubo active={a} />,
       match: (p) => p.startsWith("/주보"),
     },

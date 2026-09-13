@@ -19,20 +19,21 @@ describe("Gyojeokbu — 로그인 가드 + 민감정보 제한", () => {
   it("일반 교인으로 로그인하면 교인 목록이 보이고 목회 메모는 보이지 않는다", async () => {
     localStorage.setItem("user", JSON.stringify({ email: "test@togather.com", name: "홍길동" }));
     const user = userEvent.setup();
-    renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const table = container.querySelector("table");
 
-    expect(screen.getByText(MEMBERS[0].name)).toBeInTheDocument();
+    expect(within(table).getByText(MEMBERS[0].name)).toBeInTheDocument();
 
-    await user.click(screen.getByText(MEMBERS[0].name));
+    await user.click(within(table).getByText(MEMBERS[0].name));
     expect(screen.queryByText("목회 메모")).not.toBeInTheDocument();
   });
 
   it("관리자로 로그인하면 상세 드로어에서 목회 메모가 보인다", async () => {
     localStorage.setItem("user", JSON.stringify({ email: "admin@togather.com", isAdmin: true }));
     const user = userEvent.setup();
-    renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
 
-    await user.click(screen.getByText(MEMBERS[0].name));
+    await user.click(within(container.querySelector("table")).getByText(MEMBERS[0].name));
     expect(screen.getByText("목회 메모")).toBeInTheDocument();
     expect(screen.getByText(MEMBERS[0].notes)).toBeInTheDocument();
   });
@@ -45,15 +46,16 @@ describe("Gyojeokbu — 검색·필터·상세 드로어", () => {
   });
 
   it("이름으로 검색하면 해당 교인만 표시된다", () => {
-    renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
     const target = MEMBERS[0];
     const other = MEMBERS[1];
 
     const input = screen.getByPlaceholderText("이름 또는 휴대폰 번호로 검색");
     fireEvent.change(input, { target: { value: target.name } });
 
-    expect(screen.getByText(target.name)).toBeInTheDocument();
-    expect(screen.queryByText(other.name)).not.toBeInTheDocument();
+    const table = container.querySelector("table");
+    expect(within(table).getByText(target.name)).toBeInTheDocument();
+    expect(within(table).queryByText(other.name)).not.toBeInTheDocument();
   });
 
   it("검색 결과가 없으면 안내 문구가 표시된다", () => {
@@ -66,23 +68,24 @@ describe("Gyojeokbu — 검색·필터·상세 드로어", () => {
 
   it("구역 필터를 선택하면 해당 구역 교인만 표시된다", async () => {
     const user = userEvent.setup();
-    renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
 
     const target = MEMBERS.find((m) => m.region === "1구역");
     const other = MEMBERS.find((m) => m.region !== "1구역");
 
     await user.click(screen.getByRole("button", { name: /^1구역/ }));
 
-    expect(screen.getByText(target.name)).toBeInTheDocument();
-    expect(screen.queryByText(other.name)).not.toBeInTheDocument();
+    const table = container.querySelector("table");
+    expect(within(table).getByText(target.name)).toBeInTheDocument();
+    expect(within(table).queryByText(other.name)).not.toBeInTheDocument();
   });
 
   it("교인 행을 클릭하면 상세 드로어가 열리고 기본 정보가 보인다", async () => {
     const user = userEvent.setup();
-    renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
     const target = MEMBERS[0];
 
-    await user.click(screen.getByText(target.name));
+    await user.click(within(container.querySelector("table")).getByText(target.name));
 
     expect(screen.getByText(target.address)).toBeInTheDocument();
   });
@@ -91,7 +94,7 @@ describe("Gyojeokbu — 검색·필터·상세 드로어", () => {
     const user = userEvent.setup();
     const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
 
-    await user.click(screen.getByText(MEMBERS[1].name));
+    await user.click(within(container.querySelector("table")).getByText(MEMBERS[1].name));
     await user.click(screen.getByRole("button", { name: "다음" }));
 
     // 주의: m.phone은 드로어 안에 두 곳(Hero의 tel 링크 + 기본정보 InfoRow)에
@@ -111,11 +114,11 @@ describe("Gyojeokbu — 검색·필터·상세 드로어", () => {
     const linkedFamily = owner.family.find((f) => f.id);
     const target = MEMBERS.find((m) => m.id === linkedFamily.id);
 
-    await user.click(screen.getByText(owner.name));
-    await user.click(screen.getByRole("button", { name: new RegExp(target.name) }));
+    await user.click(within(container.querySelector("table")).getByText(owner.name));
+    const drawer = container.querySelector("aside");
+    await user.click(within(drawer).getByRole("button", { name: new RegExp(target.name) }));
 
     // phone은 중복 렌더되므로(위 테스트와 동일한 이유) 생년월일 조합 텍스트로 식별한다.
-    const drawer = container.querySelector("aside");
     expect(
       within(drawer).getByText(`${target.birth} (만 ${target.age}세)`),
     ).toBeInTheDocument();
