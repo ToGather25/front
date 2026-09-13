@@ -10,6 +10,10 @@ import {
   DUMMY_SUPPORT,
   DUMMY_DISTRICTS,
   DUMMY_MINISTERS,
+  DUMMY_COVER,
+  DUMMY_NEWS,
+  DUMMY_PRAYER_TOPICS,
+  DUMMY_SERMON_NOTE,
 } from "@/data/dummy/jubo";
 
 /**
@@ -22,7 +26,10 @@ import {
  * @typedef {{ title: string, items: string[] }} TitledGroup
  * @typedef {{ organization: string, target: string, region: string }} SupportRow
  * @typedef {{ name: string, location: string, time: string, leader: string }} DistrictRow
- * @typedef {"WORSHIP_SERVICES"|"WORSHIP_ORDER"|"VOLUNTEER"|"OFFERING"|"SUPPORT"|"DISTRICTS"|"MINISTERS"} JuboSectionType
+ * @typedef {{ photos: { church: string|null, panorama: string|null, group: string|null } }} CoverContent
+ * @typedef {{ title: string, scripture: string, outline: string[] }} SermonNote
+ * @typedef {{ title: string, subtitle: string, category: string }} PrayerTopic
+ * @typedef {"WORSHIP_SERVICES"|"WORSHIP_ORDER"|"VOLUNTEER"|"OFFERING"|"SUPPORT"|"DISTRICTS"|"MINISTERS"|"COVER"|"NEWS"|"PRAYER_TOPICS"|"SERMON_NOTE"} JuboSectionType
  */
 
 /** 현재 발행된 주보의 호수/날짜 @returns {Promise<JuboInfo>} */
@@ -127,6 +134,34 @@ export async function getDistricts(churchId) {
 export async function getMinisters(churchId) {
   if (isDummy("jubo")) return DUMMY_MINISTERS;
   const res = await api.get(`/churches/${churchId}/jubo/ministers`);
+  return res.data.data;
+}
+
+/** @returns {Promise<CoverContent>} */
+export async function getCover(churchId) {
+  if (isDummy("jubo")) return DUMMY_COVER;
+  const res = await api.get(`/churches/${churchId}/jubo/cover`);
+  return res.data.data;
+}
+
+/** @returns {Promise<TitledGroup[]>} */
+export async function getNews(churchId) {
+  if (isDummy("jubo")) return DUMMY_NEWS;
+  const res = await api.get(`/churches/${churchId}/jubo/news`);
+  return res.data.data;
+}
+
+/** @returns {Promise<PrayerTopic[]>} */
+export async function getPrayerTopics(churchId) {
+  if (isDummy("jubo")) return DUMMY_PRAYER_TOPICS;
+  const res = await api.get(`/churches/${churchId}/jubo/prayer-topics`);
+  return res.data.data;
+}
+
+/** @returns {Promise<SermonNote>} */
+export async function getSermonNote(churchId) {
+  if (isDummy("jubo")) return DUMMY_SERMON_NOTE;
+  const res = await api.get(`/churches/${churchId}/jubo/sermon-note`);
   return res.data.data;
 }
 

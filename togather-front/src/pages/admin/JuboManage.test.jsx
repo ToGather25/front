@@ -45,6 +45,26 @@ function mockPrefillGets() {
     if (url.includes("ministers")) {
       return Promise.resolve({ data: { data: [{ title: "교역자", items: ["담임목사 | OOO"] }] } });
     }
+    if (url.includes("cover")) {
+      return Promise.resolve({
+        data: { data: { photos: { church: "https://example.com/church.jpg" } } },
+      });
+    }
+    if (url.includes("news")) {
+      return Promise.resolve({
+        data: { data: [{ title: "정기모임", items: ["금요기도회"] }] },
+      });
+    }
+    if (url.includes("prayer-topics")) {
+      return Promise.resolve({
+        data: { data: [{ title: "다음 세대를 위한 기도", subtitle: "교사 헌신자", category: "사역" }] },
+      });
+    }
+    if (url.includes("sermon-note")) {
+      return Promise.resolve({
+        data: { data: { title: "은혜 위에 은혜러라", scripture: "요한복음 1장 16절", outline: [] } },
+      });
+    }
     return Promise.reject(new Error(`unexpected GET url: ${url}`));
   });
 }
@@ -114,7 +134,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("주일 오전예배");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[0]);
+    await user.click(saveButtons[1]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -138,7 +158,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("대표기도");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[1]);
+    await user.click(saveButtons[3]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -158,7 +178,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("십일조");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[2]);
+    await user.click(saveButtons[4]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -178,7 +198,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("베트남");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[3]);
+    await user.click(saveButtons[5]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -198,7 +218,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("1구역");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[4]);
+    await user.click(saveButtons[6]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -218,11 +238,91 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("교역자");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[5]);
+    await user.click(saveButtons[7]);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
         "/church/admin/jubo/42/sections/MINISTERS",
+        expect.any(Array),
+      ),
+    );
+  });
+
+  it("표지 섹션 저장 시 COVER 섹션을 저장한다", async () => {
+    mockCreateOnce();
+    api.put.mockResolvedValue({ data: null });
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+    await screen.findByDisplayValue("https://example.com/church.jpg");
+
+    const saveButtons = screen.getAllByRole("button", { name: "저장" });
+    await user.click(saveButtons[0]);
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/jubo/42/sections/COVER",
+        expect.any(Object),
+      ),
+    );
+  });
+
+  it("소식 섹션 저장 시 NEWS 섹션을 저장한다", async () => {
+    mockCreateOnce();
+    api.put.mockResolvedValue({ data: null });
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+    await screen.findByDisplayValue("금요기도회");
+
+    const saveButtons = screen.getAllByRole("button", { name: "저장" });
+    await user.click(saveButtons[2]);
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/jubo/42/sections/NEWS",
+        expect.any(Array),
+      ),
+    );
+  });
+
+  it("말씀 섹션 저장 시 SERMON_NOTE 섹션을 저장한다", async () => {
+    mockCreateOnce();
+    api.put.mockResolvedValue({ data: null });
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+    await screen.findByDisplayValue("은혜 위에 은혜러라");
+
+    const saveButtons = screen.getAllByRole("button", { name: "저장" });
+    await user.click(saveButtons[8]);
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/jubo/42/sections/SERMON_NOTE",
+        expect.any(Object),
+      ),
+    );
+  });
+
+  it("기도제목 섹션 저장 시 PRAYER_TOPICS 섹션을 저장한다", async () => {
+    mockCreateOnce();
+    api.put.mockResolvedValue({ data: null });
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+    await screen.findByDisplayValue("다음 세대를 위한 기도");
+
+    const saveButtons = screen.getAllByRole("button", { name: "저장" });
+    await user.click(saveButtons[9]);
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/jubo/42/sections/PRAYER_TOPICS",
         expect.any(Array),
       ),
     );
@@ -238,7 +338,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("주일 오전예배");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[0]);
+    await user.click(saveButtons[1]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });
@@ -253,7 +353,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("대표기도");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[1]);
+    await user.click(saveButtons[3]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });
@@ -268,7 +368,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("십일조");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[2]);
+    await user.click(saveButtons[4]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });
@@ -283,7 +383,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("베트남");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[3]);
+    await user.click(saveButtons[5]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });
@@ -298,7 +398,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("1구역");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[4]);
+    await user.click(saveButtons[6]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });
@@ -313,7 +413,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByDisplayValue("교역자");
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[5]);
+    await user.click(saveButtons[7]);
 
     expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
   });

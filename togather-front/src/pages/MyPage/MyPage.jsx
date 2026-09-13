@@ -40,9 +40,9 @@ export default function MyPage() {
   // 값은 각 탭이 자체 소유해 탭 전환 시 초기화되며, 이는 사용자가 입력한
   // 값이 아니므로 문제없다.
   const [userForm, setUserForm] = useState({
-    name: MOCK_USER.name,
+    name: currentUser?.name ?? MOCK_USER.name,
     phone: MOCK_USER.phone,
-    email: MOCK_USER.email,
+    email: currentUser?.email ?? MOCK_USER.email,
     address: MOCK_USER.address,
     currentPw: "",
     newPw: "",
@@ -140,11 +140,11 @@ export default function MyPage() {
             <div className="bg-grey-1 border border-grey-3 rounded-2xl p-5">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-grey-5 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
-                  {MOCK_USER.name[0]}
+                  {(currentUser.name ?? MOCK_USER.name)[0]}
                 </div>
                 <div className="min-w-0">
                   <p className="text-body-3 font-bold text-grey-11 truncate">
-                    {MOCK_USER.name}
+                    {currentUser.name ?? MOCK_USER.name}
                     <span className="font-normal text-body-4 text-grey-7 ml-0.5">님</span>
                   </p>
                   <p className="text-body-5 text-grey-6 mt-0.5 truncate">

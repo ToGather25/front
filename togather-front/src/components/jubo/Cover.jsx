@@ -1,18 +1,21 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getJuboInfo } from "@/services/juboService";
-import juboConfig from "@/config/jubo.config";
+import { getJuboInfo, getCover } from "@/services/juboService";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import DefaultBanner from "@/assets/default_banner.png";
 
+const EMPTY_COVER = { photos: {} };
+
 export default function Cover({ issue }) {
   const { church } = useChurch();
-  const { cover } = juboConfig;
   const {
     data: currentInfo,
     error: juboInfoError,
     refetch: refetchJuboInfo,
   } = useFetch(() => (issue ? Promise.resolve(null) : getJuboInfo(church.id)), [church.id, issue], null);
+  // 표지 사진은 발행호와 무관하게 항상 "현재" 섹션 콘텐츠 하나뿐이다(과거 발행호별
+  // 개별 사진을 백엔드가 아직 지원하지 않음 — 다른 6개 연동 섹션과 동일한 제약).
+  const { data: cover } = useFetch(() => getCover(church.id), [church.id], EMPTY_COVER);
   // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호 정보를, 아니면 현재 발행 주보 정보를 쓴다.
   const juboInfo = issue ? { issueNo: issue.issueNo, date: issue.dateLabel } : currentInfo;
   const { mainVerse, mainTitle, items, year } = church.vision;

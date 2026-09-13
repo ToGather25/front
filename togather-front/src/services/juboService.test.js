@@ -15,6 +15,10 @@ import {
   getSupport,
   getDistricts,
   getMinisters,
+  getCover,
+  getNews,
+  getPrayerTopics,
+  getSermonNote,
   createJuboIssue,
   updateJuboSection,
   publishJubo,
@@ -73,6 +77,30 @@ describe("juboService — 실 API 경로", () => {
     api.get.mockResolvedValue({ data: { data: [] } });
     await getMinisters("church-1");
     expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/ministers");
+  });
+
+  it("getCover는 GET .../cover를 호출한다", async () => {
+    api.get.mockResolvedValue({ data: { data: { photos: {} } } });
+    await getCover("church-1");
+    expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/cover");
+  });
+
+  it("getNews는 GET .../news를 호출한다", async () => {
+    api.get.mockResolvedValue({ data: { data: [] } });
+    await getNews("church-1");
+    expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/news");
+  });
+
+  it("getPrayerTopics는 GET .../prayer-topics를 호출한다", async () => {
+    api.get.mockResolvedValue({ data: { data: [] } });
+    await getPrayerTopics("church-1");
+    expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/prayer-topics");
+  });
+
+  it("getSermonNote는 GET .../sermon-note를 호출한다", async () => {
+    api.get.mockResolvedValue({ data: { data: {} } });
+    await getSermonNote("church-1");
+    expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/sermon-note");
   });
 
   it("createJuboIssue는 POST /church/admin/jubo를 호출한다", async () => {

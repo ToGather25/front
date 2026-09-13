@@ -27,6 +27,24 @@ describe("Cover — 표지", () => {
     expect(screen.getByText(churchConfig.vision.items[0].label)).toBeInTheDocument();
   });
 
+  it("표지 사진 3장을 실API(COVER 섹션)로 렌더한다", async () => {
+    const photos = {
+      church: "https://example.com/church.jpg",
+      panorama: "https://example.com/panorama.jpg",
+      group: "https://example.com/group.jpg",
+    };
+    api.get.mockImplementation((url) =>
+      url.endsWith("/jubo/cover")
+        ? Promise.resolve({ data: { data: { photos } } })
+        : Promise.resolve({ data: { data: { issueNo: "제10-7", date: "2026년 2월 15일" } } }),
+    );
+    renderWithChurch(<Cover />);
+
+    expect(await screen.findByAltText("교회 건물")).toHaveAttribute("src", photos.church);
+    expect(screen.getByAltText("예배 전경")).toHaveAttribute("src", photos.panorama);
+    expect(screen.getByAltText("공동체 단체 사진")).toHaveAttribute("src", photos.group);
+  });
+
   it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
     renderWithChurch(<Cover />);

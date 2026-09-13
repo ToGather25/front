@@ -1,20 +1,56 @@
 import { useState } from "react";
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getChurchProfile } from "@/services/churchProfileService";
 import { SectionTitle } from "./shared";
 
+// 백엔드에 QR 코드 URL 필드가 아직 없다 — 계좌 정보가 채워지기 전까지 표시할 값이
+// 없으므로, 값이 생기기 전까지는 계좌 카드만 보여준다(shared.js:qrCodeUrl 없음 분기 재사용).
+const qrCodeUrl = null;
+
 export default function Giving() {
-  const { giving } = juboConfig;
-  const { bankAccount, qrCodeUrl } = giving;
+  const { church } = useChurch();
+  const { data: profile, loading } = useFetch(
+    () => getChurchProfile(church.id),
+    [church.id],
+    null,
+  );
   const [copied, setCopied] = useState(false);
 
   async function handleCopyAccount() {
     try {
-      await navigator.clipboard.writeText(bankAccount.accountNumber);
+      await navigator.clipboard.writeText(profile.offeringAccountNumber);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
       // 클립보드 API 미지원 환경 — 조용히 무시(계좌번호는 여전히 화면에 보임)
     }
+  }
+
+  if (loading) return null;
+
+  if (!profile?.offeringAccountNumber) {
+    return (
+      <>
+        <SectionTitle
+          icon={
+            <svg
+              className="w-5 h-5 text-primary"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              viewBox="0 0 24 24"
+            >
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M2 10h20" />
+            </svg>
+          }
+        >
+          헌금
+        </SectionTitle>
+        <p className="mt-5 text-body-4 text-grey-6">등록된 헌금 계좌 안내가 없습니다.</p>
+      </>
+    );
   }
 
   return (
@@ -40,11 +76,11 @@ export default function Giving() {
           onClick={handleCopyAccount}
           className="text-left border border-bluegrey-2 rounded-xl p-5 hover:border-primary transition-colors print:pointer-events-none"
         >
-          <p className="text-body-5 text-grey-6 mb-1">{bankAccount.bank}</p>
+          <p className="text-body-5 text-grey-6 mb-1">{profile.offeringBankName}</p>
           <p className="text-sub-tit-4 font-bold text-grey-11 mb-1">
-            {copied ? "복사되었습니다" : bankAccount.accountNumber}
+            {copied ? "복사되었습니다" : profile.offeringAccountNumber}
           </p>
-          <p className="text-body-5 text-grey-7">예금주: {bankAccount.holder}</p>
+          <p className="text-body-5 text-grey-7">예금주: {profile.offeringAccountHolder}</p>
         </button>
 
         {qrCodeUrl && (

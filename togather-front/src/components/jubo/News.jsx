@@ -1,8 +1,11 @@
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getNews } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
 export default function News() {
-  const { news } = juboConfig;
+  const { church } = useChurch();
+  const { data: news } = useFetch(() => getNews(church.id), [church.id], []);
   return (
     <>
       <SectionTitle

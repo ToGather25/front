@@ -36,6 +36,18 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
     expect(screen.getByText("내 프로필")).toBeInTheDocument();
   });
 
+  it("로그인한 사용자의 실제 이름을 보여준다(목업 이름이 아니라)", () => {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ email: "test@togather.com", name: "박신실", community: "청년부" }),
+    );
+    renderWithChurch(<MyPage />, { withAuth: true });
+
+    // 사이드바 아바타 카드와 "내 프로필" 카드 둘 다 실제 이름을 보여준다.
+    expect(screen.getAllByText("박신실").length).toBeGreaterThan(0);
+    expect(screen.queryByText("김민수")).not.toBeInTheDocument();
+  });
+
   it("'일정' 탭을 클릭하면 ScheduleTab 콘텐츠로 전환된다", () => {
     localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
     renderWithChurch(<MyPage />, { withAuth: true });
