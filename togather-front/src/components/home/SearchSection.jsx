@@ -86,6 +86,7 @@ const MENU_ITEMS = [
 export default function SearchSection() {
   const navigate = useNavigate();
   const [value, setValue] = useState("");
+  const [focused, setFocused] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -102,19 +103,12 @@ export default function SearchSection() {
       {/* Search bar */}
       <form
         onSubmit={handleSearch}
-        className="flex items-center gap-3 px-6 rounded-full transition-all duration-200 w-full max-w-[760px]"
+        className={`flex items-center gap-3 px-6 rounded-full transition-all duration-200 w-full max-w-[760px] border-2 ${
+          focused ? "border-primary" : "border-bluegrey-2 hover:border-primary"
+        }`}
         style={{
           height: "56px",
           background: "#fff",
-          border: "2px solid #dde0e5",
-        }}
-        onFocusCapture={(e) => {
-          e.currentTarget.style.borderColor = "#3d5588";
-          e.currentTarget.style.boxShadow = "0 0 0 6px rgba(61,85,136,.08)";
-        }}
-        onBlurCapture={(e) => {
-          e.currentTarget.style.borderColor = "#dde0e5";
-          e.currentTarget.style.boxShadow = "none";
         }}
       >
         <button type="submit" aria-label="검색">
@@ -125,6 +119,8 @@ export default function SearchSection() {
           placeholder="예배, 주보, 성경, 오시는 길…"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           className="flex-1 bg-transparent border-0 outline-none text-body-1 text-grey-11 placeholder:text-grey-5"
         />
         {value && (
@@ -158,7 +154,6 @@ export default function SearchSection() {
             key={item.id}
             to={item.to}
             className="group aspect-square bg-white rounded-2xl border border-bluegrey-2 p-4 flex flex-col items-center justify-center text-center gap-2 hover:-translate-y-1 hover:bg-primary hover:border-primary transition-all duration-200"
-            style={{ boxShadow: "16px 20px 48px 4px rgba(0,0,0,.10)" }}
           >
             <div className="shrink-0 text-primary group-hover:text-white transition-colors pb-5">
               {item.icon}

@@ -55,7 +55,7 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
 // 바뀔 때마다 페이지 높이가 들쭉날쭉하지 않도록.
 function NoServiceCard({ message = "오늘 예정된 예배가 없습니다" }) {
   return (
-    <div className="w-full aspect-video rounded-2xl bg-grey-11 flex items-center justify-center">
+    <div className="w-full aspect-video bg-grey-11 flex items-center justify-center">
       <p className="text-body-3 font-medium text-grey-5">{message}</p>
     </div>
   );
@@ -107,11 +107,11 @@ export default function WordBroadcast() {
 
       <WordTabBar />
 
-      <div className="max-w-[1400px] mx-auto px-4 py-8 md:px-8 md:py-12">
+      <div className="max-w-[1400px] mx-auto px-4 py-10 md:px-8 md:py-12">
         {/* ── 로딩 중 ── */}
         {status === "loading" && (
           <section className="mb-14 max-w-6xl mx-auto">
-            <div className="w-full rounded-2xl overflow-hidden bg-grey-2 animate-pulse aspect-video" />
+            <div className="w-full overflow-hidden bg-grey-2 animate-pulse aspect-video" />
           </section>
         )}
 
@@ -119,7 +119,7 @@ export default function WordBroadcast() {
         {status === "LIVE" && (
           <section className="mb-14 max-w-5xl mx-auto">
             <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
-            <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
+            <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video">
               {liveVideoId ? (
                 <iframe
                   src={`https://www.youtube.com/embed/${liveVideoId}?autoplay=1`}
@@ -158,11 +158,8 @@ export default function WordBroadcast() {
         {/* ── 방송 예정 ── */}
         {status === "BEFORE" && (
           <section className="mb-14 max-w-3xl mx-auto">
-            <div className="w-full rounded-2xl bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-              <div className="text-4xl" aria-hidden="true">
-                ⏳
-              </div>
-              <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다</p>
+            <div className="w-full bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
+              <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다.</p>
             </div>
             {screen.sermon && (
               <SermonInfoBlock
@@ -178,7 +175,7 @@ export default function WordBroadcast() {
           <section className="mb-14 max-w-6xl mx-auto">
             {liveVideoId ? (
               <>
-                <div className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl aspect-video">
+                <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video">
                   <iframe
                     src={`https://www.youtube.com/embed/${liveVideoId}`}
                     title={screen.sermon?.title ?? "지난 예배"}
@@ -210,7 +207,21 @@ export default function WordBroadcast() {
         <section className="max-w-5xl mx-auto">
           <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
           {recentSermons.length === 0 ? (
-            <p className="text-body-4 text-grey-5">등록된 지난 설교가 없습니다.</p>
+            <div className="bg-bluegrey-1 rounded-2xl py-16 px-8 flex flex-col items-center justify-center text-center min-h-[200px]">
+              <YouTubeIcon className="w-12 h-12 text-bluegrey-4 mb-4" />
+              <p className="text-body-3 font-medium text-grey-8 mb-2">등록된 지난 설교가 없습니다.</p>
+              <p className="text-body-4 text-grey-6">더 많은 설교는 유튜브 채널에서 확인하세요.</p>
+              {channelUrl && (
+                <a
+                  href={channelUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 px-5 py-2 rounded-full bg-primary text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
+                >
+                  유튜브 채널 이동
+                </a>
+              )}
+            </div>
           ) : (
             <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
               {recentSermons.map((s) => (
@@ -243,7 +254,7 @@ export default function WordBroadcast() {
               ))}
             </div>
           )}
-          {channelUrl && (
+          {recentSermons.length > 0 && channelUrl && (
             <p className="mt-4 text-body-4 text-grey-6">
               더 많은 설교는{" "}
               <a
@@ -267,7 +278,7 @@ export default function WordBroadcast() {
           onClick={() => setJuboOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            className="bg-white shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-bluegrey-2">

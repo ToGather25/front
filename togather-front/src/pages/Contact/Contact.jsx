@@ -134,7 +134,7 @@ export default function Contact() {
                   value={form.category}
                   onChange={handleChange}
                   required
-                  className="px-4 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors bg-white"
+                  className="pl-4 pr-10 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors bg-white"
                 >
                   <option value="">선택해 주세요</option>
                   {categories.map((c) => (

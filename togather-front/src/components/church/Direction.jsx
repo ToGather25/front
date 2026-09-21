@@ -17,12 +17,12 @@ export default function Direction() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row md:gap-12 md:items-start">
-      <div className="w-full md:w-[42%] md:max-w-[480px] md:shrink-0">
+    <div className="flex flex-col md:flex-row md:gap-12 md:items-stretch">
+      <div className="w-full md:w-[42%] md:max-w-[480px] md:shrink-0 flex flex-col">
         <KakaoMap
           level={church.location.level}
           address={church.address}
-          className="w-full h-80 rounded-2xl overflow-hidden mb-3"
+          className="w-full flex-1 rounded-2xl overflow-hidden mb-3"
         />
         <div className="flex items-center justify-between gap-3 rounded-xl bg-blue-1 px-4 py-1">
           <p className="text-body-4 text-grey-8">{church.address}</p>
@@ -128,7 +128,6 @@ export default function Direction() {
                 </div>
               ))}
             </div>
-            <div className="h-px bg-bluegrey-2 mt-8" />
           </div>
         )}
 
@@ -138,7 +137,7 @@ export default function Direction() {
             <select
               value={selectedLot}
               onChange={(e) => setSelectedLot(Number(e.target.value))}
-              className="px-3 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 bg-white"
+              className="pl-3 pr-8 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 bg-white"
             >
               {lots.map((lot, i) => (
                 <option key={lot.name} value={i}>

@@ -57,7 +57,7 @@ function NoticeModal({ notice, onClose, onSave }) {
                 </p>
               ) : (
                 <select
-                  className="w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary bg-white"
+                  className="w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary bg-white"
                   value={form.type}
                   onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
                 >

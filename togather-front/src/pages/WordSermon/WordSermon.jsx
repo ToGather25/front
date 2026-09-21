@@ -91,7 +91,7 @@ export default function WordSermon() {
 
       <WordTabBar />
 
-      <div className="max-w-[1400px] mx-auto px-4 py-8 md:px-8 md:py-12">
+      <div className="max-w-[1400px] mx-auto px-4 py-10 md:px-8 md:py-12">
         {/* 검색바 */}
         <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-2xl">
           <div className="relative flex-1">
@@ -161,13 +161,7 @@ export default function WordSermon() {
         {/* 조회 실패 */}
         {!loading && error && (
           <div className="py-24 text-center text-grey-6 text-body-2">
-            <p className="mb-4">불러오지 못했습니다. 다시 시도해 주세요.</p>
-            <button
-              onClick={() => setReloadToken((t) => t + 1)}
-              className="px-5 py-2.5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors"
-            >
-              다시 시도
-            </button>
+            <p className="mb-4">데이터를 불러오지 못했습니다.</p>
           </div>
         )}
 

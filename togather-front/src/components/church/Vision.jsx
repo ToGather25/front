@@ -4,82 +4,30 @@ export default function Vision() {
   const { church } = useChurch();
   const { mainTitle, mainVerse, items } = church.vision;
 
-  const D = 280;
-  const SIDE = 220;
-  const TH = Math.round((SIDE * Math.sqrt(3)) / 2);
-  const W = SIDE + D;
-  const H = TH + D;
-
-  const SIDE_TEXT_W = 160;
-  const GAP = 40;
-  const TOTAL_W = SIDE_TEXT_W + GAP + W + GAP + SIDE_TEXT_W;
-
-  const layout = [
-    { item: items[0], left: Math.round((W - D) / 2), top: 0, z: 3, delay: "0s" },
-    { item: items[1], left: 0, top: TH, z: 2, delay: "0.25s" },
-    { item: items[2], left: W - D, top: TH, z: 1, delay: "0.5s" },
-  ];
-
   return (
     <div>
-      <style>{`
-        @keyframes circleIn {
-          from { opacity: 0; transform: scale(0.6); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
-
-      <div className="bg-blue-1 rounded-2xl px-12 py-20 text-center mb-20">
-        <p className="text-sub-tit-4 font-semibold text-grey-9">{mainTitle}</p>
-        <p className="text-body-2 text-grey-8 mt-1">{mainVerse}</p>
+      <div className="mb-12">
+        <h3 className="text-sub-tit-2 font-bold text-grey-11 mb-3">{mainTitle}</h3>
+        <p className="text-body-2 text-grey-7">{mainVerse}</p>
       </div>
 
-      <div className="overflow-x-auto">
-        <div
-          className="mx-auto flex flex-col items-center gap-4"
-          style={{ width: TOTAL_W, maxWidth: "100%" }}
-        >
-          <p className="text-body-2 text-grey-7 text-center mb-2" style={{ width: W }}>
-            {items[0].description}
-          </p>
-
-          <div className="flex items-start gap-10">
-            <div className="flex flex-col shrink-0" style={{ width: SIDE_TEXT_W, height: H }}>
-              <div style={{ height: TH }} />
-              <div className="flex-1 flex items-center">
-                <p className="text-body-2 text-grey-7 text-right w-full">{items[1].description}</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {items.map((item) => (
+          <div key={item.label} className="bg-white border border-bluegrey-2 rounded-2xl p-8 flex flex-col items-center text-center">
+            {/* 아이콘 원형 배경 */}
+            <div className="w-24 h-24 rounded-full bg-blue-1 flex items-center justify-center mb-6 shrink-0">
+              <svg className="w-12 h-12 text-blue-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
 
-            <div className="relative shrink-0 m-5" style={{ width: W, height: H }}>
-              {layout.map(({ item, left, top, z, delay }) => (
-                <div
-                  key={item.label}
-                  className="absolute rounded-full border-2 border-grey-9 bg-transparent flex items-center justify-center"
-                  style={{
-                    width: D,
-                    height: D,
-                    left,
-                    top,
-                    zIndex: z,
-                    animation: `circleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay} both`,
-                  }}
-                >
-                  <span className="text-sub-tit-3 font-semibold text-grey-10 text-center px-8 leading-tight">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {/* 제목 */}
+            <h4 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{item.label}</h4>
 
-            <div className="flex flex-col shrink-0" style={{ width: SIDE_TEXT_W, height: H }}>
-              <div style={{ height: TH }} />
-              <div className="flex-1 flex items-center">
-                <p className="text-body-2 text-grey-7 text-left w-full">{items[2].description}</p>
-              </div>
-            </div>
+            {/* 설명 */}
+            <p className="text-body-4 text-grey-7 leading-relaxed">{item.description}</p>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

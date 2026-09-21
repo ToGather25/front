@@ -131,10 +131,7 @@ export default function SearchOverlay() {
 
         {/* 검색 인풋 */}
         <div className="max-w-[860px] mx-auto px-4 py-6">
-          <div
-            className="flex items-center gap-3 px-5 h-[56px] rounded-2xl border-2 border-primary bg-white"
-            style={{ boxShadow: "0 0 0 4px rgba(61,85,136,.1)" }}
-          >
+          <div className="flex items-center gap-3 px-5 h-[56px] rounded-2xl border-2 border-primary bg-white hover:shadow-md transition-shadow">
             <img src={IcoSearch} className="w-5 h-5 shrink-0" alt="" />
             <input
               ref={inputRef}
