@@ -76,6 +76,7 @@ export default function Mission() {
   const { section } = useParams();
   const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "전도회 소개");
   const [missionType, setMissionType] = useState(section === "해외" ? "해외" : "국내");
+  const [selectedNews, setSelectedNews] = useState(null);
 
   useEffect(() => {
     setActiveTab(SECTION_TAB_MAP[section] ?? "전도회 소개");
@@ -84,6 +85,65 @@ export default function Mission() {
 
   return (
     <div>
+      {/* News Modal Overlay */}
+      {selectedNews && (
+        <div
+          className="fixed inset-0 bg-black/40 z-[60] animate-fadeIn"
+          onClick={() => setSelectedNews(null)}
+        />
+      )}
+
+      {/* News Modal */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 z-10 bg-white border-b border-bluegrey-2 flex items-center justify-between p-6 rounded-t-2xl">
+              <h3 className="text-sub-tit-3 font-bold text-grey-11">{selectedNews.title}</h3>
+              <button
+                onClick={() => setSelectedNews(null)}
+                className="flex items-center justify-center w-8 h-8 text-grey-6 hover:text-grey-8 transition-colors"
+                aria-label="닫기"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 flex flex-col gap-4">
+              <div className="relative h-64 bg-bluegrey-1 rounded-xl flex items-center justify-center">
+                <svg
+                  className="w-16 h-16 text-bluegrey-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="absolute top-3 right-3 px-3 py-1 bg-blue-1 text-blue-7 text-body-4 font-semibold rounded-full">
+                  {selectedNews.location}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-body-3 font-semibold text-grey-11">{selectedNews.missionary}</p>
+                <span className="text-body-4 text-grey-5">{selectedNews.date}</span>
+              </div>
+              <p className="text-body-3 text-grey-7 leading-relaxed">{selectedNews.summary}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Banner */}
       <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
@@ -270,11 +330,12 @@ export default function Mission() {
               {MISSION_NEWS.map((news) => (
                 <div
                   key={news.id}
+                  onClick={() => setSelectedNews(news)}
                   className="border border-bluegrey-2 rounded-2xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                 >
-                  <div className="h-36 bg-bluegrey-1 flex items-center justify-center">
+                  <div className="h-56 bg-bluegrey-1 flex items-center justify-center">
                     <svg
-                      className="w-10 h-10 text-bluegrey-4"
+                      className="w-14 h-14 text-bluegrey-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -288,17 +349,9 @@ export default function Mission() {
                     </svg>
                   </div>
                   <div className="p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 bg-blue-1 text-blue-7 text-body-5 font-semibold rounded-full">
-                        {news.location}
-                      </span>
-                      <span className="text-body-5 text-grey-5">{news.date}</span>
-                    </div>
-                    <p className="text-body-2 font-semibold text-grey-11 mb-1 line-clamp-1">
+                    <p className="text-body-2 font-semibold text-grey-11 line-clamp-2">
                       {news.title}
                     </p>
-                    <p className="text-body-4 text-grey-6 mb-3">{news.missionary}</p>
-                    <p className="text-body-4 text-grey-7 line-clamp-2">{news.summary}</p>
                   </div>
                 </div>
               ))}

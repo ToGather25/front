@@ -8,6 +8,10 @@ import OfferingSectionEditor from "@/components/admin/jubo/OfferingSectionEditor
 import SupportSectionEditor from "@/components/admin/jubo/SupportSectionEditor";
 import DistrictSectionEditor from "@/components/admin/jubo/DistrictSectionEditor";
 import MinistersSectionEditor from "@/components/admin/jubo/MinistersSectionEditor";
+import CoverSectionEditor from "@/components/admin/jubo/CoverSectionEditor";
+import NewsSectionEditor from "@/components/admin/jubo/NewsSectionEditor";
+import PrayerTopicsSectionEditor from "@/components/admin/jubo/PrayerTopicsSectionEditor";
+import SermonNoteSectionEditor from "@/components/admin/jubo/SermonNoteSectionEditor";
 
 function SectionCard({ title, children }) {
   return (
@@ -154,8 +158,14 @@ export default function JuboManage() {
           </div>
 
           <div className="grid gap-5">
+            <SectionCard title="표지">
+              <CoverSectionEditor churchId={church.id} juboId={juboId} />
+            </SectionCard>
             <SectionCard title="예배">
               <WorshipSectionEditor churchId={church.id} juboId={juboId} />
+            </SectionCard>
+            <SectionCard title="소식">
+              <NewsSectionEditor churchId={church.id} juboId={juboId} />
             </SectionCard>
             <SectionCard title="봉사">
               <VolunteerSectionEditor churchId={church.id} juboId={juboId} />
@@ -171,6 +181,12 @@ export default function JuboManage() {
             </SectionCard>
             <SectionCard title="섬기는 분들">
               <MinistersSectionEditor churchId={church.id} juboId={juboId} />
+            </SectionCard>
+            <SectionCard title="말씀">
+              <SermonNoteSectionEditor churchId={church.id} juboId={juboId} />
+            </SectionCard>
+            <SectionCard title="기도제목">
+              <PrayerTopicsSectionEditor churchId={church.id} juboId={juboId} />
             </SectionCard>
           </div>
 

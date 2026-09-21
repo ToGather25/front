@@ -3,7 +3,7 @@ import WorshipInfo from "@/components/church/WorshipInfo";
 
 export default function WordInfo() {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       {/* Hero */}
       <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
@@ -14,7 +14,7 @@ export default function WordInfo() {
 
       <WordTabBar />
 
-      <div className="max-w-[1400px] mx-auto px-4 py-8 md:px-8 md:py-12">
+      <div className="flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full mt-5 md:mt-8">
         <WorshipInfo />
       </div>
     </div>

@@ -149,7 +149,7 @@ export default function Notice() {
         /* 목록 */
         <>
           <div className="flex flex-col min-h-[700px]">
-            <div className="border border-grey-3 rounded-2xl overflow-hidden">
+            <div className="border border-grey-3 rounded-2xl overflow-hidden min-h-[620px] flex flex-col">
               {/* 테이블 헤더 */}
               <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-3 py-3 text-body-5 font-semibold text-grey-7">
                 <span className="text-center">구분</span>
@@ -159,62 +159,60 @@ export default function Notice() {
               </div>
 
               {paged.length === 0 ? (
-                <div className="py-20 text-center text-grey-5 text-body-3">
+                <div className="flex-1 flex items-center justify-center text-grey-5 text-body-3">
                   공지사항이 없습니다.
                 </div>
               ) : (
-                paged.map((n, i) => {
-                  const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
-                  return (
-                    <button
-                      key={n.id}
-                      onClick={() => {
-                        setSelected(n);
-                        setSearchParams({ id: n.id });
-                      }}
-                      className={`w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
-                        i < paged.length - 1 ? "border-b border-grey-3" : ""
-                      } ${n.featured ? "bg-blue-1/30" : ""}`}
-                    >
-                      <span className="flex justify-center">
-                        <span
-                          className="text-body-5 font-bold px-2.5 py-1 rounded-md text-center"
-                          style={tagStyle}
-                        >
-                          {n.type}
+                <div className="flex-1 flex flex-col">
+                  {paged.map((n, i) => {
+                    const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
+                    return (
+                      <button
+                        key={n.id}
+                        onClick={() => {
+                          setSelected(n);
+                          setSearchParams({ id: n.id });
+                        }}
+                        className={`w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
+                          i < paged.length - 1 ? "border-b border-grey-3" : ""
+                        } ${n.featured ? "bg-blue-1/30" : ""}`}
+                      >
+                        <span className="flex justify-center">
+                          <span
+                            className="text-body-5 font-bold px-2.5 py-1 rounded-md text-center"
+                            style={tagStyle}
+                          >
+                            {n.type}
+                          </span>
                         </span>
-                      </span>
-                      <span className="pl-4 flex items-center gap-2 min-w-0">
-                        {n.featured && <IconPin className="shrink-0 text-primary" />}
-                        <span
-                          className={`truncate text-body-3 ${n.featured ? "font-semibold text-grey-11" : "text-grey-10"}`}
-                        >
-                          {n.title}
+                        <span className="pl-4 flex items-center gap-2 min-w-0">
+                          {n.featured && <IconPin className="shrink-0 text-primary" />}
+                          <span
+                            className={`truncate text-body-3 ${n.featured ? "font-semibold text-grey-11" : "text-grey-10"}`}
+                          >
+                            {n.title}
+                          </span>
                         </span>
-                      </span>
-                      <span className="hidden md:block text-center text-body-5 text-grey-6">
-                        {n.author}
-                      </span>
-                      <span className="hidden md:block text-center text-body-5 text-grey-6">
-                        {formatDate(n.date)}
-                      </span>
-                    </button>
-                  );
-                })
+                        <span className="hidden md:block text-center text-body-5 text-grey-6">
+                          {n.author}
+                        </span>
+                        <span className="hidden md:block text-center text-body-5 text-grey-6">
+                          {formatDate(n.date)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
-            <div className="flex-1" />
-            {isFiltered ? (
-              <NumberedPagination
-                total={filtered.length}
-                perPage={PAGE_SIZE}
-                current={clientPage}
-                onChange={setClientPage}
-              />
-            ) : (
-              <PrevNextPagination page={serverPage} hasNext={hasNext} onChange={setServerPage} />
-            )}
+            {paged.length > 0 && <div className="flex-1" />}
+            <NumberedPagination
+              total={isFiltered ? filtered.length : notices.length}
+              perPage={PAGE_SIZE}
+              current={isFiltered ? clientPage : serverPage}
+              onChange={isFiltered ? setClientPage : setServerPage}
+            />
           </div>
         </>
       )}

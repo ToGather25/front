@@ -1,10 +1,13 @@
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getPrayerTopics } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
 const CATEGORY_EMOJI = { 사역: "🙏", 병중: "❤️‍🩹", 선교: "🌍", 소그룹: "🏠" };
 
 export default function PrayerTopics() {
-  const { prayerTopics } = juboConfig;
+  const { church } = useChurch();
+  const { data: prayerTopics } = useFetch(() => getPrayerTopics(church.id), [church.id], []);
 
   return (
     <>

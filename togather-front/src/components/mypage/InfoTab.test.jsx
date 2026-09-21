@@ -20,9 +20,10 @@ describe("InfoTab — 회원탈퇴", () => {
   it("탈퇴를 확정하면 withdrawAccount를 호출하고 로그아웃한다", async () => {
     api.delete.mockResolvedValue({ data: null });
     const user = userEvent.setup();
-    renderWithChurch(<InfoTab userForm={{}} setUserForm={() => {}} onNavigateDept={() => {}} />, {
-      withAuth: true,
-    });
+    renderWithChurch(
+      <InfoTab userForm={{ name: "홍길동" }} setUserForm={() => {}} onNavigateDept={() => {}} />,
+      { withAuth: true },
+    );
 
     await user.click(screen.getByRole("button", { name: "회원 탈퇴" }));
     await user.click(screen.getByRole("button", { name: "탈퇴 신청" }));
@@ -36,9 +37,10 @@ describe("InfoTab — 회원탈퇴", () => {
   it("탈퇴 API가 실패하면 에러 메시지를 보여주고 로그아웃하지 않는다", async () => {
     api.delete.mockRejectedValue(new Error("network error"));
     const user = userEvent.setup();
-    renderWithChurch(<InfoTab userForm={{}} setUserForm={() => {}} onNavigateDept={() => {}} />, {
-      withAuth: true,
-    });
+    renderWithChurch(
+      <InfoTab userForm={{ name: "홍길동" }} setUserForm={() => {}} onNavigateDept={() => {}} />,
+      { withAuth: true },
+    );
 
     await user.click(screen.getByRole("button", { name: "회원 탈퇴" }));
     await user.click(screen.getByRole("button", { name: "탈퇴 신청" }));

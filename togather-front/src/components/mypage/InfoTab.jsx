@@ -13,7 +13,7 @@ function IconUpload() {
 export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
   const [modal, setModal] = useState(null);
   const fileInputRef = useRef(null);
-  const { logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { church } = useChurch();
   const [withdrawError, setWithdrawError] = useState("");
 
@@ -29,9 +29,9 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
 
   function resetInfo() {
     setUserForm({
-      name: MOCK_USER.name,
+      name: currentUser?.name ?? MOCK_USER.name,
       phone: MOCK_USER.phone,
-      email: MOCK_USER.email,
+      email: currentUser?.email ?? MOCK_USER.email,
       address: MOCK_USER.address,
       currentPw: "",
       newPw: "",
@@ -53,10 +53,10 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
         </div>
         <div className="flex items-center gap-5">
           <div className="w-20 h-20 rounded-full bg-grey-5 flex items-center justify-center text-headline-5 font-bold text-white shrink-0">
-            {MOCK_USER.name[0]}
+            {userForm.name[0]}
           </div>
           <div>
-            <p className="text-body-3 font-bold text-grey-10 mb-1">{MOCK_USER.name}</p>
+            <p className="text-body-3 font-bold text-grey-10 mb-1">{userForm.name}</p>
             <p className="text-body-5 text-grey-6 mb-3">
               JPG · PNG · 5MB 이하의 정사각형 이미지를 권장합니다.
             </p>

@@ -1,14 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { render, screen, fireEvent } from "@testing-library/react";
-import juboConfig from "@/config/jubo.config";
+import { screen, fireEvent } from "@testing-library/react";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import Giving from "./Giving";
+
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+  isDummy: () => false,
+}));
+
+import api from "@/services/api";
+
+const PROFILE = {
+  offeringBankName: "국민은행",
+  offeringAccountNumber: "123456-78-901234",
+  offeringAccountHolder: "옥길교회",
+};
 
 describe("Giving — 헌금", () => {
   let writeText;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     // jsdom의 navigator.clipboard는 getter만 있는 접근자 프로퍼티라 Object.assign으로는
-    // 덮어쓸 수 없다 — Register.test.jsx에서 이미 검증된 patterns대로 configurable: true인
+    // 덮어쓸 수 없다 — Register.test.jsx에서 이미 검증된 패턴대로 configurable: true인
     // 값 프로퍼티로 재정의한다. writeText는 로컬 변수로 잡아두고 단언에 사용한다
     // (navigator.clipboard.writeText를 직접 참조하면 oxlint의 unbound-method 경고가 뜬다).
     writeText = vi.fn().mockResolvedValue(undefined);
@@ -19,54 +33,40 @@ describe("Giving — 헌금", () => {
     });
   });
 
-  it("은행명·계좌번호·예금주와 연말정산 안내 문구를 렌더한다", () => {
-    render(<Giving />);
-    expect(screen.getByText(juboConfig.giving.bankAccount.bank)).toBeInTheDocument();
-    expect(screen.getByText(juboConfig.giving.bankAccount.accountNumber)).toBeInTheDocument();
+  it("은행명·계좌번호·예금주와 연말정산 안내 문구를 렌더한다", async () => {
+    api.get.mockResolvedValue({ data: { data: PROFILE } });
+    renderWithChurch(<Giving />);
+
+    expect(await screen.findByText(PROFILE.offeringBankName)).toBeInTheDocument();
+    expect(screen.getByText(PROFILE.offeringAccountNumber)).toBeInTheDocument();
     expect(screen.getByText(/예금주/)).toBeInTheDocument();
     expect(screen.getByText(/연말정산/)).toBeInTheDocument();
   });
 
   it("계좌 카드를 클릭하면 계좌번호가 클립보드에 복사되고 '복사되었습니다'가 표시된다", async () => {
-    render(<Giving />);
-    fireEvent.click(screen.getByText(juboConfig.giving.bankAccount.accountNumber));
+    api.get.mockResolvedValue({ data: { data: PROFILE } });
+    renderWithChurch(<Giving />);
+
+    fireEvent.click(await screen.findByText(PROFILE.offeringAccountNumber));
 
     expect(await screen.findByText("복사되었습니다")).toBeInTheDocument();
-    expect(writeText).toHaveBeenCalledWith(juboConfig.giving.bankAccount.accountNumber);
+    expect(writeText).toHaveBeenCalledWith(PROFILE.offeringAccountNumber);
   });
 
-  it("qrCodeUrl이 없으면 QR 카드가 렌더되지 않는다", () => {
-    render(<Giving />);
+  it("QR 코드는 아직 백엔드에 없으므로 렌더되지 않는다", async () => {
+    api.get.mockResolvedValue({ data: { data: PROFILE } });
+    renderWithChurch(<Giving />);
+
+    await screen.findByText(PROFILE.offeringBankName);
     expect(screen.queryByAltText("헌금 QR 코드")).not.toBeInTheDocument();
   });
 
-  it("qrCodeUrl이 있으면 QR 카드가 렌더된다", async () => {
-    // 이 테스트 안에서만 jubo.config의 giving.qrCodeUrl에 임시 URL을 주입한다.
-    // 실제 jubo.config.js 파일은 건드리지 않고, vi.doMock + 동적 import로
-    // 이 테스트에만 국한된 모듈 인스턴스를 만든다(다른 테스트의 정적 import에는 영향 없음).
-    vi.resetModules();
-    vi.doMock("@/config/jubo.config", async (importOriginal) => {
-      const actual = await importOriginal();
-      return {
-        ...actual,
-        default: {
-          ...actual.default,
-          giving: {
-            ...actual.default.giving,
-            qrCodeUrl: "https://example.com/giving-qr.png",
-          },
-        },
-      };
+  it("등록된 계좌 정보가 없으면 안내 문구를 보여준다", async () => {
+    api.get.mockResolvedValue({
+      data: { data: { offeringBankName: null, offeringAccountNumber: null, offeringAccountHolder: null } },
     });
+    renderWithChurch(<Giving />);
 
-    const { default: GivingWithQrCode } = await import("./Giving");
-    render(<GivingWithQrCode />);
-
-    const qrImage = screen.getByAltText("헌금 QR 코드");
-    expect(qrImage).toBeInTheDocument();
-    expect(qrImage).toHaveAttribute("src", "https://example.com/giving-qr.png");
-
-    vi.doUnmock("@/config/jubo.config");
-    vi.resetModules();
+    expect(await screen.findByText("등록된 헌금 계좌 안내가 없습니다.")).toBeInTheDocument();
   });
 });

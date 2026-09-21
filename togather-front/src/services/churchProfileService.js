@@ -1,10 +1,18 @@
 import api, { isDummy } from "./api";
 
 /**
- * @typedef {{ representativeImageUrl: string|null, slogan: string|null }} ChurchProfile
+ * @typedef {{ representativeImageUrl: string|null, slogan: string|null,
+ *   offeringBankName: string|null, offeringAccountNumber: string|null,
+ *   offeringAccountHolder: string|null }} ChurchProfile
  */
 
-const EMPTY_PROFILE = { representativeImageUrl: null, slogan: null };
+const EMPTY_PROFILE = {
+  representativeImageUrl: null,
+  slogan: null,
+  offeringBankName: null,
+  offeringAccountNumber: null,
+  offeringAccountHolder: null,
+};
 
 /**
  * 교회 프로필(메인화면 대표이미지/슬로건) 조회 — 공개

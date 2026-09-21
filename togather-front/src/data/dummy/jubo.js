@@ -176,3 +176,32 @@ export const DUMMY_MINISTERS = [
   },
   { title: "찬 양", items: ["지휘자 | OOO", "피아노 | OOO", "오르간 | OOO"] },
 ];
+
+export const DUMMY_COVER = {
+  photos: { church: null, panorama: null, group: null },
+};
+
+export const DUMMY_NEWS = [
+  { title: "담임목사 방송 설교", items: ["제목을 입력하세요.", "제목을 입력하세요."] },
+  { title: "정기모임", items: ["제목을 입력하세요.", "제목을 입력하세요."] },
+  {
+    title: "오늘의 모임",
+    items: ["제목을 입력하세요.", "제목을 입력하세요.", "제목을 입력하세요."],
+  },
+  { title: "공지사항", items: ["제목을 입력하세요.", "제목을 입력하세요."] },
+  { title: "헌금안내", items: ["제목을 입력하세요.", "제목을 입력하세요."] },
+  { title: "일정안내", items: ["제목을 입력하세요.", "제목을 입력하세요."] },
+];
+
+export const DUMMY_PRAYER_TOPICS = [
+  { title: "다음 세대를 위한 기도", subtitle: "주일학교 교사 헌신자", category: "사역" },
+  { title: "투병 중인 성도를 위한 기도", subtitle: "OOO 권사님", category: "병중" },
+  { title: "선교사 파송을 위한 기도", subtitle: "단기선교팀", category: "선교" },
+  { title: "구역 모임 부흥을 위한 기도", subtitle: "1구역", category: "소그룹" },
+];
+
+export const DUMMY_SERMON_NOTE = {
+  title: "이러한 율법을 행하는 이방인이 정죄하리라",
+  scripture: "로마서 2장 27절",
+  outline: ["율법의 참된 의미", "마음의 할례", "이방인과 유대인의 구별 없음"],
+};

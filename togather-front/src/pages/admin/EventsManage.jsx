@@ -14,7 +14,7 @@ import { getRegistrationState } from "@/utils/eventStatus";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const inputCls =
-  "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
+  "w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
 function emptyForm() {

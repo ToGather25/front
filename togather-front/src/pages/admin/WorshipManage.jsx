@@ -21,7 +21,7 @@ const FILTER_TYPES = ["전체", ...SERVICE_TYPES];
 const BROADCAST_LABEL = { BEFORE: "예약됨", LIVE: "방송 중", ENDED: "종료됨" };
 
 const inputCls =
-  "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
+  "w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
 function emptyForm() {

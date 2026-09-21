@@ -144,7 +144,7 @@ export default function SundaySchool() {
     <div>
       {/* Hero Banner */}
       <div
-        className="relative h-[150px] md:h-[320px] bg-blue-9 flex flex-col justify-end overflow-hidden"
+        className="relative h-[150px] bg-blue-9 flex flex-col justify-end overflow-hidden"
         style={
           dept.bgImage
             ? {
@@ -159,8 +159,7 @@ export default function SundaySchool() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-4 md:px-8 pb-6 md:pb-8 w-full flex items-end justify-between gap-4">
           <div>
-            <p className="text-body-4 text-white/70 font-medium mb-1">주일학교</p>
-            <h1 className="text-sub-tit-1 md:text-headline-3 font-bold text-white">{dept.key}</h1>
+            <h1 className="text-headline-4 font-bold text-white">{dept.key}</h1>
           </div>
           <Link
             to={`/갤러리?community=${encodeURIComponent(GALLERY_COMMUNITY_MAP[dept.key] ?? dept.key)}`}
@@ -198,7 +197,7 @@ export default function SundaySchool() {
                 onClick={() => setActiveTab(d.key)}
                 className={`px-6 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === d.key
-                    ? "border-blue-8 text-blue-8 font-semibold"
+                    ? "border-blue-8 text-blue-8"
                     : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"
                 }`}
               >
@@ -210,7 +209,7 @@ export default function SundaySchool() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-30 md:px-8 md:pt-15 md:pb-40">
         <DeptContent dept={dept} />
       </div>
     </div>

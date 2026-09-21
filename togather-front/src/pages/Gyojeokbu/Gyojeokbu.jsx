@@ -342,7 +342,6 @@ function MemberRow({ m, isSelected, searchQ, onClick }) {
       className={`cursor-pointer border-b border-bluegrey-1 transition-colors ${
         isSelected ? "bg-blue-1" : "hover:bg-bluegrey-1"
       }`}
-      style={isSelected ? { boxShadow: "inset 3px 0 0 #3d5588" } : {}}
     >
       <td className="px-6 py-3.5">
         <div className="flex items-center gap-3">
@@ -408,6 +407,7 @@ export default function Gyojeokbu() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("전체");
   const [selectedId, setSelectedId] = useState(null);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const matches = useMemo(() => {
     const norm = q.replace(/[^0-9]/g, "");
@@ -568,13 +568,19 @@ export default function Gyojeokbu() {
         {/* Toolbar */}
         <div className="bg-white rounded-2xl border border-bluegrey-2 px-6 py-4 flex items-center gap-4 mb-4 flex-wrap">
           {/* Search */}
-          <div className="flex items-center gap-3 h-11 px-4 bg-bluegrey-1 rounded-full border border-transparent focus-within:border-blue-6 focus-within:bg-white transition-all w-full md:w-[360px]">
+          <div className={`flex items-center gap-3 h-11 px-4 rounded-full border transition-all w-full md:w-[360px] ${
+            searchFocused
+              ? "bg-white border-blue-6"
+              : "bg-bluegrey-1 border-transparent"
+          }`}>
             <img src={IcoSearch} className="w-[18px] h-[18px] shrink-0" alt="" />
             <input
               type="text"
               placeholder="이름 또는 휴대폰 번호로 검색"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
               className="flex-1 bg-transparent border-0 outline-none text-body-3 text-grey-11 placeholder:text-grey-5"
             />
             {q && (
@@ -714,7 +720,6 @@ export default function Gyojeokbu() {
         className="fixed top-14 md:top-[72px] right-0 bottom-0 w-full md:w-[520px] bg-white border-l border-bluegrey-2 z-40 flex flex-col overflow-hidden transition-transform duration-200"
         style={{
           transform: member ? "translateX(0)" : "translateX(520px)",
-          boxShadow: member ? "-16px 0 40px -20px rgba(0,0,0,.15)" : "none",
         }}
       >
         {member && (

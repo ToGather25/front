@@ -1,11 +1,22 @@
 import { useState } from "react";
 import IcoHeartRed from "@/assets/icon-svg/heart-red.svg";
 import IcoHeartStroke from "@/assets/icon-svg/heart-stroke.svg";
-import juboConfig from "@/config/jubo.config";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getSermonNote } from "@/services/juboService";
 import { SectionTitle } from "./shared";
 
+const EMPTY_SERMON = { title: "", scripture: "", outline: [] };
+
 export default function Sermon({ issue }) {
-  const { sermon: currentSermon } = juboConfig;
+  const { church } = useChurch();
+  // 설교 개요는 발행호와 무관하게 항상 "현재" 섹션 콘텐츠 하나뿐이다(과거 발행호별
+  // 말씀은 백엔드가 아직 지원하지 않음 — 다른 6개 연동 섹션과 동일한 제약).
+  const { data: currentSermon } = useFetch(
+    () => (issue ? Promise.resolve(EMPTY_SERMON) : getSermonNote(church.id)),
+    [church.id, issue],
+    EMPTY_SERMON,
+  );
   // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호의 설교 제목/본문을, 아니면 현재 주보 설정값을 쓴다.
   const sermon = issue
     ? { title: issue.sermonTitle, scripture: issue.verse, outline: [] }

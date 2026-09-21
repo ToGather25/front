@@ -221,7 +221,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
               onMouseEnter={() => setOpenMenu(null)}
             >
               <ChurchLogo
-                className="h-26 w-26 object-contain transition-[filter] duration-300"
+                className="h-30 w-30 object-contain transition-[filter] duration-300"
                 style={{ filter: effectiveTransparent ? "brightness(0) invert(1)" : "none" }}
                 alt={`${church.name} 로고`}
               />
