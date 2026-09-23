@@ -342,7 +342,10 @@ const churchConfig = {
   },
 
   // ── 교회 연혁 ─────────────────────────────────────────
-  history: [
+  history: {
+    description: "복음과 함께 걸어온 시간,\n하나님의 인도하심 가운데 걸어온 옥길교회의 발자취를 돌아봅니다.",
+    foundedYear: 1985,
+    items: [
     {
       era: "2020~",
       events: [
@@ -408,7 +411,8 @@ const churchConfig = {
       rooms: "중·고등부실, 초등부실, 소회의실1, 소회의실2, 소회의실3",
       image: floorB1,
     },
-  ],
+    ],
+  },
 
   // ── 소속 공동체 목록 (회원가입 선택지) ───────────────
   communities: [
