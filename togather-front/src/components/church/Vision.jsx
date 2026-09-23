@@ -51,7 +51,6 @@ export default function Vision() {
         .vision-card-back {
           transform: rotateY(180deg);
           color: var(--color-grey-11);
-          white-space: pre-wrap;
         }
       `}</style>
 
@@ -89,9 +88,17 @@ export default function Vision() {
 
               {/* 뒷면 */}
               <div className="vision-card-back">
-                <p className="text-body-3 leading-relaxed">
-                  {item.detailedDescription || item.description}
-                </p>
+                <div className="text-body-2 leading-relaxed space-y-3">
+                  {Array.isArray(item.detailedDescription) ? (
+                    item.detailedDescription.map((detail, idx) => (
+                      <p key={idx}>
+                        <span className="font-bold">{detail.title}:</span> {detail.text}
+                      </p>
+                    ))
+                  ) : (
+                    <p>{item.description}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
