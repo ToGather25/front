@@ -55,7 +55,7 @@ function SermonInfoBlock({ sermon, isLive = false, juboOnClick }) {
 // 바뀔 때마다 페이지 높이가 들쭉날쭉하지 않도록.
 function NoServiceCard({ message = "오늘 예정된 예배가 없습니다" }) {
   return (
-    <div className="w-full aspect-video bg-grey-11 flex items-center justify-center">
+    <div className="w-full aspect-video bg-grey-11 flex items-center justify-center rounded-2xl">
       <p className="text-body-3 font-medium text-grey-5">{message}</p>
     </div>
   );
@@ -119,7 +119,7 @@ export default function WordBroadcast() {
         {status === "LIVE" && (
           <section className="mb-14 max-w-5xl mx-auto">
             <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
-            <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video">
+            <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video rounded-2xl">
               {liveVideoId ? (
                 <iframe
                   src={`https://www.youtube.com/embed/${liveVideoId}?autoplay=1`}
@@ -129,7 +129,7 @@ export default function WordBroadcast() {
                   allowFullScreen
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-4 rounded-2xl">
                   <YouTubeIcon className="w-16 h-16 text-grey-5" />
                   <p className="text-grey-5 text-body-3">실시간 영상 정보를 불러올 수 없습니다.</p>
                   {channelUrl && (

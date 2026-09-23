@@ -41,8 +41,8 @@ const churchConfig = {
 
   // ── SNS ───────────────────────────────────────────────
   social: {
-    youtube: "https://www.youtube.com/channel/UCHKLbKQ17ZXo735AaWugkiA", // 채널 URL (푸터 링크용) — 서울옥길교회
-    youtubeChannelId: "UCHKLbKQ17ZXo735AaWugkiA", // UC로 시작하는 채널 ID (서울옥길교회)
+    youtube: "https://www.youtube.com/@okgilchurch", // 채널 URL (푸터 링크용) — 옥길교회
+    youtubeChannelId: "UCEqVXU3lm5RbDRWbTSPc_yg", // UC로 시작하는 채널 ID (옥길교회)
     instagram: null,
     facebook: null,
   },
@@ -148,12 +148,37 @@ const churchConfig = {
   // ── 교회 비전 ─────────────────────────────────────────
   vision: {
     year: 2026,
-    mainTitle: "옥길교회 공동체 비전 ToGather",
-    mainVerse: '"함께 모여 하나님 아버지께로"',
+    mainTitle: `안녕하세요!
+옥길교회에 찾아와 주신 여러분을 주님의 이름으로 환영합니다.`,
+    mainVerse: `옥길교회는 
+이 땅의 모든 사람들에게 복음의 밝은 빛을 비춰 구원의 길로 초대하고 (Calling),
+부름 받은 성도들을 온전한 그리스도인으로 양육하여 (Training),
+어두운 세상에서 빛의 역할을 하도록 세상으로 파송하는 교회입니다. (Sending)`,
     items: [
-      { label: "Together", description: "첫번째 비전에 대한 내용을 입력하세요." },
-      { label: "To father", description: "두번째 비전에 대한 내용을 입력하세요." },
-      { label: "To gather", description: "세번째 비전에 대한 내용을 입력하세요." },
+      {
+        label: "말씀 공동체",
+        description: "말씀으로 인도 선포하여 영혼의 구원 목표로 맺는 교회입니다.",
+        detailedDescription: `예배 및 모임: 말씀의 존재와 성령 중만함으로 가정 직장사회를 변화시키는 믿은 안심`,
+      },
+      {
+        label: "기도 공동체",
+        description: "하나님과의 깊은 기도로 영혼을 양육하는 교회입니다.",
+        detailedDescription: `새벽기도회/수요기도회: 성경강해 중심 (신신사, 모세오경, 선지사)
+특별새벽기도회: 신년, 고난주간, 여름방학, 새학년준제
+중보/은기죽 기도회: 담임목사선교 중보기도, 매혼 마지막 금은알 은기죽 기도회`,
+      },
+      {
+        label: "선도 공동체",
+        description: "우리는 사람 있어서 믿음 주심이 지혜로 세상으로 파송하는 교회입니다.",
+        detailedDescription: `전도 활동: 우도진도, 주임진도, 계절진도(부활주일), 전 도점심 및 진도측회
+선교 봉사: 국내 미자립교회 및 선교자 후원, 주파 중과대 선교사 및 방문 선교사 심김`,
+      },
+      {
+        label: "무지개 공동체",
+        description: "요람에서 무덤까지 말씀과 실력을 갖추어 모든 대가 조화를 이루는 무지개 공동체를 만듭니다.",
+        detailedDescription: `주요 행사: 온기죽에(5월 3일), 가정세미나(5월 10일), 홍충 4주절(10월 18일)
+운영 인사: 교회 성정인 따라 시설 및 예산을 지원하여 정긴 적으로 확대 시행`,
+      },
     ],
   },
 
