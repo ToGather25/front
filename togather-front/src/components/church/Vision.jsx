@@ -92,7 +92,7 @@ export default function Vision() {
                   {Array.isArray(item.detailedDescription) ? (
                     item.detailedDescription.map((detail, idx) => (
                       <p key={idx}>
-                        <span className="font-bold">{detail.title}:</span> {detail.text}
+                        <span className="font-bold text-grey-11">{detail.title}:</span> <span className="text-grey-9">{detail.text}</span>
                       </p>
                     ))
                   ) : (
