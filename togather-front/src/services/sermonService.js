@@ -1,5 +1,4 @@
 import api from "./api";
-import { DUMMY_ADMIN_SERMONS, DUMMY_LIVE_SCREEN } from "@/data/dummy/sermons";
 
 /**
  * 설교 등록 (관리자)
@@ -7,11 +6,6 @@ import { DUMMY_ADMIN_SERMONS, DUMMY_LIVE_SCREEN } from "@/data/dummy/sermons";
  * @param {{ title:string, scripture?:string, preacher?:string, worshipType?:string, youtubeVideoId?:string, sermonDate:string }} payload
  */
 export async function createSermon(churchId, payload) {
-  if (isDummy("sermon")) {
-    const created = { id: `dummy-${Date.now()}`, ...payload };
-    DUMMY_ADMIN_SERMONS.unshift(created);
-    return created;
-  }
   const res = await api.post(`/church/admin/sermons`, payload);
   return res.data.data;
 }
@@ -25,11 +19,6 @@ export async function createSermon(churchId, payload) {
 export async function updateSermon(churchId, publicId, payload) {
   const { title, scripture, preacher, worshipType, youtubeVideoId, sermonDate } = payload;
   const fields = { title, scripture, preacher, worshipType, youtubeVideoId, sermonDate };
-  if (isDummy("sermon")) {
-    const idx = DUMMY_ADMIN_SERMONS.findIndex((s) => s.id === publicId);
-    if (idx !== -1) DUMMY_ADMIN_SERMONS[idx] = { ...DUMMY_ADMIN_SERMONS[idx], ...fields };
-    return DUMMY_ADMIN_SERMONS[idx] ?? null;
-  }
   const res = await api.patch(`/church/admin/sermons/${publicId}`, fields);
   return res.data.data;
 }
@@ -50,7 +39,6 @@ export async function deleteSermon(churchId, publicId) {
  * @returns {Promise<{id:number|string, status:"BEFORE"}>}
  */
 export async function scheduleBroadcast(churchId, { sermonId, youtubeLiveUrl, scheduledStartAt }) {
-  if (isDummy("sermon")) return { id: `dummy-bc-${Date.now()}`, status: "BEFORE" };
   const res = await api.post(`/church/admin/broadcasts`, {
     sermonId,
     youtubeLiveUrl,
@@ -66,7 +54,6 @@ export async function scheduleBroadcast(churchId, { sermonId, youtubeLiveUrl, sc
  * @returns {Promise<{id:number|string, status:"LIVE"}>}
  */
 export async function startBroadcast(churchId, broadcastId) {
-  if (isDummy("sermon")) return { id: broadcastId, status: "LIVE" };
   const res = await api.post(`/church/admin/broadcasts/${broadcastId}/start`);
   return res.data.data;
 }
@@ -78,7 +65,6 @@ export async function startBroadcast(churchId, broadcastId) {
  * @returns {Promise<{id:number|string, status:"ENDED"}>}
  */
 export async function endBroadcast(churchId, broadcastId) {
-  if (isDummy("sermon")) return { id: broadcastId, status: "ENDED" };
   const res = await api.post(`/church/admin/broadcasts/${broadcastId}/end`);
   return res.data.data;
 }
@@ -110,7 +96,6 @@ export function extractYoutubeVideoId(url) {
  */
 // oxlint-disable-next-line no-unused-vars
 export async function getLiveScreen(churchId) {
-  if (isDummy("sermon")) return DUMMY_LIVE_SCREEN;
   const screen = (await api.get(`/church/sermons/live`)).data.data;
 
   // 자동 라이브 감지: 백엔드가 교회 유튜브 채널을 조회(키 보호+캐시)해 현재 라이브 여부를 판정한다.
@@ -137,27 +122,6 @@ export async function getLiveScreen(churchId) {
  * @returns {Promise<{ sermons:object[], pageInfo:object }>}
  */
 export async function searchSermons(churchId, { keyword, worshipType, page = 1, size = 12 } = {}) {
-  if (isDummy("sermon")) {
-    let list = DUMMY_ADMIN_SERMONS;
-    if (worshipType) list = list.filter((s) => s.worshipType === worshipType);
-    if (keyword?.trim()) {
-      const q = keyword.trim().toLowerCase();
-      list = list.filter((s) => s.title.toLowerCase().includes(q));
-    }
-    const start = (page - 1) * size;
-    const content = list.slice(start, start + size);
-    return {
-      sermons: content,
-      pageInfo: {
-        page: page - 1,
-        size,
-        totalElements: list.length,
-        totalPages: Math.max(1, Math.ceil(list.length / size)),
-        hasNext: start + size < list.length,
-        hasPrevious: page > 1,
-      },
-    };
-  }
   const res = await api.get(`/church/sermons`, {
     params: {
       keyword: keyword || undefined,
@@ -176,7 +140,6 @@ export async function searchSermons(churchId, { keyword, worshipType, page = 1, 
  * @returns {Promise<object|null>}
  */
 export async function getSermonDetail(churchId, publicId) {
-  if (isDummy("sermon")) return DUMMY_ADMIN_SERMONS.find((s) => s.id === publicId) ?? null;
   const res = await api.get(`/church/sermons/${publicId}`);
   return res.data.data;
 }
