@@ -198,33 +198,6 @@
     animation: fadeIn 0.3s ease-out;
   }
 
-  [data-home-section] {
-    animation: fadeInUp 1s ease-out both;
-  }
-
-  [data-home-section]:nth-child(1) {
-    animation-delay: 0ms;
-  }
-
-  [data-home-section]:nth-child(2) {
-    animation-delay: 100ms;
-  }
-
-  [data-home-section]:nth-child(3) {
-    animation-delay: 200ms;
-  }
-
-  [data-home-section]:nth-child(4) {
-    animation-delay: 300ms;
-  }
-
-  [data-home-section]:nth-child(5) {
-    animation-delay: 400ms;
-  }
-
-  [data-home-section]:nth-child(6) {
-    animation-delay: 500ms;
-  }
 
   select {
     appearance: none;
