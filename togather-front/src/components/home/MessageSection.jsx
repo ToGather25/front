@@ -53,6 +53,7 @@ export default function MessageSection() {
             videoId: videoId,
             youtubeUrl: videoId ? `https://www.youtube.com/watch?v=${videoId}` : null,
             thumbnail: latestVideo.thumbnails?.high?.url || defaultBanner,
+            isLive: false, // 백엔드에서 라이브 상태 받기 필요
           });
         }
       } catch (error) {
@@ -123,22 +124,28 @@ export default function MessageSection() {
                   </div>
                 </div>
 
-                {/* YouTube 링크 버튼 - hover 시 표시, 오른쪽 아래 */}
+                {/* 큰 화살표 버튼 - hover 시 표시, 오른쪽 아래 */}
                 {sermon.youtubeUrl && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       window.open(sermon.youtubeUrl, "_blank");
                     }}
-                    className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20"
                     aria-label="YouTube에서 보기"
                   >
-                    <div className="w-10 h-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-colors">
-                      <svg className="w-5 h-5 text-blue-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </div>
+                    <svg className="w-16 h-16 text-white drop-shadow-lg hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 19L19 5M19 5H10M19 5V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    </svg>
                   </button>
+                )}
+
+                {/* LIVE 배지 */}
+                {sermon.isLive && (
+                  <span className="absolute top-6 left-6 flex items-center gap-1.5 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-sm z-20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    LIVE
+                  </span>
                 )}
               </div>
             ) : (
