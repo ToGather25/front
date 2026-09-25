@@ -99,8 +99,8 @@ export default function MessageSection() {
               </div>
             ) : sermon ? (
               <div
-                onClick={() => navigate("/말씀")}
-                className="flex-2 h-[548px] rounded-3xl p-[60px] flex flex-col justify-end gap-8 cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
+                onClick={() => sermon.youtubeUrl && window.open(sermon.youtubeUrl, "_blank")}
+                className="flex-2 h-[548px] rounded-3xl p-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
                 style={{
                   backgroundImage: `url('${sermon.thumbnail}')`,
                   backgroundSize: "cover",
@@ -123,14 +123,14 @@ export default function MessageSection() {
                   </div>
                 </div>
 
-                {/* YouTube 링크 버튼 - hover 시 표시 */}
+                {/* YouTube 링크 버튼 - hover 시 표시, 오른쪽 아래 */}
                 {sermon.youtubeUrl && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       window.open(sermon.youtubeUrl, "_blank");
                     }}
-                    className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity z-20"
                     aria-label="YouTube에서 보기"
                   >
                     <div className="w-10 h-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-colors">
