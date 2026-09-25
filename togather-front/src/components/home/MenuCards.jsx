@@ -46,7 +46,7 @@ export default function MenuCards() {
 
   return (
     <div className="py-[100px] flex justify-center w-full">
-      <div className="flex gap-6 w-[1196px]">
+      <div className="flex gap-6 w-[1000px]">
         {menus.map((menu) => {
           const isHovered = hoveredId === menu.id;
           return (
@@ -55,19 +55,19 @@ export default function MenuCards() {
               onClick={() => navigate(menu.href)}
               onMouseEnter={() => setHoveredId(menu.id)}
               onMouseLeave={() => setHoveredId(null)}
-              className={`flex-1 h-[220px] rounded-[36px] p-5 flex flex-col gap-5 items-center justify-center transition-all shadow-lg ${
+              className={`flex-1 h-[220px] rounded-[36px] p-5 flex flex-col gap-5 items-center justify-center transition-all shadow-xl ${
                 isHovered
                   ? "bg-primary text-white"
-                  : "bg-white text-grey-11 hover:shadow-xl"
+                  : "bg-white text-grey-11 hover:shadow-2xl"
               }`}
             >
               <img
                 src={isHovered ? menu.iconHover : menu.iconDefault}
                 alt={menu.title}
-                className="w-[48px] h-[48px]"
+                className="w-[36px] h-[36px]"
               />
               <h3
-                className={`text-[26px] font-medium ${
+                className={`text-sub-tit-3 font-medium ${
                   isHovered ? "text-white" : "text-grey-11"
                 }`}
               >

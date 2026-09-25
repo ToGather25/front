@@ -40,14 +40,14 @@ export default function NotificationSection() {
         {/* 공지 + 주보 */}
         <div className="grid grid-cols-2 gap-10">
           {/* 공지 알림 */}
-          <div className="bg-blue-1 rounded-[24px] p-12">
+          <div className="bg-bluegrey-1 rounded-2xl p-12">
             <div className="flex items-center justify-between mb-9">
-              <h3 className="text-grey-12 text-[40px] font-bold">공지 알림</h3>
+              <h3 className="text-grey-12 text-headline-4 font-bold">공지사항</h3>
               <button
                 onClick={() => navigate("/교회행사")}
-                className="border border-grey-6 rounded-full p-3 hover:bg-grey-1 transition-colors"
+                className="border border-grey-6 rounded-full p-2 hover:bg-grey-1 transition-colors"
               >
-                →
+                ↗
               </button>
             </div>
 
@@ -61,14 +61,14 @@ export default function NotificationSection() {
                       }`}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-grey-11 text-[24px] font-semibold mb-2 line-clamp-2">
+                      <p className="text-grey-11 text-body-1 font-medium mb-2 line-clamp-2">
                         {notice.title}
                       </p>
-                      <p className="text-grey-6 text-[18px]">{notice.date}</p>
+                      <p className="text-grey-6 text-body-2">{notice.date}</p>
                     </div>
                   </div>
                   {i < notices.length - 1 && (
-                    <div className="mt-8 ml-7 h-px bg-grey-2" />
+                    <div className="mt-4 ml-7 border-t border-dotted border-bluegrey-2" />
                   )}
                 </div>
               ))}
@@ -76,9 +76,9 @@ export default function NotificationSection() {
           </div>
 
           {/* 스마트 주보 */}
-          <div className="bg-primary rounded-[24px] p-12">
+          <div className="bg-bluegrey-1 rounded-2xl p-12">
             <div className="flex items-center justify-between mb-9">
-              <h3 className="text-white text-[40px] font-bold">스마트 주보</h3>
+              <h3 className="text-grey-12 text-headline-4 font-bold">스마트 주보</h3>
               <button
                 onClick={() => navigate("/주보")}
                 className="border border-white rounded-full p-3 hover:bg-white/20 transition-colors"
@@ -92,10 +92,10 @@ export default function NotificationSection() {
                 <div key={i} className="flex gap-6">
                   <div className="w-[140px] h-[90px] bg-grey-3 rounded-[10px] shrink-0" />
                   <div className="flex-1 min-w-0 py-1">
-                    <p className="text-white text-[24px] font-semibold mb-2 line-clamp-2">
+                    <p className="text-grey-11 text-body-1 font-medium mb-2 line-clamp-2">
                       {item.title}
                     </p>
-                    <p className="text-pale text-[18px]">{item.date}</p>
+                    <p className="text-grey-6 text-body-2">{item.date}</p>
                   </div>
                 </div>
               ))}
