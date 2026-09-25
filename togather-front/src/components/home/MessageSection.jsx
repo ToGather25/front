@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import defaultBanner from "@/assets/default_banner.png";
+import rightArrow from "@/assets/icon-svg/right_arrow.svg";
 
 export default function MessageSection() {
   const navigate = useNavigate();
@@ -124,19 +125,17 @@ export default function MessageSection() {
                   </div>
                 </div>
 
-                {/* 큰 화살표 버튼 - hover 시 표시, 오른쪽 아래 */}
+                {/* 화살표 버튼 - hover 시 표시, 오른쪽 아래 */}
                 {sermon.youtubeUrl && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       window.open(sermon.youtubeUrl, "_blank");
                     }}
-                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110 transition-transform"
                     aria-label="YouTube에서 보기"
                   >
-                    <svg className="w-16 h-16 text-white drop-shadow-lg hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M5 19L19 5M19 5H10M19 5V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                    </svg>
+                    <img src={rightArrow} alt="" className="w-16 h-16 drop-shadow-lg" />
                   </button>
                 )}
 
