@@ -179,12 +179,51 @@
     }
   }
 
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .animate-slideInRight {
     animation: slideInRight 0.3s ease-out;
   }
 
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out;
+  }
+
+  [data-home-section] {
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  [data-home-section]:nth-child(1) {
+    animation-delay: 0ms;
+  }
+
+  [data-home-section]:nth-child(2) {
+    animation-delay: 100ms;
+  }
+
+  [data-home-section]:nth-child(3) {
+    animation-delay: 200ms;
+  }
+
+  [data-home-section]:nth-child(4) {
+    animation-delay: 300ms;
+  }
+
+  [data-home-section]:nth-child(5) {
+    animation-delay: 400ms;
+  }
+
+  [data-home-section]:nth-child(6) {
+    animation-delay: 500ms;
   }
 
   select {
