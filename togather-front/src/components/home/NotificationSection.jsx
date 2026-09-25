@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
+import BtnArrowDefault from "@/assets/icon-svg/btn-arrow.svg";
+import BtnArrowHover from "@/assets/icon-svg/btn-arrow-1.svg";
 
 export default function NotificationSection() {
   const navigate = useNavigate();
+  const [hoveredNoticeBtn, setHoveredNoticeBtn] = useState(false);
+  const [hoveredJuboBtn, setHoveredJuboBtn] = useState(false);
 
   const notices = [
     {
@@ -44,10 +49,16 @@ export default function NotificationSection() {
             <div className="flex items-center justify-between mb-9">
               <h3 className="text-grey-12 text-headline-4 font-bold">공지사항</h3>
               <button
-                onClick={() => navigate("/교회행사")}
-                className="border border-grey-6 rounded-full p-2 hover:bg-grey-1 transition-colors"
+                onClick={() => navigate("/공지사항")}
+                onMouseEnter={() => setHoveredNoticeBtn(true)}
+                onMouseLeave={() => setHoveredNoticeBtn(false)}
+                className="w-6 h-6 flex items-center justify-center transition-colors"
               >
-                ↗
+                <img
+                  src={hoveredNoticeBtn ? BtnArrowHover : BtnArrowDefault}
+                  alt="이동"
+                  className="w-6 h-6"
+                />
               </button>
             </div>
 
@@ -81,9 +92,15 @@ export default function NotificationSection() {
               <h3 className="text-grey-12 text-headline-4 font-bold">스마트 주보</h3>
               <button
                 onClick={() => navigate("/주보")}
-                className="border border-white rounded-full p-3 hover:bg-white/20 transition-colors"
+                onMouseEnter={() => setHoveredJuboBtn(true)}
+                onMouseLeave={() => setHoveredJuboBtn(false)}
+                className="w-6 h-6 flex items-center justify-center transition-colors"
               >
-                ↗
+                <img
+                  src={hoveredJuboBtn ? BtnArrowHover : BtnArrowDefault}
+                  alt="이동"
+                  className="w-6 h-6"
+                />
               </button>
             </div>
 
