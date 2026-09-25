@@ -3,7 +3,7 @@
  *   body:string, date:string, author:string }} Notice
  */
 
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_NOTICES } from "@/data/dummy/notices";
 
 /**
@@ -13,11 +13,6 @@ import { DUMMY_NOTICES } from "@/data/dummy/notices";
  * @returns {Promise<Notice[]>}
  */
 export async function getNotices(churchId, params = {}) {
-  if (isDummy("notice")) {
-    if (!params.limit) return [...DUMMY_NOTICES];
-    const start = ((params.page ?? 1) - 1) * params.limit;
-    return DUMMY_NOTICES.slice(start, start + params.limit);
-  }
   // 프론트는 1-based page를 쓰지만 백엔드(Spring Data)는 0-based라 여기서 변환한다.
   const { page, ...rest } = params;
   const res = await api.get(`/churches/${churchId}/notices`, {
@@ -83,11 +78,6 @@ export async function updateNotice(churchId, noticeId, payload) {
  * @param {number|string} noticeId
  */
 export async function deleteNotice(churchId, noticeId) {
-  if (isDummy("notice")) {
-    const idx = DUMMY_NOTICES.findIndex((n) => String(n.id) === String(noticeId));
-    if (idx !== -1) DUMMY_NOTICES.splice(idx, 1);
-    return { success: true };
-  }
   await api.delete(`/church/admin/notices/${noticeId}`);
   return { success: true };
 }

@@ -7,30 +7,30 @@ export default function FloorGuide() {
   const currentFloor = church.floorGuide[selectedIdx];
 
   return (
-    <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "260px 1fr 400px" }}>
-      {/* 좌측: 층별 버튼 그룹 */}
-      <div className="flex flex-col w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
-        {church.floorGuide.map(({ floor }, i) => (
-          <button
-            key={floor}
-            onClick={() => setSelectedIdx(i)}
-            className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-              i === selectedIdx
-                ? "bg-primary text-white"
-                : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-            }`}
-          >
-            {floor}
-          </button>
+    <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "260px 1fr" }}>
+      {/* 좌측: 층별 버튼 그룹 (서브 메뉴 형태) */}
+      <div className="flex flex-col w-[260px] shrink-0 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+        {church.floorGuide.map(({ floor, rooms }, i) => (
+          <div key={floor}>
+            <button
+              onClick={() => setSelectedIdx(i)}
+              className={`w-full px-4 py-2 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                i === selectedIdx
+                  ? "bg-primary text-white"
+                  : "text-grey-9 hover:bg-blue-1 hover:text-primary"
+              }`}
+            >
+              {floor}
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              i === selectedIdx ? "max-h-96 opacity-100 py-2" : "max-h-0 opacity-0"
+            }`}>
+              <div className="pl-6 text-body-5 text-grey-7 whitespace-pre-line">
+                {rooms}
+              </div>
+            </div>
+          </div>
         ))}
-      </div>
-
-      {/* 중앙: 층별 상세 정보 */}
-      <div className="flex flex-col gap-4">
-        <div>
-          <h3 className="text-sub-tit-4 font-bold text-grey-12 mb-3">{currentFloor?.floor} 안내</h3>
-          <p className="text-body-2 text-grey-7 leading-relaxed whitespace-pre-line">{currentFloor?.rooms}</p>
-        </div>
       </div>
 
       {/* 우측: 사진 */}

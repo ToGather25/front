@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_MY_SCHEDULES, DUMMY_MY_PRAYERS, DUMMY_MY_INQUIRIES } from "@/data/dummy/mypage";
 
 /** @typedef {{id:number, title:string, date:string, memo:string}} MySchedule */
@@ -39,11 +39,6 @@ export async function addMySchedule(churchId, payload) {
  * @param {number} id
  */
 export async function deleteMySchedule(churchId, id) {
-  if (isDummy("my")) {
-    const idx = DUMMY_MY_SCHEDULES.findIndex((s) => s.id === id);
-    if (idx !== -1) DUMMY_MY_SCHEDULES.splice(idx, 1);
-    return;
-  }
   await api.delete(`/my/schedules/${id}`);
 }
 

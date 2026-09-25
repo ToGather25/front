@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 
 /**
  * @typedef {{ representativeImageUrl: string|null, slogan: string|null,

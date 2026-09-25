@@ -4,7 +4,7 @@
  *   desc:string, imageUrl:string|null }} Photo
  */
 
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_COMMUNITIES, DUMMY_PHOTOS } from "@/data/dummy/gallery";
 
 /**
@@ -72,10 +72,5 @@ export async function createPhoto(churchId, payload) {
  * @param {number} photoId
  */
 export async function deletePhoto(churchId, photoId) {
-  if (isDummy("gallery")) {
-    const idx = DUMMY_PHOTOS.findIndex((p) => p.id === photoId);
-    if (idx !== -1) DUMMY_PHOTOS.splice(idx, 1);
-    return;
-  }
   await api.delete(`/church/admin/gallery/${photoId}`);
 }

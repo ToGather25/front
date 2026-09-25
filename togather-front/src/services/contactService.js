@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 
 /**
  * 교회 문의 등록
@@ -7,9 +7,6 @@ import api, { isDummy } from "./api";
  * @returns {Promise<{contactId:number|string}>}
  */
 export async function submitContact(churchId, payload) {
-  if (isDummy("contact")) {
-    return { contactId: Date.now() };
-  }
   const res = await api.post(`/churches/${churchId}/contact`, payload);
   return res.data.data;
 }

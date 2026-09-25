@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_ADMIN_SERMONS, DUMMY_LIVE_SCREEN } from "@/data/dummy/sermons";
 
 /**
@@ -40,11 +40,6 @@ export async function updateSermon(churchId, publicId, payload) {
  * @param {string} publicId
  */
 export async function deleteSermon(churchId, publicId) {
-  if (isDummy("sermon")) {
-    const idx = DUMMY_ADMIN_SERMONS.findIndex((s) => s.id === publicId);
-    if (idx !== -1) DUMMY_ADMIN_SERMONS.splice(idx, 1);
-    return;
-  }
   await api.delete(`/church/admin/sermons/${publicId}`);
 }
 

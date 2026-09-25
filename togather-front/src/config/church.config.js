@@ -27,7 +27,7 @@ const churchConfig = {
   address: "경기도 부천시 양지로 166번길 34 (옥길동)",
   tel: "02) 2615-4067",
   fax: "02) 2683-4326",
-  email: "algok@gmail.com",
+  email: "okgil@gmail.com",
   pastor: "임재호",
   denomination: "대한예수교장로회 고신교단",
 

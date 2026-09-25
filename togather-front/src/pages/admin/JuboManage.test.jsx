@@ -6,7 +6,6 @@ import JuboManage from "./JuboManage";
 
 vi.mock("@/services/api", () => ({
   default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
-  isDummy: () => false,
 }));
 
 import api from "@/services/api";

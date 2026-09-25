@@ -4,8 +4,11 @@ import Vision1 from "@/assets/icon-svg/vision-1.png";
 import Vision2 from "@/assets/icon-svg/vision-2.png";
 import Vision3 from "@/assets/icon-svg/vision-3.png";
 import Vision4 from "@/assets/icon-svg/vision-4.png";
+import Vision5 from "@/assets/icon-svg/vision-5.png";
+import Vision6 from "@/assets/icon-svg/vision-6.png";
+import Vision7 from "@/assets/icon-svg/vision-7.png";
 
-const VISION_ICONS = [Vision1, Vision2, Vision3, Vision4];
+const VISION_ICONS = [Vision1, Vision2, Vision3, Vision4, Vision5, Vision6, Vision7];
 
 export default function Vision() {
   const { church } = useChurch();
@@ -43,7 +46,7 @@ export default function Vision() {
           padding: 2rem;
           text-align: center;
           border-radius: 1rem;
-          box-shadow: 24px 20px 70px rgba(35, 46, 78, 0.25);
+          box-shadow: 16px 10px 50px rgba(35, 46, 78, 0.15);
           background-color: white;
           position: absolute;
           width: 100%;

@@ -6,7 +6,6 @@ import MembersManage from "./MembersManage";
 
 vi.mock("@/services/api", () => ({
   default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
-  isDummy: () => false,
 }));
 
 import api from "@/services/api";

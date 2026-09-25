@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 import { formatKoreanDate } from "@/utils/date";
 import {
   DUMMY_JUBO_INFO,

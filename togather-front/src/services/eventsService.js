@@ -19,7 +19,7 @@
  * @property {boolean|null} isRegistered        - 로그인한 사용자의 신청 여부. 비로그인 시 null
  */
 
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_EVENTS } from "@/data/dummy/events";
 
 const todayIso = () => {
@@ -65,17 +65,6 @@ export async function getEvents(churchId, params = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
-  if (isDummy("events")) {
-    const key = normalize(q);
-    const list = key
-      ? DUMMY_EVENTS.filter((e) =>
-          [e.title, e.description, e.location, e.department].some((f) =>
-            normalize(f).includes(key),
-          ),
-        )
-      : [...DUMMY_EVENTS];
-    return sortEvents(list, sort);
-  }
   // 백엔드에 검색 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 필터링한다.
   const res = await api.get(`/churches/${churchId}/events`);
   const key = normalize(q);
@@ -94,9 +83,6 @@ export async function searchEvents(churchId, { q = "", sort = "date" } = {}) {
  * @returns {Promise<Event[]>}
  */
 export async function getRecentEvents(churchId, limit = 5) {
-  if (isDummy("events")) {
-    return sortEvents(DUMMY_EVENTS, "createdAt").slice(0, limit);
-  }
   // 백엔드에 최근순 전용 엔드포인트가 없어 전체 목록을 받아 클라이언트에서 정렬한다.
   const res = await api.get(`/churches/${churchId}/events`);
   return sortEvents(res.data.data, "createdAt").slice(0, limit);
@@ -109,9 +95,6 @@ export async function getRecentEvents(churchId, limit = 5) {
  * @returns {Promise<Event|null>}
  */
 export async function getEventById(churchId, eventId) {
-  if (isDummy("events")) {
-    return DUMMY_EVENTS.find((e) => String(e.id) === String(eventId)) ?? null;
-  }
   const res = await api.get(`/churches/${churchId}/events/${eventId}`);
   return res.data.data;
 }
@@ -123,9 +106,6 @@ export async function getEventById(churchId, eventId) {
  * @returns {Promise<{registered:boolean}>}
  */
 export async function registerForEvent(churchId, eventId) {
-  if (isDummy("events")) {
-    return { registered: true };
-  }
   const res = await api.post(`/churches/${churchId}/events/${eventId}/register`);
   return res.data;
 }
@@ -193,11 +173,6 @@ export async function getEventRegistrations(churchId, eventId) {
  * @param {number|string} eventId
  */
 export async function deleteEvent(churchId, eventId) {
-  if (isDummy("events")) {
-    const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
-    if (idx !== -1) DUMMY_EVENTS.splice(idx, 1);
-    return { success: true };
-  }
   const res = await api.delete(`/church/admin/events/${eventId}`);
   return res.data;
 }

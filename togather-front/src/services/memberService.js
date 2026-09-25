@@ -1,4 +1,4 @@
-import api, { isDummy } from "./api";
+import api from "./api";
 import { DUMMY_MEMBERS } from "@/data/dummy/members";
 
 /**
@@ -20,24 +20,6 @@ const DEFAULT_SIZE = 20;
  * @returns {Promise<{ members: MemberSummary[], pageInfo: object }>}
  */
 export async function getMembers(churchId, { keyword, page = 1, size = DEFAULT_SIZE } = {}) {
-  if (isDummy("member")) {
-    const filtered = keyword
-      ? DUMMY_MEMBERS.filter((m) => m.name.includes(keyword) || m.phone.includes(keyword))
-      : DUMMY_MEMBERS;
-    const start = (page - 1) * size;
-    const content = filtered.slice(start, start + size);
-    return {
-      members: content,
-      pageInfo: {
-        page: page - 1,
-        size,
-        totalElements: filtered.length,
-        totalPages: Math.ceil(filtered.length / size),
-        hasNext: start + size < filtered.length,
-        hasPrevious: page > 1,
-      },
-    };
-  }
   const res = await api.get(`/church/admin/members`, {
     params: { keyword: keyword || undefined, page: page - 1, size },
   });
@@ -51,10 +33,6 @@ export async function getMembers(churchId, { keyword, page = 1, size = DEFAULT_S
  * @returns {Promise<MemberSummary & { hasAccount:boolean }>}
  */
 export async function getMemberDetail(churchId, publicId) {
-  if (isDummy("member")) {
-    const found = DUMMY_MEMBERS.find((m) => String(m.id) === String(publicId));
-    return found ? { ...found, hasAccount: true } : null;
-  }
   const res = await api.get(`/church/admin/members/${publicId}`);
   return res.data.data;
 }

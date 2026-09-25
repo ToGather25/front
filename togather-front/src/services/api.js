@@ -6,9 +6,6 @@ import defaultConfig from "@/config/church.config";
  *
  * 환경변수:
  *   VITE_API_BASE_URL   — 백엔드 URL (e.g. https://api.togather.church)
- *   VITE_USE_DUMMY       — "true"이면 모든 서비스가 더미 데이터 반환 (레거시, VITE_DUMMY_DOMAINS로 점진 대체 중)
- *   VITE_DUMMY_DOMAINS   — 콤마 구분 도메인 목록. 이 목록에 있는 도메인만 더미 데이터 사용,
- *                          없는 도메인(tenant/auth 등)은 항상 실제 API 호출.
  */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api",
@@ -76,18 +73,5 @@ api.interceptors.response.use(
     return Promise.reject(err);
   },
 );
-
-/** 더미 모드 여부(레거시 전역 플래그). .env에서 VITE_USE_DUMMY=false 로 끄면 실제 API 호출 */
-export const USE_DUMMY = import.meta.env.VITE_USE_DUMMY !== "false";
-
-const dummyDomains = new Set(
-  (import.meta.env.VITE_DUMMY_DOMAINS ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean),
-);
-
-/** domain(예: "notice", "events")이 아직 더미 데이터를 쓰는지 여부 */
-export const isDummy = (domain) => dummyDomains.has(domain);
 
 export default api;

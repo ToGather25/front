@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/icon-svg/search-black.svg";
 import { searchSermons } from "@/services/sermonService";
 import { SERVICE_TYPES } from "@/config/sermon.config";
 

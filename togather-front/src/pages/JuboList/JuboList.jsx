@@ -5,7 +5,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getJuboIssues } from "@/services/juboService";
 import { getDaysInMonth, getFirstDayOfMonth, toDateKey, parseLocalDate } from "@/utils/date";
 import WordTabBar from "@/components/word/WordTabBar";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/icon-svg/search-black.svg";
 import IcoChurch from "@/assets/icon-svg/mypage-church.svg";
 
 const PAGE_SIZE = 8;
