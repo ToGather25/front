@@ -19,6 +19,7 @@ export default function Cover({ issue }) {
   // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호 정보를, 아니면 현재 발행 주보 정보를 쓴다.
   const juboInfo = issue ? { issueNo: issue.issueNo, date: issue.dateLabel } : currentInfo;
   const { mainVerse, mainTitle, items, year } = church.vision;
+  const { title: sloganTitle, scripture: sloganScripture, year: sloganYear } = church.slogan || {};
 
   const churchPhoto = cover.photos?.church;
   const panoramaPhoto = cover.photos?.panorama ?? DefaultBanner;
@@ -47,14 +48,33 @@ export default function Cover({ issue }) {
         )}
       </div>
 
-      {/* 표어 + 교회 사진 */}
+      {/* 올해 표어 + 성경구절 */}
+      {sloganTitle && sloganScripture && (
+        <div
+          className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2"
+          style={{ minHeight: 220 }}
+        >
+          <div className="flex flex-col justify-center gap-4 px-6 py-6 sm:w-[38%] sm:shrink-0 bg-blue-1">
+            <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
+              {sloganYear}년 표어
+            </span>
+            <h2 className="text-[26px] md:text-[32px] font-bold leading-[1.35] text-primary">
+              {sloganTitle}
+            </h2>
+            <p className="text-[13px] text-grey-7">{sloganScripture}</p>
+          </div>
+          <div className="flex-1 hidden sm:flex bg-gradient-to-br from-blue-2 to-blue-3" />
+        </div>
+      )}
+
+      {/* 비전 표어 + 교회 사진 */}
       <div
         className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2"
         style={{ minHeight: 260 }}
       >
         <div className="flex flex-col justify-center gap-4 px-6 py-6 sm:w-[38%] sm:shrink-0 bg-white">
           <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
-            {year}년 표어
+            {year}년 비전
           </span>
           <h2 className="text-[22px] md:text-[26px] font-bold leading-[1.35] text-grey-12">
             {mainVerse.replace(/^"|"$/g, "")}
