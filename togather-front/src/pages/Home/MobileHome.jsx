@@ -18,7 +18,7 @@ function MobileSearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="px-4 pt-5 py-3">
-      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-bluegrey-1 border border-bluegrey-2">
+      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full border border-bluegrey-2">
         <button type="submit" aria-label="검색" className="shrink-0">
           <img src={IcoSearch} className="w-4 h-4" alt="" />
         </button>

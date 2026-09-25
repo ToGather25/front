@@ -1,111 +1,82 @@
 import { useState } from "react";
-import { Link } from "react-router";
-
-const MENU_ITEMS = [
-  {
-    id: "intro",
-    label: "교회소개",
-    sub: "비전 · 섬기는 사람들 · 오시는 길",
-    to: "/교회소개",
-    icon: (
-      <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        viewBox="0 0 24 24"
-      >
-        <path d="M12 2v4M10 4h4M3 22V9l9-4 9 4v13M9 22v-7h6v7" />
-      </svg>
-    ),
-  },
-  {
-    id: "news",
-    label: "행사 ∙ 소식",
-    sub: "캘린더 · 갤러리 · 공지사항",
-    to: "/교회행사",
-    icon: (
-      <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        viewBox="0 0 24 24"
-      >
-        <path d="M3 10v4h4l10 5V5L7 10H3zM18 8a4 4 0 0 1 0 8" />
-      </svg>
-    ),
-  },
-  {
-    id: "bull",
-    label: "스마트 주보",
-    sub: "주보 · 예배순서 · 교회 소식",
-    to: "/주보/목록",
-    icon: (
-      <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        viewBox="0 0 24 24"
-      >
-        <path d="M6 3h9l4 4v14H6z" />
-        <path d="M15 3v5h4M9 12h7M9 16h7M9 8h3" />
-      </svg>
-    ),
-  },
-  {
-    id: "type",
-    label: "성경 타자",
-    sub: "필사 · 통독 · 랭킹",
-    to: "/말씀/필사",
-    icon: (
-      <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        viewBox="0 0 24 24"
-      >
-        <rect x="2" y="6" width="20" height="12" rx="2" />
-        <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12" />
-      </svg>
-    ),
-  },
-];
+import { useNavigate } from "react-router";
+import IcoChurchDefault from "@/assets/icon-svg/church-default.svg";
+import IcoChurchHover from "@/assets/icon-svg/church-hover.svg";
+import IcoAnnouncementDefault from "@/assets/icon-svg/annotation-check-default.svg";
+import IcoAnnouncementHover from "@/assets/icon-svg/annotation-check-hover.svg";
+import IcoNotiDefault from "@/assets/icon-svg/notification-text-default.svg";
+import IcoNotiHover from "@/assets/icon-svg/notification-text-hover.svg";
+import IcoBookDefault from "@/assets/icon-svg/book-open-default.svg";
+import IcoBookHover from "@/assets/icon-svg/book-open-hover.svg";
 
 export default function MenuCards() {
-  const [activeMenu, setActiveMenu] = useState("intro");
+  const navigate = useNavigate();
+  const [hoveredId, setHoveredId] = useState(null);
+
+  const menus = [
+    {
+      id: 1,
+      title: "교회소개",
+      iconDefault: IcoChurchDefault,
+      iconHover: IcoChurchHover,
+      href: "/교회소개",
+    },
+    {
+      id: 2,
+      title: "행사 ∙ 소식",
+      iconDefault: IcoAnnouncementDefault,
+      iconHover: IcoAnnouncementHover,
+      href: "/교회행사",
+    },
+    {
+      id: 3,
+      title: "스마트 주보",
+      iconDefault: IcoNotiDefault,
+      iconHover: IcoNotiHover,
+      href: "/주보",
+    },
+    {
+      id: 4,
+      title: "성경 타자",
+      iconDefault: IcoBookDefault,
+      iconHover: IcoBookHover,
+      href: "/말씀/필사",
+    },
+  ];
 
   return (
-    <section className="w-full py-[100px] flex flex-col items-center">
-      <div className="grid grid-cols-4 gap-6 w-full max-w-[950px]">
-        {MENU_ITEMS.map((item) => (
-          <Link
-            key={item.id}
-            to={item.to}
-            onClick={() => setActiveMenu(item.id)}
-            className={`group h-40 rounded-2xl border p-4 flex flex-col items-center justify-center text-center gap-2 hover:-translate-y-1 transition-all duration-200 ${
-              activeMenu === item.id
-                ? "bg-primary border-primary text-white"
-                : "bg-white border-bluegrey-2 hover:bg-primary hover:border-primary"
-            }`}
-          >
-            <div className={`shrink-0 transition-colors pb-5 ${
-              activeMenu === item.id ? "text-white" : "text-primary group-hover:text-white"
-            }`}>
-              {item.icon}
-            </div>
-            <div className="min-w-0">
-              <p className={`text-body-2 font-bold tracking-[-0.4px] m-0 leading-tight transition-colors ${
-                activeMenu === item.id ? "text-white" : "text-grey-12 group-hover:text-white"
-              }`}>
-                {item.label}
-              </p>
-            </div>
-          </Link>
-        ))}
+    <div className="py-[100px] flex justify-center w-full">
+      <div className="flex gap-6 w-[1196px]">
+        {menus.map((menu) => {
+          const isHovered = hoveredId === menu.id;
+          return (
+            <button
+              key={menu.id}
+              onClick={() => navigate(menu.href)}
+              onMouseEnter={() => setHoveredId(menu.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              className={`flex-1 h-[220px] rounded-[36px] p-5 flex flex-col gap-5 items-center justify-center transition-all shadow-lg ${
+                isHovered
+                  ? "bg-primary text-white"
+                  : "bg-white text-grey-11 hover:shadow-xl"
+              }`}
+            >
+              <img
+                src={isHovered ? menu.iconHover : menu.iconDefault}
+                alt={menu.title}
+                className="w-[48px] h-[48px]"
+              />
+              <h3
+                className={`text-[26px] font-medium ${
+                  isHovered ? "text-white" : "text-grey-11"
+                }`}
+              >
+                {menu.title}
+              </h3>
+            </button>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 }

@@ -199,7 +199,6 @@ const churchConfig = {
     { title: "수요예배", regularIndices: [3] },
     { title: "금요기도회", regularIndices: [4] },
     { title: "새벽기도회", regularIndices: [5] },
-    { title: "주일학교", isDepartments: true },
   ],
 
   // ── 예배 시간표 ───────────────────────────────────────
