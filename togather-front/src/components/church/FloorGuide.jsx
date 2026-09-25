@@ -7,7 +7,7 @@ export default function FloorGuide() {
   const currentFloor = church.floorGuide[selectedIdx];
 
   return (
-    <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "260px 1fr 320px" }}>
+    <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "260px 1fr 400px" }}>
       {/* 좌측: 층별 버튼 그룹 */}
       <div className="flex flex-col w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
         {church.floorGuide.map(({ floor }, i) => (
@@ -28,12 +28,12 @@ export default function FloorGuide() {
       {/* 중앙: 층별 상세 정보 */}
       <div className="flex flex-col gap-4">
         <div>
-          <h3 className="text-headline-3 font-bold text-grey-12 mb-3">{currentFloor?.floor}</h3>
+          <h3 className="text-sub-tit-4 font-bold text-grey-12 mb-3">{currentFloor?.floor} 안내</h3>
           <p className="text-body-2 text-grey-7 leading-relaxed whitespace-pre-line">{currentFloor?.rooms}</p>
         </div>
       </div>
 
-      {/* 우측: 사진 (작게) */}
+      {/* 우측: 사진 */}
       <div className="w-full overflow-hidden rounded-2xl bg-bluegrey-2 shrink-0">
         {currentFloor?.image ? (
           <img
