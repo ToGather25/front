@@ -24,6 +24,7 @@ export default function Direction() {
             <KakaoMap
               level={church.location?.level ?? 3}
               address={church.address}
+              draggable={false}
               className="w-full h-full"
             />
           </div>
