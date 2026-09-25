@@ -90,19 +90,19 @@ export default function MessageSection() {
       {/* 본문 - 배경과 overlap */}
       <div className="relative">
         {/* 배경 - 화면 전체 너비, 예배시간 약간 위부터 시작 */}
-        <div className="absolute top-1/2 left-0 right-0 w-screen bg-bluegrey-1 py-45 -mt-12" />
+        <div className="absolute top-1/2 left-0 right-0 w-screen bg-bluegrey-1 py-42 -mt-12" />
 
         <div className="px-[180px] flex justify-center relative z-10">
           <div className="w-full flex gap-10 items-end">
             {/* 설교 카드 */}
             {loading ? (
-              <div className="flex-1 h-[550px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse">
+              <div className="flex-1 h-[500px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse">
                 <p className="text-grey-6">로딩 중...</p>
               </div>
             ) : sermon ? (
               <div
                 onClick={() => sermon.youtubeUrl && window.open(sermon.youtubeUrl, "_blank")}
-                className="flex-2 h-[548px] rounded-3xl p-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
+                className="flex-2 h-[500px] rounded-3xl p-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
                 style={{
                   backgroundImage: `url('${sermon.thumbnail}')`,
                   backgroundSize: "cover",
@@ -132,7 +132,7 @@ export default function MessageSection() {
                       e.stopPropagation();
                       window.open(sermon.youtubeUrl, "_blank");
                     }}
-                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110 transition-transform"
+                    className="absolute bottom-12 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110 transition-transform"
                     aria-label="YouTube에서 보기"
                   >
                     <img src={rightArrow} alt="" className="w-16 h-16 drop-shadow-lg" />
