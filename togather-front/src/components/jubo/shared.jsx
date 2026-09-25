@@ -1,7 +1,7 @@
 // 주보 컨텐츠 래퍼 — 화면: 반응형 / 인쇄: A4
 export function JuboPage({ children, noPadding = false }) {
   return (
-    <div className="jubo-page w-full mx-auto bg-white border border-bluegrey-2 shadow-md rounded-2xl overflow-hidden min-h-[320px]">
+    <div className="jubo-page w-[80%] mx-auto bg-white border border-bluegrey-2 shadow-md overflow-hidden min-h-[800px]">
       <div className={noPadding ? "" : "p-4 md:p-8 lg:p-10"}>{children}</div>
     </div>
   );
