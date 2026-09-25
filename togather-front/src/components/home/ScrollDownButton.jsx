@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import ChevronUpIcon from "@/assets/icon-svg/chevron-up.svg";
 
 const SECTION_SELECTOR = "[data-home-section]";
 
@@ -61,21 +62,9 @@ export default function ScrollDownButton() {
         type="button"
         onClick={scrollToTop}
         aria-label="맨 위로 이동"
-        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center gap-1.5 px-4 py-2.5 rounded-full bg-white border border-bluegrey-3 shadow-lg text-grey-8 text-body-4 font-semibold hover:border-blue-5 hover:text-primary transition-colors"
+        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center gap-1.5 p-3 rounded-full bg-white border border-bluegrey-3 shadow-lg text-grey-8 text-body-4 font-semibold hover:border-blue-5 hover:text-primary transition-colors"
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 19V5M5 12l7-7 7 7" />
-        </svg>
-        TOP
+        <img src={ChevronUpIcon} alt="위로" className="w-6 h-6" />
       </button>
     );
   }

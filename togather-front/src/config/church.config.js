@@ -193,6 +193,15 @@ const churchConfig = {
     ],
   },
 
+  // ── 예배 시간표 디스플레이 설정 ─────────────────────────
+  worshipDisplay: [
+    { title: "주일예배", regularIndices: [0, 1, 2] },
+    { title: "수요예배", regularIndices: [3] },
+    { title: "금요기도회", regularIndices: [4] },
+    { title: "새벽기도회", regularIndices: [5] },
+    { title: "주일학교", isDepartments: true },
+  ],
+
   // ── 예배 시간표 ───────────────────────────────────────
   worshipSchedule: {
     regular: [

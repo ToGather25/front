@@ -3,8 +3,9 @@ import { useChurch } from "@/contexts/ChurchContext";
 import Vision1 from "@/assets/icon-svg/vision-1.png";
 import Vision2 from "@/assets/icon-svg/vision-2.png";
 import Vision3 from "@/assets/icon-svg/vision-3.png";
+import Vision4 from "@/assets/icon-svg/vision-4.png";
 
-const VISION_ICONS = [Vision1, Vision2, Vision3];
+const VISION_ICONS = [Vision1, Vision2, Vision3, Vision4];
 
 export default function Vision() {
   const { church } = useChurch();
@@ -17,7 +18,8 @@ export default function Vision() {
     <div>
       <style>{`
         .vision-card-container {
-          perspective: 1000px;
+          perspective: 4000px;
+          perspective-origin: 50% 50%;
           height: 440px;
         }
         .vision-card-inner {
@@ -26,6 +28,7 @@ export default function Vision() {
           transition: transform 0.6s;
           transform-style: preserve-3d;
           position: relative;
+          transform-origin: center;
         }
         .vision-card-inner.flipped {
           transform: rotateY(180deg);
@@ -40,7 +43,7 @@ export default function Vision() {
           padding: 2rem;
           text-align: center;
           border-radius: 1rem;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          box-shadow: 24px 20px 70px rgba(35, 46, 78, 0.25);
           background-color: white;
           position: absolute;
           width: 100%;
@@ -51,11 +54,14 @@ export default function Vision() {
         .vision-card-back {
           transform: rotateY(180deg);
           color: var(--color-grey-11);
+          text-align: left;
+          align-items: flex-start;
+          justify-content: center;
         }
       `}</style>
 
       <div className="mb-12">
-        <h3 className="text-sub-tit-2 font-bold text-grey-11 mb-3 whitespace-pre-wrap">{mainTitle}</h3>
+        <h3 className="text-sub-tit-2 font-bold text-grey-11 mb-8 whitespace-pre-wrap">{mainTitle}</h3>
         <p className="text-body-2 text-grey-7 whitespace-pre-wrap">{mainVerse}</p>
       </div>
 
@@ -88,7 +94,7 @@ export default function Vision() {
 
               {/* 뒷면 */}
               <div className="vision-card-back">
-                <div className="text-body-2 leading-relaxed space-y-3">
+                <div className="text-body-1 leading-relaxed space-y-3">
                   {Array.isArray(item.detailedDescription) ? (
                     item.detailedDescription.map((detail, idx) => (
                       <p key={idx}>

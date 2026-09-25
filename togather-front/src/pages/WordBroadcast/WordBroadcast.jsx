@@ -67,6 +67,7 @@ export default function WordBroadcast() {
   const [juboOpen, setJuboOpen] = useState(false);
   const [screen, setScreen] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("예배 보기");
 
   useEffect(() => {
     let cancelled = false;
@@ -108,167 +109,230 @@ export default function WordBroadcast() {
       <WordTabBar />
 
       <div className="max-w-[1400px] mx-auto px-4 py-10 md:px-8 md:py-12">
-        {/* ── 로딩 중 ── */}
-        {status === "loading" && (
-          <section className="mb-14 max-w-6xl mx-auto">
-            <div className="w-full overflow-hidden bg-grey-2 animate-pulse aspect-video" />
-          </section>
-        )}
-
-        {/* ── 실시간 중 ── */}
-        {status === "LIVE" && (
-          <section className="mb-14 max-w-5xl mx-auto">
-            <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
-            <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video rounded-2xl">
-              {liveVideoId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${liveVideoId}?autoplay=1`}
-                  title="실시간 예배 방송"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; encrypted-media"
-                  allowFullScreen
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4 rounded-2xl">
-                  <YouTubeIcon className="w-16 h-16 text-grey-5" />
-                  <p className="text-grey-5 text-body-3">실시간 영상 정보를 불러올 수 없습니다.</p>
-                  {channelUrl && (
-                    <a
-                      href={channelUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-5 py-2.5 rounded-full bg-red-600 text-white text-body-3 font-semibold hover:bg-red-700 transition-colors"
-                    >
-                      유튜브 채널에서 보기
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-            {screen.sermon && (
-              <SermonInfoBlock
-                sermon={screen.sermon}
-                isLive
-                juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
-              />
-            )}
-          </section>
-        )}
-
-        {/* ── 방송 예정 ── */}
-        {status === "BEFORE" && (
-          <section className="mb-14 max-w-3xl mx-auto">
-            <div className="w-full bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
-              <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다.</p>
-            </div>
-            {screen.sermon && (
-              <SermonInfoBlock
-                sermon={screen.sermon}
-                juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
-              />
-            )}
-          </section>
-        )}
-
-        {/* ── 오늘 예배가 끝난 경우(다시보기) ── */}
-        {status === "ENDED" && (
-          <section className="mb-14 max-w-6xl mx-auto">
-            {liveVideoId ? (
-              <>
-                <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${liveVideoId}`}
-                    title={screen.sermon?.title ?? "지난 예배"}
-                    className="w-full h-full"
-                    allowFullScreen
-                  />
-                </div>
-                {screen.sermon && (
-                  <SermonInfoBlock
-                    sermon={screen.sermon}
-                    juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
-                  />
-                )}
-              </>
-            ) : (
-              <NoServiceCard message="다시보기 영상을 준비 중입니다" />
-            )}
-          </section>
-        )}
-
-        {/* ── 오늘 예배 없음 ── */}
-        {status === "NONE" && (
-          <section className="mb-14 max-w-5xl mx-auto">
-            <NoServiceCard />
-          </section>
-        )}
-
-        {/* ── 지난 설교 가로 스크롤 ── */}
-        <section className="max-w-5xl mx-auto">
-          <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
-          {recentSermons.length === 0 ? (
-            <div className="bg-bluegrey-1 rounded-2xl py-16 px-8 flex flex-col items-center justify-center text-center min-h-[200px]">
-              <YouTubeIcon className="w-12 h-12 text-bluegrey-4 mb-4" />
-              <p className="text-body-3 font-medium text-grey-8 mb-2">등록된 지난 설교가 없습니다.</p>
-              <p className="text-body-4 text-grey-6">더 많은 설교는 유튜브 채널에서 확인하세요.</p>
-              {channelUrl && (
-                <a
-                  href={channelUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 px-5 py-2 rounded-full bg-primary text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
-                >
-                  유튜브 채널 이동
-                </a>
-              )}
-            </div>
-          ) : (
-            <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
-              {recentSermons.map((s) => (
-                <Link
-                  key={s.id}
-                  to={`/말씀/설교/${s.id}`}
-                  className="group shrink-0 w-52 rounded-xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-md transition-all"
-                >
-                  <div
-                    className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
-                    style={{ aspectRatio: "16/9" }}
-                  >
-                    <YouTubeIcon className="w-8 h-8 text-grey-4 group-hover:text-primary transition-colors" />
-                  </div>
-                  <div className="p-3">
-                    <p className="text-body-4 font-medium text-grey-10 group-hover:text-primary transition-colors line-clamp-2 mb-1">
-                      {s.title}
-                    </p>
-                    <div className="flex items-center gap-1.5 text-body-5 text-grey-5">
-                      {s.worshipType && (
-                        <>
-                          <span>{s.worshipType}</span>
-                          <span>·</span>
-                        </>
-                      )}
-                      <span>{s.sermonDate}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-          {recentSermons.length > 0 && channelUrl && (
-            <p className="mt-4 text-body-4 text-grey-6">
-              더 많은 설교는{" "}
-              <a
-                href={channelUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
+        <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "260px 1fr" }}>
+          {/* 좌측: 탭 그룹 */}
+          <div className="flex flex-col w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+            {["예배 보기", "예배 안내"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                  activeTab === tab
+                    ? "bg-primary text-white"
+                    : "text-grey-9 hover:bg-blue-1 hover:text-primary"
+                }`}
               >
-                유튜브 채널
-              </a>
-              에서 확인하세요.
-            </p>
-          )}
-        </section>
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* 우측: 탭 콘텐츠 */}
+          <div className="flex-1 w-full min-w-0">
+            {/* ── 탭 1: 예배 보기 ── */}
+            {activeTab === "예배 보기" && (
+              <>
+                {/* 로딩 중 */}
+                {status === "loading" && (
+                  <section className="mb-14">
+                    <div className="w-full overflow-hidden bg-grey-2 animate-pulse aspect-video" />
+                  </section>
+                )}
+
+                {/* 실시간 중 */}
+                {status === "LIVE" && (
+                  <section className="mb-14">
+                    <p className="text-body-4 text-grey-6 mb-3">지금 예배가 진행중입니다</p>
+                    <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video rounded-2xl">
+                      {liveVideoId ? (
+                        <iframe
+                          src={`https://www.youtube.com/embed/${liveVideoId}?autoplay=1`}
+                          title="실시간 예배 방송"
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; encrypted-media"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-4 rounded-2xl">
+                          <YouTubeIcon className="w-16 h-16 text-grey-5" />
+                          <p className="text-grey-5 text-body-3">실시간 영상 정보를 불러올 수 없습니다.</p>
+                          {channelUrl && (
+                            <a
+                              href={channelUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-5 py-2.5 rounded-full bg-red-600 text-white text-body-3 font-semibold hover:bg-red-700 transition-colors"
+                            >
+                              유튜브 채널에서 보기
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {screen.sermon && (
+                      <SermonInfoBlock
+                        sermon={screen.sermon}
+                        isLive
+                        juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
+                      />
+                    )}
+                  </section>
+                )}
+
+                {/* 방송 예정 */}
+                {status === "BEFORE" && (
+                  <section className="mb-14">
+                    <div className="w-full bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
+                      <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다.</p>
+                    </div>
+                    {screen.sermon && (
+                      <SermonInfoBlock
+                        sermon={screen.sermon}
+                        juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
+                      />
+                    )}
+                  </section>
+                )}
+
+                {/* 오늘 예배가 끝난 경우(다시보기) */}
+                {status === "ENDED" && (
+                  <section className="mb-14">
+                    {liveVideoId ? (
+                      <>
+                        <div className="w-full overflow-hidden bg-grey-11 shadow-xl aspect-video">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${liveVideoId}`}
+                            title={screen.sermon?.title ?? "지난 예배"}
+                            className="w-full h-full"
+                            allowFullScreen
+                          />
+                        </div>
+                        {screen.sermon && (
+                          <SermonInfoBlock
+                            sermon={screen.sermon}
+                            juboOnClick={screen.bulletinAvailable ? () => setJuboOpen(true) : null}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <NoServiceCard message="다시보기 영상을 준비 중입니다" />
+                    )}
+                  </section>
+                )}
+
+                {/* 오늘 예배 없음 */}
+                {status === "NONE" && (
+                  <section className="mb-14">
+                    <NoServiceCard />
+                  </section>
+                )}
+
+                {/* 지난 설교 가로 스크롤 */}
+                <section>
+                  <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">지난 설교</h2>
+                  {recentSermons.length === 0 ? (
+                    <div className="bg-bluegrey-1 rounded-2xl py-16 px-8 flex flex-col items-center justify-center text-center min-h-[200px]">
+                      <YouTubeIcon className="w-12 h-12 text-bluegrey-4 mb-4" />
+                      <p className="text-body-3 font-medium text-grey-8 mb-2">등록된 지난 설교가 없습니다.</p>
+                      <p className="text-body-4 text-grey-6">더 많은 설교는 유튜브 채널에서 확인하세요.</p>
+                      {channelUrl && (
+                        <a
+                          href={channelUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 px-5 py-2 rounded-full bg-primary text-white text-body-4 font-medium hover:bg-blue-8 transition-colors"
+                        >
+                          유튜브 채널 이동
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
+                      {recentSermons.map((s) => (
+                        <Link
+                          key={s.id}
+                          to={`/말씀/설교/${s.id}`}
+                          className="group shrink-0 w-52 rounded-xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-md transition-all"
+                        >
+                          <div
+                            className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
+                            style={{ aspectRatio: "16/9" }}
+                          >
+                            <YouTubeIcon className="w-8 h-8 text-grey-4 group-hover:text-primary transition-colors" />
+                          </div>
+                          <div className="p-3">
+                            <p className="text-body-4 font-medium text-grey-10 group-hover:text-primary transition-colors line-clamp-2 mb-1">
+                              {s.title}
+                            </p>
+                            <div className="flex items-center gap-1.5 text-body-5 text-grey-5">
+                              {s.worshipType && (
+                                <>
+                                  <span>{s.worshipType}</span>
+                                  <span>·</span>
+                                </>
+                              )}
+                              <span>{s.sermonDate}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {recentSermons.length > 0 && channelUrl && (
+                    <p className="mt-4 text-body-4 text-grey-6">
+                      더 많은 설교는{" "}
+                      <a
+                        href={channelUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline font-medium"
+                      >
+                        유튜브 채널
+                      </a>
+                      에서 확인하세요.
+                    </p>
+                  )}
+                </section>
+              </>
+            )}
+
+            {/* ── 탭 2: 예배 안내 ── */}
+            {activeTab === "예배 안내" && (
+              <section>
+                <div className="space-y-8">
+                  {church.worshipDisplay?.map((display, idx) => {
+                    let schedule = [];
+                    if (display.isDepartments) {
+                      schedule = church.worshipSchedule?.departments?.slice(0, 4) || [];
+                    } else {
+                      schedule = display.regularIndices
+                        ?.map((i) => church.worshipSchedule?.regular?.[i])
+                        .filter(Boolean) || [];
+                    }
+
+                    return (
+                      <div key={idx} className="border-b border-dashed border-grey-3 pb-6 last:border-0">
+                        <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-4">{display.title}</h3>
+                        <div className="space-y-3">
+                          {schedule.map((item, i) => (
+                            <div key={i} className="flex items-center justify-between">
+                              <span className="text-body-3 text-grey-8">
+                                {display.isDepartments ? item.name : `${item.time}`}
+                              </span>
+                              {item.location && (
+                                <span className="text-body-4 text-grey-6">{item.location}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 스마트 주보 모달 */}

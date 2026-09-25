@@ -1,7 +1,6 @@
 import MainBanner from "@/components/home/MainBanner";
-import SearchSection from "@/components/home/SearchSection";
+import MenuCards from "@/components/home/MenuCards";
 import WorshipSection from "@/components/home/WorshipSection";
-import ServiceBand from "@/components/home/ServiceBand";
 import NoticeSection from "@/components/home/NoticeSection";
 import DirectionsSection from "@/components/home/DirectionsSection";
 import ScrollDownButton from "@/components/home/ScrollDownButton";
@@ -18,11 +17,10 @@ export default function Home() {
           <MainBanner />
         </div>
         <div data-home-section className="min-h-screen flex flex-col justify-center bg-bluegrey-1">
-          <SearchSection />
+          <MenuCards />
         </div>
-        <div data-home-section className="min-h-screen flex flex-col justify-center">
+        <div data-home-section className="min-h-screen flex flex-col justify-center bg-bluegrey-1">
           <WorshipSection />
-          <ServiceBand />
         </div>
         <div data-home-section className="min-h-screen flex flex-col justify-center bg-bluegrey-1">
           <NoticeSection />

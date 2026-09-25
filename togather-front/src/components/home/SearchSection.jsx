@@ -87,6 +87,7 @@ export default function SearchSection() {
   const navigate = useNavigate();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("intro");
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -148,18 +149,27 @@ export default function SearchSection() {
       </div>
 
       {/* Shortcut cards */}
-      <div className="grid grid-cols-4 gap-9 mt-20 w-full max-w-[900px]">
+      <div className="grid grid-cols-4 gap-6 mt-20 w-full max-w-[950px]">
         {MENU_ITEMS.map((item) => (
           <Link
             key={item.id}
             to={item.to}
-            className="group aspect-square bg-white rounded-2xl border border-bluegrey-2 p-4 flex flex-col items-center justify-center text-center gap-2 hover:-translate-y-1 hover:bg-primary hover:border-primary transition-all duration-200"
+            onClick={() => setActiveMenu(item.id)}
+            className={`group aspect-square rounded-2xl border p-4 flex flex-col items-center justify-center text-center gap-2 hover:-translate-y-1 transition-all duration-200 ${
+              activeMenu === item.id
+                ? "bg-primary border-primary text-white"
+                : "bg-white border-bluegrey-2 hover:bg-primary hover:border-primary"
+            }`}
           >
-            <div className="shrink-0 text-primary group-hover:text-white transition-colors pb-5">
+            <div className={`shrink-0 transition-colors pb-5 ${
+              activeMenu === item.id ? "text-white" : "text-primary group-hover:text-white"
+            }`}>
               {item.icon}
             </div>
             <div className="min-w-0">
-              <p className="text-body-2 font-bold text-grey-12 group-hover:text-white tracking-[-0.4px] m-0 leading-tight transition-colors">
+              <p className={`text-body-2 font-bold tracking-[-0.4px] m-0 leading-tight transition-colors ${
+                activeMenu === item.id ? "text-white" : "text-grey-12 group-hover:text-white"
+              }`}>
                 {item.label}
               </p>
             </div>

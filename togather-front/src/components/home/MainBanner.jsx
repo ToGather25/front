@@ -1,14 +1,26 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getChurchProfile } from "@/services/churchProfileService";
 import defaultBanner from "@/assets/default_banner.png";
+import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoClose from "@/assets/icon-svg/popup-close.svg";
 
 export default function MainBanner() {
+  const navigate = useNavigate();
   const { church } = useChurch();
   const { data: profile } = useFetch(() => getChurchProfile(church.id), [church.id], null);
   const { title, subtitle } = church.mainBanner;
   const bgImage = profile?.representativeImageUrl || defaultBanner;
+  const [value, setValue] = useState("");
+  const [focused, setFocused] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmed = value.trim();
+    if (trimmed) void navigate(`/검색?q=${encodeURIComponent(trimmed)}`);
+  };
 
   return (
     <section
@@ -58,7 +70,7 @@ export default function MainBanner() {
       />
 
       {/* Content */}
-      <div className="relative h-full max-w-[1400px] mx-auto px-[50px] pt-[300px] flex flex-col justify-center">
+      <div className="relative h-full max-w-[1400px] mx-auto px-[50px] pt-[240px] flex flex-col justify-center">
         {/* Verse */}
         <p
           className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"
@@ -79,39 +91,30 @@ export default function MainBanner() {
           {subtitle}
         </div>
 
-        {/* CTA buttons */}
-        <div className="flex gap-3.5 mt-10">
-          <Link
-            to="/말씀/방송"
-            className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full bg-white text-blue-10 font-semibold text-[17px] tracking-[-0.3px] hover:bg-blue-4 hover:text-white hover:-translate-y-0.5 transition-all duration-200"
-          >
-            <span>이번 주 예배 보기</span>
-            <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 4l14 8-14 8z" />
-            </svg>
-          </Link>
-          <Link
-            to="/말씀/안내"
-            className="inline-flex items-center gap-3 px-7 py-[18px] rounded-full font-semibold text-[17px] tracking-[-0.3px] text-white hover:-translate-y-0.5 transition-all duration-200"
-            style={{
-              background: "rgba(255,255,255,.08)",
-              border: "1px solid rgba(255,255,255,.4)",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,.18)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,.08)")}
-          >
-            <span>예배 안내</span>
-            <svg
-              className="w-[18px] h-[18px]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </Link>
-        </div>
+        {/* Search bar */}
+        <form
+          onSubmit={handleSearch}
+          className={`flex items-center gap-3 px-6 rounded-full transition-all duration-200 mt-10 w-full max-w-[460px]`}
+          style={{
+            height: "56px",
+            background: focused ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.3)",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="원하는 기능을 검색해보세요"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            className={`flex-1 bg-transparent border-0 outline-none text-body-1 ${
+              focused ? "text-white placeholder:text-white caret-white" : "text-white/70 placeholder:text-white/60"
+            }`}
+          />
+          <button type="submit" aria-label="검색">
+            <img src={IcoSearch} className={`w-[22px] h-[22px] shrink-0 transition-opacity ${focused ? "opacity-100" : "opacity-70"}`} alt="" />
+          </button>
+        </form>
       </div>
     </section>
   );
