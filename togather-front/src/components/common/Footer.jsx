@@ -8,7 +8,7 @@ import ChurchLogo from "@/components/common/ChurchLogo";
 export default function Footer({ isHome = false }) {
   const { church } = useChurch();
 
-  const bgClass = isHome ? "bg-primary" : "bg-bluegrey-1";
+  const bgClass = isHome ? "bg-primary-darker" : "bg-bluegrey-1";
   const borderClass = isHome ? "border-primary" : "border-bluegrey-2";
   const textColorClass = isHome ? "text-white" : "text-grey-10";
   const linkColorClass = isHome ? "hover:text-white/80" : "hover:text-blue-7";
@@ -23,7 +23,11 @@ export default function Footer({ isHome = false }) {
         <div className="max-w-[1440px] mx-auto px-8 pt-10 pb-16 flex items-end justify-between gap-8">
           <div className="flex gap-16 items-start">
             <div className="flex items-center gap-2.5 h-[52px]">
-              <ChurchLogo className="w-30 object-contain" alt={`${church.name} 로고`} />
+              <ChurchLogo
+                className="h-30 w-30 object-contain transition-[filter] duration-300"
+                style={{ filter: isHome ? "brightness(0) invert(1)" : "none" }}
+                alt={`${church.name} 로고`}
+              />
             </div>
             <div className="flex flex-col gap-5 py-2">
               <div className={`flex items-center gap-10 text-body-2 font-bold ${textColorClass}`}>
