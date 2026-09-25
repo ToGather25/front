@@ -83,16 +83,16 @@ export default function MessageSection() {
         <div className="flex gap-14 items-end">
           {/* 설교 카드 */}
           {loading ? (
-            <div className="flex-1 h-[548px] bg-grey-2 rounded-[32px] p-[60px] flex items-center justify-center animate-pulse">
+            <div className="flex-1 h-[550px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse">
               <p className="text-grey-6">로딩 중...</p>
             </div>
           ) : sermon ? (
             <div
               onClick={() => navigate("/말씀")}
-              className="flex-1 h-[548px] bg-gradient-to-b from-grey-11/20 to-grey-11/80 rounded-[32px] p-[60px] flex flex-col justify-end gap-8 cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden"
+              className="flex-2 h-[548px] bg-gradient-to-b from-grey-11/20 to-grey-11/80 rounded-3xl p-[60px] flex flex-col justify-end gap-8 cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden"
             >
               <div className="relative z-10">
-                <h3 className="text-white text-[55px] font-semibold leading-tight mb-4">
+                <h3 className="text-white text-headline-5 font-semibold leading-tight mb-4">
                   {sermon.title}
                 </h3>
                 <div className="text-white space-y-1">
@@ -110,18 +110,20 @@ export default function MessageSection() {
           )}
 
           {/* 예배시간 */}
-          <div className="flex-1 py-5 space-y-7">
+          <div className="flex-1 py-2 space-y-0">
             {schedules.map((schedule, i) => (
-              <div key={i}>
-                <div className="flex gap-6 items-center mb-4">
-                  <p className="text-primary text-[30px] font-semibold w-32">
-                    {schedule.label}
-                  </p>
-                  <p className="text-grey-6 text-[22px]">{schedule.time}</p>
-                </div>
-                {i < schedules.length - 1 && (
-                  <div className="h-px bg-grey-3 w-full" />
-                )}
+              <div
+                key={i}
+                className={`grid grid-cols-[auto_1fr] items-center gap-8 ${
+                  i === schedules.length - 1 ? "pt-5" : "py-5"
+                } ${i < schedules.length - 1 ? "border-b border-dashed border-grey-3" : ""}`}
+              >
+                <span className="text-sub-tit-4 font-medium text-bluegrey-9">
+                  {schedule.label}
+                </span>
+                <span className="text-body-4 text-grey-7 whitespace-nowrap">
+                  {schedule.time}
+                </span>
               </div>
             ))}
           </div>

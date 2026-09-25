@@ -209,7 +209,7 @@ const churchConfig = {
       { name: "오후 예배", time: "주일 오후 2시", location: "본당" },
       { name: "수요 예배", time: "수요일 오전 10시", location: "본당" },
       { name: "금요기도회", time: "금요일 오후 8시", location: "본당" },
-      { name: "새벽기도회", time: "매일 오전 5시반", location: "본당" },
+      { name: "새벽기도회", time: "오전 5시 30분", location: "본당" },
     ],
     departments: [
       { name: "유치부", time: "주일 오전 11시", location: "1층 유치부실" },
