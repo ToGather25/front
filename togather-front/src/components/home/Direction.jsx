@@ -1,14 +1,22 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
+import churchSermonBg from "@/assets/church_sermon.png";
 
 export default function Direction() {
   const { church } = useChurch();
 
   return (
     <div className="relative py-[120px]">
-      {/* 어두운 배경 + 배경 이미지 */}
-      <div className="absolute inset-0 bg-primary-darker" />
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-darker/60 to-primary-darker/90" />
+      {/* 배경 이미지 + 오버레이 */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src={churchSermonBg}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        {/* 어두운 오버레이 (#1A2439 투명도 80%) */}
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(26, 36, 57, 0.8)" }} />
+      </div>
 
       {/* 콘텐츠 */}
       <div className="relative px-[180px] flex justify-center">
