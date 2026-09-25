@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import defaultBanner from "@/assets/default_banner.png";
 
 export default function MessageSection() {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export default function MessageSection() {
         const latestVideo = videosData.items?.[0]?.snippet;
 
         if (latestVideo) {
+          const videoId = latestVideo.resourceId?.videoId;
           setSermon({
             title: latestVideo.title,
             date: new Date(latestVideo.publishedAt).toLocaleDateString(
@@ -48,6 +50,9 @@ export default function MessageSection() {
             ),
             preacher: church.pastor || "담임목사",
             scripture: latestVideo.description?.split("\n")[0] || "",
+            videoId: videoId,
+            youtubeUrl: videoId ? `https://www.youtube.com/watch?v=${videoId}` : null,
+            thumbnail: latestVideo.thumbnails?.high?.url || defaultBanner,
           });
         }
       } catch (error) {
@@ -95,8 +100,17 @@ export default function MessageSection() {
             ) : sermon ? (
               <div
                 onClick={() => navigate("/말씀")}
-                className="flex-2 h-[548px] bg-gradient-to-b from-grey-11/20 to-grey-11/80 rounded-3xl p-[60px] flex flex-col justify-end gap-8 cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden"
+                className="flex-2 h-[548px] rounded-3xl p-[60px] flex flex-col justify-end gap-8 cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
+                style={{
+                  backgroundImage: `url('${sermon.thumbnail}')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
               >
+                {/* 오버레이 */}
+                <div className="absolute inset-0 bg-gradient-to-b from-grey-11/20 to-grey-11/80 group-hover:from-grey-11/30 group-hover:to-grey-11/85 transition-colors" />
+
+                {/* 콘텐츠 */}
                 <div className="relative z-10">
                   <h3 className="text-white text-headline-5 font-semibold leading-tight mb-4">
                     {sermon.title}
@@ -108,6 +122,24 @@ export default function MessageSection() {
                     <p className="text-[20px] text-white/80">{sermon.scripture}</p>
                   </div>
                 </div>
+
+                {/* YouTube 링크 버튼 - hover 시 표시 */}
+                {sermon.youtubeUrl && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(sermon.youtubeUrl, "_blank");
+                    }}
+                    className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    aria-label="YouTube에서 보기"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-colors">
+                      <svg className="w-5 h-5 text-blue-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </div>
+                  </button>
+                )}
               </div>
             ) : (
               <div className="flex-1 h-[548px] bg-grey-1 rounded-[32px] p-[60px] flex items-center justify-center border border-grey-3">
