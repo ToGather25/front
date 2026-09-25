@@ -176,7 +176,7 @@ export default function Jubo() {
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-4 py-6 md:px-8 md:py-10">
+      <div className="max-w-5xl mx-auto px-4 py-6 md:px-8 md:py-10">
         {/* 헤더 — 프린트 시 숨김 */}
         <div className="jubo-no-print">
           <h1 className="text-sub-tit-1 font-bold text-grey-12 mb-6">스마트 주보</h1>
