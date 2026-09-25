@@ -41,11 +41,11 @@ export default function Footer({ isHome = false }) {
               <div className="flex flex-col gap-2.5">
                 <div className={`flex items-center gap-10 text-body-3 ${bodyColorClass}`}>
                   <div className="flex items-center gap-2">
-                    <img src={FooterLocation} className="w-5 h-5 shrink-0" alt="" />
+                    <img src={FooterLocation} className={`w-5 h-5 shrink-0 ${isHome ? "invert brightness-0" : ""}`} alt="" />
                     <span>{church.address}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <img src={FooterPhone} className="w-5 h-5 shrink-0" alt="" />
+                    <img src={FooterPhone} className={`w-5 h-5 shrink-0 ${isHome ? "invert brightness-0" : ""}`} alt="" />
                     <span>
                       TEL <strong>{church.tel}</strong>
                     </span>
@@ -60,7 +60,7 @@ export default function Footer({ isHome = false }) {
                   </div>
                 </div>
                 <div className={`flex items-center gap-2 text-body-3 ${bodyColorClass}`}>
-                  <img src={FooterEmail} className="w-5 h-5 shrink-0" alt="" />
+                  <img src={FooterEmail} className={`w-5 h-5 shrink-0 ${isHome ? "invert brightness-0" : ""}`} alt="" />
                   <span>{church.email}</span>
                 </div>
               </div>
