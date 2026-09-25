@@ -7,6 +7,8 @@ import { getLiveScreen } from "@/services/sermonService";
 import ArrowExternal from "@/assets/icon-svg/arrow-external.svg";
 
 function VideoThumb({ isLive, onClick, sermon }) {
+  const backgroundImage = sermon.image || defaultBanner;
+
   return (
     <div
       className="relative w-full aspect-video rounded-2xl overflow-hidden bg-grey-11 cursor-pointer group"
@@ -14,7 +16,7 @@ function VideoThumb({ isLive, onClick, sermon }) {
       role="button"
       tabIndex={0}
     >
-      <img src={defaultBanner} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      <img src={backgroundImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
 
       {/* Sermon info overlay */}
@@ -78,6 +80,7 @@ export default function WorshipSection() {
     date: "2026년 3월 17일 · 주일 1부 예배",
     title: isLive ? (screen.sermon?.title ?? "사랑으로 부르신\n그 자리에서") : "사랑으로 부르신\n그 자리에서",
     verse: `요한일서 4:7–12 · ${church.pastor || "담임목사"}`,
+    image: screen.sermon?.image || null,
   };
 
   return (
