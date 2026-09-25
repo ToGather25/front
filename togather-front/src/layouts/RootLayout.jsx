@@ -806,7 +806,7 @@ function Layout() {
       </main>
 
       {/* 푸터 (bible 전체화면 페이지 제외) */}
-      {!isBiblePage && <Footer />}
+      {!isBiblePage && <Footer isHome={pathname === "/"} />}
 
       {/* 모바일 바텀 네비 */}
       <BottomNav />
