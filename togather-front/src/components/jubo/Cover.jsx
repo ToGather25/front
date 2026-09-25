@@ -38,7 +38,7 @@ export default function Cover({ issue }) {
             onClick={refetchJuboInfo}
             className="w-full text-center text-caption text-primary underline"
           >
-            주보 정보를 불러오지 못했습니다. 다시 시도
+            주보 정보를 불러오지 못했습니다.
           </button>
         ) : (
           <>
@@ -51,19 +51,18 @@ export default function Cover({ issue }) {
       {/* 올해 표어 + 성경구절 */}
       {sloganTitle && sloganScripture && (
         <div
-          className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2"
-          style={{ minHeight: 280 }}
+          className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2 min-h-[150px]"
         >
           <div className="flex flex-col justify-center gap-4 px-6 py-6 sm:w-[38%] sm:shrink-0">
             <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
               {sloganYear}년 표어
             </span>
-            <h2 className="text-[26px] md:text-[32px] font-bold leading-[1.35] text-primary">
+            <h2 className="text-sub-tit-3 font-bold leading-[1.35] text-primary">
               {sloganTitle}
             </h2>
-            <p className="text-[13px] text-grey-7">{sloganScripture}</p>
+            <p className="text-field-desc text-grey-7">{sloganScripture}</p>
           </div>
-          <div className="flex-1 relative overflow-hidden bg-grey-3 min-h-[220px]">
+          <div className="flex-1 relative overflow-hidden bg-grey-3 min-h-[180px]">
             {churchPhoto ? (
               <img src={churchPhoto} alt="교회 건물" className="w-full h-full object-cover" />
             ) : (
@@ -79,23 +78,22 @@ export default function Cover({ issue }) {
       )}
 
       {/* 파노라마 사진 */}
-      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2 h-[280px]">
+      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2 h-[250px]">
         <img src={panoramaPhoto} alt="예배 전경" className="w-full h-full object-cover" />
       </div>
 
       {/* 3대 실천사항 + 단체 사진 */}
       <div
-        className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2"
-        style={{ minHeight: 300 }}
+        className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2 min-h-[150px]"
       >
         <div
           className="flex flex-col items-center justify-center gap-3 px-8 py-6 sm:w-[38%] sm:shrink-0"
           style={{ background: "var(--color-primary)" }}
         >
-          <p className="text-[11px] font-semibold text-blue-3 tracking-widest">[실천사항]</p>
-          <div className="flex flex-col items-center gap-1.5">
+          <p className="text-field-desc font-semibold text-blue-3 tracking-widest">[실천사항]</p>
+          <div className="flex flex-col items-center gap-1">
             {items.map(({ label }) => (
-              <p key={label} className="text-sub-tit-3 font-bold text-white">
+              <p key={label} className="text-body-3 font-bold text-white">
                 {label}
               </p>
             ))}

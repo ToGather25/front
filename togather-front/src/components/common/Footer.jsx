@@ -19,7 +19,7 @@ export default function Footer({ isHome = false }) {
   return (
     <>
       {/* Desktop Footer (md 이상에서만 표시) */}
-      <footer className={`${bgClass} border-t ${borderClass} hidden md:block`}>
+      <footer className={`${bgClass} hidden md:block`}>
         <div className="max-w-[1440px] mx-auto px-8 pt-10 pb-16 flex items-end justify-between gap-8">
           <div className="flex gap-16 items-start">
             <div className="flex items-center gap-2.5 h-[52px]">

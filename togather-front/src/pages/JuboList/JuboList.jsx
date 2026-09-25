@@ -284,8 +284,11 @@ function DateJumpPicker({ issues, onSelectWeek }) {
                   주(週) 행 전체를 감싸도록 grid 위에 절대 위치로 겹쳐 그린다. */}
               {selectedRowIndex != null && (
                 <div
-                  className="absolute inset-x-0 h-9 rounded-full bg-blue-2 z-0"
-                  style={{ top: selectedRowIndex * 40 }}
+                  className="absolute inset-x-0 rounded-full bg-blue-2 z-0"
+                  style={{
+                    top: `calc(${selectedRowIndex} * 40px + ${selectedRowIndex} * 5px)`,
+                    height: "36px"
+                  }}
                 />
               )}
               {cells.map((c, i) => {

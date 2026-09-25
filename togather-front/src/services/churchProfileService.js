@@ -14,6 +14,11 @@ const EMPTY_PROFILE = {
   offeringAccountHolder: null,
 };
 
+/** 더미 데이터 사용 여부 — 백엔드 연동 시 항상 false */
+function isDummy(type) {
+  return false;
+}
+
 /**
  * 교회 프로필(메인화면 대표이미지/슬로건) 조회 — 공개
  * @param {string} churchId

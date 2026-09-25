@@ -16,6 +16,11 @@ import {
   DUMMY_SERMON_NOTE,
 } from "@/data/dummy/jubo";
 
+/** 더미 데이터 사용 여부 — 백엔드 연동 시 항상 false */
+function isDummy(type) {
+  return false;
+}
+
 /**
  * @typedef {{ issueNo: string, date: string }} JuboInfo
  * @typedef {{ id: string|number, issueNo: string, date: string, dateLabel: string, sermonTitle: string, verse: string, current?: boolean }} JuboIssue
