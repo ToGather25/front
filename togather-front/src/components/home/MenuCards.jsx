@@ -62,8 +62,8 @@ export default function MenuCards() {
               }`}
               style={{
                 boxShadow: isHovered
-                  ? "8px 6px 12px rgba(41, 49, 66, 0.15)"
-                  : "8px 4px 12px rgba(41, 49, 66, 0.08)"
+                  ? "12px 8px 44px rgba(41, 49, 66, 0.15)"
+                  : "8px 4px 36px rgba(41, 49, 66, 0.08)"
               }}
             >
               <img
