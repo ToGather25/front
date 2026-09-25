@@ -2,7 +2,7 @@ import MainBanner from "@/components/home/MainBanner";
 import MenuCards from "@/components/home/MenuCards";
 import MessageSection from "@/components/home/MessageSection";
 import NotificationSection from "@/components/home/NotificationSection";
-import DirectionsSection from "@/components/home/DirectionsSection";
+import Direction from "@/components/home/Direction";
 import ScrollDownButton from "@/components/home/ScrollDownButton";
 import MobileHome from "@/pages/Home/MobileHome";
 
@@ -25,8 +25,8 @@ export default function Home() {
         <div data-home-section className="min-h-screen flex flex-col justify-center">
           <NotificationSection />
         </div>
-        <div data-home-section className="min-h-screen flex flex-col justify-center">
-          <DirectionsSection />
+        <div data-home-section className="flex flex-col justify-center">
+          <Direction />
         </div>
         <ScrollDownButton />
       </div>
