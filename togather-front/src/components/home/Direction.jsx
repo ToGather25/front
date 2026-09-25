@@ -6,7 +6,7 @@ export default function Direction() {
   const { church } = useChurch();
 
   return (
-    <div className="relative py-[120px]">
+    <div className="relative py-[150px]">
       {/* 배경 이미지 + 오버레이 */}
       <div className="absolute inset-0 overflow-hidden">
         <img
@@ -28,7 +28,7 @@ export default function Direction() {
           </div>
 
           {/* 지도 */}
-          <div className="w-full rounded-[24px] overflow-hidden border-2 border-grey-10 h-[546px] bg-grey-1">
+          <div className="w-full rounded-2xl overflow-hidden border-2 border-grey-10 h-[540px] bg-grey-1">
             <KakaoMap
               level={church.location?.level ?? 3}
               address={church.address}

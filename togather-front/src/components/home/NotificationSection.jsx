@@ -29,7 +29,7 @@ export default function NotificationSection() {
   ];
 
   return (
-    <div className="py-[160px] px-[200px] flex justify-center w-full">
+    <div className="pb-[140px] px-[200px] flex justify-center w-full">
       <div className="w-[1520px]">
         {/* 타이틀 */}
         <div className="text-center mb-14">

@@ -71,7 +71,7 @@ export default function MessageSection() {
   })) || [];
 
   return (
-    <div className="py-[120px]">
+    <div className="pb-[120px]">
       <div className="px-[180px] flex justify-center">
         {/* 타이틀 */}
         <div className="w-full text-center mb-16">
