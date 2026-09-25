@@ -9,6 +9,13 @@ import ArrowExternal from "@/assets/icon-svg/arrow-external.svg";
 function VideoThumb({ isLive, onClick, sermon }) {
   const backgroundImage = sermon.image || defaultBanner;
 
+  const handleYouTubeClick = (e) => {
+    if (sermon.youtubeUrl) {
+      e.stopPropagation();
+      window.open(sermon.youtubeUrl, "_blank");
+    }
+  };
+
   return (
     <div
       className="relative w-full aspect-video rounded-2xl overflow-hidden bg-grey-11 cursor-pointer group"
@@ -36,6 +43,21 @@ function VideoThumb({ isLive, onClick, sermon }) {
           </svg>
         </div>
       </div>
+
+      {/* YouTube arrow button - show on hover */}
+      {sermon.youtubeUrl && (
+        <button
+          onClick={handleYouTubeClick}
+          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          aria-label="YouTube에서 보기"
+        >
+          <div className="w-10 h-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-colors">
+            <svg className="w-5 h-5 text-blue-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </div>
+        </button>
+      )}
 
       {/* Live badge */}
       {isLive && (
@@ -81,6 +103,7 @@ export default function WorshipSection() {
     title: isLive ? (screen.sermon?.title ?? "사랑으로 부르신\n그 자리에서") : "사랑으로 부르신\n그 자리에서",
     verse: `요한일서 4:7–12 · ${church.pastor || "담임목사"}`,
     image: screen.sermon?.image || null,
+    youtubeUrl: isLive ? screen.youtubeLiveUrl : screen.sermon?.youtubeUrl,
   };
 
   return (
