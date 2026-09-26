@@ -142,7 +142,7 @@ export default function JuboList({ hideHeader = false }) {
                 <Link
                   key={issue.id}
                   to={`/주보?issue=${issue.id}`}
-                  className="group rounded-2xl border border-bluegrey-2 overflow-hidden hover:border-bluegrey-5 hover:shadow-lg transition-all bg-white"
+                  className="group rounded-2xl border border-bluegrey-2 overflow-hidden hover:shadow-xl transition-all bg-white"
                 >
                   <div className="relative h-40 bg-grey-2 flex flex-col items-center justify-center gap-2 px-4 overflow-hidden">
                     {issue.coverImageUrl ? (
