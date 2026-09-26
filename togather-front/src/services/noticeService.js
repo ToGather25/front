@@ -4,7 +4,6 @@
  */
 
 import api from "./api";
-import { DUMMY_NOTICES } from "@/data/dummy/notices";
 
 /**
  * 공지 목록 조회
@@ -28,19 +27,6 @@ export async function getNotices(churchId, params = {}) {
  * @returns {Promise<{noticeId:number|string, title:string, content:string, createdAt:string}>}
  */
 export async function createNotice(churchId, payload) {
-  if (isDummy("notice")) {
-    const created = {
-      id: Date.now(),
-      date: new Date().toISOString().slice(0, 10),
-      type: payload.type,
-      title: payload.title,
-      body: payload.body,
-      author: payload.author,
-      featured: payload.featured,
-    };
-    DUMMY_NOTICES.unshift(created);
-    return created;
-  }
   const res = await api.post(`/church/admin/notices`, {
     title: payload.title,
     content: payload.body,
@@ -59,12 +45,6 @@ export async function createNotice(churchId, payload) {
  * @returns {Promise<Notice|null>}
  */
 export async function updateNotice(churchId, noticeId, payload) {
-  if (isDummy("notice")) {
-    const idx = DUMMY_NOTICES.findIndex((n) => String(n.id) === String(noticeId));
-    if (idx === -1) return null;
-    DUMMY_NOTICES[idx] = { ...DUMMY_NOTICES[idx], title: payload.title, body: payload.body };
-    return DUMMY_NOTICES[idx];
-  }
   const res = await api.patch(`/church/admin/notices/${noticeId}`, {
     title: payload.title,
     content: payload.body,

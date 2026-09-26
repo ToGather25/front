@@ -10,7 +10,7 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-describe("Settings — 홈 화면 메인 배너 (실API 연동)", () => {
+describe("Settings — 홈 화면 메인 배너 · SNS (실API 연동)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -34,7 +34,7 @@ describe("Settings — 홈 화면 메인 배너 (실API 연동)", () => {
     });
     const user = userEvent.setup();
     renderWithChurch(<Settings />);
-    await screen.findByText("홈 화면 메인 배너");
+    await screen.findByText("홈 화면 메인 배너 · SNS");
 
     await user.type(
       screen.getByLabelText("대표 이미지 URL"),
@@ -47,9 +47,44 @@ describe("Settings — 홈 화면 메인 배너 (실API 연동)", () => {
       expect(api.put).toHaveBeenCalledWith("/church/admin/profile", {
         representativeImageUrl: "https://example.com/new.jpg",
         slogan: "새 슬로건",
+        instagramUrl: null,
       }),
     );
     expect(await screen.findByText("저장됨")).toBeInTheDocument();
+  });
+
+  it("인스타그램 URL을 조회해 채우고, 저장 시 instagramUrl로 함께 보낸다", async () => {
+    api.get.mockResolvedValue({
+      data: {
+        data: {
+          representativeImageUrl: "",
+          slogan: "",
+          instagramUrl: "https://www.instagram.com/old",
+          offeringBankName: "국민은행",
+        },
+      },
+    });
+    api.put.mockResolvedValue({ data: { data: {} } });
+    const user = userEvent.setup();
+    renderWithChurch(<Settings />);
+
+    const input = await screen.findByLabelText("인스타그램 URL");
+    expect(input).toHaveValue("https://www.instagram.com/old");
+
+    await user.clear(input);
+    await user.type(input, "https://www.instagram.com/new");
+    await user.click(screen.getAllByRole("button", { name: "저장" })[0]);
+
+    // 프로필 upsert는 통째 교체 — 편집하지 않은 헌금 계좌가 지워지지 않아야 한다
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/profile",
+        expect.objectContaining({
+          instagramUrl: "https://www.instagram.com/new",
+          offeringBankName: "국민은행",
+        }),
+      ),
+    );
   });
 
   it("조회에 실패하면 재시도 버튼이 뜨고, 클릭하면 다시 조회한다", async () => {
@@ -70,7 +105,7 @@ describe("Settings — 홈 화면 메인 배너 (실API 연동)", () => {
     api.put.mockRejectedValueOnce(new Error("network error"));
     const user = userEvent.setup();
     renderWithChurch(<Settings />);
-    await screen.findByText("홈 화면 메인 배너");
+    await screen.findByText("홈 화면 메인 배너 · SNS");
 
     await user.click(screen.getAllByRole("button", { name: "저장" })[0]);
 

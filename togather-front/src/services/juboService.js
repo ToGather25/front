@@ -1,25 +1,5 @@
 import api from "./api";
 import { formatKoreanDate } from "@/utils/date";
-import {
-  DUMMY_JUBO_INFO,
-  DUMMY_JUBO_ISSUES,
-  DUMMY_WORSHIP_SERVICES,
-  DUMMY_WORSHIP_ORDER,
-  DUMMY_VOLUNTEER,
-  DUMMY_OFFERING,
-  DUMMY_SUPPORT,
-  DUMMY_DISTRICTS,
-  DUMMY_MINISTERS,
-  DUMMY_COVER,
-  DUMMY_NEWS,
-  DUMMY_PRAYER_TOPICS,
-  DUMMY_SERMON_NOTE,
-} from "@/data/dummy/jubo";
-
-/** 더미 데이터 사용 여부 — 백엔드 연동 시 항상 false */
-function isDummy(type) {
-  return false;
-}
 
 /**
  * @typedef {{ issueNo: string, date: string }} JuboInfo
@@ -39,7 +19,6 @@ function isDummy(type) {
 
 /** 현재 발행된 주보의 호수/날짜 @returns {Promise<JuboInfo>} */
 export async function getJuboInfo(churchId) {
-  if (isDummy("jubo")) return DUMMY_JUBO_INFO;
   const res = await api.get(`/churches/${churchId}/jubo/current`);
   return res.data.data;
 }
@@ -62,7 +41,6 @@ function toJuboIssue(summary, currentIssueNo) {
  * @returns {Promise<JuboIssue[]>}
  */
 export async function getJuboIssues(churchId) {
-  if (isDummy("jubo")) return DUMMY_JUBO_ISSUES;
   const [{ data: archive }, current] = await Promise.all([
     api.get(`/churches/${churchId}/jubo`),
     getJuboInfo(churchId).catch(() => null),
@@ -79,8 +57,6 @@ export async function getJuboIssues(churchId) {
  * @returns {Promise<JuboIssue|null>}
  */
 export async function getJuboIssue(churchId, issueId) {
-  if (isDummy("jubo"))
-    return DUMMY_JUBO_ISSUES.find((issue) => String(issue.id) === String(issueId)) ?? null;
   const res = await api.get(`/churches/${churchId}/jubo/${issueId}`);
   const d = res.data.data;
   return {
@@ -95,77 +71,66 @@ export async function getJuboIssue(churchId, issueId) {
 
 /** @returns {Promise<WorshipService[]>} */
 export async function getWorshipServices(churchId) {
-  if (isDummy("jubo")) return DUMMY_WORSHIP_SERVICES;
   const res = await api.get(`/churches/${churchId}/jubo/worship-services`);
   return res.data.data;
 }
 
 /** serviceType 없이 호출해 전체 맵을 받는다 — 클라이언트에서 라벨로 조회한다 @returns {Promise<WorshipOrderMap>} */
 export async function getWorshipOrder(churchId) {
-  if (isDummy("jubo")) return DUMMY_WORSHIP_ORDER;
   const res = await api.get(`/churches/${churchId}/jubo/worship-order`);
   return res.data.data;
 }
 
 /** @returns {Promise<VolunteerRow[]>} */
 export async function getVolunteer(churchId) {
-  if (isDummy("jubo")) return DUMMY_VOLUNTEER;
   const res = await api.get(`/churches/${churchId}/jubo/volunteer`);
   return res.data.data;
 }
 
 /** @returns {Promise<TitledGroup[]>} */
 export async function getOffering(churchId) {
-  if (isDummy("jubo")) return DUMMY_OFFERING;
   const res = await api.get(`/churches/${churchId}/jubo/offering`);
   return res.data.data;
 }
 
 /** @returns {Promise<SupportRow[]>} */
 export async function getSupport(churchId) {
-  if (isDummy("jubo")) return DUMMY_SUPPORT;
   const res = await api.get(`/churches/${churchId}/jubo/support`);
   return res.data.data;
 }
 
 /** @returns {Promise<DistrictRow[]>} */
 export async function getDistricts(churchId) {
-  if (isDummy("jubo")) return DUMMY_DISTRICTS;
   const res = await api.get(`/churches/${churchId}/jubo/districts`);
   return res.data.data;
 }
 
 /** @returns {Promise<TitledGroup[]>} */
 export async function getMinisters(churchId) {
-  if (isDummy("jubo")) return DUMMY_MINISTERS;
   const res = await api.get(`/churches/${churchId}/jubo/ministers`);
   return res.data.data;
 }
 
 /** @returns {Promise<CoverContent>} */
 export async function getCover(churchId) {
-  if (isDummy("jubo")) return DUMMY_COVER;
   const res = await api.get(`/churches/${churchId}/jubo/cover`);
   return res.data.data;
 }
 
 /** @returns {Promise<TitledGroup[]>} */
 export async function getNews(churchId) {
-  if (isDummy("jubo")) return DUMMY_NEWS;
   const res = await api.get(`/churches/${churchId}/jubo/news`);
   return res.data.data;
 }
 
 /** @returns {Promise<PrayerTopic[]>} */
 export async function getPrayerTopics(churchId) {
-  if (isDummy("jubo")) return DUMMY_PRAYER_TOPICS;
   const res = await api.get(`/churches/${churchId}/jubo/prayer-topics`);
   return res.data.data;
 }
 
 /** @returns {Promise<SermonNote>} */
 export async function getSermonNote(churchId) {
-  if (isDummy("jubo")) return DUMMY_SERMON_NOTE;
   const res = await api.get(`/churches/${churchId}/jubo/sermon-note`);
   return res.data.data;
 }
@@ -177,7 +142,6 @@ export async function getSermonNote(churchId) {
  * @returns {Promise<{ id:number, issueNo:string, juboDate:string, published:boolean }>}
  */
 export async function createJuboIssue(churchId, payload) {
-  if (isDummy("jubo")) return { id: `dummy-${Date.now()}`, ...payload, published: false };
   const res = await api.post(`/church/admin/jubo`, payload);
   return res.data.data;
 }
@@ -191,7 +155,6 @@ export async function createJuboIssue(churchId, payload) {
  * @param {object} content
  */
 export async function updateJuboSection(churchId, juboId, sectionType, content) {
-  if (isDummy("jubo")) return;
   await api.put(`/church/admin/jubo/${juboId}/sections/${sectionType}`, content);
 }
 
@@ -202,7 +165,6 @@ export async function updateJuboSection(churchId, juboId, sectionType, content) 
  * @returns {Promise<{ id:number, issueNo:string, juboDate:string, published:boolean }>}
  */
 export async function publishJubo(churchId, juboId) {
-  if (isDummy("jubo")) return { id: juboId, issueNo: "", juboDate: "", published: true };
   const res = await api.post(`/church/admin/jubo/${juboId}/publish`);
   return res.data.data;
 }

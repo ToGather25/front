@@ -7,7 +7,7 @@ export default function Direction() {
 
   return (
     <div
-      className="relative py-[200px]"
+      className="relative py-[150px]"
       style={{
         backgroundImage: `url('${churchSermonBg}')`,
         backgroundAttachment: "fixed",

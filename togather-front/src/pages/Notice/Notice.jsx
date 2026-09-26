@@ -168,9 +168,9 @@ export default function Notice() {
                       </span>
                     </div>
                     <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">{selected.title}</h2>
-                    <div className="flex items-center gap-4 text-body-5 text-grey-6">
+                    <div className="flex items-center gap-1 text-body-5 text-grey-6">
                       <span>{selected.author}</span>
-                      <span>·</span>
+                      <span>|</span>
                       <span>{formatDate(selected.date)}</span>
                     </div>
                   </div>

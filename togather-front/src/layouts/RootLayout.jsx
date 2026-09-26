@@ -1,7 +1,7 @@
 import { Outlet, Link, NavLink, useLocation } from "react-router";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { AuthProvider, useAuth } from "@/contexts/auth";
-import { useChurch } from "@/contexts/ChurchContext";
+import { ChurchProvider, useChurch } from "@/contexts/ChurchContext";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import Footer from "@/components/common/Footer";
@@ -820,8 +820,10 @@ function Layout() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <ScrollToTop />
-      <Layout />
+      <ChurchProvider>
+        <ScrollToTop />
+        <Layout />
+      </ChurchProvider>
     </AuthProvider>
   );
 }

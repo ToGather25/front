@@ -18,8 +18,37 @@ function Probe() {
       <span data-testid="name">{church.name}</span>
       <span data-testid="tel">{church.tel}</span>
       <span data-testid="navCount">{church.nav.length}</span>
+      <span data-testid="instagram">{church.social?.instagram ?? "none"}</span>
+      <span data-testid="greetingTitle">{church.greeting?.title}</span>
+      <span data-testid="firstWorship">{church.worshipSchedule?.regular?.[0]?.name}</span>
     </div>
   );
+}
+
+/**
+ * ChurchProvider는 tenant 조회 후 intro/worship-schedule/profile을 병렬로 부른다.
+ * url별로 응답을 지정하고, 지정하지 않은 url은 거부(=미설정)시킨다.
+ */
+function mockEndpoints({ tenant, intro, schedule, profile }) {
+  api.get.mockImplementation((url) => {
+    if (url === "/tenant") {
+      return tenant ? Promise.resolve({ data: { data: tenant } }) : Promise.reject(new Error("no tenant"));
+    }
+    if (url.endsWith("/intro")) {
+      return intro ? Promise.resolve({ data: { data: intro } }) : Promise.reject(new Error("no intro"));
+    }
+    if (url === "/church/worship-schedule") {
+      return schedule
+        ? Promise.resolve({ data: { data: schedule } })
+        : Promise.reject(new Error("no schedule"));
+    }
+    if (url === "/church/profile") {
+      return profile
+        ? Promise.resolve({ data: { data: profile } })
+        : Promise.reject(new Error("no profile"));
+    }
+    return Promise.reject(new Error(`unexpected url: ${url}`));
+  });
 }
 
 describe("ChurchContext", () => {
@@ -92,6 +121,104 @@ describe("ChurchContext", () => {
     await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
     expect(screen.getByTestId("name").textContent).toBe(defaultConfig.name);
     expect(screen.queryByText("교회 정보를 찾을 수 없습니다.")).not.toBeInTheDocument();
+  });
+
+  it("교회 프로필의 instagramUrl이 social.instagram으로 병합된다", async () => {
+    mockEndpoints({
+      tenant: { id: 1, name: "인스타교회" },
+      profile: { instagramUrl: "https://www.instagram.com/okgil" },
+    });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("instagram").textContent).toBe("https://www.instagram.com/okgil"),
+    );
+  });
+
+  it("프로필에 인스타그램이 없으면 기본 설정값을 유지한다", async () => {
+    mockEndpoints({ tenant: { id: 1, name: "무인스타교회" }, profile: { instagramUrl: null } });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("instagram").textContent).toBe(
+      defaultConfig.social.instagram ?? "none",
+    );
+  });
+
+  it("교회소개 섹션(GREETING 등)이 내려오면 church의 해당 블록을 덮어쓴다", async () => {
+    mockEndpoints({
+      tenant: { id: 1, name: "소개교회" },
+      intro: { GREETING: { title: "서버 인사말", paragraphs: [] } },
+    });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("greetingTitle").textContent).toBe("서버 인사말"));
+  });
+
+  it("설정되지 않은 교회소개 섹션은 기본 설정을 유지한다", async () => {
+    // 백엔드는 설정된 섹션만 내려준다 — VISION만 와도 GREETING이 지워지면 안 된다
+    mockEndpoints({ tenant: { id: 1, name: "부분소개교회" }, intro: { VISION: { year: 2030 } } });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("greetingTitle").textContent).toBe(defaultConfig.greeting.title);
+  });
+
+  it("예배 시간표가 내려오면 교체하고, 비어 있으면 기본 설정을 유지한다", async () => {
+    mockEndpoints({
+      tenant: { id: 1, name: "예배교회" },
+      schedule: { regular: [{ name: "서버 1부", time: "9시", location: "본당" }], departments: [] },
+    });
+    const { unmount } = render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId("firstWorship").textContent).toBe("서버 1부"));
+    unmount();
+
+    mockEndpoints({
+      tenant: { id: 1, name: "예배교회" },
+      schedule: { regular: [], departments: [] },
+    });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("firstWorship").textContent).toBe(
+      defaultConfig.worshipSchedule.regular[0].name,
+    );
+  });
+
+  it("콘텐츠 조회가 모두 실패해도 기본 설정으로 ready 상태가 된다", async () => {
+    mockEndpoints({ tenant: { id: 1, name: "실패교회" } }); // intro/schedule/profile 전부 거부
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("name").textContent).toBe("실패교회");
+    expect(screen.getByTestId("greetingTitle").textContent).toBe(defaultConfig.greeting.title);
   });
 
   it("initialChurch가 주어지면 fetch를 생략하고 즉시 ready 상태다(테스트 주입용)", () => {

@@ -58,7 +58,7 @@ export default function JuboList({ hideHeader = false }) {
   const [page, setPage] = useState(1);
 
   const filtered = (issues ?? []).filter(
-    (issue) => issue.sermonTitle.includes(query) || issue.verse.includes(query),
+    (issue) => (issue.sermonTitle ?? '').includes(query) || (issue.verse ?? '').includes(query),
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

@@ -70,12 +70,12 @@ export default function NotificationSection() {
                 {notices.map((notice, i) => (
                   <div key={notice.id}>
                     <button
-                      onClick={() => navigate(`/공지사항/${notice.id}`)}
+                      onClick={() => navigate(`/공지사항?id=${notice.id}`)}
                       className="w-full flex gap-5 items-start text-left hover:opacity-70 transition-opacity"
                     >
                       <div
                         className={`w-2 h-8 rounded-sm shrink-0 ${
-                          notice.isNew ? "bg-primary" : "bg-grey-4"
+                          notice.featured ? "bg-primary" : "bg-grey-4"
                         }`}
                       />
                       <div className="flex-1 min-w-0">

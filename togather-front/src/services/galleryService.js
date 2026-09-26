@@ -5,10 +5,6 @@
  */
 
 import api from "./api";
-import { DUMMY_COMMUNITIES, DUMMY_PHOTOS } from "@/data/dummy/gallery";
-
-// isDummy 함수 - 현재는 항상 true (테스트 데이터 사용)
-const isDummy = () => true;
 
 /**
  * 공동체 목록 조회
@@ -16,7 +12,6 @@ const isDummy = () => true;
  * @returns {Promise<Community[]>}
  */
 export async function getCommunities(churchId) {
-  if (isDummy("gallery")) return DUMMY_COMMUNITIES;
   const res = await api.get(`/churches/${churchId}/communities`);
   return res.data.data;
 }
@@ -29,10 +24,6 @@ export async function getCommunities(churchId) {
  * @returns {Promise<Photo[]>}
  */
 export async function getPhotos(churchId, params = {}) {
-  if (isDummy("gallery")) {
-    const { communityId } = params;
-    return communityId ? DUMMY_PHOTOS.filter((p) => p.communityId === communityId) : DUMMY_PHOTOS;
-  }
   const res = await api.get(`/churches/${churchId}/gallery`, { params });
   return res.data.data;
 }
@@ -44,11 +35,6 @@ export async function getPhotos(churchId, params = {}) {
  * @returns {Promise<Community>}
  */
 export async function createCommunity(churchId, payload) {
-  if (isDummy("gallery")) {
-    const created = { id: Date.now(), ...payload };
-    DUMMY_COMMUNITIES.push(created);
-    return created;
-  }
   const res = await api.post(`/church/admin/communities`, payload);
   return res.data.data;
 }
@@ -60,11 +46,6 @@ export async function createCommunity(churchId, payload) {
  * @returns {Promise<Photo>}
  */
 export async function createPhoto(churchId, payload) {
-  if (isDummy("gallery")) {
-    const created = { id: Date.now(), ...payload };
-    DUMMY_PHOTOS.unshift(created);
-    return created;
-  }
   const res = await api.post(`/church/admin/gallery`, payload);
   return { ...payload, id: res.data.data.id };
 }

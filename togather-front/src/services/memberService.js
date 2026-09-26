@@ -1,7 +1,14 @@
 import api from "./api";
-import { DUMMY_MEMBERS } from "@/data/dummy/members";
 
 /**
+ * @typedef {Object} DirectoryEntry
+ * @property {string} id          - UUID
+ * @property {string} name
+ * @property {string} role        - 직분
+ * @property {string} region      - 구역
+ * @property {string} department  - 부서
+ * @property {string} smallGroup  - 소그룹
+ *
  * @typedef {Object} MemberSummary
  * @property {string} id            - UUID(더미는 "m1" 형태 문자열)
  * @property {string} name
@@ -12,6 +19,18 @@ import { DUMMY_MEMBERS } from "@/data/dummy/members";
  */
 
 const DEFAULT_SIZE = 20;
+
+/**
+ * 교적부 명부 조회 (로그인한 교인이면 접근 가능)
+ *
+ * 개인정보(휴대폰·생년월일·이메일·주소)는 응답에 포함되지 않는다 — 연락처가 필요한
+ * 관리 업무는 CHURCH_ADMIN 전용 getMembers()를 쓴다.
+ * @returns {Promise<DirectoryEntry[]>}
+ */
+export async function getMemberDirectory() {
+  const res = await api.get(`/church/members`);
+  return res.data.data;
+}
 
 /**
  * 교적부 목록 조회 (관리자, CHURCH_ADMIN 전용)

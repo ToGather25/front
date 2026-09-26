@@ -7,6 +7,15 @@ const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
+function ReadOnlyField({ label, value }) {
+  return (
+    <div>
+      <dt className={labelCls}>{label}</dt>
+      <dd className="text-body-3 text-grey-10">{value || "-"}</dd>
+    </div>
+  );
+}
+
 function Section({ title, children }) {
   return (
     <div className="bg-white rounded-2xl border border-grey-2 p-7">
@@ -26,7 +35,12 @@ export default function Settings() {
     error: profileError,
     refetch: refetchProfile,
   } = useFetch(() => getChurchProfile(church.id), [church.id], null);
-  const [profile, setProfile] = useState({ representativeImageUrl: "", slogan: "" });
+  // 프로필 upsert는 통째 교체다 — 편집하지 않는 필드(헌금 계좌 등)도 실어 보내야 지워지지 않는다.
+  const [profile, setProfile] = useState({
+    representativeImageUrl: "",
+    slogan: "",
+    instagramUrl: "",
+  });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileSaveError, setProfileSaveError] = useState(false);
@@ -36,6 +50,7 @@ export default function Settings() {
       setProfile({
         representativeImageUrl: initialProfile.representativeImageUrl ?? "",
         slogan: initialProfile.slogan ?? "",
+        instagramUrl: initialProfile.instagramUrl ?? "",
       });
     }
   }, [initialProfile]);
@@ -45,8 +60,10 @@ export default function Settings() {
     setProfileSaveError(false);
     try {
       await updateChurchProfile(church.id, {
+        ...initialProfile,
         representativeImageUrl: profile.representativeImageUrl || null,
         slogan: profile.slogan || null,
+        instagramUrl: profile.instagramUrl || null,
       });
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 2000);
@@ -58,50 +75,28 @@ export default function Settings() {
     }
   }
 
-  const [info, setInfo] = useState({
-    name: "옥길교회",
-    nameEn: "Algok Church",
-    denomination: "대한예수교장로회 (합동)",
-    pastor: "김영수 담임목사",
-    address: "서울특별시 강남구 언주로 123",
-    tel: "02-123-4567",
-    fax: "02-123-4568",
-    email: "office@algok.com",
-    website: "https://www.algok.com",
-    youtube: "https://www.youtube.com/@algok-church",
-    instagram: "",
-    facebook: "",
-  });
-
-  const [theme, setTheme] = useState({
-    primaryColor: "#3B5280",
-    fontFamily: "Pretendard",
-  });
-
-  const [saved, setSaved] = useState(false);
-
-  function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  }
-
-  const update = (field) => (e) => setInfo((p) => ({ ...p, [field]: e.target.value }));
+  // 교회 기본 정보·연락처·테마는 아직 저장 API가 없다(플랫폼 관리자 전용
+  // PATCH /api/admin/churches/{id}/settings만 존재) — 현재 설정값을 읽기 전용으로 보여준다.
+  const info = {
+    name: church.name,
+    denomination: church.denomination,
+    pastor: church.pastor,
+    address: church.address,
+    tel: church.tel,
+    fax: church.fax,
+    email: church.email,
+    youtube: church.social?.youtube,
+  };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-headline-5 font-bold text-grey-11">사이트 기본 설정</h1>
-        <button
-          onClick={handleSave}
-          className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
-        >
-          {saved ? "저장 완료 ✓" : "변경사항 저장"}
-        </button>
       </div>
 
       <div className="flex flex-col gap-5">
-        {/* Main banner (실API 연동 — 홈 화면 히어로 배너의 대표이미지/슬로건) */}
-        <Section title="홈 화면 메인 배너">
+        {/* 실API 연동 — 홈 배너 대표이미지/슬로건 + 푸터 인스타그램 링크 */}
+        <Section title="홈 화면 메인 배너 · SNS">
           {profileLoading ? (
             <p className="text-body-4 text-grey-5">불러오는 중...</p>
           ) : profileError ? (
@@ -144,6 +139,18 @@ export default function Settings() {
                     placeholder="아직 화면에는 표시되지 않습니다"
                   />
                 </div>
+                <div className="col-span-2">
+                  <label className={labelCls} htmlFor="profile-instagram">
+                    인스타그램 URL
+                  </label>
+                  <input
+                    id="profile-instagram"
+                    className={inputCls}
+                    value={profile.instagramUrl}
+                    onChange={(e) => setProfile((p) => ({ ...p, instagramUrl: e.target.value }))}
+                    placeholder="https://www.instagram.com/... (비워두면 푸터에서 숨김)"
+                  />
+                </div>
               </div>
               <div className="flex items-center gap-3 mt-5">
                 <button
@@ -162,187 +169,22 @@ export default function Settings() {
           )}
         </Section>
 
-        {/* Church basic info */}
-        <Section title="교회 기본 정보">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label className={labelCls}>교회명 (한국어)</label>
-              <input className={inputCls} value={info.name} onChange={update("name")} />
-            </div>
-            <div>
-              <label className={labelCls}>교회명 (영문)</label>
-              <input className={inputCls} value={info.nameEn} onChange={update("nameEn")} />
-            </div>
-            <div>
-              <label className={labelCls}>교단</label>
-              <input
-                className={inputCls}
-                value={info.denomination}
-                onChange={update("denomination")}
-              />
-            </div>
-            <div>
-              <label className={labelCls}>담임 목사</label>
-              <input className={inputCls} value={info.pastor} onChange={update("pastor")} />
-            </div>
-            <div className="col-span-2">
-              <label className={labelCls}>주소</label>
-              <input className={inputCls} value={info.address} onChange={update("address")} />
-            </div>
-          </div>
-        </Section>
-
-        {/* Contact */}
-        <Section title="연락처 정보">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label className={labelCls}>전화번호</label>
-              <input
-                className={inputCls}
-                value={info.tel}
-                onChange={update("tel")}
-                placeholder="02-000-0000"
-              />
-            </div>
-            <div>
-              <label className={labelCls}>팩스</label>
-              <input
-                className={inputCls}
-                value={info.fax}
-                onChange={update("fax")}
-                placeholder="02-000-0001"
-              />
-            </div>
-            <div>
-              <label className={labelCls}>이메일</label>
-              <input
-                className={inputCls}
-                value={info.email}
-                onChange={update("email")}
-                placeholder="office@church.com"
-              />
-            </div>
-            <div>
-              <label className={labelCls}>홈페이지 URL</label>
-              <input
-                className={inputCls}
-                value={info.website}
-                onChange={update("website")}
-                placeholder="https://www.church.com"
-              />
-            </div>
-          </div>
-        </Section>
-
-        {/* SNS */}
-        <Section title="SNS 채널">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label className={labelCls}>유튜브 URL</label>
-              <input
-                className={inputCls}
-                value={info.youtube}
-                onChange={update("youtube")}
-                placeholder="https://www.youtube.com/@..."
-              />
-            </div>
-            <div>
-              <label className={labelCls}>인스타그램 URL</label>
-              <input
-                className={inputCls}
-                value={info.instagram}
-                onChange={update("instagram")}
-                placeholder="https://www.instagram.com/..."
-              />
-            </div>
-            <div>
-              <label className={labelCls}>페이스북 URL</label>
-              <input
-                className={inputCls}
-                value={info.facebook}
-                onChange={update("facebook")}
-                placeholder="https://www.facebook.com/..."
-              />
-            </div>
-          </div>
-        </Section>
-
-        {/* Logo */}
-        <Section title="로고 및 파비콘">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className={labelCls}>교회 로고</label>
-              <div className="border-2 border-dashed border-grey-3 rounded-xl p-6 flex flex-col items-center gap-2 text-grey-5 cursor-pointer hover:border-primary hover:text-primary transition-colors">
-                <svg
-                  width="28"
-                  height="28"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21,15 16,10 5,21" />
-                </svg>
-                <p className="text-body-4">클릭하여 업로드</p>
-                <p className="text-body-5">PNG, SVG (투명 배경 권장)</p>
-              </div>
-            </div>
-            <div>
-              <label className={labelCls}>파비콘</label>
-              <div className="border-2 border-dashed border-grey-3 rounded-xl p-6 flex flex-col items-center gap-2 text-grey-5 cursor-pointer hover:border-primary hover:text-primary transition-colors">
-                <svg
-                  width="28"
-                  height="28"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21,15 16,10 5,21" />
-                </svg>
-                <p className="text-body-4">클릭하여 업로드</p>
-                <p className="text-body-5">ICO, PNG 32×32</p>
-              </div>
-            </div>
-          </div>
-        </Section>
-
-        {/* Theme */}
-        <Section title="테마 설정">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label className={labelCls}>메인 색상</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={theme.primaryColor}
-                  onChange={(e) => setTheme((p) => ({ ...p, primaryColor: e.target.value }))}
-                  className="w-12 h-12 rounded-lg border border-grey-3 cursor-pointer p-1"
-                />
-                <input
-                  className={inputCls}
-                  value={theme.primaryColor}
-                  onChange={(e) => setTheme((p) => ({ ...p, primaryColor: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelCls}>기본 폰트</label>
-              <select
-                className={inputCls + " bg-white"}
-                value={theme.fontFamily}
-                onChange={(e) => setTheme((p) => ({ ...p, fontFamily: e.target.value }))}
-              >
-                <option>Pretendard</option>
-                <option>Noto Sans KR</option>
-                <option>Nanum Gothic</option>
-              </select>
-            </div>
-          </div>
+        {/* 아래 항목은 조회 전용 — 저장 API(PATCH /api/admin/churches/{id}/settings)가
+            플랫폼 관리자(SUPER_ADMIN) 전용이라 교회 관리자는 수정할 수 없다. */}
+        <Section title="교회 기본 정보 (조회 전용)">
+          <dl className="grid grid-cols-2 gap-x-5 gap-y-4">
+            <ReadOnlyField label="교회명" value={info.name} />
+            <ReadOnlyField label="교단" value={info.denomination} />
+            <ReadOnlyField label="담임 목사" value={info.pastor} />
+            <ReadOnlyField label="주소" value={info.address} />
+            <ReadOnlyField label="전화번호" value={info.tel} />
+            <ReadOnlyField label="팩스" value={info.fax} />
+            <ReadOnlyField label="이메일" value={info.email} />
+            <ReadOnlyField label="유튜브 채널" value={info.youtube} />
+          </dl>
+          <p className="text-body-5 text-grey-5 mt-5">
+            이 정보의 수정이 필요하면 ToGather 운영팀에 요청해 주세요.
+          </p>
         </Section>
       </div>
     </div>

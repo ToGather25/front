@@ -20,7 +20,6 @@
  */
 
 import api from "./api";
-import { DUMMY_EVENTS } from "@/data/dummy/events";
 
 const todayIso = () => {
   const d = new Date();
@@ -49,11 +48,6 @@ function sortEvents(list, sort) {
  * @returns {Promise<Event[]>}
  */
 export async function getEvents(churchId, params = {}) {
-  if (isDummy("events")) {
-    if (!params.year || !params.month) return [...DUMMY_EVENTS];
-    const prefix = `${params.year}-${String(params.month).padStart(2, "0")}`;
-    return DUMMY_EVENTS.filter((e) => e.date.startsWith(prefix));
-  }
   const res = await api.get(`/churches/${churchId}/events`, { params });
   return res.data.data;
 }
@@ -117,22 +111,6 @@ export async function registerForEvent(churchId, eventId) {
  * @returns {Promise<Event>}
  */
 export async function createEvent(churchId, payload) {
-  if (isDummy("events")) {
-    const created = {
-      id: Date.now(),
-      startTime: null,
-      endTime: null,
-      imageUrl: null,
-      capacity: null,
-      registrationStart: null,
-      registrationEnd: null,
-      registeredCount: 0,
-      createdAt: todayIso(),
-      ...payload,
-    };
-    DUMMY_EVENTS.unshift(created);
-    return created;
-  }
   const res = await api.post(`/church/admin/events`, payload);
   return res.data.data;
 }
@@ -145,12 +123,6 @@ export async function createEvent(churchId, payload) {
  * @returns {Promise<Event|null>}
  */
 export async function updateEvent(churchId, eventId, payload) {
-  if (isDummy("events")) {
-    const idx = DUMMY_EVENTS.findIndex((e) => String(e.id) === String(eventId));
-    if (idx === -1) return null;
-    DUMMY_EVENTS[idx] = { ...DUMMY_EVENTS[idx], ...payload };
-    return DUMMY_EVENTS[idx];
-  }
   const res = await api.patch(`/church/admin/events/${eventId}`, payload);
   return res.data.data;
 }
@@ -162,7 +134,6 @@ export async function updateEvent(churchId, eventId, payload) {
  * @returns {Promise<Array<{ name:string, phone:string|null }>>}
  */
 export async function getEventRegistrations(churchId, eventId) {
-  if (isDummy("events")) return [];
   const res = await api.get(`/church/admin/events/${eventId}/registrations`);
   return res.data.data;
 }
