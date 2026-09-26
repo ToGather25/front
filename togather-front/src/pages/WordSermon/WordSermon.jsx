@@ -191,16 +191,25 @@ export default function WordSermon() {
                 <button
                   key={s.id}
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
-                  className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer"
+                  className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer bg-grey-2 flex flex-col"
                   style={{
                     aspectRatio: "9/11",
-                    backgroundImage: `url('${s.thumbnail || ''}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
                   }}
                 >
-                  {/* 썸네일이 없을 때 아이콘 표시 */}
-                  {!s.thumbnail && <SermonThumb />}
+                  {/* 배경 이미지 또는 기본 썸네일 */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: s.thumbnail ? `url('${s.thumbnail}')` : undefined,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  />
+                  {!s.thumbnail && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <SermonThumb />
+                    </div>
+                  )}
 
                   {/* 그래디언트 오버레이 */}
                   <div className="absolute inset-0 bg-gradient-to-b from-grey-11/50 via-grey-11/20 to-transparent group-hover:from-grey-11/60 group-hover:via-grey-11/30 transition-colors" />
