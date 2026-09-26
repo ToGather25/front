@@ -167,19 +167,17 @@ export default function JuboList({ hideHeader = false }) {
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-1">
-                <PageBtn onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} label="‹" />
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <PageBtn key={p} onClick={() => setPage(p)} active={p === page} label={String(p)} />
-                ))}
-                <PageBtn
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  label="›"
-                />
-              </div>
-            )}
+            <div className="flex items-center justify-center gap-1">
+              <PageBtn onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} label="‹" />
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <PageBtn key={p} onClick={() => setPage(p)} active={p === page} label={String(p)} />
+              ))}
+              <PageBtn
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                label="›"
+              />
+            </div>
           </>
         )}
       </div>
