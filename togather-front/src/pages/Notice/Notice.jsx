@@ -65,11 +65,17 @@ export default function Notice() {
     }
   }, [notices, searchParams]);
 
-  const filtered = notices.filter((n) => {
-    const matchesTab = isFiltered ? n.type === tab : true;
-    const matchesQuery = query ? n.title.toLowerCase().includes(query.toLowerCase()) : true;
-    return matchesTab && matchesQuery;
-  });
+  const filtered = notices
+    .filter((n) => {
+      const matchesTab = isFiltered ? n.type === tab : true;
+      const matchesQuery = query ? n.title.toLowerCase().includes(query.toLowerCase()) : true;
+      return matchesTab && matchesQuery;
+    })
+    .sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return 0;
+    });
   const paged = isFiltered || query
     ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
     : filtered;
