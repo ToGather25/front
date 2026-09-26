@@ -11,9 +11,10 @@ import { useEffect, useRef, useState } from "react";
  * @param {boolean} draggable - false이면 드래그/스크롤/더블클릭 비활성화 (기본 true)
  * @param {string}  className - 컨테이너 클래스
  */
-export default function KakaoMap({ address, level = 4, draggable = true, className = "", style }) {
+export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (!address) return;
@@ -43,6 +44,13 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
             disableDoubleClickZoom: !draggable,
           });
 
+          mapRef.current = map;
+
+          // 교통정보 오버레이 추가
+          if (showTraffic) {
+            map.addOverlayMapTypeId(window.kakao.maps.MapTypeId.TRAFFIC);
+          }
+
           // 마커
           const marker = new window.kakao.maps.Marker({ map, position: coords });
 
@@ -69,7 +77,7 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
         console.error("[KakaoMap]", e);
       }
     });
-  }, [address, level, draggable]);
+  }, [address, level, draggable, showTraffic]);
 
   if (error) {
     return (

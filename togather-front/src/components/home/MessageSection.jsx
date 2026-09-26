@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import defaultBanner from "@/assets/default_banner.png";
-import rightArrow from "@/assets/icon-svg/right_arrow.svg";
+import rightArrow from "@/assets/icon-svg/right-arrow.svg";
 
 export default function MessageSection() {
   const navigate = useNavigate();
@@ -82,8 +82,8 @@ export default function MessageSection() {
       <div className="px-[180px] flex justify-center">
         {/* 타이틀 */}
         <div className="w-full text-center mb-16">
-          <p className="text-pale text-[30px] font-bold mb-4">Message</p>
-          <h2 className="text-grey-12 text-[40px] font-bold">{church.name} 말씀</h2>
+          <p className="text-pale text-headline-5 font-semibold mb-4">Message</p>
+          <h2 className="text-grey-12 text-section-title font-bold">{church.name} 말씀</h2>
         </div>
       </div>
 

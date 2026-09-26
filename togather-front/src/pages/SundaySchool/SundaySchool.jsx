@@ -1,12 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router";
-
-const DEPT_PARAM_MAP = {
-  유치부: "유치부",
-  초등부: "초등부",
-  중고등부: "중·고등부",
-  청년부: "대학·청년부",
-};
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router";
 
 // 주일학교 부서명 -> 갤러리 공동체명 (갤러리 쪽 명칭이 다른 경우만 매핑)
 const GALLERY_COMMUNITY_MAP = {
@@ -132,13 +125,10 @@ function DeptContent({ dept }) {
 }
 
 export default function SundaySchool() {
-  const { dept: deptParam } = useParams();
-  const [activeTab, setActiveTab] = useState(DEPT_PARAM_MAP[deptParam] ?? DEPARTMENTS[0].key);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const deptNames = DEPARTMENTS.map((d) => d.key);
+  const activeTab = deptNames.includes(searchParams.get("tab")) ? searchParams.get("tab") : DEPARTMENTS[0].key;
   const dept = DEPARTMENTS.find((d) => d.key === activeTab);
-
-  useEffect(() => {
-    setActiveTab(DEPT_PARAM_MAP[deptParam] ?? DEPARTMENTS[0].key);
-  }, [deptParam]);
 
   return (
     <div>
@@ -194,7 +184,7 @@ export default function SundaySchool() {
             {DEPARTMENTS.map((d) => (
               <button
                 key={d.key}
-                onClick={() => setActiveTab(d.key)}
+                onClick={() => setSearchParams({ tab: d.key })}
                 className={`px-6 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === d.key
                     ? "border-blue-8 text-blue-8"

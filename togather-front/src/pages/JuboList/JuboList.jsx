@@ -46,7 +46,7 @@ function startOfWeek(date) {
   return d;
 }
 
-export default function JuboList() {
+export default function JuboList({ hideHeader = false }) {
   const { church } = useChurch();
   const navigate = useNavigate();
   const { data: issues, loading, error, refetch } = useFetch(
@@ -65,6 +65,8 @@ export default function JuboList() {
 
   return (
     <div>
+      {!hideHeader && (
+        <>
       <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-4 pb-6 md:px-8 md:pb-8 w-full">
@@ -73,6 +75,8 @@ export default function JuboList() {
       </div>
 
       <WordTabBar />
+        </>
+      )}
 
       <div className="max-w-[1400px] mx-auto px-4 py-10 md:px-8 md:py-12">
         <div className="flex items-center gap-3 mb-10">
@@ -90,7 +94,7 @@ export default function JuboList() {
                 setPage(1);
               }}
               placeholder="설교 제목, 말씀 검색"
-              className="w-full h-[46px] pl-10 pr-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
+              className="w-full h-[46px] pl-10 pr-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
             />
           </div>
           <DateJumpPicker
@@ -119,9 +123,15 @@ export default function JuboList() {
           </div>
         )}
 
-        {!loading && !error && filtered.length === 0 && (
-          <div className="py-24 text-center text-grey-6 text-body-2">
+        {!loading && !error && filtered.length === 0 && query && (
+          <div className="min-h-[60vh] flex items-center justify-center text-centre text-grey-6 text-body-2">
             검색 결과가 없습니다. 다른 검색어를 입력해 주세요.
+          </div>
+        )}
+
+        {!loading && !error && filtered.length === 0 && !query && (
+          <div className="min-h-[60vh] flex items-center justify-center text-centre text-grey-6 text-body-2">
+            주보 데이터를 불러오는 중입니다.
           </div>
         )}
 

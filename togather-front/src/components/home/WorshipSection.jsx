@@ -89,14 +89,14 @@ export default function WorshipSection() {
           <h3 className="font-bold text-grey-12 m-0 mb-6" style={{ fontSize: "34px", lineHeight: "1.2", letterSpacing: "-0.5px" }}>
             {church.name} 말씀
           </h3>
-          <VideoThumb isLive={isLive} onClick={() => navigate("/말씀/방송")} sermon={sermon} />
+          <VideoThumb isLive={isLive} onClick={() => navigate("/말씀/설교")} sermon={sermon} />
         </div>
 
         {/* Right: Worship schedule */}
         <div className="py-2">
           <div className="flex items-center justify-end mb-8">
             <Link
-              to="/말씀/방송"
+              to="/말씀/설교"
               className="inline-flex items-center gap-2 group"
             >
               <span className="text-body-3 font-light text-bluegrey-4 group-hover:text-blue-8 transition-colors">전체 보기</span>

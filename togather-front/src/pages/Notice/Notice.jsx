@@ -41,6 +41,7 @@ export default function Notice() {
   const { church } = useChurch();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState("전체");
+  const [query, setQuery] = useState("");
   const [serverPage, setServerPage] = useState(1);
   const [clientPage, setClientPage] = useState(1);
   const [selected, setSelected] = useState(null);
@@ -64,11 +65,15 @@ export default function Notice() {
     }
   }, [notices, searchParams]);
 
-  const filtered = isFiltered ? notices.filter((n) => n.type === tab) : notices;
-  const paged = isFiltered
+  const filtered = notices.filter((n) => {
+    const matchesTab = isFiltered ? n.type === tab : true;
+    const matchesQuery = query ? n.title.toLowerCase().includes(query.toLowerCase()) : true;
+    return matchesTab && matchesQuery;
+  });
+  const paged = isFiltered || query
     ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
     : filtered;
-  const hasNext = !isFiltered && notices.length === PAGE_SIZE;
+  const hasNext = !isFiltered && !query && notices.length === PAGE_SIZE;
 
   function handleTabChange(t) {
     setTab(t);
@@ -83,139 +88,185 @@ export default function Notice() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
+    <>
       {/* 헤더 */}
-      <div className="mb-8">
-        <h1 className="text-headline-4 font-bold text-grey-11">공지사항</h1>
-      </div>
-
-      {/* 탭 */}
-      <div className="flex gap-2 mb-5">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => handleTabChange(t)}
-            className={`px-5 py-2 rounded-full text-body-4 font-medium transition-colors ${
-              t === tab ? "bg-primary text-white" : "bg-grey-2 text-grey-7 hover:bg-grey-3"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
-      {/* 목록 or 상세 */}
-      {selected ? (
-        /* 상세 */
-        <div className="border border-grey-3 rounded-2xl overflow-hidden">
-          {/* 상세 헤더 */}
-          <div className="border-b border-grey-3 px-8 py-6">
-            <div className="flex items-center gap-2 mb-3">
-              {selected.featured && <IconPin />}
-              <span
-                className="text-body-5 font-bold px-1 py-1 rounded-md"
-                style={TAG_STYLES[selected.type] ?? TAG_STYLES["공지"]}
-              >
-                {selected.type}
-              </span>
-            </div>
-            <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">{selected.title}</h2>
-            <div className="flex items-center gap-4 text-body-5 text-grey-6">
-              <span>{selected.author}</span>
-              <span>·</span>
-              <span>{formatDate(selected.date)}</span>
-            </div>
-          </div>
-          {/* 본문 */}
-          <div className="px-8 py-8 min-h-[150px]">
-            <p className="text-body-3 text-grey-9 leading-relaxed whitespace-pre-wrap">
-              {selected.body}
-            </p>
-          </div>
-          {/* 하단 */}
-          <div className="border-t border-grey-3 px-8 py-4 flex justify-end">
-            <button
-              onClick={() => {
-                setSelected(null);
-                setSearchParams({});
-              }}
-              className="border border-grey-4 text-grey-7 rounded-full px-6 py-2 text-body-4 hover:bg-grey-1 transition-colors"
-            >
-              목록으로
-            </button>
-          </div>
+      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
+          <h1 className="text-headline-4 font-bold text-white">공지사항</h1>
         </div>
-      ) : (
-        /* 목록 */
-        <>
-          <div className="flex flex-col min-h-[700px]">
-            <div className="border border-grey-3 rounded-2xl overflow-hidden min-h-[620px] flex flex-col">
-              {/* 테이블 헤더 */}
-              <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-3 py-3 text-body-5 font-semibold text-grey-7">
-                <span className="text-center">구분</span>
-                <span className="pl-4">제목</span>
-                <span className="hidden md:block text-center">작성자</span>
-                <span className="hidden md:block text-center">날짜</span>
-              </div>
+      </div>
 
-              {paged.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-grey-5 text-body-3">
-                  공지사항이 없습니다.
+      <div className="max-w-6xl mx-auto px-4 pb-8 md:px-6 md:pb-12">
+        {/* 메인 레이아웃 - (검색+필터) 왼쪽 | 콘텐츠 오른쪽 */}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+          {/* 왼쪽: 검색 + 필터 */}
+          <div className="w-full md:w-[300px] flex flex-col gap-6">
+            {/* 검색 */}
+            <div className="relative">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-grey-5 brightness-75 group-focus-within:brightness-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setClientPage(1);
+                }}
+                placeholder="제목 검색"
+                className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all group"
+              />
+            </div>
+
+            {/* 모바일 필터 */}
+            <div className="flex flex-wrap gap-2 md:hidden">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => handleTabChange(t)}
+                  className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
+                    t === tab ? "bg-primary text-white" : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* 데스크톱 필터 */}
+            <div className="hidden md:flex md:flex-col gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => handleTabChange(t)}
+                  className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                    t === tab ? "bg-primary text-white" : "text-grey-9 hover:bg-blue-1 hover:text-primary"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 오른쪽: 콘텐츠 */}
+          <div className="flex-1 w-full md:w-auto min-w-0">
+              {/* 목록 or 상세 */}
+              {selected ? (
+                /* 상세 */
+                <div className="border border-grey-3 rounded-2xl overflow-hidden">
+                  {/* 상세 헤더 */}
+                  <div className="border-b border-grey-3 px-8 py-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      {selected.featured && <IconPin />}
+                      <span
+                        className="text-body-5 font-bold px-1 py-1 rounded-md"
+                        style={TAG_STYLES[selected.type] ?? TAG_STYLES["공지"]}
+                      >
+                        {selected.type}
+                      </span>
+                    </div>
+                    <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">{selected.title}</h2>
+                    <div className="flex items-center gap-4 text-body-5 text-grey-6">
+                      <span>{selected.author}</span>
+                      <span>·</span>
+                      <span>{formatDate(selected.date)}</span>
+                    </div>
+                  </div>
+                  {/* 본문 */}
+                  <div className="px-8 py-8 min-h-[150px]">
+                    <p className="text-body-3 text-grey-9 leading-relaxed whitespace-pre-wrap">
+                      {selected.body}
+                    </p>
+                  </div>
+                  {/* 하단 */}
+                  <div className="border-t border-grey-3 px-8 py-4 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setSelected(null);
+                        setSearchParams({});
+                      }}
+                      className="border border-grey-4 text-grey-7 rounded-full px-6 py-2 text-body-4 hover:bg-grey-1 transition-colors"
+                    >
+                      목록으로
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col">
-                  {paged.map((n, i) => {
-                    const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
-                    return (
-                      <button
-                        key={n.id}
-                        onClick={() => {
-                          setSelected(n);
-                          setSearchParams({ id: n.id });
-                        }}
-                        className={`w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
-                          i < paged.length - 1 ? "border-b border-grey-3" : ""
-                        } ${n.featured ? "bg-blue-1/30" : ""}`}
-                      >
-                        <span className="flex justify-center">
-                          <span
-                            className="text-body-5 font-bold px-2.5 py-1 rounded-md text-center"
-                            style={tagStyle}
-                          >
-                            {n.type}
-                          </span>
-                        </span>
-                        <span className="pl-4 flex items-center gap-2 min-w-0">
-                          {n.featured && <IconPin className="shrink-0 text-primary" />}
-                          <span
-                            className={`truncate text-body-3 ${n.featured ? "font-semibold text-grey-11" : "text-grey-10"}`}
-                          >
-                            {n.title}
-                          </span>
-                        </span>
-                        <span className="hidden md:block text-center text-body-5 text-grey-6">
-                          {n.author}
-                        </span>
-                        <span className="hidden md:block text-center text-body-5 text-grey-6">
-                          {formatDate(n.date)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                /* 목록 */
+                <>
+                  <div className="flex flex-col min-h-[700px]">
+                    <div className="border border-grey-3 rounded-2xl overflow-hidden min-h-[715px] flex flex-col">
+                      {/* 테이블 헤더 */}
+                      <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] bg-grey-1 border-b border-grey-3 px-3 py-3 text-body-5 font-semibold text-grey-7">
+                        <span className="text-center">구분</span>
+                        <span className="text-center">제목</span>
+                        <span className="hidden md:block text-center">작성자</span>
+                        <span className="hidden md:block text-center">날짜</span>
+                      </div>
+
+                      {paged.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center text-grey-5 text-body-3">
+                          공지사항이 없습니다.
+                        </div>
+                      ) : (
+                        <div className="flex-1 flex flex-col">
+                          {paged.map((n, i) => {
+                            const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
+                            return (
+                              <button
+                                key={n.id}
+                                onClick={() => {
+                                  setSelected(n);
+                                  setSearchParams({ id: n.id });
+                                }}
+                                className={`w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_80px_100px] items-center px-3 py-4 text-left transition-colors hover:bg-grey-1 ${
+                                  i < paged.length - 1 ? "border-b border-grey-3" : ""
+                                } ${n.featured ? "bg-blue-1/30" : ""}`}
+                              >
+                                <span className="flex justify-center">
+                                  <span
+                                    className="text-body-5 font-bold px-2.5 py-1 rounded-md text-center"
+                                    style={tagStyle}
+                                  >
+                                    {n.type}
+                                  </span>
+                                </span>
+                                <span className="pl-4 flex items-center gap-2 min-w-0">
+                                  {n.featured && <IconPin className="shrink-0 text-primary" />}
+                                  <span
+                                    className={`truncate text-body-3 ${n.featured ? "font-semibold text-grey-11" : "text-grey-10"}`}
+                                  >
+                                    {n.title}
+                                  </span>
+                                </span>
+                                <span className="hidden md:block text-center text-body-5 text-grey-6">
+                                  {n.author}
+                                </span>
+                                <span className="hidden md:block text-center text-body-5 text-grey-6">
+                                  {formatDate(n.date)}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {paged.length > 0 && <div className="flex-1" />}
+                    <NumberedPagination
+                      total={isFiltered ? filtered.length : notices.length}
+                      perPage={PAGE_SIZE}
+                      current={isFiltered ? clientPage : serverPage}
+                      onChange={isFiltered ? setClientPage : setServerPage}
+                    />
+                  </div>
+                </>
               )}
             </div>
-
-            {paged.length > 0 && <div className="flex-1" />}
-            <NumberedPagination
-              total={isFiltered ? filtered.length : notices.length}
-              perPage={PAGE_SIZE}
-              current={isFiltered ? clientPage : serverPage}
-              onChange={isFiltered ? setClientPage : setServerPage}
-            />
           </div>
-        </>
-      )}
-    </div>
+        </div>
+    </>
   );
 }

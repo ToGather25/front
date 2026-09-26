@@ -58,7 +58,7 @@ describe("routes — 말씀 읽기/필사 라우트의 AuthProvider 존재 확�
 });
 
 /**
- * 아래 두 테스트는 "/" 하위 RootLayout 라우트(즉 말씀/방송, 말씀/안내)를 거치므로
+ * 아래 두 테스트는 "/" 하위 RootLayout 라우트(즉 말씀/안내, 말씀/설교)를 거치므로
  * DesktopHeader/DesktopFooter/MobileFooter/SearchOverlay가 함께 렌더된다.
  * 이 컴포넌트들은 useChurch()/useSearch()를 쓰는데, 실제 앱에서는 main.jsx가
  * ChurchProvider·SearchProvider로 RouterProvider 바깥을 감싸주지만 여기서는
@@ -66,8 +66,8 @@ describe("routes — 말씀 읽기/필사 라우트의 AuthProvider 존재 확�
  * (위쪽 "말씀/읽기·필사" 테스트들은 AuthOnlyLayout만 거쳐 RootLayout을 타지 않으므로
  * 이 문제가 드러나지 않았다.) 그래서 여기서만 두 provider로 감싸 렌더한다.
  */
-describe("routes — /말씀 리다이렉트 + 예배 안내 라우트", () => {
-  it("/말씀 진입 시 /말씀/방송(예배·방송 기본 탭)으로 리다이렉트된다", () => {
+describe("routes — /말씀 리다이렉트 + 예배 목록 라우트", () => {
+  it("/말씀 진입 시 /말씀/설교(예배 목록 기본 탭)으로 리다이렉트된다", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/말씀"] });
     render(
       <ChurchProvider>
@@ -80,7 +80,7 @@ describe("routes — /말씀 리다이렉트 + 예배 안내 라우트", () => {
     // 헤더 드롭다운(예배·방송 메뉴)에도 동일 라벨의 링크가 있어 getByRole은 모호해진다.
     // WordTabBar의 활성 탭(class="border-blue-8")을 명시적으로 찾아 검증한다.
     const activeTabLinks = screen
-      .getAllByRole("link", { name: "실시간 예배" })
+      .getAllByRole("link", { name: "예배 목록" })
       .filter((link) => link.className.includes("border-blue-8"));
     expect(activeTabLinks).toHaveLength(1);
   });

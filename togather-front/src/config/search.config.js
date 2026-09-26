@@ -1,11 +1,10 @@
 /** 사이트 전체 검색 대상(내비게이션 단축키 성격) — SearchOverlay와 /검색 결과 페이지가 공유한다. */
 export const ALL_KEYWORDS = [
-  { label: "주일 예배", to: "/말씀/방송", category: "예배" },
-  { label: "주일 2부 예배", to: "/말씀/방송", category: "예배" },
-  { label: "새벽 예배", to: "/말씀/방송", category: "예배" },
-  { label: "수요 예배", to: "/말씀/방송", category: "예배" },
-  { label: "금요 예배", to: "/말씀/방송", category: "예배" },
-  { label: "실시간 방송", to: "/말씀/방송", category: "예배" },
+  { label: "주일 예배", to: "/말씀/설교", category: "예배" },
+  { label: "주일 2부 예배", to: "/말씀/설교", category: "예배" },
+  { label: "새벽 예배", to: "/말씀/설교", category: "예배" },
+  { label: "수요 예배", to: "/말씀/설교", category: "예배" },
+  { label: "금요 예배", to: "/말씀/설교", category: "예배" },
   { label: "성경 타자", to: "/말씀/필사", category: "말씀" },
   { label: "성경 필사", to: "/말씀/필사", category: "말씀" },
   { label: "성경 읽기", to: "/말씀/읽기", category: "말씀" },
@@ -28,7 +27,7 @@ export const ALL_KEYWORDS = [
 ];
 
 export const QUICK_SUGGESTIONS = [
-  { label: "주일 예배", to: "/말씀/방송" },
+  { label: "주일 예배", to: "/말씀/설교" },
   { label: "성경 타자", to: "/말씀/필사" },
   { label: "오시는 길", to: "/교회소개?tab=오시는 길" },
   { label: "구역모임", to: "/양육훈련/구역" },

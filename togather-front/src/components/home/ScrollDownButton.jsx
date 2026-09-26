@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import ChevronUpIcon from "@/assets/icon-svg/chevron-up.svg";
+import floatingDefault from "@/assets/icon-svg/floating-default.svg";
+import floatingHover from "@/assets/icon-svg/floating-hover.svg";
 
 const SECTION_SELECTOR = "[data-home-section]";
 
@@ -62,9 +63,10 @@ export default function ScrollDownButton() {
         type="button"
         onClick={scrollToTop}
         aria-label="맨 위로 이동"
-        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center gap-1.5 p-3 rounded-full bg-white border border-bluegrey-3 shadow-lg text-grey-8 text-body-4 font-semibold hover:border-blue-5 hover:text-primary transition-colors"
+        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center justify-center transition-all group"
       >
-        <img src={ChevronUpIcon} alt="위로" className="w-6 h-6" />
+        <img src={floatingDefault} alt="위로" className="w-16 h-16 group-hover:hidden transition-all" />
+        <img src={floatingHover} alt="위로" className="w-16 h-16 hidden group-hover:block transition-all" />
       </button>
     );
   }

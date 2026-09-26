@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useAuth } from "@/contexts/auth";
 import { useFetch } from "@/hooks/useFetch";
 import { getCommunities, getPhotos } from "@/services/galleryService";
+import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 
-const AVATAR_GRADIENTS = [
-  "from-blue-6 to-blue-9",
-  "from-point-5 to-point-8",
-  "from-blue-5 to-point-6",
-  "from-point-4 to-blue-7",
-  "from-blue-7 to-point-7",
-  "from-point-6 to-blue-8",
+const PRIMARY_BORDER_COLORS = [
+  "#3d5588", // blue-6
+  "#344874", // blue-7
+  "#2b3c61", // blue-8
+  "#232f4f", // blue-9
 ];
 
-function getAvatarGradient(id) {
-  return AVATAR_GRADIENTS[id % AVATAR_GRADIENTS.length];
+function getPrimaryBorderColor(id) {
+  return PRIMARY_BORDER_COLORS[id % PRIMARY_BORDER_COLORS.length];
 }
 
 const PHOTO_FETCH_LIMIT = 200;
@@ -71,11 +71,12 @@ function CameraIcon({ className = "w-8 h-8" }) {
 function CommunityAvatar({ community }) {
   return (
     <div
-      className={`shrink-0 w-9 h-9 rounded-full bg-gradient-to-br ${getAvatarGradient(
-        community.id,
-      )} flex items-center justify-center font-bold text-body-4 text-white`}
+      style={{ backgroundColor: getPrimaryBorderColor(community.id) }}
+      className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
     >
-      {community.name.charAt(0)}
+      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+      </svg>
     </div>
   );
 }
@@ -197,17 +198,12 @@ function PhotoGrid({ church, community, onBack }) {
 
       <div className="flex items-center gap-6 md:gap-9 pb-6 md:pb-8 border-b border-grey-2">
         <div
-          className={`shrink-0 rounded-full bg-gradient-to-br ${getAvatarGradient(
-            community.id,
-          )} p-1`}
+          style={{ backgroundColor: getPrimaryBorderColor(community.id) }}
+          className="shrink-0 w-28 h-28 md:w-40 md:h-40 rounded-3xl md:rounded-4xl flex items-center justify-center shadow-xl"
         >
-          <div className="p-1 bg-white rounded-full">
-            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-grey-2 flex items-center justify-center">
-              <span className="text-headline-3 font-bold text-grey-7">
-                {community.name.charAt(0)}
-              </span>
-            </div>
-          </div>
+          <svg className="w-12 h-12 md:w-20 md:h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+          </svg>
         </div>
         <div className="min-w-0">
           <h2 className="text-sub-tit-1 font-bold text-grey-11">{community.name}</h2>
@@ -260,24 +256,26 @@ function PhotoGrid({ church, community, onBack }) {
   );
 }
 
-function CommunityStoryCard({ community, onSelect }) {
+function CommunityStoryCard({ community, onSelect, disabled = false }) {
   return (
-    <button onClick={onSelect} className="group flex flex-col items-center gap-3 text-center">
-      <div
-        className={`p-1 rounded-full bg-gradient-to-br ${getAvatarGradient(
-          community.id,
-        )} group-hover:scale-105 transition-transform`}
+    <button
+      onClick={onSelect}
+      className={`group flex flex-col items-center text-center ${
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:scale-110"
+      } transition-transform`}
+    >
+      <svg
+        style={{ color: getPrimaryBorderColor(community.id) }}
+        className="w-50 h-50 md:w-55 md:h-55"
+        fill="currentColor"
+        viewBox="0 0 24 24"
       >
-        <div className="p-1 bg-white rounded-full">
-          <div className="w-28 h-28 rounded-full bg-grey-2 flex items-center justify-center">
-            <span className="text-headline-3 font-bold text-grey-7">
-              {community.name.charAt(0)}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="max-w-[124px]">
-        <p className="text-body-3 font-semibold text-grey-11 truncate">{community.name}</p>
+        <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+      </svg>
+      <div className="max-w-[140px]">
+        <p className={`text-headline-5 mb-2 font-semibold truncate ${disabled ? "text-grey-6" : "text-grey-11"}`}>
+          {community.name}
+        </p>
         <p className="text-body-5 text-grey-6 truncate">{community.desc}</p>
       </div>
     </button>
@@ -286,12 +284,14 @@ function CommunityStoryCard({ community, onSelect }) {
 
 export default function Gallery() {
   const { church } = useChurch();
+  const { currentUser } = useAuth();
   const { data: communities = [], loading } = useFetch(
     () => getCommunities(church.id),
     [church.id],
     [],
   );
   const [selected, setSelected] = useState(null);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -301,33 +301,52 @@ export default function Gallery() {
     if (matched) setSelected(matched);
   }, [searchParams, communities]);
 
-  return (
-    <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
-      {!selected ? (
-        /* Community List */
-        loading ? (
-          <div className="text-center py-20 text-body-4 text-bluegrey-5">불러오는 중...</div>
-        ) : (
-          <div className="flex flex-col gap-10">
-            <div>
-              <h1 className="text-sub-tit-2 font-bold text-grey-11">갤러리</h1>
-              <p className="text-body-4 text-grey-6 mt-1">공동체를 선택해 사진을 둘러보세요</p>
-            </div>
+  const handleCommunitySelect = (community) => {
+    if (!currentUser) {
+      setShowLoginRequired(true);
+      return;
+    }
+    setSelected(community);
+  };
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-y-10 gap-x-6 justify-items-center">
-              {communities.map((community) => (
-                <CommunityStoryCard
-                  key={community.id}
-                  community={community}
-                  onSelect={() => setSelected(community)}
-                />
-              ))}
+  return (
+    <div>
+      <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
+          <h1 className="text-headline-4 font-bold text-white">갤러리</h1>
+          <p className="text-body-3 text-white/80 mt-2">공동체를 선택해 사진을 둘러보세요</p>
+        </div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+        {showLoginRequired && (
+          <LoginRequiredModal
+            message="갤러리를 이용하려면 로그인해 주세요."
+            onCancel={() => setShowLoginRequired(false)}
+          />
+        )}
+
+        {!selected ? (
+          /* Community List */
+          loading ? (
+            <div className="text-center py-20 text-body-4 text-bluegrey-5">불러오는 중...</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-12 gap-x-8 justify-items-center">
+                {communities.map((community) => (
+                  <CommunityStoryCard
+                    key={community.id}
+                    community={community}
+                    onSelect={() => handleCommunitySelect(community)}
+                    disabled={!currentUser}
+                  />
+                ))}
             </div>
-          </div>
-        )
-      ) : (
-        <PhotoGrid church={church} community={selected} onBack={() => setSelected(null)} />
-      )}
+          )
+        ) : (
+          <PhotoGrid church={church} community={selected} onBack={() => setSelected(null)} />
+        )}
+      </div>
     </div>
   );
 }

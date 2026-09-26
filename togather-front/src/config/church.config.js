@@ -65,39 +65,37 @@ const churchConfig = {
     {
       label: "예배·방송",
       children: [
-        { label: "예배 안내", to: "/말씀/안내" },
-        { label: "실시간 예배", to: "/말씀/방송" },
-        { label: "예배 목록", to: "/말씀/설교" },
-        { label: "스마트 주보", to: "/주보/목록" },
+        { label: "예배 안내", to: "/말씀?tab=예배 안내" },
+        { label: "예배 목록", to: "/말씀?tab=예배 목록" },
+        { label: "스마트 주보", to: "/말씀?tab=스마트 주보" },
       ],
     },
     {
       label: "주일학교",
       children: [
-        { label: "유치부", to: "/주일학교/유치부" },
-        { label: "초등부", to: "/주일학교/초등부" },
-        { label: "중·고등부", to: "/주일학교/중고등부" },
-        { label: "대학·청년부", to: "/주일학교/청년부" },
+        { label: "유치부", to: "/주일학교?tab=유치부" },
+        { label: "초등부", to: "/주일학교?tab=초등부" },
+        { label: "중·고등부", to: "/주일학교?tab=중·고등부" },
+        { label: "대학·청년부", to: "/주일학교?tab=대학·청년부" },
       ],
     },
     {
       label: "전도·선교",
       children: [
-        { label: "전도회 소개", to: "/전도선교/전도회" },
-        { label: "국내 선교", to: "/전도선교/국내" },
-        { label: "해외 선교", to: "/전도선교/해외" },
-        { label: "선교지 소식", to: "/전도선교/소식" },
+        { label: "전도회 소개", to: "/전도선교?tab=전도회 소개" },
+        { label: "국내외 선교", to: "/전도선교?tab=국내외 선교" },
+        { label: "선교지 소식", to: "/전도선교?tab=선교지 소식" },
       ],
     },
     {
       label: "양육·훈련",
       children: [
-        { label: "구역 모임", to: "/양육훈련/구역" },
-        { label: "오늘의 묵상", to: "/양육훈련/묵상" },
-        { label: "제자훈련", to: "/양육훈련/제자훈련" },
-        { label: "양육 프로그램", to: "/양육훈련/프로그램" },
-        { label: "양육·훈련 게시판", to: "/양육훈련/게시판" },
-        { label: "성경 읽기·쓰기", to: "/양육훈련" },
+        { label: "구역 모임", to: "/양육훈련?tab=구역모임" },
+        { label: "오늘의 묵상", to: "/양육훈련?tab=오늘의 묵상" },
+        { label: "제자훈련", to: "/양육훈련?tab=제자훈련" },
+        { label: "양육 프로그램", to: "/양육훈련?tab=양육프로그램" },
+        { label: "양육·훈련 게시판", to: "/양육훈련?tab=양육/훈련 게시판" },
+        { label: "성경 읽기·쓰기", to: "/양육훈련?tab=성경읽기/쓰기" },
       ],
     },
     {
@@ -217,6 +215,10 @@ const churchConfig = {
       { name: "수요 예배", time: "수요일 오전 10시", location: "본당" },
       { name: "금요기도회", time: "금요일 오후 8시", location: "본당" },
       { name: "새벽기도회", time: "오전 5시 30분", location: "본당" },
+    ],
+    sundayAdditional: [
+      { name: "오후 예배", time: "오전 9시", location: "2층 본당" },
+      { name: "주일 학교 예배", time: "* 부서 별 상이", location: "부서별 상이" },
     ],
     departments: [
       { name: "유치부", time: "주일 오전 11시", location: "1층 유치부실" },
@@ -488,34 +490,42 @@ const churchConfig = {
   transportGuide: {
     routes: [
       {
-        name: "운행코스 1",
+        name: "청산역 라인",
         color: "#3B5280",
         waypoints: [
-          { lat: 37.4847, lng: 126.9291, label: "신림역", time: "06:00" },
-          { lat: 37.4814, lng: 126.9407, label: "신림사거리", time: "06:20" },
-          { lat: 37.479, lng: 126.931, label: "난곡사거리", time: "06:55" },
+          { lat: 37.4847, lng: 126.9291, label: "옥길교회 출발", time: "06:10" },
+          { lat: 37.4814, lng: 126.9407, label: "청산역 7호선 1번출구", time: "06:20" },
+          { lat: 37.479, lng: 126.931, label: "신림역", time: "06:35" },
+          { lat: 37.475, lng: 126.925, label: "신림사거리", time: "06:45" },
+          { lat: 37.480, lng: 126.935, label: "옥길교회 도착", time: "06:55" },
         ],
       },
       {
-        name: "운행코스 2",
+        name: "천왕역 라인",
         color: "#E05C2D",
-        waypoints: [],
+        waypoints: [
+          { lat: 37.4847, lng: 126.9291, label: "옥길교회 출발", time: "07:40" },
+          { lat: 37.4814, lng: 126.9407, label: "천왕역 7호선 3번출구", time: "07:52" },
+          { lat: 37.479, lng: 126.931, label: "철산역", time: "08:05" },
+          { lat: 37.475, lng: 126.925, label: "명파역", time: "08:18" },
+          { lat: 37.480, lng: 126.935, label: "옥길교회 도착", time: "08:30" },
+        ],
       },
       {
-        name: "운행코스 3",
+        name: "광명시청 라인",
         color: "#2D9E6B",
-        waypoints: [],
+        waypoints: [
+          { lat: 37.4847, lng: 126.9291, label: "옥길교회 출발", time: "06:30" },
+          { lat: 37.4814, lng: 126.9407, label: "광명시거리역", time: "06:42" },
+          { lat: 37.479, lng: 126.931, label: "광명시청", time: "06:55" },
+          { lat: 37.475, lng: 126.925, label: "오금역", time: "07:08" },
+          { lat: 37.480, lng: 126.935, label: "옥길교회 도착", time: "07:20" },
+        ],
       },
-      {
-        name: "운행코스 4",
-        color: "#9B51E0",
-        waypoints: [],
-      },
-      {
-        name: "운행코스 5",
-        color: "#E0A82D",
-        waypoints: [],
-      },
+    ],
+    notes: [
+      "차량 운행 관련 공지사항을 이곳에 입력하세요.",
+      "차량 운행 관련 추가 공지사항을 이곳에 입력하세요.",
     ],
   },
 };

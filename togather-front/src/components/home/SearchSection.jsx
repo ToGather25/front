@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 const SUGGESTIONS = [
-  { label: "주일 예배", to: "/말씀/방송" },
   { label: "성경 타자", to: "/말씀/필사" },
   { label: "오시는 길", to: "/교회소개?tab=오시는 길" },
   { label: "구역모임", to: "/양육훈련/구역" },

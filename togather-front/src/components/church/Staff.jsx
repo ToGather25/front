@@ -69,14 +69,14 @@ export default function Staff() {
   return (
     <div>
       {/* 검색 */}
-      <div className="relative max-w-[300px] mb-6">
-        <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
+      <div className="relative max-w-[300px] mb-6 group">
+        <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 brightness-75 group-focus-within:brightness-50 transition-all" alt="" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="이름 또는 직책으로 검색하세요."
-          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
+          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all"
         />
       </div>
 
@@ -97,7 +97,7 @@ export default function Staff() {
             </button>
           ))}
         </div>
-        <div className="hidden md:flex md:flex-col md:w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+        <div className="hidden md:flex md:flex-col md:w-[300px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
           {STAFF_CHIPS.map((chip) => (
             <button
               key={chip}

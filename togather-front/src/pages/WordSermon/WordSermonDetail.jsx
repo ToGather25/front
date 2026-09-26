@@ -2,8 +2,19 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { getSermonDetail, searchSermons } from "@/services/sermonService";
+import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import BtnArrow from "@/assets/icon-svg/btn-arrow.svg";
+import BtnArrow1 from "@/assets/icon-svg/btn-arrow-1.svg";
 
 const NEIGHBOR_FETCH_SIZE = 50;
+
+// 테스트용 mock 데이터
+const MOCK_SERMON = {
+  id: "test-sermon-1",
+  title: "믿음으로 사는 삶",
+  sermonDate: "2026.09.26",
+  youtubeVideoId: "0kpFz0-uGdc",
+};
 
 export default function WordSermonDetail() {
   const { id } = useParams();
@@ -22,6 +33,13 @@ export default function WordSermonDetail() {
       if (cancelled) return;
       if (detailResult.status === "rejected") {
         console.error("[WordSermonDetail] 설교 상세 조회 실패:", detailResult.reason);
+        // 테스트 모드: mock 데이터 사용 (URL에 test 파라미터가 있을 때)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("test") === "true") {
+          setSermon(MOCK_SERMON);
+          setNeighbors([]);
+          return;
+        }
         setSermon(null);
         return;
       }
@@ -69,28 +87,35 @@ export default function WordSermonDetail() {
       <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
-          <button
-            onClick={() => navigate("/말씀/설교")}
-            className="flex items-center gap-1.5 text-blue-3 hover:text-white transition-colors text-body-4 mb-3"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            예배 목록
-          </button>
           <h1 className="text-headline-4 font-bold text-white">예배·방송</h1>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:px-8 md:py-12">
+        {/* 목록으로 버튼 */}
+        <button
+          onClick={() => navigate("/말씀/설교")}
+          className="flex items-center gap-1.5 text-bluegrey-3 hover:text-primary transition-colors text-body-4 mb-6 group"
+        >
+          <img src={ArrowLeft} alt="" className="w-4 h-4 opacity-30 group-hover:opacity-100 transition-opacity" />
+          목록으로
+        </button>
+
+        {/* 주보 보기 버튼 */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => navigate("/주보")}
+            className="flex items-center gap-2 text-body-4 text-primary hover:text-primary transition-all group"
+          >
+            주보 보기
+            <img src={BtnArrow} alt="" className="w-4 h-4 group-hover:hidden" />
+            <img src={BtnArrow1} alt="" className="w-4 h-4 hidden group-hover:block" />
+          </button>
+        </div>
+
         {/* 영상 플레이어 */}
         <div
-          className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-8"
+          className="w-full rounded-2xl overflow-hidden bg-grey-11 shadow-xl mb-6"
           style={{ aspectRatio: "16/9" }}
         >
           {sermon.youtubeVideoId ? (
@@ -120,49 +145,9 @@ export default function WordSermonDetail() {
         </div>
 
         {/* 설교 정보 */}
-        <p className="text-body-4 text-grey-5 mb-3">{sermon.sermonDate}</p>
-        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-4">{sermon.title}</h2>
-        {(sermon.scripture || sermon.preacher || sermon.worshipType) && (
-          <div className="flex items-center gap-2 text-body-3 text-grey-6 mb-6">
-            {sermon.worshipType && (
-              <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-medium rounded-full">
-                {sermon.worshipType}
-              </span>
-            )}
-            {sermon.scripture && <span className="text-primary font-medium">{sermon.scripture}</span>}
-            {sermon.scripture && sermon.preacher && <span className="text-grey-4">·</span>}
-            {sermon.preacher && <span>{sermon.preacher}</span>}
-          </div>
-        )}
-
-        {/* 이전/다음 네비게이션 */}
-        <div className="flex gap-4 mt-12 pt-8 border-t border-bluegrey-2">
-          {prev ? (
-            <button
-              onClick={() => navigate(`/말씀/설교/${prev.id}`)}
-              className="flex-1 text-left px-4 py-3.5 rounded-xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all group"
-            >
-              <p className="text-body-5 text-grey-5 mb-1">이전 설교</p>
-              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">
-                {prev.title}
-              </p>
-            </button>
-          ) : (
-            <div className="flex-1" />
-          )}
-          {next ? (
-            <button
-              onClick={() => navigate(`/말씀/설교/${next.id}`)}
-              className="flex-1 text-right px-4 py-3.5 rounded-xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all group"
-            >
-              <p className="text-body-5 text-grey-5 mb-1">다음 설교</p>
-              <p className="text-body-3 font-medium text-grey-9 group-hover:text-primary transition-colors line-clamp-1">
-                {next.title}
-              </p>
-            </button>
-          ) : (
-            <div className="flex-1" />
-          )}
+        <div className="flex items-center justify-between mb-6 px-2">
+          <h2 className="text-sub-tit-3 font-bold text-grey-11">{sermon.title}</h2>
+          <p className="text-body-4 text-grey-5">{sermon.sermonDate}</p>
         </div>
       </div>
     </div>

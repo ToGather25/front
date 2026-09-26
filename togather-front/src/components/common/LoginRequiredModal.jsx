@@ -7,12 +7,12 @@ export default function LoginRequiredModal({ message, onCancel }) {
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-[320px] px-8 py-8 flex flex-col items-center gap-5"
+        className="bg-white rounded-2xl shadow-2xl w-[90vw] max-w-[320px] md:max-w-[450px] px-8 py-10 md:py-12 flex flex-col items-center gap-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-14 h-14 rounded-full bg-blue-1 flex items-center justify-center">
+        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-1 flex items-center justify-center">
           <svg
-            className="w-7 h-7 text-primary"
+            className="w-8 h-8 md:w-10 md:h-10 text-primary"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.8"
@@ -26,22 +26,22 @@ export default function LoginRequiredModal({ message, onCancel }) {
           </svg>
         </div>
         <div className="text-center">
-          <p className="text-sub-tit-4 font-bold text-grey-12 mb-2">
+          <p className="text-sub-tit-4 md:text-sub-tit-3 font-bold text-grey-12 mb-2">
             로그인이 필요한 서비스입니다
           </p>
-          <p className="text-body-4 text-grey-6">{message}</p>
+          <p className="text-body-4 md:text-body-3 text-grey-6">{message}</p>
         </div>
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-3 w-full">
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-full border border-bluegrey-2 text-body-4 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"
+            className="flex-1 py-3 md:py-3.5 rounded-full border border-bluegrey-2 text-body-4 md:text-body-3 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"
           >
             취소
           </button>
           <Link
             to="/login"
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-full bg-primary text-white text-body-4 font-semibold text-center hover:bg-blue-8 transition-colors"
+            className="flex-1 py-3 md:py-3.5 rounded-full bg-primary text-white text-body-4 md:text-body-3 font-semibold text-center hover:bg-blue-8 transition-colors"
           >
             로그인
           </Link>

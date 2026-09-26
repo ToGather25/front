@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
+import WorshipInfo from "@/components/church/WorshipInfo";
+import JuboList from "@/pages/JuboList/JuboList";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
 import { searchSermons } from "@/services/sermonService";
-import { SERVICE_TYPES } from "@/config/sermon.config";
 
 const PAGE_SIZE = 12;
 
@@ -27,6 +28,8 @@ function SermonThumb() {
 
 export default function WordSermon() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "예배 목록";
   const { church } = useChurch();
   const [sermons, setSermons] = useState([]);
   const [pageInfo, setPageInfo] = useState({ totalPages: 1 });
@@ -91,6 +94,7 @@ export default function WordSermon() {
 
       <WordTabBar />
 
+      {activeTab === "예배 목록" && (
       <div className="max-w-[1400px] mx-auto px-4 py-10 md:px-8 md:py-12">
         {/* 검색바 */}
         <form onSubmit={handleSearch} className="flex gap-3 mb-10 max-w-2xl">
@@ -105,7 +109,7 @@ export default function WordSermon() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="설교 제목 검색"
-              className="w-full h-[46px] pl-10 pr-10 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all"
+              className="w-full h-[46px] pl-10 pr-10 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
             />
             {inputVal && (
               <button
@@ -123,12 +127,12 @@ export default function WordSermon() {
               setWorshipType(e.target.value);
               setPage(1);
             }}
-            className="h-[46px] px-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 focus:ring-2 focus:ring-blue-3/40 outline-none transition-all shrink-0"
+            className="h-[46px] px-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 outline-none transition-all shrink-0"
           >
             <option value="">예배 전체</option>
-            {SERVICE_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
+            {(church.worshipDisplay || []).map((display) => (
+              <option key={display.title} value={display.title}>
+                {display.title}
               </option>
             ))}
           </select>
@@ -165,10 +169,17 @@ export default function WordSermon() {
           </div>
         )}
 
-        {/* 결과 없음 */}
-        {!loading && !error && sermons.length === 0 && (
-          <div className="py-24 text-center text-grey-6 text-body-2">
+        {/* 검색했는데 결과 없음 */}
+        {!loading && !error && sermons.length === 0 && query && (
+          <div className="min-h-[60vh] flex items-center justify-center text-centre text-grey-6 text-body-2">
             검색 결과가 없습니다. 다른 검색어를 입력해 주세요.
+          </div>
+        )}
+
+        {/* 검색 안 했을 때 (데이터 없는 상태) */}
+        {!loading && !error && sermons.length === 0 && !query && (
+          <div className="min-h-[60vh] flex items-center justify-center text-centre text-grey-6 text-body-2">
+            설교 데이터를 불러오는 중입니다.
           </div>
         )}
 
@@ -218,6 +229,19 @@ export default function WordSermon() {
           </>
         )}
       </div>
+      )}
+
+      {activeTab === "예배 안내" && (
+      <div className="flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full mt-5 md:mt-8">
+        <WorshipInfo />
+      </div>
+      )}
+
+      {activeTab === "스마트 주보" && (
+      <div>
+        <JuboList hideHeader />
+      </div>
+      )}
     </div>
   );
 }

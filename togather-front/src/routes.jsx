@@ -4,7 +4,6 @@ import AdminLayout from "@/layouts/AdminLayout";
 import AuthOnlyLayout from "@/layouts/AuthOnlyLayout";
 import Home from "@/pages/Home/Home";
 import Jubo from "@/pages/Jubo/Jubo";
-import JuboList from "@/pages/JuboList/JuboList";
 import Church from "@/pages/Church/Church";
 import Events from "@/pages/Events/Events";
 import EventDetail from "@/pages/Events/EventDetail";
@@ -23,10 +22,8 @@ import Mission from "@/pages/Mission/Mission";
 import Nurture from "@/pages/Nurture/Nurture";
 import SundaySchool from "@/pages/SundaySchool/SundaySchool";
 import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
-import WordBroadcast from "@/pages/WordBroadcast/WordBroadcast";
 import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordSermonDetail from "@/pages/WordSermon/WordSermonDetail";
-import WordInfo from "@/pages/WordInfo/WordInfo";
 import Contact from "@/pages/Contact/Contact";
 import Notice from "@/pages/Notice/Notice";
 import Privacy from "@/pages/Privacy/Privacy";
@@ -59,7 +56,7 @@ export const routes = [
     children: [
       { index: true, element: <Home /> },
       { path: "주보", element: <Jubo /> },
-      { path: "주보/목록", element: <JuboList /> },
+      { path: "주보/목록", element: <Navigate to="/말씀?tab=스마트 주보" replace /> },
       { path: "교회소개", element: <Church /> },
       { path: "교회행사", element: <Events /> },
       { path: "교회행사/검색", element: <EventSearch /> },
@@ -67,20 +64,16 @@ export const routes = [
       { path: "교회행사/:id", element: <EventDetail /> },
       { path: "갤러리", element: <Gallery /> },
       // 예배·방송
-      { path: "말씀", element: <Navigate to="/말씀/방송" replace /> },
-      { path: "말씀/방송", element: <WordBroadcast /> },
+      { path: "말씀", element: <WordSermon /> },
       { path: "말씀/설교", element: <WordSermon /> },
       { path: "말씀/설교/:id", element: <WordSermonDetail /> },
-      { path: "말씀/안내", element: <WordInfo /> },
+      { path: "말씀/안내", element: <Navigate to="/말씀?tab=예배 안내" replace /> },
       // 주일학교
       { path: "주일학교", element: <SundaySchool /> },
-      { path: "주일학교/:dept", element: <SundaySchool /> },
       // 전도·선교
       { path: "전도선교", element: <Mission /> },
-      { path: "전도선교/:section", element: <Mission /> },
       // 양육·훈련
       { path: "양육훈련", element: <Nurture /> },
-      { path: "양육훈련/:section", element: <Nurture /> },
       // 기타
       { path: "login", element: <Login /> },
       { path: "find-password", element: <FindPassword /> },

@@ -7,6 +7,9 @@
 import api from "./api";
 import { DUMMY_COMMUNITIES, DUMMY_PHOTOS } from "@/data/dummy/gallery";
 
+// isDummy 함수 - 현재는 항상 true (테스트 데이터 사용)
+const isDummy = () => true;
+
 /**
  * 공동체 목록 조회
  * @param {string} churchId

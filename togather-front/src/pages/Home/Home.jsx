@@ -25,7 +25,7 @@ export default function Home() {
         <div data-home-section className="min-h-screen flex flex-col justify-center">
           <NotificationSection />
         </div>
-        <div data-home-section className="flex flex-col justify-center">
+        <div data-home-section className="min-h-screen flex flex-col justify-center">
           <Direction />
         </div>
         <ScrollDownButton />

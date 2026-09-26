@@ -1,16 +1,8 @@
-import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
-
-const SECTION_TAB_MAP = {
-  구역: "구역모임",
-  묵상: "오늘의 묵상",
-  제자훈련: "제자훈련",
-  프로그램: "양육프로그램",
-  게시판: "양육/훈련 게시판",
-};
 
 const TABS = [
   "구역모임",
@@ -182,8 +174,8 @@ const CATEGORY_COLORS = {
 };
 
 export default function Nurture() {
-  const { section } = useParams();
-  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "성경읽기/쓰기";
   const { church } = useChurch();
   const { currentUser } = useAuth();
   const [showLoginRequired, setShowLoginRequired] = useState(false);
@@ -204,9 +196,6 @@ export default function Nurture() {
     }
   }
 
-  useEffect(() => {
-    setActiveTab(SECTION_TAB_MAP[section] ?? "성경읽기/쓰기");
-  }, [section]);
 
   return (
     <div>
@@ -228,7 +217,7 @@ export default function Nurture() {
             {TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setSearchParams({ tab })}
                 className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
@@ -247,7 +236,7 @@ export default function Nurture() {
         {/* 구역모임 */}
         {activeTab === "구역모임" && (
           <div>
-            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-8">구역모임</h2>
+            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">구역모임</h2>
             <p className="text-body-2 text-grey-7 mb-8">
               지역별로 모여 말씀을 나누고 서로를 섬기는 구역 공동체입니다.
             </p>
@@ -477,7 +466,7 @@ export default function Nurture() {
         {/* 양육프로그램 */}
         {activeTab === "양육프로그램" && (
           <div>
-            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-8">양육프로그램</h2>
+            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">양육프로그램</h2>
             <p className="text-body-2 text-grey-7 mb-8">
               단계별 신앙 성장을 위한 양육 프로그램을 운영합니다.
             </p>

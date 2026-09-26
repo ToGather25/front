@@ -1,14 +1,7 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useState } from "react";
+import { useSearchParams } from "react-router";
 
-const SECTION_TAB_MAP = {
-  전도회: "전도회 소개",
-  국내: "국내·해외 선교",
-  해외: "국내·해외 선교",
-  소식: "선교지 소식",
-};
-
-const TABS = ["전도회 소개", "국내·해외 선교", "선교지 소식"];
+const TABS = ["전도회 소개", "국내외 선교", "선교지 소식"];
 
 const EVANGELISM_INFO = {
   description:
@@ -73,15 +66,9 @@ const MISSION_NEWS = [
 ];
 
 export default function Mission() {
-  const { section } = useParams();
-  const [activeTab, setActiveTab] = useState(SECTION_TAB_MAP[section] ?? "전도회 소개");
-  const [missionType, setMissionType] = useState(section === "해외" ? "해외" : "국내");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "전도회 소개";
   const [selectedNews, setSelectedNews] = useState(null);
-
-  useEffect(() => {
-    setActiveTab(SECTION_TAB_MAP[section] ?? "전도회 소개");
-    if (section === "국내" || section === "해외") setMissionType(section);
-  }, [section]);
 
   return (
     <div>
@@ -162,7 +149,7 @@ export default function Mission() {
             {TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setSearchParams({ tab })}
                 className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
@@ -253,64 +240,57 @@ export default function Mission() {
           </div>
         )}
 
-        {/* 국내·해외 선교 */}
-        {activeTab === "국내·해외 선교" && (
+        {/* 국내외 선교 */}
+        {activeTab === "국내외 선교" && (
           <div>
-            {/* 국내/해외 토글 */}
-            <div className="flex items-center gap-1 bg-bluegrey-1 rounded-xl p-1 w-fit mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {["국내", "해외"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setMissionType(type)}
-                  className={`px-7 py-2 rounded-lg text-body-3 font-semibold transition-all ${
-                    missionType === type
-                      ? "bg-white text-primary shadow-sm"
-                      : "text-grey-7 hover:text-grey-10"
-                  }`}
-                >
-                  {type} 선교
-                </button>
-              ))}
-            </div>
-
-            <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">
-              {MISSION_CONTENT[missionType].title}
-            </h2>
-            <p className="text-body-2 text-grey-7 mb-8">
-              {MISSION_CONTENT[missionType].description}
-            </p>
-
-            <div className="grid grid-cols-1 gap-4 max-w-2xl">
-              {MISSION_CONTENT[missionType].items.map(({ name, schedule, location }) => (
-                <div
-                  key={name}
-                  className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
-                >
-                  <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
-                    <svg
-                      className="w-5 h-5 text-blue-7"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                <div key={type}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-primary rounded-sm" />
+                    <h2 className="text-sub-tit-2 font-bold text-grey-11">
+                      {MISSION_CONTENT[type].title}
+                    </h2>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-body-2 font-semibold text-grey-11 mb-1">{name}</p>
-                    <p className="text-body-4 text-grey-6">{schedule}</p>
-                    <p className="text-body-4 text-grey-7 mt-0.5">{location}</p>
+
+                  <p className="text-body-2 text-grey-7 mb-6">
+                    {MISSION_CONTENT[type].description}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {MISSION_CONTENT[type].items.map(({ name, schedule, location }) => (
+                      <div
+                        key={name}
+                        className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
+                          <svg
+                            className="w-5 h-5 text-blue-7"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-body-3 font-semibold text-grey-11 mb-1 line-clamp-2">{name}</p>
+                          <p className="text-body-5 text-grey-6">{schedule}</p>
+                          <p className="text-body-5 text-grey-7 mt-0.5">{location}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}

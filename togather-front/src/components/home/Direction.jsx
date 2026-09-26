@@ -7,7 +7,7 @@ export default function Direction() {
 
   return (
     <div
-      className="relative py-[100px]"
+      className="relative py-[200px]"
       style={{
         backgroundImage: `url('${churchSermonBg}')`,
         backgroundAttachment: "fixed",
@@ -23,17 +23,18 @@ export default function Direction() {
         <div className="w-full flex flex-col gap-16">
           {/* 타이틀 */}
           <div className="text-center">
-            <p className="text-pale text-[30px] font-bold mb-4">Contact Us</p>
-            <h2 className="text-white text-[40px] font-bold">찾아오시는 길</h2>
+            <p className="text-pale text-headline-5 font-semibold mb-4">Contact Us</p>
+            <h2 className="text-white text-section-title font-bold">찾아오시는 길</h2>
           </div>
 
           {/* 지도 */}
-          <div className="w-full rounded-2xl overflow-hidden border-2 border-grey-10 h-[540px] bg-grey-1">
+          <div className="w-full rounded-2xl overflow-hidden border-2 border-grey-10 h-[600px] bg-grey-1">
             <KakaoMap
               level={church.location?.level ?? 3}
               address={church.address}
               draggable={false}
               className="w-full h-full"
+              showTraffic
             />
           </div>
         </div>
