@@ -191,7 +191,7 @@ export default function WordSermon() {
                 <button
                   key={s.id}
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
-                  className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer bg-grey-2 flex flex-col"
+                  className="group text-left rounded-2xl overflow-hidden hover:shadow-xl transition-all relative cursor-pointer bg-grey-2 flex flex-col"
                   style={{
                     aspectRatio: "9/7",
                   }}
