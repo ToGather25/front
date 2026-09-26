@@ -43,10 +43,10 @@ function Section({ title, items }) {
 
 export default function WorshipInfo() {
   const { church } = useChurch();
-  const { regular, sundayAdditional, departments } = church.worshipSchedule;
+  const { regular, departments } = church.worshipSchedule;
 
-  // 주일 예배 (1부, 2부, 오후 + 추가 데이터)
-  const sundayWorship = [...regular.slice(0, 3), ...(sundayAdditional ?? [])];
+  // 주일 예배 (1부, 2부, 오후)
+  const sundayWorship = regular.slice(0, 3);
 
   // 평일 예배 (수요, 금요, 새벽)
   const weekdayWorship = regular.slice(3);
