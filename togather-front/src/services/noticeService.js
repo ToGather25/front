@@ -17,7 +17,10 @@ export async function getNotices(churchId, params = {}) {
   const res = await api.get(`/churches/${churchId}/notices`, {
     params: page != null ? { ...rest, page: page - 1 } : rest,
   });
-  return res.data.data;
+  return {
+    data: res.data.data,
+    total: res.data.total ?? res.data.data?.length ?? 0,
+  };
 }
 
 /**

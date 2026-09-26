@@ -48,13 +48,13 @@ export default function Notice() {
 
   const isFiltered = tab !== "전체";
   const hasDeepLinkId = !!searchParams.get("id");
-  const { data: notices = [] } = useFetch(
+  const { data: notices = [], total: noticesTotal = 0 } = useFetch(
     () =>
       isFiltered || hasDeepLinkId
         ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
         : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
     [church.id, isFiltered, hasDeepLinkId, serverPage],
-    [],
+    { data: [], total: 0 },
   );
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function Notice() {
     : filtered;
   const hasNext = isFiltered || query
     ? filtered.length > clientPage * PAGE_SIZE
-    : notices.length === PAGE_SIZE;
+    : noticesTotal > serverPage * PAGE_SIZE;
 
   function handleTabChange(t) {
     setTab(t);
@@ -264,7 +264,7 @@ export default function Notice() {
 
                     {paged.length > 0 && <div className="flex-1" />}
                     <NumberedPagination
-                      total={isFiltered ? filtered.length : notices.length}
+                      total={isFiltered ? filtered.length : noticesTotal}
                       perPage={PAGE_SIZE}
                       current={isFiltered ? clientPage : serverPage}
                       onChange={isFiltered ? setClientPage : setServerPage}
