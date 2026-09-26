@@ -101,7 +101,7 @@ export default function Direction() {
               ))}
             </div>
           ) : (
-            <p className="text-body-4 text-grey-5">정보가 없습니다.</p>
+            <p className="text-body-4 text-grey-5 text-center">정보가 없습니다.</p>
           )}
         </div>
 
