@@ -67,7 +67,11 @@ export default function NotificationSection() {
               </div>
             ) : (
               <div className="space-y-8">
-                {[...notices].sort((a, b) => (b.featured || false) - (a.featured || false)).map((notice, i) => (
+                {[...notices].sort((a, b) => {
+                  if (a.featured && !b.featured) return -1;
+                  if (!a.featured && b.featured) return 1;
+                  return 0;
+                }).map((notice, i) => (
                   <div key={notice.id}>
                     <button
                       onClick={() => navigate(`/공지사항?id=${notice.id}`)}
