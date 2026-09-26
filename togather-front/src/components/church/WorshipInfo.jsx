@@ -45,11 +45,11 @@ export default function WorshipInfo() {
   const { church } = useChurch();
   const { regular, departments } = church.worshipSchedule;
 
-  // 주일 예배 (1부, 2부, 오후)
-  const sundayWorship = regular.slice(0, 3);
+  // 주일 예배 (1부, 2부, 오후, 주일 학교 예배)
+  const sundayWorship = regular.slice(0, 4);
 
   // 평일 예배 (수요, 금요, 새벽)
-  const weekdayWorship = regular.slice(3);
+  const weekdayWorship = regular.slice(4);
 
   return (
     <div className="space-y-8">
