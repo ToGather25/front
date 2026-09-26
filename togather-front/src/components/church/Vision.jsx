@@ -53,7 +53,7 @@ export default function Vision() {
         }
       `}</style>
 
-      <div className="mt-8 mb-12">
+      <div className="mb-12">
         <h3 className="text-sub-tit-2 font-bold text-grey-11 mb-2 whitespace-pre-wrap">{mainTitle}</h3>
         <p className="text-body-2 text-grey-7 whitespace-pre-wrap">{mainVerse}</p>
       </div>
