@@ -216,8 +216,8 @@ export default function WordSermon() {
 
                   {/* 콘텐츠 */}
                   <div className="relative z-10 h-full flex flex-col justify-end p-5 pb-6">
-                    <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2 hover-underline inline-block">
-                      {s.title}
+                    <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2">
+                      <span className="hover-underline inline-block">{s.title}</span>
                     </h3>
                     <div className="flex items-center gap-2 text-body-5 text-white/90">
                       <span>{s.sermonDate}</span>
