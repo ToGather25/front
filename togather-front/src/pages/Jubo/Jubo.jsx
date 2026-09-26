@@ -6,6 +6,13 @@ import { useFetch } from "@/hooks/useFetch";
 import { getJuboIssue } from "@/services/juboService";
 import { JuboPage } from "@/components/jubo/shared";
 import Cover from "@/components/jubo/Cover";
+import JuboSection2 from "@/components/jubo/JuboSection2";
+import JuboSection3 from "@/components/jubo/JuboSection3";
+import JuboSection4 from "@/components/jubo/JuboSection4";
+import JuboSection5 from "@/components/jubo/JuboSection5";
+import Sermon from "@/components/jubo/Sermon";
+import Giving from "@/components/jubo/Giving";
+import PrayerTopics from "@/components/jubo/PrayerTopics";
 import Worship from "@/components/jubo/Worship";
 import News from "@/components/jubo/News";
 import Service from "@/components/jubo/Service";
@@ -14,95 +21,46 @@ import Support from "@/components/jubo/Support";
 import District from "@/components/jubo/District";
 import Ministers from "@/components/jubo/Ministers";
 import Direction from "@/components/jubo/Direction";
-import Sermon from "@/components/jubo/Sermon";
-import Giving from "@/components/jubo/Giving";
-import PrayerTopics from "@/components/jubo/PrayerTopics";
 
-const TABS = [
-  "표지",
-  "예배",
-  "소식",
-  "봉사",
-  "예물",
-  "후원",
-  "구역",
-  "섬기는 분들",
-  "오시는 길",
-  "말씀",
-  "헌금",
-  "기도제목",
+const SECTIONS = [
+  { id: "cover", label: "표지", section: "cover" },
+  { id: "worship-news", label: "예배 및 소식", section: "section2" },
+  { id: "service-offering", label: "봉사 및 예물 안내", section: "section3" },
+  { id: "support-district", label: "후원 및 구역 안내", section: "section4" },
+  { id: "others", label: "기타안내", section: "section5" },
 ];
 
-// ── 탭별 렌더 ──────────────────────────────────────────
-function renderTab(tab, issue) {
-  switch (tab) {
-    case "표지":
+const ALL_TABS = ["표지", "예배 및 소식", "봉사 및 예물", "후원 및 구역", "기타안내", "말씀", "헌금", "기도제목"];
+
+function renderContent(section, issue) {
+  switch (section) {
+    case "cover":
       return (
         <JuboPage noPadding>
           <Cover issue={issue} />
         </JuboPage>
       );
-    case "예배":
-      return (
-        <JuboPage>
-          <Worship />
-        </JuboPage>
-      );
-    case "소식":
-      return (
-        <JuboPage>
-          <News />
-        </JuboPage>
-      );
-    case "봉사":
-      return (
-        <JuboPage>
-          <Service />
-        </JuboPage>
-      );
-    case "예물":
-      return (
-        <JuboPage>
-          <Offering />
-        </JuboPage>
-      );
-    case "후원":
-      return (
-        <JuboPage>
-          <Support />
-        </JuboPage>
-      );
-    case "구역":
-      return (
-        <JuboPage>
-          <District />
-        </JuboPage>
-      );
-    case "섬기는 분들":
-      return (
-        <JuboPage>
-          <Ministers />
-        </JuboPage>
-      );
-    case "오시는 길":
-      return (
-        <JuboPage>
-          <Direction />
-        </JuboPage>
-      );
-    case "말씀":
+    case "section2":
+      return <JuboSection2 />;
+    case "section3":
+      return <JuboSection3 />;
+    case "section4":
+      return <JuboSection4 />;
+    case "section5":
+      return <JuboSection5 />;
+    case "sermon":
       return (
         <JuboPage>
           <Sermon issue={issue} />
         </JuboPage>
       );
-    case "헌금":
+    case "giving":
       return (
         <JuboPage>
           <Giving />
         </JuboPage>
       );
-    case "기도제목":
+    case "prayer":
       return (
         <JuboPage>
           <PrayerTopics />
@@ -113,17 +71,18 @@ function renderTab(tab, issue) {
   }
 }
 
-// ── 메인 ───────────────────────────────────────────────
 export default function Jubo() {
   const { church } = useChurch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "표지";
+  const activeSection = searchParams.get("section") || "cover";
   const issueId = searchParams.get("issue");
   const { data: issue } = useFetch(
     () => (issueId ? getJuboIssue(church.id, issueId) : Promise.resolve(null)),
     [church.id, issueId],
     null,
   );
+
+  const currentSection = SECTIONS.find(s => s.section === activeSection);
 
   const handleDownloadPdf = async () => {
     const element = document.querySelector(".jubo-print-wrapper-all");
@@ -142,7 +101,7 @@ export default function Jubo() {
 
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
-      const pagePixelHeight = canvasHeight / 6; // 6개 페이지로 나누기
+      const pagePixelHeight = canvasHeight / 6;
 
       const pdf = new jsPDF({
         orientation: "landscape",
@@ -150,12 +109,10 @@ export default function Jubo() {
         format: "a4",
       });
 
-      // 6개 페이지로 나눠서 PDF에 추가
       for (let pageNum = 0; pageNum < 6; pageNum++) {
         const startY = pageNum * pagePixelHeight;
         const cropHeight = Math.min(pagePixelHeight, canvasHeight - startY);
 
-        // 현재 페이지의 캔버스 자르기
         const pageCanvas = document.createElement("canvas");
         pageCanvas.width = canvasWidth;
         pageCanvas.height = cropHeight;
@@ -174,7 +131,6 @@ export default function Jubo() {
         pdf.addImage(imgData, "PNG", 0, 0, 297, 210);
       }
 
-      // issueNo와 date로 파일명 생성
       const issueNo = issue?.issueNo || "주보";
       const date = issue?.dateLabel?.replace(/\s/g, "-") || new Date().toISOString().split("T")[0];
       pdf.save(`${issueNo}-${date}.pdf`);
@@ -183,56 +139,92 @@ export default function Jubo() {
     }
   };
 
+  const isCoverPage = activeSection === "cover";
+  const sections = SECTIONS.slice(1); // cover 제외한 섹션들 (section2-5)
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 md:px-8 md:py-10">
+    <div className="w-full bg-grey-1">
       {/* 헤더 */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <h1 className="text-sub-tit-1 font-bold text-grey-12">스마트 주보</h1>
-
-          {/* PDF 다운로드 버튼 — 데스크톱에만 표시 */}
-          <button
-            onClick={handleDownloadPdf}
-            title="PDF 다운로드"
-            className="hidden md:block bg-bluegrey-1 border border-bluegrey-3 rounded-lg p-2 hover:bg-bluegrey-2 transition-colors shrink-0"
-          >
-            <svg
-              className="w-5 h-5 text-grey-9"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div className="flex gap-0 overflow-x-auto pb-1">
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setSearchParams(issueId ? { tab, issue: issueId } : { tab })}
-              className={`shrink-0 w-20 h-10 flex items-center justify-center text-body-3 border text-xs transition-colors font-medium ${
-                activeTab === tab
-                  ? "bg-primary border-primary text-white font-semibold"
-                  : "bg-white border-grey-5 text-grey-8 hover:bg-bluegrey-1 hover:border-primary hover:text-primary"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
+        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
+          <h1 className="text-headline-4 font-bold text-white">스마트 주보</h1>
         </div>
       </div>
 
-      {/* 화면: 현재 탭만 표시 */}
-      <div className="jubo-single-tab">{renderTab(activeTab, issue)}</div>
+      {/* 메인 컨텐츠 */}
+      <div className="bg-white">
+        {/* 서브 헤더: 목록으로 | 제목 | PDF 다운로드 */}
+        <div className="border-b border-bluegrey-2">
+          <div className="max-w-[1400px] mx-auto px-8 py-4 flex items-center justify-between">
+            <button
+              onClick={() => setSearchParams({})}
+              className="flex items-center gap-2 text-body-4 font-medium text-primary hover:opacity-70"
+            >
+              <span>←</span>
+              <span>목록으로</span>
+            </button>
 
-      {/* PDF 저장용: 모든 탭을 2개씩 그룹화 (화면 밖) */}
+            <h2 className="text-headline-5 font-bold text-grey-12">
+              {issue?.dateLabel || "주보"}
+            </h2>
+
+            <button
+              onClick={handleDownloadPdf}
+              className="flex items-center justify-center gap-2 bg-primary text-white rounded-full px-4 py-2.5 hover:opacity-90 transition-opacity text-body-4 font-medium"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5m-4.5 4.5V3"
+                />
+              </svg>
+              <span>PDF 다운로드</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 메인 콘텐츠 + 우측 미리보기 */}
+        <div className="max-w-[1400px] mx-auto px-8 py-12">
+          <div className="flex gap-8 items-start relative">
+            {/* 중앙 메인 콘텐츠 */}
+            <div className="flex-1">
+              <div className={isCoverPage ? "max-w-xl mx-auto" : ""}>
+                {renderContent(activeSection, issue)}
+              </div>
+            </div>
+
+            {/* 우측 섹션 미리보기 (연하게) */}
+            <div className="w-80 shrink-0 relative h-96">
+              {sections.map((section, idx) => (
+                <button
+                  key={section.id}
+                  onClick={() => setSearchParams({ section: section.section, issue: issueId })}
+                  className="absolute inset-0 bg-white rounded-5 shadow-lg overflow-hidden transition-all duration-300 cursor-pointer hover:opacity-100"
+                  style={{
+                    zIndex: 10 - idx,
+                    opacity: activeSection === section.section ? 0 : 0.4,
+                    transform: `translateY(${idx * 16}px) scale(${1 - idx * 0.02})`,
+                  }}
+                >
+                  <div className="p-6 text-body-4 text-grey-8 font-medium pointer-events-none">
+                    {section.label}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 숨겨진 PDF 렌더 영역 */}
       <div className="jubo-print-wrapper-all" style={{ position: "absolute", left: "-9999px", top: 0, width: "297mm" }}>
         <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
@@ -246,7 +238,6 @@ export default function Jubo() {
             </JuboPage>
           </div>
         </div>
-
         <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
             <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
@@ -259,7 +250,6 @@ export default function Jubo() {
             </JuboPage>
           </div>
         </div>
-
         <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
             <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
@@ -272,7 +262,6 @@ export default function Jubo() {
             </JuboPage>
           </div>
         </div>
-
         <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
             <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
@@ -285,7 +274,6 @@ export default function Jubo() {
             </JuboPage>
           </div>
         </div>
-
         <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
             <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
@@ -295,19 +283,6 @@ export default function Jubo() {
           <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
             <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
               <Sermon issue={issue} />
-            </JuboPage>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", width: "297mm", height: "210mm", gap: 0 }}>
-          <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
-            <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
-              <Giving />
-            </JuboPage>
-          </div>
-          <div style={{ width: "148.5mm", height: "210mm", overflow: "hidden", flexShrink: 0 }}>
-            <JuboPage noPadding style={{ width: "100%", minHeight: "210mm", margin: 0, padding: 0 }}>
-              <PrayerTopics />
             </JuboPage>
           </div>
         </div>
