@@ -158,14 +158,14 @@ export default function MessageSection() {
             {schedules.map((schedule, i) => (
               <div
                 key={i}
-                className={`grid grid-cols-[auto_1fr] items-center gap-8 ${
+                className={`grid grid-cols-[auto_1fr] items-start gap-8 ${
                   i === schedules.length - 1 ? "pt-5" : "py-5"
                 } ${i < schedules.length - 1 ? "border-b border-dashed border-bluegrey-3" : ""}`}
               >
-                <span className="text-sub-tit-4 font-medium text-bluegrey-9">
+                <span className="text-sub-tit-4 font-medium text-bluegrey-9 shrink-0">
                   {schedule.label}
                 </span>
-                <span className="text-body-4 text-grey-7 whitespace-nowrap">
+                <span className="text-body-4 text-grey-7 break-words">
                   {schedule.time}
                 </span>
               </div>
