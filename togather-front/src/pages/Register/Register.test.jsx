@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
+import defaultConfig from "@/config/church.config";
 import Register from "./Register";
 
 vi.mock("@/services/api", () => ({
@@ -110,10 +111,15 @@ describe("Register", () => {
     await fillBasicFields(user, container, { name: "박민수", phone: "010-5555-4444" });
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
-    const contactButton = await screen.findByRole("button", { name: "02-2615-4067" }, { timeout: 2000 });
+    // 연락처는 교회 설정(church.tel)에서 온다 — 하드코딩 값과 어긋나지 않게 config를 기준으로 본다
+    const contactButton = await screen.findByRole(
+      "button",
+      { name: defaultConfig.tel },
+      { timeout: 2000 },
+    );
     await user.click(contactButton);
 
-    expect(writeText).toHaveBeenCalledWith("02-2615-4067");
+    expect(writeText).toHaveBeenCalledWith(defaultConfig.tel);
     expect(await screen.findByText("복사되었습니다")).toBeInTheDocument();
   });
 });

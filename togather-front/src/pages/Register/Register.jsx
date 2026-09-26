@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/auth";
 import { getErrorMessage } from "@/utils/apiErrors";
 import IcoPhone from "@/assets/icon-svg/main-phone.svg";
 
-const ADMIN_CONTACT = "02-2615-4067";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => CURRENT_YEAR - i);
@@ -18,6 +17,8 @@ function daysInMonth(year, month) {
 
 export default function Register() {
   const { church } = useChurch();
+  // 가입 문의 연락처는 교회 대표번호를 쓴다 — 교회별로 달라 하드코딩하면 안 된다.
+  const adminContact = church.tel;
   const { register } = useAuth();
   const [form, setForm] = useState({
     name: "",
@@ -35,7 +36,7 @@ export default function Register() {
 
   async function handleCopyContact() {
     try {
-      await navigator.clipboard.writeText(ADMIN_CONTACT);
+      await navigator.clipboard.writeText(adminContact);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -379,7 +380,7 @@ export default function Register() {
               className="flex items-center justify-center gap-1.5 text-body-4 text-grey-7 mb-6 mx-auto hover:text-blue-7 transition-colors"
             >
               <img src={IcoPhone} className="w-4 h-4 opacity-80" alt="" />
-              {copied ? "복사되었습니다" : ADMIN_CONTACT}
+              {copied ? "복사되었습니다" : adminContact}
             </button>
             <button
               onClick={() => setShowDuplicateModal(false)}
