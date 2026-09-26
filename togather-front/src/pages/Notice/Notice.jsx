@@ -49,11 +49,8 @@ export default function Notice() {
   const isFiltered = tab !== "전체";
   const hasDeepLinkId = !!searchParams.get("id");
   const { data: notices = [] } = useFetch(
-    () =>
-      isFiltered || hasDeepLinkId
-        ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
-        : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
-    [church.id, isFiltered, hasDeepLinkId, serverPage],
+    () => getNotices(church.id, { limit: FILTER_FETCH_LIMIT }),
+    [church.id],
     [],
   );
 
@@ -260,10 +257,10 @@ export default function Notice() {
 
                     {paged.length > 0 && <div className="flex-1" />}
                     <NumberedPagination
-                      total={isFiltered ? filtered.length : notices.length}
+                      total={filtered.length}
                       perPage={PAGE_SIZE}
-                      current={isFiltered ? clientPage : serverPage}
-                      onChange={isFiltered ? setClientPage : setServerPage}
+                      current={clientPage}
+                      onChange={setClientPage}
                     />
                   </div>
                 </>
