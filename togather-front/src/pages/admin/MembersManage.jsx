@@ -2,32 +2,14 @@ import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getMembers, getMemberDetail } from "@/services/memberService";
+import {
+  getSignupRequests,
+  approveSignupRequest,
+  rejectSignupRequest,
+} from "@/services/signupRequestService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
-const DUMMY_PENDING = [
-  {
-    id: 101,
-    name: "홍길동",
-    birthdate: "1990.05.12",
-    phone: "010-1111-2222",
-    appliedAt: "2026.07.08",
-  },
-  {
-    id: 102,
-    name: "김새신",
-    birthdate: "1998.11.30",
-    phone: "010-3333-4444",
-    appliedAt: "2026.07.09",
-  },
-  {
-    id: 103,
-    name: "이방문",
-    birthdate: "2001.03.22",
-    phone: "010-5555-6666",
-    appliedAt: "2026.07.10",
-  },
-];
 
 const EMPTY_PAGE = { page: 0, size: 20, totalElements: 0, totalPages: 0, hasNext: false, hasPrevious: false };
 
@@ -94,8 +76,8 @@ export default function MembersManage() {
   const [searchInput, setSearchInput] = useState("");
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
-  const [pendingList, setPendingList] = useState(DUMMY_PENDING);
   const [approvingId, setApprovingId] = useState(null);
+  const [pendingError, setPendingError] = useState(null);
   const [detailId, setDetailId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -116,6 +98,13 @@ export default function MembersManage() {
     [church.id, keyword, page],
     { members: [], pageInfo: EMPTY_PAGE },
   );
+
+  const {
+    data: pendingList,
+    loading: pendingLoading,
+    error: pendingLoadError,
+    refetch: refetchPending,
+  } = useFetch(() => getSignupRequests("PENDING"), [church.id], []);
 
   useEffect(() => {
     if (!detailId) {
@@ -145,13 +134,27 @@ export default function MembersManage() {
     };
   }, [church.id, detailId]);
 
-  const handleApprove = async (id) => {
-    setApprovingId(id);
-    // TODO: PATCH /api/admin/members/:id/approve → 승인 처리 + 알림톡 발송
-    await new Promise((r) => setTimeout(r, 700));
-    setPendingList((prev) => prev.filter((p) => p.id !== id));
-    setApprovingId(null);
+  // 승인/거절 후에는 목록을 다시 불러온다 — 승인은 계정 생성까지 하므로
+  // 서버 상태를 믿고 교인 목록 쪽 카운트도 함께 갱신되게 한다.
+  const handleDecision = async (requestId, decide, failMessage) => {
+    setApprovingId(requestId);
+    setPendingError(null);
+    try {
+      await decide(requestId);
+      await refetchPending();
+    } catch (err) {
+      console.error("[MembersManage] 가입 요청 처리 실패:", err);
+      setPendingError(failMessage);
+    } finally {
+      setApprovingId(null);
+    }
   };
+
+  const handleApprove = (requestId) =>
+    handleDecision(requestId, approveSignupRequest, "승인에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+
+  const handleReject = (requestId) =>
+    handleDecision(requestId, rejectSignupRequest, "거절에 실패했습니다. 잠시 후 다시 시도해 주세요.");
 
   const tabCls = (tab) =>
     `px-5 py-2.5 text-body-3 font-medium border-b-2 transition-colors ${
@@ -175,7 +178,7 @@ export default function MembersManage() {
         <button className={tabCls("pending")} onClick={() => setActiveTab("pending")}>
           승인 대기
           {pendingList.length > 0 && (
-            <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[11px] font-bold">
+            <span className="ml-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-bold">
               {pendingList.length}
             </span>
           )}
@@ -277,47 +280,71 @@ export default function MembersManage() {
 
       {/* ── 승인 대기 탭 ── */}
       {activeTab === "pending" && (
-        <div className="bg-white rounded-2xl border border-grey-2 overflow-hidden">
-          <div
-            className="grid text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2 px-6 py-3"
-            style={{ gridTemplateColumns: "48px 100px 120px 150px 120px 110px" }}
-          >
-            <span className="text-center">No</span>
-            <span>이름</span>
-            <span>생년월일</span>
-            <span>휴대폰</span>
-            <span>신청일</span>
-            <span className="text-center">처리</span>
-          </div>
-          {pendingList.length === 0 ? (
-            <div className="py-16 text-center text-grey-5 text-body-3">
-              대기 중인 가입 신청이 없습니다.
+        <>
+          {pendingError && <p className="text-body-4 text-red-500 mb-4">{pendingError}</p>}
+          <div className="bg-white rounded-2xl border border-grey-2 overflow-hidden">
+            <div
+              className="grid text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2 px-6 py-3"
+              style={{ gridTemplateColumns: "48px 100px 120px 150px 120px 170px" }}
+            >
+              <span className="text-center">No</span>
+              <span>이름</span>
+              <span>생년월일</span>
+              <span>휴대폰</span>
+              <span>신청일</span>
+              <span className="text-center">처리</span>
             </div>
-          ) : (
-            pendingList.map((p, i) => (
-              <div
-                key={p.id}
-                className={`grid items-center px-6 py-4 hover:bg-grey-1 transition-colors ${i < pendingList.length - 1 ? "border-b border-grey-2" : ""}`}
-                style={{ gridTemplateColumns: "48px 100px 120px 150px 120px 110px" }}
-              >
-                <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
-                <span className="text-body-4 font-semibold text-grey-10">{p.name}</span>
-                <span className="text-body-5 text-grey-7">{p.birthdate}</span>
-                <span className="text-body-5 text-grey-6">{p.phone}</span>
-                <span className="text-body-5 text-grey-5">{p.appliedAt}</span>
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => handleApprove(p.id)}
-                    disabled={approvingId === p.id}
-                    className="px-3.5 py-1.5 rounded-lg bg-primary text-white text-body-5 font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors"
-                  >
-                    {approvingId === p.id ? "처리 중..." : "승인"}
-                  </button>
-                </div>
+            {pendingLoading ? (
+              <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+            ) : pendingLoadError ? (
+              <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
+                <p>가입 신청 목록을 불러오지 못했습니다.</p>
+                <button
+                  onClick={refetchPending}
+                  className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+                >
+                  다시 시도
+                </button>
               </div>
-            ))
-          )}
-        </div>
+            ) : pendingList.length === 0 ? (
+              <div className="py-16 text-center text-grey-5 text-body-3">
+                대기 중인 가입 신청이 없습니다.
+              </div>
+            ) : (
+              pendingList.map((p, i) => (
+                <div
+                  key={p.requestId}
+                  className={`grid items-center px-6 py-4 hover:bg-grey-1 transition-colors ${i < pendingList.length - 1 ? "border-b border-grey-2" : ""}`}
+                  style={{ gridTemplateColumns: "48px 100px 120px 150px 120px 170px" }}
+                >
+                  <span className="text-body-5 text-grey-5 text-center">{i + 1}</span>
+                  <span className="text-body-4 font-semibold text-grey-10">{p.name}</span>
+                  <span className="text-body-5 text-grey-7">{p.birthDate}</span>
+                  <span className="text-body-5 text-grey-6">{p.phone}</span>
+                  <span className="text-body-5 text-grey-5">
+                    {p.requestedAt?.slice(0, 10).replace(/-/g, ".")}
+                  </span>
+                  <div className="flex justify-center gap-1.5">
+                    <button
+                      onClick={() => handleApprove(p.requestId)}
+                      disabled={approvingId === p.requestId}
+                      className="px-3.5 py-1.5 rounded-lg bg-primary text-white text-body-5 font-semibold hover:bg-blue-8 disabled:bg-blue-3 transition-colors"
+                    >
+                      {approvingId === p.requestId ? "처리 중..." : "승인"}
+                    </button>
+                    <button
+                      onClick={() => handleReject(p.requestId)}
+                      disabled={approvingId === p.requestId}
+                      className="px-3.5 py-1.5 rounded-lg border border-grey-3 text-grey-7 text-body-5 font-semibold hover:border-red-400 hover:text-red-500 disabled:opacity-50 transition-colors"
+                    >
+                      거절
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
       {detailId && (

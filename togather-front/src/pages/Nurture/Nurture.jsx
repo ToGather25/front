@@ -707,12 +707,12 @@ export default function Nurture() {
                           검색 결과가 없습니다.
                         </div>
                       ) : (
-                        <div className="flex flex-col">
+                        <div className="flex flex-col min-h-[300px]">
                           {boardPosts.map((post) => (
                             <button
                               key={post.id}
                               onClick={() => setSelectedPost(post)}
-                              className="w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors text-left items-center"
+                              className="w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 hover:bg-bluegrey-1 transition-colors text-left items-center"
                             >
                               <span
                                 className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
