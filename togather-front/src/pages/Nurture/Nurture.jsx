@@ -632,11 +632,13 @@ export default function Nurture() {
                               onClick={() => setSelectedPost(post)}
                               className="w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 hover:bg-bluegrey-1 transition-colors text-left items-center"
                             >
-                              <span
-                                className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
-                              >
-                                {post.category}
-                              </span>
+                              <div className="flex items-center justify-center">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
+                                >
+                                  {post.category}
+                                </span>
+                              </div>
                               <span className="text-body-3 text-grey-10 px-3 truncate text-center">{post.title}</span>
                               <span className="hidden md:block text-body-5 text-grey-6 text-center">
                                 {post.author}
