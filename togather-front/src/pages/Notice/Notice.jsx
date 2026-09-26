@@ -48,7 +48,7 @@ export default function Notice() {
 
   const isFiltered = tab !== "전체";
   const hasDeepLinkId = !!searchParams.get("id");
-  const { data: notices = [], total: noticesTotal = 0 } = useFetch(
+  const { data: responseData = { data: [], total: 0 } } = useFetch(
     () =>
       isFiltered || hasDeepLinkId
         ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
@@ -56,6 +56,7 @@ export default function Notice() {
     [church.id, isFiltered, hasDeepLinkId, serverPage],
     { data: [], total: 0 },
   );
+  const { data: notices = [], total: noticesTotal = 0 } = responseData;
 
   useEffect(() => {
     const id = searchParams.get("id");
