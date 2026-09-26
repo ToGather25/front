@@ -179,29 +179,19 @@ CHURCH_ADMIN 엔드포인트를 요청합니다. **운영 정책상 현재가 �
 | `POST /api/company/inquiries` | 도입 문의(ToGather 영업용) 페이지 미구현 |
 | `POST /api/auth/oauth/{provider}` | 소셜 로그인 UI 미구현 |
 
-### 4-6. (P2) 비전 섹션 데이터 필드 추가 요청
+### 4-6. (P2) 비전 섹션 detailedDescription 필드 추가 요청
 
-현재 백엔드 VISION 섹션의 items 필드가 `title`, `desc` 형태이지만,
-프론트는 다음 필드를 필요로 합니다:
+현재 백엔드 VISION 섹션의 items에 `title`, `desc` 필드는 있으나,
+**`detailedDescription` 필드가 없습니다.**
 
-**필수 필드:**
-- `label` (또는 `title` → `label`로 이름 통일)
-- `description` (또는 `desc` → `description`으로 이름 통일)
-- `detailedDescription` — **필수 추가 필드**
+프론트 Vision 컴포넌트에서 hover 시 상세 설명을 표시하기 위해
+`detailedDescription` 필드를 추가해주길 요청합니다.
 
-현재 구조:
+**요청하는 필드:**
 ```json
 {
   "title": "예배",
-  "desc": "살아있는 예배"
-}
-```
-
-요청하는 구조:
-```json
-{
-  "label": "예배",
-  "description": "살아있는 예배",
+  "desc": "살아있는 예배",
   "detailedDescription": [
     {
       "title": "첫째 포인트",
@@ -215,7 +205,8 @@ CHURCH_ADMIN 엔드포인트를 요청합니다. **운영 정책상 현재가 �
 }
 ```
 
-**detailedDescription이 없으면 polygon 아이콘이 표시되지 않으므로, 꼭 필요한 필드입니다.**
+**주의:** detailedDescription이 없으면 polygon 아이콘이 표시되지 않으므로,
+최소 하나의 detailedDescription 항목이 필요합니다.
 
 ### 4-7. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
 

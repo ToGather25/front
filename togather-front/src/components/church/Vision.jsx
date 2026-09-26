@@ -17,7 +17,7 @@ export default function Vision() {
   const [hoveredIndex, setHoveredIndex] = useState(0);
 
   const displayItems = (items ?? [])
-    .filter(item => item?.label && item?.description)
+    .filter(item => item?.title && item?.desc)
     .slice(0, 4);
 
   return (
@@ -71,7 +71,7 @@ export default function Vision() {
         }`}>
           {displayItems.map((item, index) => (
             <div
-              key={item.label}
+              key={item.title}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(0)}
               className={`transition-opacity duration-300 ${
@@ -85,16 +85,16 @@ export default function Vision() {
                   <div className="w-30 h-30 rounded-full bg-blue-1 flex items-center justify-center mb-6 shrink-0 overflow-hidden">
                     <img
                       src={VISION_ICONS[index % VISION_ICONS.length]}
-                      alt={item.label}
+                      alt={item.title}
                       className="w-full h-full object-contain"
                     />
                   </div>
 
                   {/* 제목 */}
-                  <h4 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{item.label}</h4>
+                  <h4 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{item.title}</h4>
 
                   {/* 설명 */}
-                  <p className="text-body-4 text-grey-7 leading-relaxed">{item.description}</p>
+                  <p className="text-body-4 text-grey-7 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             </div>
