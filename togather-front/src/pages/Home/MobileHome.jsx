@@ -167,11 +167,12 @@ function VideoSection({ youtubeUrl, pastor, title, isLive }) {
 
 export default function MobileHome() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(
+  const { data: responseData = { data: [] } } = useFetch(
     () => getNotices(church.id, { limit: 10 }),
     [church.id],
-    [],
+    { data: [] },
   );
+  const notices = responseData.data;
 
   const sermon = {
     service: "1부 예배",
