@@ -179,7 +179,33 @@ CHURCH_ADMIN 엔드포인트를 요청합니다. **운영 정책상 현재가 �
 | `POST /api/company/inquiries` | 도입 문의(ToGather 영업용) 페이지 미구현 |
 | `POST /api/auth/oauth/{provider}` | 소셜 로그인 UI 미구현 |
 
-### 4-6. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
+### 4-6. (P3) 비전 섹션 데이터 필드 확인
+
+현재 백엔드 VISION 섹션의 items 필드가 `title`, `desc` 형태인데,
+프론트 Vision 컴포넌트는 `label`, `description` 형태를 기대합니다.
+
+프론트에서 임시로 `title → label`, `desc → description`으로 매핑해 사용 중이나,
+**백엔드에서 필드명을 `label`, `description`으로 통일해주거나,**
+**최소한 `label` 필드를 추가해주길** 요청드립니다.
+
+현재 구조:
+```json
+{
+  "title": "예배",
+  "desc": "살아있는 예배"
+}
+```
+
+기대 구조:
+```json
+{
+  "label": "예배",
+  "description": "살아있는 예배",
+  "detailedDescription": [...]  // 선택사항
+}
+```
+
+### 4-7. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
 
 현재 스펙(`§10.10`)대로 `resetToken`을 응답으로 받아
 **본인확인 → 새 비밀번호 입력 → 변경 완료**를 한 화면에서 처리하도록 구현했습니다.
