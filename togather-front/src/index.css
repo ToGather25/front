@@ -225,17 +225,17 @@
 
   .hover-underline {
     position: relative;
+    padding-bottom: 6px;
   }
 
   .hover-underline::after {
     content: "";
     position: absolute;
-    bottom: -4px;
+    bottom: 0;
     left: 0;
     width: 0;
     height: 2px;
-    background-color: currentColor;
-    transition: width 0.3s ease-out;
+    background-color: white;
   }
 
   .group:hover .hover-underline::after {
