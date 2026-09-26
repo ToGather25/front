@@ -125,14 +125,14 @@ export default function MessageSection() {
                   </div>
                 </div>
 
-                {/* 화살표 버튼 - hover 시 표시, 오른쪽 아래 */}
+                {/* 화살표 버튼 - hover 시 표시, 오른쪽 아래, 왼쪽→오른쪽 바운스 */}
                 {sermon.youtubeUrl && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       window.open(sermon.youtubeUrl, "_blank");
                     }}
-                    className="absolute bottom-12 right-8 opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:scale-110 transition-transform"
+                    className="absolute bottom-12 right-14 opacity-0 group-hover:opacity-100 group-hover:animate-bounceInRight transition-opacity z-20 hover:scale-110 transition-transform"
                     aria-label="YouTube에서 보기"
                   >
                     <img src={rightArrow} alt="" className="w-16 h-16 drop-shadow-lg" />
