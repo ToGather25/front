@@ -16,7 +16,7 @@ function SermonThumb() {
       style={{ aspectRatio: "16/9" }}
     >
       <svg
-        className="w-10 h-10 text-grey-4 group-hover:text-primary transition-colors"
+        className="w-16 h-16 text-grey-4 group-hover:text-primary transition-colors"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -203,7 +203,7 @@ export default function WordSermon() {
                   {!s.thumbnail && <SermonThumb />}
 
                   {/* 그래디언트 오버레이 */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-grey-11/40 to-grey-11/85 group-hover:from-grey-11/50 group-hover:to-grey-11/90 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-grey-11/60 group-hover:to-grey-11/70 transition-colors" />
 
                   {/* 콘텐츠 */}
                   <div className="relative z-10 h-full flex flex-col justify-center p-4">
