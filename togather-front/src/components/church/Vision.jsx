@@ -16,13 +16,7 @@ export default function Vision() {
   const { mainTitle, mainVerse, items } = church.vision;
   const [hoveredIndex, setHoveredIndex] = useState(0);
 
-  // Backend 데이터 구조 (title/desc) → Frontend 기대 구조 (label/description) 변환
   const displayItems = (items ?? [])
-    .map(item => ({
-      label: item.label || item.title,
-      description: item.description || item.desc,
-      detailedDescription: item.detailedDescription,
-    }))
     .filter(item => item?.label && item?.description)
     .slice(0, 4);
 
