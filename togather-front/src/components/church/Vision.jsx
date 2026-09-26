@@ -116,34 +116,27 @@ export default function Vision() {
           )}
         </div>
 
-        {/* 타이핑 애니메이션 텍스트 - 전체 너비 */}
-        {hoveredIndex !== null && displayItems[hoveredIndex] && (
+        {/* 타이핑 애니메이션 텍스트 - 전체 너비 (detailedDescription이 있을 때만) */}
+        {hoveredIndex !== null && displayItems[hoveredIndex] && Array.isArray(displayItems[hoveredIndex].detailedDescription) && (
           <div className="mt-8">
             <div className="space-y-0">
-              {Array.isArray(displayItems[hoveredIndex].detailedDescription) ? (
-                displayItems[hoveredIndex].detailedDescription.map((detail, idx, arr) => (
-                  <div key={idx}>
-                    <div
-                      className="typing-text flex gap-3 py-3"
-                      style={{ animationDelay: `${idx * 0.2}s` }}
-                    >
-                      <div className={`w-1.5 h-6 rounded-sm shrink-0 mt-1 ${
-                        idx === 0 ? 'bg-primary' : 'bg-bluegrey-2'
-                      }`} />
-                      <div className="flex-1">
-                        <p className="text-sub-tit-5 font-bold text-grey-11 mb-1">{detail.title}</p>
-                        <p className="text-body-4 text-grey-7">{detail.text}</p>
-                      </div>
+              {displayItems[hoveredIndex].detailedDescription.map((detail, idx, arr) => (
+                <div key={idx}>
+                  <div
+                    className="typing-text flex gap-3 py-3"
+                    style={{ animationDelay: `${idx * 0.2}s` }}
+                  >
+                    <div className={`w-1.5 h-6 rounded-sm shrink-0 mt-1 ${
+                      idx === 0 ? 'bg-primary' : 'bg-bluegrey-2'
+                    }`} />
+                    <div className="flex-1">
+                      <p className="text-sub-tit-5 font-bold text-grey-11 mb-1">{detail.title}</p>
+                      <p className="text-body-4 text-grey-7">{detail.text}</p>
                     </div>
-                    {idx < arr.length - 1 && <div className="mt-2 ml-4 border-t border-dotted border-bluegrey-2" />}
                   </div>
-                ))
-              ) : (
-                <div className="typing-text flex gap-3 py-3">
-                  <div className="w-1.5 h-6 rounded-sm bg-primary shrink-0 mt-1" />
-                  <p className="text-body-4 text-grey-7">{displayItems[hoveredIndex].description}</p>
+                  {idx < arr.length - 1 && <div className="mt-2 ml-4 border-t border-dotted border-bluegrey-2" />}
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
