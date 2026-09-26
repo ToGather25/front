@@ -67,7 +67,15 @@ export default function Vision() {
       </div>
 
       <div className="min-h-[75vh]">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {displayItems.length > 0 && (
+        <div className={`grid gap-6 ${
+          {
+            1: 'grid-cols-1',
+            2: 'grid-cols-2',
+            3: 'grid-cols-3',
+            4: 'grid-cols-4',
+          }[displayItems.length] || 'grid-cols-4'
+        }`}>
           {displayItems.map((item, index) => (
             <div
               key={item.label}
@@ -145,6 +153,7 @@ export default function Vision() {
               )}
             </div>
           </div>
+        )}
         )}
       </div>
     </div>
