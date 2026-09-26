@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import IcoThumb from "@/assets/icon-svg/none-thumb.png";
 
 const TABS = [
   "구역모임",
@@ -73,7 +74,7 @@ const BOARD_POSTS = [
   },
 ];
 
-const BOARD_PAGE_SIZE = 5;
+const BOARD_PAGE_SIZE = 10;
 
 const LEVEL_COLORS = {
   기초: "bg-point-1 text-point-7",
@@ -160,7 +161,7 @@ export default function Nurture() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+      <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
         {/* 구역모임 */}
         {activeTab === "구역모임" && (
           <div>
@@ -169,118 +170,41 @@ export default function Nurture() {
               지역별로 모여 말씀을 나누고 서로를 섬기는 구역 공동체입니다.
             </p>
 
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-              {/* 필터 — 모바일: 가로 칩, 데스크톱: 세로 리스트 */}
-              <div className="flex flex-wrap gap-2 md:hidden">
-                <button
-                  onClick={() => setSelectedZone("전체")}
-                  className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
-                    selectedZone === "전체"
-                      ? "bg-primary text-white"
-                      : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
-                  }`}
-                >
-                  전체
-                </button>
-                {ZONES.map((zone) => (
-                  <button
-                    key={zone.name}
-                    onClick={() => setSelectedZone(zone.name)}
-                    className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
-                      selectedZone === zone.name
-                        ? "bg-primary text-white"
-                        : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
-                    }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {ZONES.map((zone) => (
+                <div key={zone.name} className="flex flex-col">
+                  <div
+                    className="rounded-2xl overflow-hidden text-white flex items-center justify-center h-[190px] bg-primary"
                   >
-                    {zone.name}
-                  </button>
-                ))}
-              </div>
-              <div className="hidden md:flex md:flex-col md:w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
-                <button
-                  onClick={() => setSelectedZone("전체")}
-                  className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                    selectedZone === "전체"
-                      ? "bg-primary text-white"
-                      : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-                  }`}
-                >
-                  전체
-                </button>
-                {ZONES.map((zone) => (
-                  <button
-                    key={zone.name}
-                    onClick={() => setSelectedZone(zone.name)}
-                    className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                      selectedZone === zone.name
-                        ? "bg-primary text-white"
-                        : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-                    }`}
-                  >
-                    {zone.name}
-                  </button>
-                ))}
-              </div>
-
-              {/* 콘텐츠 */}
-              <div className="flex-1 w-full min-w-0">
-                {selectedZone === "전체" ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {ZONES.map((zone) => (
-                      <div key={zone.name} className="border border-bluegrey-2 rounded-2xl p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sub-tit-4 font-bold text-grey-11">{zone.name}</h3>
-                          <span className="px-2.5 py-1 bg-blue-1 text-blue-7 text-body-5 font-semibold rounded-full">
-                            {zone.members}명
-                          </span>
-                        </div>
-                        <dl className="flex flex-col gap-2 text-body-4">
-                          <div className="flex gap-2">
-                            <dt className="text-grey-5 w-16 shrink-0">구역장</dt>
-                            <dd className="text-grey-9 font-medium">{zone.leader}</dd>
-                          </div>
-                          <div className="flex gap-2">
-                            <dt className="text-grey-5 w-16 shrink-0">모임</dt>
-                            <dd className="text-grey-9">{zone.time}</dd>
-                          </div>
-                          <div className="flex gap-2">
-                            <dt className="text-grey-5 w-16 shrink-0">장소</dt>
-                            <dd className="text-grey-9">{zone.location}</dd>
-                          </div>
-                        </dl>
-                      </div>
-                    ))}
+                    <img src={IcoThumb} alt="" className="w-16 h-16 opacity-50" />
                   </div>
-                ) : (
-                  (() => {
-                    const zone = ZONES.find((z) => z.name === selectedZone);
-                    return zone ? (
-                      <div className="border border-bluegrey-2 rounded-2xl p-6 md:p-8">
-                        <div className="flex items-center justify-between mb-6">
-                          <h3 className="text-sub-tit-3 font-bold text-grey-11">{zone.name}</h3>
-                          <span className="px-3 py-1.5 bg-blue-1 text-blue-7 text-body-4 font-semibold rounded-full">
-                            {zone.members}명
-                          </span>
-                        </div>
-                        <dl className="flex flex-col gap-4 text-body-3">
-                          <div className="flex gap-4">
-                            <dt className="text-grey-5 font-semibold w-20 shrink-0">구역장</dt>
-                            <dd className="text-grey-9 font-medium">{zone.leader}</dd>
-                          </div>
-                          <div className="flex gap-4">
-                            <dt className="text-grey-5 font-semibold w-20 shrink-0">모임</dt>
-                            <dd className="text-grey-9">{zone.time}</dd>
-                          </div>
-                          <div className="flex gap-4">
-                            <dt className="text-grey-5 font-semibold w-20 shrink-0">장소</dt>
-                            <dd className="text-grey-9">{zone.location}</dd>
-                          </div>
-                        </dl>
+                  <div className="mt-5 text-left px-1">
+                    <h3 className="text-sub-tit-5 font-bold text-grey-11 mb-4">{zone.name}</h3>
+                    <dl className="space-y-3 text-body-4">
+                      <div className="flex gap-3">
+                        <dt className="text-grey-5 font-medium w-12 shrink-0">구역장</dt>
+                        <div className="text-grey-5">|</div>
+                        <dd className="text-grey-9 font-medium">{zone.leader}</dd>
                       </div>
-                    ) : null;
-                  })()
-                )}
-              </div>
+                      <div className="flex gap-3">
+                        <dt className="text-grey-5 font-medium w-12 shrink-0">모임</dt>
+                        <div className="text-grey-5">|</div>
+                        <dd className="text-grey-9">{zone.time}</dd>
+                      </div>
+                      <div className="flex gap-3">
+                        <dt className="text-grey-5 font-medium w-12 shrink-0">장소</dt>
+                        <div className="text-grey-5">|</div>
+                        <dd className="text-grey-9">{zone.location}</dd>
+                      </div>
+                      <div className="flex gap-3">
+                        <dt className="text-grey-5 font-medium w-12 shrink-0">인원</dt>
+                        <div className="text-grey-5">|</div>
+                        <dd className="text-grey-9">총 {zone.members}명</dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -399,104 +323,36 @@ export default function Nurture() {
               단계별 신앙 성장을 위한 양육 프로그램을 운영합니다.
             </p>
 
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-              {/* 필터 — 모바일: 가로 칩, 데스크톱: 세로 리스트 */}
-              <div className="flex flex-wrap gap-2 md:hidden">
-                <button
-                  onClick={() => setSelectedProgram("전체")}
-                  className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
-                    selectedProgram === "전체"
-                      ? "bg-primary text-white"
-                      : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
-                  }`}
-                >
-                  전체
-                </button>
-                {NURTURE_PROGRAMS.map((prog) => (
-                  <button
-                    key={prog.title}
-                    onClick={() => setSelectedProgram(prog.title)}
-                    className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
-                      selectedProgram === prog.title
-                        ? "bg-primary text-white"
-                        : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
-                    }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {NURTURE_PROGRAMS.map((prog) => (
+                <div key={prog.title} className="flex flex-col">
+                  <div
+                    className={`rounded-2xl overflow-hidden text-white flex items-center justify-center h-[190px] ${LEVEL_COLORS[prog.level]}`}
                   >
-                    {prog.title}
-                  </button>
-                ))}
-              </div>
-              <div className="hidden md:flex md:flex-col md:w-[260px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
-                <button
-                  onClick={() => setSelectedProgram("전체")}
-                  className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                    selectedProgram === "전체"
-                      ? "bg-primary text-white"
-                      : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-                  }`}
-                >
-                  전체
-                </button>
-                {NURTURE_PROGRAMS.map((prog) => (
-                  <button
-                    key={prog.title}
-                    onClick={() => setSelectedProgram(prog.title)}
-                    className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                      selectedProgram === prog.title
-                        ? "bg-primary text-white"
-                        : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-                    }`}
-                  >
-                    {prog.title}
-                  </button>
-                ))}
-              </div>
-
-              {/* 콘텐츠 */}
-              <div className="flex-1 w-full min-w-0">
-                {selectedProgram === "전체" ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {NURTURE_PROGRAMS.map((prog) => (
-                      <div key={prog.title} className="border border-bluegrey-2 rounded-2xl p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-body-5 font-semibold ${LEVEL_COLORS[prog.level]}`}
-                          >
-                            {prog.level}
-                          </span>
-                          <span className="text-body-5 text-grey-5">{prog.duration}</span>
-                        </div>
-                        <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-2">{prog.title}</h3>
-                        <p className="text-body-4 text-grey-7 mb-4">{prog.desc}</p>
-                        <div className="flex gap-2 text-body-4">
-                          <span className="text-grey-5 w-12 shrink-0">일정</span>
-                          <span className="text-grey-9">{prog.schedule}</span>
-                        </div>
-                      </div>
-                    ))}
+                    <img src={IcoThumb} alt="" className="w-16 h-16 opacity-70" />
                   </div>
-                ) : (
-                  (() => {
-                    const prog = NURTURE_PROGRAMS.find((p) => p.title === selectedProgram);
-                    return prog ? (
-                      <div className="border border-bluegrey-2 rounded-2xl p-6 md:p-8">
-                        <div className="flex items-center gap-3 mb-6">
-                          <span className={`px-3 py-1.5 rounded-full text-body-4 font-semibold ${LEVEL_COLORS[prog.level]}`}>
-                            {prog.level}
-                          </span>
-                          <span className="text-body-4 text-grey-5">{prog.duration}</span>
-                        </div>
-                        <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">{prog.title}</h3>
-                        <p className="text-body-3 text-grey-7 mb-6 leading-relaxed">{prog.desc}</p>
-                        <div className="flex gap-4 text-body-3">
-                          <span className="text-grey-5 font-semibold w-16 shrink-0">일정</span>
-                          <span className="text-grey-9">{prog.schedule}</span>
-                        </div>
+                  <div className="mt-5 text-left px-1">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sub-tit-5 font-bold text-grey-11">{prog.title}</h3>
+                      <div className="flex gap-2 shrink-0">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-body-5 font-semibold ${LEVEL_COLORS[prog.level]}`}>
+                          {prog.level}
+                        </span>
+                        <span className="inline-block px-2.5 py-1 bg-grey-2 text-grey-7 rounded-full text-body-5 font-semibold">
+                          {prog.duration}
+                        </span>
                       </div>
-                    ) : null;
-                  })()
-                )}
-              </div>
+                    </div>
+                    <dl className="space-y-2 text-body-4">
+                      <div className="flex gap-3">
+                        <dt className="text-grey-5 font-medium w-10 shrink-0">일정</dt>
+                        <div className="text-grey-5">|</div>
+                        <dd className="text-grey-9">{prog.schedule}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -611,7 +467,7 @@ export default function Nurture() {
 
                   {/* 오른쪽: 콘텐츠 */}
                   <div className="flex-1 w-full md:w-auto min-w-0">
-                    <div className="border border-bluegrey-2 rounded-2xl overflow-hidden flex flex-col min-h-[300px]">
+                    <div className="border border-bluegrey-2 rounded-2xl overflow-hidden flex flex-col min-h-[550px]">
                       {/* 헤더 */}
                       <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
                         <span className="text-center">분류</span>
@@ -625,7 +481,7 @@ export default function Nurture() {
                           검색 결과가 없습니다.
                         </div>
                       ) : (
-                        <div className="flex flex-col min-h-[300px]">
+                        <div className="flex flex-col min-h-[470px]">
                           {boardPosts.map((post) => (
                             <button
                               key={post.id}
@@ -652,28 +508,26 @@ export default function Nurture() {
                       )}
                     </div>
 
-                    {boardTotalPages > 1 && (
-                      <div className="flex items-center justify-center gap-1 mt-6">
+                    <div className="flex items-center justify-center gap-1 mt-6">
+                      <PageBtn
+                        onClick={() => setBoardPage((p) => Math.max(1, p - 1))}
+                        disabled={boardPage === 1}
+                        label="‹"
+                      />
+                      {Array.from({ length: boardTotalPages }, (_, i) => i + 1).map((p) => (
                         <PageBtn
-                          onClick={() => setBoardPage((p) => Math.max(1, p - 1))}
-                          disabled={boardPage === 1}
-                          label="‹"
+                          key={p}
+                          onClick={() => setBoardPage(p)}
+                          active={p === boardPage}
+                          label={String(p)}
                         />
-                        {Array.from({ length: boardTotalPages }, (_, i) => i + 1).map((p) => (
-                          <PageBtn
-                            key={p}
-                            onClick={() => setBoardPage(p)}
-                            active={p === boardPage}
-                            label={String(p)}
-                          />
-                        ))}
-                        <PageBtn
-                          onClick={() => setBoardPage((p) => Math.min(boardTotalPages, p + 1))}
-                          disabled={boardPage === boardTotalPages}
-                          label="›"
-                        />
-                      </div>
-                    )}
+                      ))}
+                      <PageBtn
+                        onClick={() => setBoardPage((p) => Math.min(boardTotalPages, p + 1))}
+                        disabled={boardPage === boardTotalPages}
+                        label="›"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

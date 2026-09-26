@@ -110,7 +110,7 @@ export default function Mission() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+      <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
         {/* 전도회 소개 */}
         {activeTab === "전도회 소개" && (
           <div>

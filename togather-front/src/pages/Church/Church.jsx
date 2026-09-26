@@ -63,7 +63,7 @@ export default function Church() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+      <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
         {TAB_CONTENT[activeTab]}
       </div>
     </div>

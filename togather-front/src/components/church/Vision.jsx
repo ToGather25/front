@@ -100,8 +100,8 @@ export default function Vision() {
             </div>
           ))}
 
-          {/* polygon - hover한 카드 위치에 붙음 */}
-          {hoveredIndex !== null && (
+          {/* polygon - hover한 카드 위치에 붙음 (detail이 있을 때만) */}
+          {hoveredIndex !== null && displayItems[hoveredIndex] && Array.isArray(displayItems[hoveredIndex].detailedDescription) && (
             <div
               className="col-span-1 flex flex-col items-center justify-start -mt-6.5"
               style={{ gridColumn: `${hoveredIndex + 1}` }}

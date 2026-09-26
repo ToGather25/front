@@ -45,7 +45,7 @@ export default function NotificationSection() {
         {/* 공지 + 주보 */}
         <div className="grid grid-cols-2 gap-10">
           {/* 공지 알림 */}
-          <div className="bg-bluegrey-1 rounded-2xl p-12 flex flex-col min-h-[330px]">
+          <div className="bg-bluegrey-1 rounded-2xl p-12 flex flex-col min-h-[330px] shadow-xl">
             <div className="flex items-center justify-between mb-9">
               <h3 className="text-grey-12 text-headline-4 font-bold">공지사항</h3>
               <button
@@ -100,7 +100,7 @@ export default function NotificationSection() {
           </div>
 
           {/* 스마트 주보 */}
-          <div className="bg-bluegrey-1 rounded-2xl p-12 flex flex-col min-h-[330px]">
+          <div className="bg-bluegrey-1 rounded-2xl p-12 flex flex-col min-h-[330px] shadow-xl">
             <div className="flex items-center justify-between mb-9">
               <h3 className="text-grey-12 text-headline-4 font-bold">스마트 주보</h3>
               <button

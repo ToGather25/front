@@ -319,7 +319,7 @@ export default function Gallery() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 pt-10 pb-15 md:px-8 md:pt-15 md:pb-25">
+      <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
         {showLoginRequired && (
           <LoginRequiredModal
             message="갤러리를 이용하려면 로그인해 주세요."
