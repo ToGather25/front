@@ -151,7 +151,7 @@ export default function NoticesManage() {
 
   const isFiltered = tab !== "전체" || search !== "";
   const {
-    data: notices = [],
+    data: responseData = { data: [] },
     loading,
     refetch,
   } = useFetch(
@@ -160,8 +160,9 @@ export default function NoticesManage() {
         ? getNotices(church.id, { limit: FILTER_FETCH_LIMIT })
         : getNotices(church.id, { page: serverPage, limit: PAGE_SIZE }),
     [church.id, isFiltered, serverPage],
-    [],
+    { data: [] },
   );
+  const notices = responseData.data;
 
   const filtered = isFiltered
     ? notices.filter((n) => tab === "전체" || n.type === tab).filter((n) => n.title.includes(search))

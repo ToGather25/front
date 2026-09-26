@@ -116,11 +116,12 @@ function MiniCalendar({ year, month, countByDay, detailByDay }) {
 
 export default function NoticeSection() {
   const { church } = useChurch();
-  const { data: notices = [] } = useFetch(
+  const { data: responseData = { data: [] } } = useFetch(
     () => getNotices(church.id, { limit: 30 }),
     [church.id],
-    [],
+    { data: [] },
   );
+  const notices = responseData.data;
   const [tab, setTab] = useState("전체");
 
   const rows = (tab === "전체" ? notices : notices.filter((n) => n.type === tab)).slice(

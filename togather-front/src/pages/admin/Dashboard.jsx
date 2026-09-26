@@ -95,11 +95,12 @@ export default function Dashboard() {
     [church.id],
     [],
   );
-  const { data: notices, loading: noticesLoading } = useFetch(
+  const { data: responseData = { data: [] }, loading: noticesLoading } = useFetch(
     () => getNotices(church.id, { limit: 5 }),
     [church.id],
-    [],
+    { data: [] },
   );
+  const notices = responseData.data;
   const { data: events, loading: eventsLoading } = useFetch(
     () => getEvents(church.id),
     [church.id],
