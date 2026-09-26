@@ -76,12 +76,8 @@ export default function Notice() {
       if (!a.featured && b.featured) return 1;
       return 0;
     });
-  const paged = isFiltered || query
-    ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
-    : filtered;
-  const hasNext = isFiltered || query
-    ? filtered.length > clientPage * PAGE_SIZE
-    : notices.length === PAGE_SIZE;
+  const paged = filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE);
+  const hasNext = filtered.length > clientPage * PAGE_SIZE;
 
   function handleTabChange(t) {
     setTab(t);
