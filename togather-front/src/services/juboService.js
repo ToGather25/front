@@ -32,6 +32,7 @@ function toJuboIssue(summary, currentIssueNo) {
     dateLabel: formatKoreanDate(summary.juboDate),
     sermonTitle: summary.title,
     verse: summary.scripture,
+    coverImageUrl: summary.coverImageUrl,
     current: currentIssueNo != null && summary.issueNo === currentIssueNo,
   };
 }

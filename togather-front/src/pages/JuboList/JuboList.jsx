@@ -144,13 +144,17 @@ export default function JuboList({ hideHeader = false }) {
                   to={`/주보?issue=${issue.id}`}
                   className="group rounded-2xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-lg transition-all bg-white"
                 >
-                  <div className="relative h-40 bg-grey-2 flex flex-col items-center justify-center gap-2 px-4">
+                  <div className="relative h-40 bg-grey-2 flex flex-col items-center justify-center gap-2 px-4 overflow-hidden">
+                    {issue.coverImageUrl ? (
+                      <img src={issue.coverImageUrl} alt="주보 표지" className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={IcoChurch} className="w-10 h-12 opacity-60 invert" alt="" />
+                    )}
                     {issue.current && (
                       <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-blue-3 text-blue-9 text-[11px] font-semibold">
                         이번 주 주보
                       </span>
                     )}
-                    <img src={IcoChurch} className="w-10 h-12 opacity-60 invert" alt="" />
                   </div>
                   <div className="p-4">
                     <p className="text-body-4">{issue.dateLabel} 주보</p>
