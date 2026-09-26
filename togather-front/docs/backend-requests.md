@@ -388,6 +388,47 @@ church.config.js의 기본값만 사용 중입니다.
 
 프론트에서 발행호별로 cover를 별도 호출하여 표시하겠습니다.
 
+### 4-12. (P3) 공지사항 Featured 필드 추가 요청
+
+현재 홈 화면의 NotificationSection에서 공지사항 목록을 표시할 때,
+**중요 공지(featured=true)를 항상 위쪽에 정렬**하고 있습니다.
+
+다만, 백엔드의 `GET /api/churches/{id}/notices` 응답에 `featured` 필드가 
+포함되어 있지 않아, 프론트에서 정렬을 할 수 없습니다.
+
+**요청:**
+
+공지사항 list 응답의 각 아이템에 `featured` 필드를 포함해주세요.
+
+**예상 응답 형식:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "type": "공지",
+      "featured": true,
+      "title": "중요 공지사항 제목",
+      "body": "...",
+      "date": "2026-09-27",
+      "author": "사무실"
+    },
+    {
+      "id": 2,
+      "type": "행사",
+      "featured": false,
+      "title": "일반 공지사항 제목",
+      "body": "...",
+      "date": "2026-09-26",
+      "author": "교역자실"
+    },
+    ...
+  ]
+}
+```
+
+`featured`가 `true`인 공지사항이 목록 상단에 표시됩니다.
+
 ---
 
 ## 5. 참고 — 이번 감사에서 프론트가 연결 완료한 항목
