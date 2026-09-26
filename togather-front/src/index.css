@@ -226,6 +226,8 @@
   .hover-underline {
     position: relative;
     padding-bottom: 6px;
+    display: fit-content;
+    max-width: 100%;
   }
 
   .hover-underline::after {
@@ -239,7 +241,8 @@
   }
 
   .group:hover .hover-underline::after {
-    animation: underlineSlide 0.3s ease-out forwards;
+    width: 100%;
+    transition: width 0.3s ease-out;
   }
 
 
