@@ -79,7 +79,9 @@ export default function Notice() {
   const paged = isFiltered || query
     ? filtered.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE)
     : filtered;
-  const hasNext = !isFiltered && !query && notices.length === PAGE_SIZE;
+  const hasNext = isFiltered || query
+    ? filtered.length > clientPage * PAGE_SIZE
+    : notices.length === PAGE_SIZE;
 
   function handleTabChange(t) {
     setTab(t);
