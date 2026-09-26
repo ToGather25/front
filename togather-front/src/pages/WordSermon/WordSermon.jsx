@@ -193,7 +193,7 @@ export default function WordSermon() {
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
                   className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer"
                   style={{
-                    aspectRatio: "16/9",
+                    aspectRatio: "3/4",
                     backgroundImage: `url('${s.thumbnail || ''}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
