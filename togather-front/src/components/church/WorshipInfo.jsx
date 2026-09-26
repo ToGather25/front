@@ -28,7 +28,7 @@ function Section({ title, items }) {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr className="border-b border-bluegrey-3">
                 {tableItems.map((item) => (
                   <td key={item.name} className="px-4 py-3 text-body-4 text-grey-6 text-center">{item.time} | {item.location}</td>
                 ))}

@@ -232,7 +232,7 @@ export default function WordSermon() {
       )}
 
       {activeTab === "예배 안내" && (
-      <div className="flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full mt-5 md:mt-8">
+      <div className="flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full">
         <WorshipInfo />
       </div>
       )}
