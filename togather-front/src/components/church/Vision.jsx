@@ -67,7 +67,6 @@ export default function Vision() {
       </div>
 
       <div className="min-h-[75vh]">
-        {displayItems.length > 0 && (
         <div className={`grid gap-6 ${
           {
             1: 'grid-cols-1',
@@ -153,7 +152,6 @@ export default function Vision() {
               )}
             </div>
           </div>
-        )}
         )}
       </div>
     </div>
