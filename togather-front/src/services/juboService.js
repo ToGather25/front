@@ -49,11 +49,8 @@ export async function getJuboIssues(churchId) {
 }
 
 /**
- * 발행된 특정 주보 1건 — issueNo/dateLabel만 채워진다. 백엔드 상세 응답은
- * sermonTitle/verse에 대응하는 flat 필드가 없고 sections(SERMON_NOTE)로만
- * 내려오는데, 그 섹션 콘텐츠 shape이 프론트 어디에도 아직 안 쓰이고 있어
- * 확인된 필드명이 없다 — 확인 전까지 비워둔다(Cover.jsx는 issueNo/dateLabel만
- * 쓰므로 표지 탭은 정상 동작, Sermon.jsx가 쓰는 sermonTitle/verse만 비어 보임).
+ * 발행된 특정 주보 1건. 백엔드 상세 응답의 flat 필드 title/scripture가
+ * 프론트의 sermonTitle/verse에 대응한다(목록 응답과 같은 관례 — toJuboIssue 참고).
  * @returns {Promise<JuboIssue|null>}
  */
 export async function getJuboIssue(churchId, issueId) {
@@ -64,8 +61,8 @@ export async function getJuboIssue(churchId, issueId) {
     issueNo: d.issueNo,
     date: d.juboDate,
     dateLabel: formatKoreanDate(d.juboDate),
-    sermonTitle: "",
-    verse: "",
+    sermonTitle: d.title,
+    verse: d.scripture,
   };
 }
 
