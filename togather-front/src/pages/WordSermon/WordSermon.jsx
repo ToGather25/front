@@ -193,7 +193,7 @@ export default function WordSermon() {
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
                   className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer bg-grey-2 flex flex-col"
                   style={{
-                    aspectRatio: "4/5",
+                    aspectRatio: "9/7",
                   }}
                 >
                   {/* 배경 이미지 또는 기본 썸네일 */}
@@ -216,12 +216,10 @@ export default function WordSermon() {
 
                   {/* 콘텐츠 */}
                   <div className="relative z-10 h-full flex flex-col justify-end p-5 pb-6">
-                    <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2">
+                    <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2 hover-underline">
                       {s.title}
                     </h3>
                     <div className="flex items-center gap-2 text-body-5 text-white/90">
-                      <span>{s.worshipType}</span>
-                      <span>·</span>
                       <span>{s.sermonDate}</span>
                     </div>
                   </div>
