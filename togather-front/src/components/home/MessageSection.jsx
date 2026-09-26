@@ -90,7 +90,7 @@ export default function MessageSection() {
       {/* 본문 - 배경과 overlap */}
       <div className="relative">
         {/* 배경 - 화면 전체 너비, 예배시간 약간 위부터 시작 */}
-        <div className="absolute top-1/2 left-0 right-0 w-screen bg-bluegrey-1 py-42 -mt-12" />
+        <div className="absolute top-1/3 left-0 right-0 w-screen bg-bluegrey-1 py-45 -mt-12" />
 
         <div className="px-[180px] flex justify-center relative z-10">
           <div className="w-full flex gap-10 items-end">
@@ -102,7 +102,7 @@ export default function MessageSection() {
             ) : sermon ? (
               <div
                 onClick={() => sermon.youtubeUrl && window.open(sermon.youtubeUrl, "_blank")}
-                className="flex-2 h-[500px] rounded-3xl p-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
+                className="flex-1 h-[400px] rounded-3xl pt-[60px] pb-[120px] px-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
                 style={{
                   backgroundImage: `url('${sermon.thumbnail}')`,
                   backgroundSize: "cover",
@@ -118,7 +118,7 @@ export default function MessageSection() {
                     {sermon.title}
                   </h3>
                   <div className="text-white space-y-1">
-                    <p className="text-[22px]">
+                    <p className="text-headline-6">
                       {sermon.date} | {sermon.preacher}
                     </p>
                     <p className="text-[20px] text-white/80">{sermon.scripture}</p>
