@@ -27,9 +27,9 @@ export default function Direction() {
       </div>
 
       <div className="flex-1 min-w-0 mt-8 md:mt-0">
-        {church.publicTransit?.length > 0 && (
-          <div className="mb-8">
-            <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">대중교통</h3>
+        <div className="mb-8">
+          <h3 className="text-sub-tit-3 font-bold text-grey-11 mb-4">대중교통</h3>
+          {church.publicTransit?.length > 0 ? (
             <div className="flex flex-col gap-3">
               {church.publicTransit.map((route, i) => (
                 <div
@@ -100,8 +100,10 @@ export default function Direction() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-body-4 text-grey-5">정보가 없습니다.</p>
+          )}
+        </div>
 
         <div className="flex items-center justify-between mb-4 pt-8 border-t border-bluegrey-2">
           <h3 className="text-sub-tit-3 font-bold text-grey-11">주차 안내</h3>
