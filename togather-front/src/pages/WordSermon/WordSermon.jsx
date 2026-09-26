@@ -13,10 +13,10 @@ function SermonThumb() {
   return (
     <div
       className="w-full bg-grey-2 flex items-center justify-center overflow-hidden"
-      style={{ aspectRatio: "16/9" }}
+      style={{ aspectRatio: "5/4" }}
     >
       <svg
-        className="w-16 h-16 text-grey-4 group-hover:text-primary transition-colors"
+        className="w-12 h-12 text-grey-4 group-hover:text-primary transition-colors"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -193,7 +193,7 @@ export default function WordSermon() {
                   onClick={() => navigate(`/말씀/설교/${s.id}`)}
                   className="group text-left rounded-2xl overflow-hidden hover:shadow-lg transition-all relative cursor-pointer"
                   style={{
-                    aspectRatio: "3/4",
+                    aspectRatio: "9/11",
                     backgroundImage: `url('${s.thumbnail || ''}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
@@ -203,10 +203,10 @@ export default function WordSermon() {
                   {!s.thumbnail && <SermonThumb />}
 
                   {/* 그래디언트 오버레이 */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-grey-11/60 group-hover:to-grey-11/70 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-grey-11/50 via-grey-11/20 to-transparent group-hover:from-grey-11/60 group-hover:via-grey-11/30 transition-colors" />
 
                   {/* 콘텐츠 */}
-                  <div className="relative z-10 h-full flex flex-col justify-center p-4">
+                  <div className="relative z-10 h-full flex flex-col justify-start p-5 pt-6">
                     <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2">
                       {s.title}
                     </h3>
