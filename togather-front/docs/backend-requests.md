@@ -501,6 +501,54 @@ church.config.js의 기본값만 사용 중입니다.
 `total`이 있으면 프론트에서 전체 페이지 수를 계산할 수 있고, 
 다음 페이지 버튼의 활성화/비활성화를 올바르게 처리할 수 있습니다.
 
+### 4-14. (P2) 최신 설교 정보 API 신설 요청 — YouTube 연동
+
+현재 홈 화면의 MessageSection(`src/components/home/MessageSection.jsx`)에서 
+YouTube API를 **프론트에서 직접 호출**하고 있습니다.
+
+```javascript
+// 현재: 프론트에서 직접 호출
+const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+const channelRes = await fetch(
+  `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`
+);
+```
+
+**문제점:**
+- API 키가 프론트에 노출됨 (보안 위험)
+- 클라이언트에서 YouTube API 호출로 인한 할당량 소모
+- 매 요청마다 YouTube API 호출 (캐싱 불가)
+
+**요청:**
+
+백엔드에서 최신 설교 정보를 제공하는 엔드포인트를 신설해주세요.
+
+```
+GET /api/churches/{churchId}/sermon/latest
+```
+
+**요청하는 응답 형식:**
+```json
+{
+  "success": true,
+  "data": {
+    "title": "설교 제목",
+    "date": "2026.09.27",
+    "preacher": "담임목사명",
+    "scripture": "요한복음 3:16",
+    "videoId": "youtube-video-id",
+    "youtubeUrl": "https://www.youtube.com/watch?v=...",
+    "thumbnail": "https://...thumbnail.jpg",
+    "isLive": false
+  }
+}
+```
+
+**참고:**
+- `thumbnail`: 유튜브 고해상도 썸네일 URL (`maxres` or `high`)
+- `isLive`: 향후 실시간 예배 라이브 상태 플래그 (현재는 항상 false)
+- 백엔드가 YouTube API 키를 관리하고 호출합니다
+
 ---
 
 ## 5. 참고 — 이번 감사에서 프론트가 연결 완료한 항목

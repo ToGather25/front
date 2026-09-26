@@ -102,7 +102,7 @@ export default function MessageSection() {
             ) : sermon ? (
               <div
                 onClick={() => sermon.youtubeUrl && window.open(sermon.youtubeUrl, "_blank")}
-                className="flex-1 h-[400px] rounded-3xl pt-[60px] pb-[120px] px-[60px] flex flex-col justify-end cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden group"
+                className="flex-1 h-[400px] rounded-3xl px-10 pb-6 flex flex-col justify-end cursor-pointer shadow-xl hover:shadow-lg transition-shadow relative overflow-hidden group"
                 style={{
                   backgroundImage: `url('${sermon.thumbnail}')`,
                   backgroundSize: "cover",
@@ -135,7 +135,7 @@ export default function MessageSection() {
                     className="absolute bottom-12 right-14 opacity-0 group-hover:opacity-100 animate-bounceRight transition-opacity z-20 hover:scale-110 transition-transform"
                     aria-label="YouTube에서 보기"
                   >
-                    <img src={rightArrow} alt="" className="w-16 h-16 drop-shadow-lg" />
+                    <img src={rightArrow} alt="" className="w-11 h-11 drop-shadow-lg" />
                   </button>
                 )}
 
