@@ -301,7 +301,37 @@ church.config.js의 기본값만 사용 중입니다.
 
 백엔드에서 위 형식으로 PARKING 섹션 데이터를 intro 응답에 포함해 주길 요청합니다.
 
-### 4-9. (P2) 차량운행 안내(TransportGuide) API 신설 요청
+### 4-9. (P2) 예배 목록 페이지네이션 PageInfo 명확화 요청
+
+예배방송 메뉴의 "예배 목록" 탭(`/예배·방송?tab=예배%20목록`)에서 
+`GET /api/church/sermons` API를 호출하고 있는데, 
+응답의 **pageInfo 구조가 명확하지 않습니다.**
+
+프론트에서는 현재 `pageInfo.totalPages`를 기대하고 있습니다.
+
+**확인 요청:**
+
+`GET /api/church/sermons?page={page}&size={size}` 응답의 `pageInfo` 구조를 명확히 해주세요.
+
+**프론트가 기대하는 형식:**
+```json
+{
+  "success": true,
+  "data": {
+    "content": [...],
+    "pageInfo": {
+      "totalPages": 5,
+      "currentPage": 1,
+      "totalElements": 47,
+      "size": 12
+    }
+  }
+}
+```
+
+`totalPages`가 있으면 페이지네이션이 올바르게 작동합니다.
+
+### 4-10. (P2) 차량운행 안내(TransportGuide) API 신설 요청
 
 현재 교회소개의 TransportGuide 화면(`src/components/church/TransportGuide.jsx`)이 
 `church.transportGuide`를 사용하고 있으나, 백엔드에 대응 API가 없어 
