@@ -203,14 +203,14 @@ export default function WordSermon() {
                   {!s.thumbnail && <SermonThumb />}
 
                   {/* 그래디언트 오버레이 */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-grey-11/70 group-hover:to-grey-11/75 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-grey-11/40 to-grey-11/85 group-hover:from-grey-11/50 group-hover:to-grey-11/90 transition-colors" />
 
                   {/* 콘텐츠 */}
-                  <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                    <h3 className="text-body-3 font-semibold text-white group-hover:text-white/90 transition-colors line-clamp-2 mb-1.5">
+                  <div className="relative z-10 h-full flex flex-col justify-center p-4">
+                    <h3 className="text-body-2 font-semibold text-white group-hover:text-white/95 transition-colors line-clamp-2 mb-2">
                       {s.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-body-5 text-white/80">
+                    <div className="flex items-center gap-2 text-body-5 text-white/90">
                       <span>{s.worshipType}</span>
                       <span>·</span>
                       <span>{s.sermonDate}</span>
