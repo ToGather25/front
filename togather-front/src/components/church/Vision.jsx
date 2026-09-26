@@ -16,7 +16,7 @@ export default function Vision() {
   const { mainTitle, mainVerse, items } = church.vision;
   const [hoveredIndex, setHoveredIndex] = useState(0);
 
-  const displayItems = items.slice(0, 4);
+  const displayItems = (items ?? []).filter(item => item?.label && item?.description).slice(0, 4);
 
   return (
     <div>
@@ -91,8 +91,8 @@ export default function Vision() {
             </div>
           ))}
 
-          {/* polygon - hover한 카드 위치에 붙음 */}
-          {hoveredIndex !== null && (
+          {/* polygon - hover한 카드 위치에 붙음 (detail이 있을 때만) */}
+          {hoveredIndex !== null && displayItems[hoveredIndex]?.detailedDescription && (
             <div
               className="col-span-1 flex flex-col items-center justify-start -mt-6.5"
               style={{ gridColumn: `${hoveredIndex + 1}` }}

@@ -23,7 +23,7 @@ export default function Greeting() {
               ))}
             </p>
           ))}
-          <div className="flex items-center justify-end gap-3 mt-10">
+          <div className="flex items-center justify-end gap-3 mt-12">
             <p className="text-body-3 text-grey-7">
               {signature.church} {signature.title} <strong>{signature.name}</strong>
             </p>
