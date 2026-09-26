@@ -14,11 +14,12 @@ export default function NotificationSection() {
   const [hoveredJuboBtn, setHoveredJuboBtn] = useState(false);
 
   // 공지사항 조회 (최근 3개)
-  const { data: notices = [] } = useFetch(
+  const { data: responseData = { data: [] } } = useFetch(
     () => getNotices(church.id, { page: 1, limit: 3 }),
     [church.id],
-    []
+    { data: [] }
   );
+  const notices = responseData.data;
 
   // 주보 조회 (최근 3개)
   const { data: allJubos = [] } = useFetch(
