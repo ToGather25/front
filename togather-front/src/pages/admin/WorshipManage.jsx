@@ -9,14 +9,11 @@ import {
   startBroadcast,
   endBroadcast,
 } from "@/services/sermonService";
-import { SERVICE_TYPES } from "@/config/sermon.config";
 
 // 관리자 목록은 페이지네이션 UI 없이 전체를 한 번에 보여준다 — 교회 한 곳의
 // 설교 수가 이 상한을 넘으면 다시 짚어볼 필요가 있다(갤러리 사이클과 동일한
 // 임시방편, 정식 페이지네이션은 별도 과제로 남겨둔다).
 const ADMIN_LIST_SIZE = 200;
-
-const FILTER_TYPES = ["전체", ...SERVICE_TYPES];
 
 const BROADCAST_LABEL = { BEFORE: "예약됨", LIVE: "방송 중", ENDED: "종료됨" };
 
@@ -24,10 +21,10 @@ const inputCls =
   "w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary";
 const labelCls = "block text-body-5 font-semibold text-grey-7 mb-1.5";
 
-function emptyForm() {
+function emptyForm(defaultWorshipType) {
   return {
     sermonDate: "",
-    worshipType: SERVICE_TYPES[0],
+    worshipType: defaultWorshipType,
     title: "",
     preacher: "",
     scripture: "",
@@ -35,14 +32,14 @@ function emptyForm() {
   };
 }
 
-function toFormState(sermon) {
-  if (!sermon) return emptyForm();
-  return { ...emptyForm(), ...sermon };
+function toFormState(sermon, defaultWorshipType) {
+  if (!sermon) return emptyForm(defaultWorshipType);
+  return { ...emptyForm(defaultWorshipType), ...sermon };
 }
 
-function SermonModal({ initial, onClose, onSave, saving }) {
+function SermonModal({ initial, onClose, onSave, saving, serviceTypes }) {
   const isEdit = !!initial;
-  const [form, setForm] = useState(() => toFormState(initial));
+  const [form, setForm] = useState(() => toFormState(initial, serviceTypes[0]));
 
   const set = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
@@ -78,7 +75,7 @@ function SermonModal({ initial, onClose, onSave, saving }) {
                 value={form.worshipType}
                 onChange={set("worshipType")}
               >
-                {SERVICE_TYPES.map((s) => (
+                {serviceTypes.map((s) => (
                   <option key={s}>{s}</option>
                 ))}
               </select>
@@ -233,6 +230,8 @@ function BroadcastPanel({ broadcast, onClose, onSchedule, onStart, onEnd, schedu
 
 export default function WorshipManage() {
   const { church } = useChurch();
+  const serviceTypes = church?.serviceTypes || [];
+  const filterTypes = ["전체", ...serviceTypes];
   const [filter, setFilter] = useState("전체");
   const [sermons, setSermons] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -360,6 +359,7 @@ export default function WorshipManage() {
           }}
           onSave={handleSave}
           saving={saving}
+          serviceTypes={serviceTypes}
         />
       )}
       {broadcastSermonId && (
@@ -401,7 +401,7 @@ export default function WorshipManage() {
 
       {/* Filter */}
       <div className="flex gap-2 mb-4">
-        {FILTER_TYPES.map((t) => (
+        {filterTypes.map((t) => (
           <button
             key={t}
             onClick={() => setFilter(t)}
