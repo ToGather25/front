@@ -113,7 +113,36 @@ P8 연동 전까지는 최소한 **로그인 응답의 `FrontUser.name`만이라
 | 3-4 | 선교지 소식 | `missionNews` | 게시물 성격 → §3-7과 함께 게시판으로 |
 | 3-5 | 구역 모임 | `districtMeetings` | `DISTRICT_MEETINGS` (주보 `DISTRICTS`와 중복 검토) |
 | 3-6 | 제자훈련 · 양육 프로그램 | `discipleTraining`, `nurturePrograms` | `DISCIPLE_TRAINING`, `NURTURE_PROGRAMS` |
+| 3-6-1 | 섬기는사람들(목사/장로/선교사) | `staff` | `STAFF` |
 | 3-7 | 양육·훈련 게시판 | `Nurture.jsx`의 `BOARD_POSTS` | 아래 별도 설명 |
+
+### 3-6-1 섬기는사람들
+
+목사, 장로, 선교사 정보가 현재 church.config.js의 `staff` 필드에만 있습니다.
+
+백엔드에서 `STAFF` 섹션을 추가해 다음 데이터 구조로 제공해주길 요청합니다:
+
+```json
+{
+  "STAFF": {
+    "filterTags": ["#담임목사", "#간사", "#행정장로", "#부목사"],
+    "headPastor": {
+      "name": "임재호 목사",
+      "tel": "02-1234-5678",
+      "email": "gather@gmail.com",
+      "role": "교회 내 역할 및 소속 부서",
+      "image": null,
+      "education": ["OOO대학교 졸업", ...],
+      "career": ["OO교회 사역", ...]
+    },
+    "clergy": [...],
+    "elders": [...],
+    "associateElders": [...],
+    "retiredElders": [...],
+    "missionaries": [...]
+  }
+}
+```
 
 ### 3-5 중복 확인 필요
 
