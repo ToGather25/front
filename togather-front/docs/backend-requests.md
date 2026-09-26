@@ -301,7 +301,52 @@ church.config.js의 기본값만 사용 중입니다.
 
 백엔드에서 위 형식으로 PARKING 섹션 데이터를 intro 응답에 포함해 주길 요청합니다.
 
-### 4-9. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
+### 4-9. (P2) 차량운행 안내(TransportGuide) API 신설 요청
+
+현재 교회소개의 TransportGuide 화면(`src/components/church/TransportGuide.jsx`)이 
+`church.transportGuide`를 사용하고 있으나, 백엔드에 대응 API가 없어 
+church.config.js의 기본값만 사용 중입니다.
+
+**요청하는 API 및 필드 구조:**
+
+`GET /api/churches/{id}/transport-guide` 또는 intro의 `TRANSPORT_GUIDE` 섹션
+
+```json
+{
+  "TRANSPORT_GUIDE": {
+    "routes": [
+      {
+        "name": "청산역 라인",
+        "color": "#3B5280",
+        "waypoints": [
+          {
+            "lat": 37.4847,
+            "lng": 126.9291,
+            "label": "옥길교회 출발",
+            "time": "06:10"
+          },
+          ...
+        ]
+      },
+      {
+        "name": "천왕역 라인",
+        "color": "#E05C2D",
+        "waypoints": [...]
+      }
+    ],
+    "notes": [
+      "차량 운행 관련 공지사항",
+      "추가 공지사항"
+    ]
+  }
+}
+```
+
+**주의:** 
+- `color`는 각 노선을 구분하는 hex 컬러입니다 (지도 표시용)
+- `waypoints`는 각 노선의 정거점 배열입니다 (순서대로 지도에 표시됨)
+
+### 4-10. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
 
 현재 스펙(`§10.10`)대로 `resetToken`을 응답으로 받아
 **본인확인 → 새 비밀번호 입력 → 변경 완료**를 한 화면에서 처리하도록 구현했습니다.
