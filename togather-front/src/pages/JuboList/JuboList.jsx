@@ -6,7 +6,7 @@ import { getJuboIssues } from "@/services/juboService";
 import { getDaysInMonth, getFirstDayOfMonth, toDateKey, parseLocalDate } from "@/utils/date";
 import WordTabBar from "@/components/word/WordTabBar";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
-import IcoChurch from "@/assets/icon-svg/mypage-church.svg";
+import IcoChurch from "@/assets/icon-svg/none-thumb.png";
 
 const PAGE_SIZE = 8;
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -144,20 +144,16 @@ export default function JuboList({ hideHeader = false }) {
                   to={`/주보?issue=${issue.id}`}
                   className="group rounded-2xl border border-bluegrey-2 overflow-hidden hover:border-blue-4 hover:shadow-lg transition-all bg-white"
                 >
-                  <div className="relative h-40 bg-blue-9 flex flex-col items-center justify-center gap-2 px-4">
+                  <div className="relative h-40 bg-grey-2 flex flex-col items-center justify-center gap-2 px-4">
                     {issue.current && (
                       <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-blue-3 text-blue-9 text-[11px] font-semibold">
                         이번 주 주보
                       </span>
                     )}
-                    <img src={IcoChurch} className="w-8 h-8 opacity-60 invert" alt="" />
-                    <span className="text-body-4 font-medium text-white/90">{church.name}</span>
-                    <span className="absolute bottom-3 right-3 text-caption text-white/70">
-                      {issue.date.replaceAll("-", ".")}
-                    </span>
+                    <img src={IcoChurch} className="w-10 h-12 opacity-60 invert" alt="" />
                   </div>
                   <div className="p-4">
-                    <p className="text-caption text-grey-6 mb-1">{issue.dateLabel}</p>
+                    <p className="text-body-4">{issue.dateLabel} 주보</p>
                     <h3 className="text-body-3 font-semibold text-grey-11 group-hover:text-primary transition-colors line-clamp-2 mb-1.5">
                       {issue.sermonTitle}
                     </h3>

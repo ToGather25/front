@@ -354,6 +354,40 @@ church.config.js의 기본값만 사용 중입니다.
 메일/SMS 발송 인프라가 붙어 **링크 발송 방식으로 전환될 때 미리 알려주세요.**
 토큰을 URL 파라미터로 받는 별도 페이지가 필요해집니다.
 
+### 4-11. (P2) 주보 발행호별 Cover 이미지 제공 요청
+
+현재 JuboList 화면(`src/pages/JuboList/JuboList.jsx`)에서 각 주보 카드의 썸네일로 
+주보 표지 이미지를 표시하고 싶으나, 백엔드가 발행호별 개별 cover 이미지를 지원하지 않습니다.
+
+현재 `GET /api/churches/{id}/jubo/cover`는 "현재" 발행호의 cover만 반환하여,
+모든 주보 카드가 같은 이미지를 공유하게 됩니다.
+
+**요청:**
+
+주보 list 응답(`GET /api/churches/{id}/jubo`)의 각 아이템에 cover 이미지 URL을 포함해주세요.
+
+**예상 응답 형식:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "issueNo": 1234,
+      "title": "설교 제목",
+      "scripture": "요한복음 3:16",
+      "juboDate": "2026-09-27",
+      "coverImageUrl": "https://..../cover-1234.jpg"
+    },
+    ...
+  ]
+}
+```
+
+또는 발행호별 cover 조회 API를 별도로 제공하면:
+- `GET /api/churches/{id}/jubo/{issueNo}/cover` → image URL 반환
+
+프론트에서 발행호별로 cover를 별도 호출하여 표시하겠습니다.
+
 ---
 
 ## 5. 참고 — 이번 감사에서 프론트가 연결 완료한 항목

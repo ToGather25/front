@@ -12,7 +12,7 @@ export default function Greeting() {
     <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-start">
       <div className="flex-1">
         <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-6">{title}</h2>
-        <div className="flex flex-col gap-4 text-body-2 text-grey-8">
+        <div className="flex flex-col gap-2 text-body-3 text-grey-8">
           {paragraphs.map((text, i) => (
             <p key={i}>
               {text.split("\n").map((line, j) => (
