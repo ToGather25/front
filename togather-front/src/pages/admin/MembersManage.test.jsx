@@ -24,10 +24,26 @@ const PAGE_RESPONSE = {
   pageInfo: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
 };
 
+const PENDING_RESPONSE = [
+  {
+    requestId: 101,
+    name: "홍길동",
+    phone: "010-1111-2222",
+    birthDate: "1990-05-12",
+    newcomer: true,
+    status: "PENDING",
+    requestedAt: "2026-07-08T09:00:00Z",
+  },
+];
+
 describe("MembersManage — 교인 목록 탭", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    api.get.mockResolvedValue({ data: { data: PAGE_RESPONSE } });
+    api.get.mockImplementation((url) =>
+      url === "/church/admin/signup-requests"
+        ? Promise.resolve({ data: { data: PENDING_RESPONSE } })
+        : Promise.resolve({ data: { data: PAGE_RESPONSE } }),
+    );
   });
 
   it("목록을 불러와 렌더링한다", async () => {
@@ -86,16 +102,55 @@ describe("MembersManage — 교인 목록 탭", () => {
     expect(api.get).toHaveBeenCalledWith("/church/admin/members/abc-123");
   });
 
-  it("승인 대기 탭은 기존 더미 동작 그대로 유지된다", async () => {
+  it("승인 대기 탭은 GET /church/admin/signup-requests 결과를 보여준다", async () => {
     const user = userEvent.setup();
     renderWithChurch(<MembersManage />);
     await screen.findByText("김은혜");
 
     await user.click(screen.getByText("승인 대기"));
 
-    expect(screen.getByText("홍길동")).toBeInTheDocument();
-    // DUMMY_PENDING에 승인 대기자가 3명이라 "승인" 버튼도 3개 렌더링된다(원본 더미 로직 그대로).
-    expect(screen.getAllByRole("button", { name: "승인" }).length).toBeGreaterThan(0);
+    expect(await screen.findByText("홍길동")).toBeInTheDocument();
+    expect(screen.getByText("2026.07.08")).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith("/church/admin/signup-requests", {
+      params: { status: "PENDING" },
+    });
+  });
+
+  it("승인을 누르면 approve를 호출하고 목록을 다시 불러온다", async () => {
+    api.post.mockResolvedValue({ data: { data: {} } });
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+    await user.click(screen.getByText("승인 대기"));
+    await screen.findByText("홍길동");
+
+    // 승인 후 재조회에서는 대기자가 비어 있다
+    api.get.mockImplementation((url) =>
+      url === "/church/admin/signup-requests"
+        ? Promise.resolve({ data: { data: [] } })
+        : Promise.resolve({ data: { data: PAGE_RESPONSE } }),
+    );
+    await user.click(screen.getByRole("button", { name: "승인" }));
+
+    await waitFor(() =>
+      expect(api.post).toHaveBeenCalledWith("/church/admin/signup-requests/101/approve"),
+    );
+    expect(await screen.findByText("대기 중인 가입 신청이 없습니다.")).toBeInTheDocument();
+  });
+
+  it("거절이 실패하면 에러 메시지를 보여준다", async () => {
+    api.post.mockRejectedValue(new Error("network error"));
+    const user = userEvent.setup();
+    renderWithChurch(<MembersManage />);
+    await screen.findByText("김은혜");
+    await user.click(screen.getByText("승인 대기"));
+    await screen.findByText("홍길동");
+
+    await user.click(screen.getByRole("button", { name: "거절" }));
+
+    expect(
+      await screen.findByText("거절에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+    ).toBeInTheDocument();
   });
 
   it("상세 조회 중 에러가 발생하면 모달이 '정보를 찾을 수 없습니다.'로 표시되고 로딩 상태에 영원히 머무르지 않는다", async () => {

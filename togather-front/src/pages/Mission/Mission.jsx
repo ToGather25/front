@@ -1,71 +1,17 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router";
+import { useChurch } from "@/contexts/ChurchContext";
 
 const TABS = ["전도회 소개", "국내외 선교", "선교지 소식"];
 
-const EVANGELISM_INFO = {
-  description:
-    "전도회는 복음을 이웃에게 전하고자 뜻을 모은 성도들의 모임입니다.\n정기적인 전도 훈련과 현장 전도를 통해 지역 사회에 그리스도의 사랑을 전합니다.",
-  leader: { name: "전도회장 홍길동 집사", tel: "010-0000-0000" },
-  schedule: "매주 토요일 오전 9:30 교회 로비 집결",
-  activities: [
-    { name: "노방전도", schedule: "매주 토요일 오전 10:00", location: "교회 주변 일대" },
-    { name: "심방전도", schedule: "매주 수요일 오후 2:00", location: "각 가정" },
-    { name: "문서전도", schedule: "상시", location: "교회 입구" },
-    { name: "전도 훈련", schedule: "매월 첫째 주 토요일", location: "교육관 201호" },
-  ],
-};
 
-const MISSION_CONTENT = {
-  국내: {
-    title: "국내 선교",
-    description: "소외된 이웃과 지역 교회를 섬기는 국내 선교 사역입니다.",
-    items: [
-      { name: "농어촌 교회 지원", schedule: "분기별", location: "전국 농어촌 지역" },
-      { name: "사회복지 사역", schedule: "매월 셋째 주 토요일", location: "지역 복지관" },
-      { name: "군 선교", schedule: "매주 일요일", location: "인근 부대" },
-    ],
-  },
-  해외: {
-    title: "해외 선교",
-    description: "땅 끝까지 복음을 전하는 해외 선교 사역입니다.",
-    items: [
-      { name: "동남아시아 선교", schedule: "연 2회", location: "태국, 캄보디아" },
-      { name: "중앙아시아 선교", schedule: "연 1회", location: "몽골, 키르기스스탄" },
-      { name: "단기선교팀", schedule: "여름, 겨울 방학", location: "파송국 현지" },
-    ],
-  },
-};
 
-const MISSION_NEWS = [
-  {
-    id: 1,
-    title: "태국 치앙마이 선교 보고",
-    date: "2026.04.20",
-    location: "태국",
-    missionary: "김선교 선교사",
-    summary:
-      "현지 교회 개척을 위한 연합 예배를 드렸습니다. 많은 현지인이 참석하여 복음을 들었습니다.",
-  },
-  {
-    id: 2,
-    title: "캄보디아 프놈펜 어린이 사역",
-    date: "2026.03.15",
-    location: "캄보디아",
-    missionary: "이복음 선교사",
-    summary: "지역 어린이 약 80명에게 성경 이야기를 전하고 함께 예배드렸습니다.",
-  },
-  {
-    id: 3,
-    title: "몽골 울란바토르 동계 사역",
-    date: "2026.01.05",
-    location: "몽골",
-    missionary: "박말씀 선교사",
-    summary: "영하 30도의 혹독한 추위 속에서도 성도들이 모여 말씀을 나눴습니다.",
-  },
-];
 
 export default function Mission() {
+  const { church } = useChurch();
+  const EVANGELISM_INFO = church.evangelism;
+  const MISSION_CONTENT = church.missions;
+  const MISSION_NEWS = church.missionNews ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "전도회 소개";
   const [selectedNews, setSelectedNews] = useState(null);

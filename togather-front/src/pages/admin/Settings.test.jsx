@@ -68,8 +68,9 @@ describe("Settings — 홈 화면 메인 배너 · SNS (실API 연동)", () => {
     const user = userEvent.setup();
     renderWithChurch(<Settings />);
 
-    const input = await screen.findByLabelText("인스타그램 URL");
-    expect(input).toHaveValue("https://www.instagram.com/old");
+    // 조회 응답이 입력값에 반영될 때까지 기다린다(라벨은 로딩 직후 바로 나타난다)
+    const input = await screen.findByDisplayValue("https://www.instagram.com/old");
+    expect(input).toBe(screen.getByLabelText("인스타그램 URL"));
 
     await user.clear(input);
     await user.type(input, "https://www.instagram.com/new");

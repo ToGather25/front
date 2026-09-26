@@ -1,57 +1,12 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
+import { useChurch } from "@/contexts/ChurchContext";
 
 // 주일학교 부서명 -> 갤러리 공동체명 (갤러리 쪽 명칭이 다른 경우만 매핑)
 const GALLERY_COMMUNITY_MAP = {
   대학·청년부: "청년부",
 };
 
-const DEPARTMENTS = [
-  {
-    key: "유치부",
-    ageRange: "만 4–7세",
-    worship: { time: "주일 오전 11:00", location: "유치부실 (2층)" },
-    pastor: { name: "담당 교역자", role: "유치부 전도사", tel: "010-0000-0000" },
-    vision: "하나님을 사랑하는 어린이",
-    description:
-      "유치부는 만 4세~7세 어린이들이 처음으로 하나님을 만나는 소중한 공간입니다.\n말씀과 찬양, 놀이를 통해 하나님의 사랑을 배우고 신앙의 첫 걸음을 내딛습니다.",
-    activities: ["주일 예배", "VBS (여름성경학교)", "어린이 찬양대", "성탄절 발표회"],
-    bgImage: null,
-  },
-  {
-    key: "초등부",
-    ageRange: "초등학교 1–6학년",
-    worship: { time: "주일 오전 11:00", location: "초등부실 (3층)" },
-    pastor: { name: "담당 교역자", role: "초등부 전도사", tel: "010-0000-0000" },
-    vision: "말씀으로 자라나는 어린이",
-    description:
-      "초등부는 초등학교 1~6학년 어린이들이 함께하는 공동체입니다.\n성경 말씀을 체계적으로 배우며 또래와 신앙 안에서 건강하게 성장합니다.",
-    activities: ["주일 예배", "성경퀴즈대회", "제자훈련", "수련회"],
-    bgImage: null,
-  },
-  {
-    key: "중·고등부",
-    ageRange: "중학교 1학년 – 고등학교 3학년",
-    worship: { time: "주일 오전 11:00", location: "중·고등부실 (4층)" },
-    pastor: { name: "담당 교역자", role: "중·고등부 전도사", tel: "010-0000-0000" },
-    vision: "세상을 변화시키는 다음 세대",
-    description:
-      "중·고등부는 중·고등학생들이 신앙과 삶의 질문을 함께 나누는 공동체입니다.\n말씀 묵상과 소그룹 활동을 통해 하나님 안에서 정체성을 세워갑니다.",
-    activities: ["주일 예배", "소그룹 모임", "청소년 수련회", "봉사활동"],
-    bgImage: null,
-  },
-  {
-    key: "대학·청년부",
-    ageRange: "대학생 – 30대",
-    worship: { time: "주일 오후 2:00", location: "대예배실 (1층)" },
-    pastor: { name: "담당 교역자", role: "대학·청년부 담당 목사", tel: "010-0000-0000" },
-    vision: "하나님 나라를 함께 세워가는 청년",
-    description:
-      "대학·청년부는 대학생부터 30대까지 함께하는 신앙 공동체입니다.\n예배와 소그룹, 캠퍼스 전도와 단기선교를 통해 하나님의 부르심을 발견하고 삶에서 실천합니다.",
-    activities: ["주일 예배", "소그룹 (셀)", "성경 공부", "단기선교", "지역사회 봉사"],
-    bgImage: null,
-  },
-];
 
 function DeptContent({ dept }) {
   return (
@@ -125,6 +80,8 @@ function DeptContent({ dept }) {
 }
 
 export default function SundaySchool() {
+  const { church } = useChurch();
+  const DEPARTMENTS = church.sundaySchool ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
   const deptNames = DEPARTMENTS.map((d) => d.key);
   const activeTab = deptNames.includes(searchParams.get("tab")) ? searchParams.get("tab") : DEPARTMENTS[0].key;

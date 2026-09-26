@@ -15,99 +15,12 @@ const TABS = [
 
 const BOARD_CATEGORIES = ["전체", "공지", "후기", "나눔"];
 
-const ZONES = [
-  {
-    name: "1구역",
-    leader: "홍길동 구역장",
-    members: 8,
-    time: "매주 목요일 오후 7:30",
-    location: "구역장 댁",
-  },
-  {
-    name: "2구역",
-    leader: "김성실 구역장",
-    members: 7,
-    time: "매주 금요일 오후 7:30",
-    location: "구역장 댁",
-  },
-  {
-    name: "3구역",
-    leader: "이믿음 구역장",
-    members: 9,
-    time: "매주 목요일 오후 8:00",
-    location: "구역장 댁",
-  },
-  {
-    name: "4구역",
-    leader: "박소망 구역장",
-    members: 6,
-    time: "매주 화요일 오후 7:30",
-    location: "구역장 댁",
-  },
-];
 
 const QT_URL = "https://www.qtland.com/quiet/quiet.php?cate=A";
 
-const DISCIPLE_TRAINING = [
-  {
-    name: "제자훈련 1단계",
-    schedule: "매주 수요일 오후 7:30 (20주)",
-    location: "교육관 302호",
-    desc: "신앙의 기초를 세우는 제자훈련 입문 과정입니다.",
-  },
-  {
-    name: "제자훈련 2단계",
-    schedule: "매주 목요일 오후 7:30 (20주)",
-    location: "교육관 302호",
-    desc: "1단계 수료 후 진행하는 심화 과정입니다.",
-  },
-  {
-    name: "사역훈련",
-    schedule: "1, 2단계 수료 후 진행",
-    location: "교육관 303호",
-    desc: "실제 사역 현장에서 봉사하며 훈련받는 과정입니다.",
-  },
-];
 
-const DISCIPLE_TRAINING_INFO = [
-  { label: "교재", value: "국제제자훈련원 교재(1, 2, 3권)" },
-  { label: "대상", value: "평신도지도자" },
-  { label: "시간", value: "주일 오후예배 후 (목양실)" },
-];
 
-const DISCIPLE_TRAINING_NOTE =
-  "제자훈련은 성경공부 프로그램이 아닙니다.\n제자훈련은 본교회에서 시행하는 바이블키 성경공부를 수료한 분들을 대상으로 실시합니다.";
 
-const NURTURE_PROGRAMS = [
-  {
-    title: "새가족반",
-    level: "기초",
-    duration: "4주",
-    schedule: "매월 첫째 주 토요일",
-    desc: "교회에 처음 오신 분들을 위한 신앙 입문 과정입니다.",
-  },
-  {
-    title: "성장반",
-    level: "초급",
-    duration: "8주",
-    schedule: "매주 화요일 오후 7:00",
-    desc: "기독교 신앙의 핵심 교리를 쉽게 배우는 과정입니다.",
-  },
-  {
-    title: "성경탐구반",
-    level: "중급",
-    duration: "12주",
-    schedule: "매주 수요일 오후 7:30",
-    desc: "구약부터 신약까지 성경 전체를 체계적으로 탐구합니다.",
-  },
-  {
-    title: "리더십훈련반",
-    level: "심화",
-    duration: "20주",
-    schedule: "매주 목요일 오후 7:30",
-    desc: "소그룹 리더 및 교회 봉사자 훈련을 위한 심화 과정입니다.",
-  },
-];
 
 const BOARD_POSTS = [
   {
@@ -179,6 +92,11 @@ export default function Nurture() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "성경읽기/쓰기";
   const { church } = useChurch();
+  const ZONES = church.districtMeetings ?? [];
+  const NURTURE_PROGRAMS = church.nurturePrograms ?? [];
+  const DISCIPLE_TRAINING = church.discipleTraining?.courses ?? [];
+  const DISCIPLE_TRAINING_INFO = church.discipleTraining?.info ?? [];
+  const DISCIPLE_TRAINING_NOTE = church.discipleTraining?.note ?? "";
   const { currentUser } = useAuth();
   const [showLoginRequired, setShowLoginRequired] = useState(false);
   const [boardPage, setBoardPage] = useState(1);
