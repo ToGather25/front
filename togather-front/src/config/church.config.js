@@ -203,10 +203,10 @@ const churchConfig = {
 
   // ── 예배 시간표 디스플레이 설정 ─────────────────────────
   worshipDisplay: [
-    { title: "주일예배", regularIndices: [0, 1, 2] },
-    { title: "수요예배", regularIndices: [3] },
-    { title: "금요기도회", regularIndices: [4] },
-    { title: "새벽기도회", regularIndices: [5] },
+    { title: "주일예배", regularIndices: [0, 1, 2, 3] },
+    { title: "수요예배", regularIndices: [4] },
+    { title: "금요기도회", regularIndices: [5] },
+    { title: "새벽기도회", regularIndices: [6] },
   ],
 
   // ── 예배 시간표 ───────────────────────────────────────
@@ -215,10 +215,10 @@ const churchConfig = {
       { name: "1부 예배", time: "주일 오전 9시", location: "본당" },
       { name: "2부 예배", time: "주일 오전 11시", location: "본당" },
       { name: "오후 예배", time: "주일 오후 2시", location: "본당" },
+      { name: "주일 학교 예배", time: "* 부서 별 상이", location: "부서별 상이" },
       { name: "수요 예배", time: "수요일 오전 10시", location: "본당" },
       { name: "금요기도회", time: "금요일 오후 8시", location: "본당" },
       { name: "새벽기도회", time: "오전 5시 30분", location: "본당" },
-      { name: "주일 학교 예배", time: "* 부서 별 상이", location: "부서별 상이" },
     ],
     departments: [
       { name: "유치부", time: "주일 오전 11시", location: "1층 유치부실" },
