@@ -13,6 +13,8 @@ const TABS = [
   "성경읽기/쓰기",
 ];
 
+const BOARD_CATEGORIES = ["전체", "공지", "후기", "나눔"];
+
 const ZONES = [
   {
     name: "1구역",
@@ -180,11 +182,19 @@ export default function Nurture() {
   const { currentUser } = useAuth();
   const [showLoginRequired, setShowLoginRequired] = useState(false);
   const [boardPage, setBoardPage] = useState(1);
+  const [boardQuery, setBoardQuery] = useState("");
+  const [boardCategory, setBoardCategory] = useState("전체");
   const [selectedZone, setSelectedZone] = useState("전체");
   const [selectedProgram, setSelectedProgram] = useState("전체");
   const [selectedPost, setSelectedPost] = useState(null);
-  const boardTotalPages = Math.max(1, Math.ceil(BOARD_POSTS.length / BOARD_PAGE_SIZE));
-  const boardPosts = BOARD_POSTS.slice(
+
+  const filteredBoardPosts = BOARD_POSTS.filter((post) => {
+    const matchesCategory = boardCategory === "전체" || post.category === boardCategory;
+    const matchesQuery = !boardQuery || post.title.toLowerCase().includes(boardQuery.toLowerCase());
+    return matchesCategory && matchesQuery;
+  });
+  const boardTotalPages = Math.max(1, Math.ceil(filteredBoardPosts.length / BOARD_PAGE_SIZE));
+  const boardPosts = filteredBoardPosts.slice(
     (boardPage - 1) * BOARD_PAGE_SIZE,
     boardPage * BOARD_PAGE_SIZE,
   );
@@ -613,64 +623,140 @@ export default function Nurture() {
               </div>
             ) : (
               /* 목록 보기 */
-              <>
+              <div>
                 <h2 className="text-sub-tit-2 font-bold text-grey-11 mb-2">양육/훈련 게시판</h2>
                 <p className="text-body-2 text-grey-7 mb-8">
                   양육과 훈련에 관한 공지 및 나눔 게시판입니다.
                 </p>
-                <div className="border border-bluegrey-2 rounded-2xl overflow-hidden">
-                  {/* 헤더 */}
-                  <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
-                    <span>분류</span>
-                    <span>제목</span>
-                    <span className="hidden md:block text-center">작성자</span>
-                    <span className="hidden md:block text-center">날짜</span>
-                  </div>
-                  {boardPosts.map((post) => (
-                    <button
-                      key={post.id}
-                      onClick={() => setSelectedPost(post)}
-                      className="w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors text-left items-center"
-                    >
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
-                      >
-                        {post.category}
-                      </span>
-                      <span className="text-body-3 text-grey-10 px-3 truncate">{post.title}</span>
-                      <span className="hidden md:block text-body-5 text-grey-6 text-center">
-                        {post.author}
-                      </span>
-                      <span className="hidden md:block text-body-5 text-grey-5 text-center">
-                        {post.date}
-                      </span>
-                    </button>
-                  ))}
-                </div>
 
-                {boardTotalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-6">
-                    <PageBtn
-                      onClick={() => setBoardPage((p) => Math.max(1, p - 1))}
-                      disabled={boardPage === 1}
-                      label="‹"
-                    />
-                    {Array.from({ length: boardTotalPages }, (_, i) => i + 1).map((p) => (
-                      <PageBtn
-                        key={p}
-                        onClick={() => setBoardPage(p)}
-                        active={p === boardPage}
-                        label={String(p)}
+                {/* 메인 레이아웃 - (검색+필터) 왼쪽 | 콘텐츠 오른쪽 */}
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                  {/* 왼쪽: 검색 + 필터 */}
+                  <div className="w-full md:w-[300px] flex flex-col gap-6">
+                    {/* 검색 */}
+                    <div className="relative">
+                      <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-grey-5 brightness-75 group-focus-within:brightness-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={boardQuery}
+                        onChange={(e) => {
+                          setBoardQuery(e.target.value);
+                          setBoardPage(1);
+                        }}
+                        placeholder="게시글 검색"
+                        className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all group"
                       />
-                    ))}
-                    <PageBtn
-                      onClick={() => setBoardPage((p) => Math.min(boardTotalPages, p + 1))}
-                      disabled={boardPage === boardTotalPages}
-                      label="›"
-                    />
+                    </div>
+
+                    {/* 모바일 필터 */}
+                    <div className="flex flex-wrap gap-2 md:hidden">
+                      {BOARD_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setBoardCategory(cat);
+                            setBoardPage(1);
+                          }}
+                          className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
+                            boardCategory === cat
+                              ? "bg-primary text-white"
+                              : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* 데스크톱 필터 */}
+                    <div className="hidden md:flex md:flex-col gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+                      {BOARD_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setBoardCategory(cat);
+                            setBoardPage(1);
+                          }}
+                          className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                            boardCategory === cat
+                              ? "bg-primary text-white"
+                              : "text-grey-9 hover:bg-blue-1 hover:text-primary"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                )}
-              </>
+
+                  {/* 오른쪽: 콘텐츠 */}
+                  <div className="flex-1 w-full md:w-auto min-w-0">
+                    <div className="border border-bluegrey-2 rounded-2xl overflow-hidden flex flex-col min-h-[300px]">
+                      {/* 헤더 */}
+                      <div className="grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] bg-bluegrey-1 px-6 py-3 text-body-5 font-semibold text-grey-7 border-b border-bluegrey-2">
+                        <span className="text-center">분류</span>
+                        <span className="text-center">제목</span>
+                        <span className="hidden md:block text-center">작성자</span>
+                        <span className="hidden md:block text-center">날짜</span>
+                      </div>
+
+                      {boardPosts.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center text-grey-6 text-body-3">
+                          검색 결과가 없습니다.
+                        </div>
+                      ) : (
+                        <div className="flex flex-col">
+                          {boardPosts.map((post) => (
+                            <button
+                              key={post.id}
+                              onClick={() => setSelectedPost(post)}
+                              className="w-full grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_120px_100px] px-6 py-4 border-b border-bluegrey-2 last:border-0 hover:bg-bluegrey-1 transition-colors text-left items-center"
+                            >
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-body-5 font-semibold text-center w-fit ${CATEGORY_COLORS[post.category]}`}
+                              >
+                                {post.category}
+                              </span>
+                              <span className="text-body-3 text-grey-10 px-3 truncate text-center">{post.title}</span>
+                              <span className="hidden md:block text-body-5 text-grey-6 text-center">
+                                {post.author}
+                              </span>
+                              <span className="hidden md:block text-body-5 text-grey-5 text-center">
+                                {post.date}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {boardTotalPages > 1 && (
+                      <div className="flex items-center justify-center gap-1 mt-6">
+                        <PageBtn
+                          onClick={() => setBoardPage((p) => Math.max(1, p - 1))}
+                          disabled={boardPage === 1}
+                          label="‹"
+                        />
+                        {Array.from({ length: boardTotalPages }, (_, i) => i + 1).map((p) => (
+                          <PageBtn
+                            key={p}
+                            onClick={() => setBoardPage(p)}
+                            active={p === boardPage}
+                            label={String(p)}
+                          />
+                        ))}
+                        <PageBtn
+                          onClick={() => setBoardPage((p) => Math.min(boardTotalPages, p + 1))}
+                          disabled={boardPage === boardTotalPages}
+                          label="›"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}

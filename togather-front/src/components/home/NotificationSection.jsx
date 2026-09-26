@@ -63,7 +63,7 @@ export default function NotificationSection() {
 
             {notices.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
-                <p className="text-grey-6 text-body-2">아직 공지사항이 없습니다.</p>
+                <p className="text-grey-6 text-body-2">등록된 공지사항이 없습니다.</p>
               </div>
             ) : (
               <div className="space-y-8">
@@ -114,7 +114,7 @@ export default function NotificationSection() {
 
             {jubo.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
-                <p className="text-grey-6 text-body-2">아직 주보가 없습니다.</p>
+                <p className="text-grey-6 text-body-2">등록된 주보가 없습니다.</p>
               </div>
             ) : (
               <div className="space-y-6">
