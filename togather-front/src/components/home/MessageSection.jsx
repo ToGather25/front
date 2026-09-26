@@ -96,13 +96,13 @@ export default function MessageSection() {
           <div className="w-full flex gap-10 items-end">
             {/* 설교 카드 */}
             {loading ? (
-              <div className="flex-[1.5] h-[500px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse">
+              <div className="flex-[1.5] h-[450px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse">
                 <p className="text-grey-6">로딩 중...</p>
               </div>
             ) : sermon ? (
               <div
                 onClick={() => sermon.youtubeUrl && window.open(sermon.youtubeUrl, "_blank")}
-                className="flex-[1.5] h-[400px] rounded-3xl px-10 pb-6 flex flex-col justify-end cursor-pointer shadow-xl hover:shadow-lg transition-shadow relative overflow-hidden group"
+                className="flex-[1.5] h-[450px] rounded-3xl px-10 pb-10 flex flex-col justify-end cursor-pointer shadow-xl hover:shadow-lg transition-shadow relative overflow-hidden group"
                 style={{
                   backgroundImage: `url('${sermon.thumbnail}')`,
                   backgroundSize: "cover",

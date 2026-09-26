@@ -501,6 +501,39 @@ church.config.js의 기본값만 사용 중입니다.
 `total`이 있으면 프론트에서 전체 페이지 수를 계산할 수 있고, 
 다음 페이지 버튼의 활성화/비활성화를 올바르게 처리할 수 있습니다.
 
+### 4-13-1. (P2) 설교 목록 API — YouTube 썸네일 추가 요청
+
+현재 예배방송 > 예배 목록(`/말씀/설교` 또는 `/예배·방송?tab=예배%20목록`)에서
+`GET /api/church/sermons` API를 호출하고 있으나,
+각 설교 카드의 썸네일로 **YouTube 이미지가 없어** 기본 아이콘만 표시됩니다.
+
+**요청:**
+
+설교 목록 응답의 각 아이템에 YouTube 썸네일 정보를 포함해주세요.
+
+**예상 응답 형식:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "title": "설교 제목",
+      "worshipType": "1부 예배",
+      "sermonDate": "2026.09.27",
+      "videoId": "youtube-video-id",              // 추가 필요
+      "thumbnail": "https://...high-thumb.jpg"    // 추가 필요 (유튜브 고해상도)
+    },
+    ...
+  ],
+  "pageInfo": { ... }
+}
+```
+
+또는 설교별 cover 조회 API를 별도 제공:
+```
+GET /api/churches/{id}/sermon/{id}/thumbnail
+```
+
 ### 4-14. (P2) 최신 설교 정보 API 신설 요청 — YouTube 연동
 
 현재 홈 화면의 MessageSection(`src/components/home/MessageSection.jsx`)에서 
