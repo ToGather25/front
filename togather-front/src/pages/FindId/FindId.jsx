@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { findLoginId } from "@/services/accountRecoveryService";
 
 function maskId(id) {
   if (id.length <= 4) return `${id[0]}${"*".repeat(Math.max(id.length - 1, 3))}`;
   return `${id.slice(0, 4)}${"*".repeat(id.length - 4)}`;
 }
 
-const MOCK_FOUND_ID = "test1234";
-
 export default function FindId() {
   const { church } = useChurch();
   const [form, setForm] = useState({ name: "", phone: "" });
   const [status, setStatus] = useState("idle"); // idle | submitting | found
+  const [found, setFound] = useState(null); // { loginId, email }
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
@@ -25,12 +25,16 @@ export default function FindId() {
     setError(null);
     setStatus("submitting");
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      // TODO: API 연동 — 이름+휴대폰 번호로 계정 조회
+      setFound(await findLoginId(form));
       setStatus("found");
-    } catch {
+    } catch (err) {
       setStatus("idle");
-      setError("일치하는 계정을 찾을 수 없습니다. 다시 시도해 주세요.");
+      // AR001(404)은 "일치하는 계정 없음", 그 외는 일시적 오류로 구분해 안내한다.
+      setError(
+        err?.response?.status === 404
+          ? "일치하는 계정을 찾을 수 없습니다. 이름과 휴대폰 번호를 확인해 주세요."
+          : "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      );
     }
   };
 
@@ -79,7 +83,7 @@ export default function FindId() {
                 입력하신 정보와 일치하는 아이디입니다.
               </p>
               <p className="text-sub-tit-3 font-bold text-blue-7 bg-blue-1 rounded-xl py-4 mb-8">
-                {maskId(MOCK_FOUND_ID)}
+                {maskId(found?.loginId ?? "")}
               </p>
               <div className="flex flex-col gap-3">
                 <Link

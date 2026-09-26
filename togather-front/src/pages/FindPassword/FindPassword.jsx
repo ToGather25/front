@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { verifyPasswordReset, resetPassword } from "@/services/accountRecoveryService";
 
 export default function FindPassword() {
   const { church } = useChurch();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", phone: "" });
-  const [status, setStatus] = useState("idle"); // idle | submitting | sent
+  // 메일/SMS 발송 인프라가 아직 없어 링크 대신 재설정 토큰을 바로 받아
+  // 같은 화면에서 새 비밀번호를 입력받는다(백엔드 api-spec §10.10).
+  const [status, setStatus] = useState("idle"); // idle | submitting | verified | resetting | done
+  const [resetToken, setResetToken] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
@@ -18,12 +24,40 @@ export default function FindPassword() {
     setError(null);
     setStatus("submitting");
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      // TODO: API 연동 — 이메일+휴대폰 번호로 계정 확인 후 재설정 링크 발송
-      setStatus("sent");
-    } catch {
+      const { resetToken: token } = await verifyPasswordReset(form);
+      setResetToken(token);
+      setStatus("verified");
+    } catch (err) {
       setStatus("idle");
-      setError("계정 정보를 확인할 수 없습니다. 다시 시도해 주세요.");
+      setError(
+        err?.response?.status === 404
+          ? "계정 정보를 확인할 수 없습니다. 이메일과 휴대폰 번호를 확인해 주세요."
+          : "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      );
+    }
+  };
+
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (newPassword.length < 8) {
+      setError("비밀번호는 8자 이상 입력해 주세요.");
+      return;
+    }
+    setStatus("resetting");
+    try {
+      await resetPassword({ resetToken, newPassword });
+      setStatus("done");
+    } catch (err) {
+      // 토큰은 1회성이라 만료/재사용이면 본인확인부터 다시 해야 한다.
+      if (err?.response?.status === 404) {
+        setStatus("idle");
+        setResetToken(null);
+        setError("재설정 시간이 만료되었습니다. 본인 확인부터 다시 진행해 주세요.");
+      } else {
+        setStatus("verified");
+        setError("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      }
     }
   };
 
@@ -51,7 +85,7 @@ export default function FindPassword() {
       {/* 오른쪽 폼 영역 */}
       <div className="flex-1 flex items-center justify-center bg-white px-8 py-12">
         <div className="w-full max-w-md">
-          {status === "sent" ? (
+          {status === "done" ? (
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
                 <svg
@@ -68,20 +102,58 @@ export default function FindPassword() {
                 </svg>
               </div>
               <h2 className="text-headline-5 font-bold text-grey-11 mb-3">
-                재설정 링크를 보냈습니다
+                비밀번호가 변경되었습니다
               </h2>
               <p className="text-body-3 text-grey-6 leading-relaxed mb-8">
-                {form.email}로 비밀번호 재설정 링크를 보냈습니다.
-                <br />
-                메일함(스팸함 포함)을 확인해 주세요.
+                새 비밀번호로 로그인해 주세요.
               </p>
-              <Link
-                to="/login"
+              <button
+                onClick={() => navigate("/login")}
                 className="inline-block w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
               >
-                로그인으로 돌아가기
-              </Link>
+                로그인하러 가기
+              </button>
             </div>
+          ) : status === "verified" || status === "resetting" ? (
+            <>
+              <div className="mb-10">
+                <h2 className="text-headline-5 font-bold text-grey-11 mb-2">새 비밀번호 설정</h2>
+                <p className="text-body-3 text-grey-6">
+                  본인 확인이 완료되었습니다. 새 비밀번호를 입력해 주세요.
+                </p>
+              </div>
+
+              <form onSubmit={handleReset} className="flex flex-col gap-5">
+                <div>
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-body-4 font-semibold text-grey-9 mb-2"
+                  >
+                    새 비밀번호
+                  </label>
+                  <input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="8자 이상 입력해 주세요"
+                    className={inputCls}
+                  />
+                </div>
+
+                {error && <p className="text-body-4 text-red-500">{error}</p>}
+
+                <button
+                  type="submit"
+                  disabled={status === "resetting" || !newPassword}
+                  className="w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 disabled:bg-bluegrey-3 transition-colors"
+                >
+                  {status === "resetting" ? "변경 중..." : "비밀번호 변경"}
+                </button>
+              </form>
+            </>
           ) : (
             <>
               <div className="mb-10">
