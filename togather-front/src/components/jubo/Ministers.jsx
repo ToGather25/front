@@ -43,7 +43,7 @@ export default function Ministers() {
             다시 시도
           </button>
         </div>
-      ) : (
+      ) : Array.isArray(ministers) && ministers.length > 0 ? (
         <div className="mt-5 flex flex-col gap-6">
           {ministers.map(({ title, items }) => (
             <div key={title}>
@@ -91,6 +91,8 @@ export default function Ministers() {
             </div>
           ))}
         </div>
+      ) : (
+        <p className="text-center text-caption text-grey-5 py-10">섬기는 분들 정보를 불러올 수 없습니다.</p>
       )}
     </>
   );

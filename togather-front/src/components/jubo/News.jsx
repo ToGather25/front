@@ -27,23 +27,27 @@ export default function News() {
       >
         교회 소식
       </SectionTitle>
-      <table className="w-full text-caption mt-1">
-        {news.map((section, i) => (
-          <tbody key={i}>
-            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-              <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
-                {i + 1}. {section.title}
-              </td>
-            </tr>
-            {section.items.map((item, j) => (
-              <tr key={j} className="border-b border-grey-3">
-                <td className="py-3 px-4 text-grey-9 w-48">{item}</td>
-                <td className="py-3 px-4 text-grey-6">내용을 입력하세요.</td>
+      {Array.isArray(news) && news.length > 0 ? (
+        <table className="w-full text-caption mt-1">
+          {news.map((section, i) => (
+            <tbody key={i}>
+              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+                <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
+                  {i + 1}. {section.title}
+                </td>
               </tr>
-            ))}
-          </tbody>
-        ))}
-      </table>
+              {section.items.map((item, j) => (
+                <tr key={j} className="border-b border-grey-3">
+                  <td className="py-3 px-4 text-grey-9 w-48">{item}</td>
+                  <td className="py-3 px-4 text-grey-6">내용을 입력하세요.</td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
+        </table>
+      ) : (
+        <p className="text-center text-caption text-grey-5 py-10">교회 소식 정보를 불러올 수 없습니다.</p>
+      )}
     </>
   );
 }

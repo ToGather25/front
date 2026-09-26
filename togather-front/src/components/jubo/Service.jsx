@@ -42,7 +42,7 @@ export default function Service() {
             다시 시도
           </button>
         </div>
-      ) : (
+      ) : Array.isArray(serviceRoles) && serviceRoles.length > 0 ? (
         <table className="w-full text-caption mt-1">
           <thead>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
@@ -61,6 +61,8 @@ export default function Service() {
             ))}
           </tbody>
         </table>
+      ) : (
+        <p className="text-center text-caption text-grey-5 py-10">봉사 안내 데이터를 불러올 수 없습니다.</p>
       )}
     </>
   );

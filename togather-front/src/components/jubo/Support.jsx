@@ -41,7 +41,7 @@ export default function Support() {
             다시 시도
           </button>
         </div>
-      ) : (
+      ) : Array.isArray(support) && support.length > 0 ? (
         <table className="w-full text-body-4 mt-1 border-collapse">
           <thead>
             <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
@@ -60,6 +60,8 @@ export default function Support() {
             ))}
           </tbody>
         </table>
+      ) : (
+        <p className="text-center text-caption text-grey-5 py-10">후원 기관 정보를 불러올 수 없습니다.</p>
       )}
     </>
   );

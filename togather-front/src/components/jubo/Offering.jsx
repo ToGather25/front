@@ -40,7 +40,7 @@ export default function Offering() {
             다시 시도
           </button>
         </div>
-      ) : (
+      ) : Array.isArray(offering) && offering.length > 0 ? (
         <table className="w-full text-caption mt-1">
           {offering.map(({ title, items }) => (
             <tbody key={title}>
@@ -57,6 +57,8 @@ export default function Offering() {
             </tbody>
           ))}
         </table>
+      ) : (
+        <p className="text-center text-caption text-grey-5 py-10">예물 안내 정보를 불러올 수 없습니다.</p>
       )}
     </>
   );
