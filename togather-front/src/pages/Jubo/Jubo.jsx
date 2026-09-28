@@ -6,13 +6,6 @@ import { useFetch } from "@/hooks/useFetch";
 import { getJuboIssue } from "@/services/juboService";
 import { JuboPage } from "@/components/jubo/shared";
 import Cover from "@/components/jubo/Cover";
-import JuboSection2 from "@/components/jubo/JuboSection2";
-import JuboSection3 from "@/components/jubo/JuboSection3";
-import JuboSection4 from "@/components/jubo/JuboSection4";
-import JuboSection5 from "@/components/jubo/JuboSection5";
-import Sermon from "@/components/jubo/Sermon";
-import Giving from "@/components/jubo/Giving";
-import PrayerTopics from "@/components/jubo/PrayerTopics";
 import Worship from "@/components/jubo/Worship";
 import News from "@/components/jubo/News";
 import Service from "@/components/jubo/Service";
@@ -21,68 +14,18 @@ import Support from "@/components/jubo/Support";
 import District from "@/components/jubo/District";
 import Ministers from "@/components/jubo/Ministers";
 import Direction from "@/components/jubo/Direction";
-
-const SECTIONS = [
-  { id: "cover", label: "표지", section: "cover" },
-  { id: "worship-news", label: "예배 및 소식", section: "section2" },
-  { id: "service-offering", label: "봉사 및 예물 안내", section: "section3" },
-  { id: "support-district", label: "후원 및 구역 안내", section: "section4" },
-  { id: "others", label: "기타안내", section: "section5" },
-];
-
-const ALL_TABS = ["표지", "예배 및 소식", "봉사 및 예물", "후원 및 구역", "기타안내", "말씀", "헌금", "기도제목"];
-
-function renderContent(section, issue) {
-  switch (section) {
-    case "cover":
-      return (
-        <JuboPage noPadding>
-          <Cover issue={issue} />
-        </JuboPage>
-      );
-    case "section2":
-      return <JuboSection2 />;
-    case "section3":
-      return <JuboSection3 />;
-    case "section4":
-      return <JuboSection4 />;
-    case "section5":
-      return <JuboSection5 />;
-    case "sermon":
-      return (
-        <JuboPage>
-          <Sermon issue={issue} />
-        </JuboPage>
-      );
-    case "giving":
-      return (
-        <JuboPage>
-          <Giving />
-        </JuboPage>
-      );
-    case "prayer":
-      return (
-        <JuboPage>
-          <PrayerTopics />
-        </JuboPage>
-      );
-    default:
-      return null;
-  }
-}
+import Sermon from "@/components/jubo/Sermon";
+import JuboPageSystem from "@/components/jubo/JuboPageSystem";
 
 export default function Jubo() {
   const { church } = useChurch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeSection = searchParams.get("section") || "cover";
   const issueId = searchParams.get("issue");
   const { data: issue } = useFetch(
     () => (issueId ? getJuboIssue(church.id, issueId) : Promise.resolve(null)),
     [church.id, issueId],
     null,
   );
-
-  const currentSection = SECTIONS.find(s => s.section === activeSection);
 
   const handleDownloadPdf = async () => {
     const element = document.querySelector(".jubo-print-wrapper-all");
@@ -139,9 +82,6 @@ export default function Jubo() {
     }
   };
 
-  const isCoverPage = activeSection === "cover";
-  const sections = SECTIONS.slice(1); // cover 제외한 섹션들 (section2-5)
-
   return (
     <div className="w-full bg-grey-1">
       {/* 헤더 */}
@@ -191,37 +131,8 @@ export default function Jubo() {
           </div>
         </div>
 
-        {/* 메인 콘텐츠 + 우측 미리보기 */}
-        <div className="max-w-[1400px] mx-auto px-8 py-12">
-          <div className="flex gap-8 items-start relative">
-            {/* 중앙 메인 콘텐츠 */}
-            <div className="flex-1">
-              <div className={isCoverPage ? "max-w-xl mx-auto" : ""}>
-                {renderContent(activeSection, issue)}
-              </div>
-            </div>
-
-            {/* 우측 섹션 미리보기 (연하게) */}
-            <div className="w-80 shrink-0 relative h-96">
-              {sections.map((section, idx) => (
-                <button
-                  key={section.id}
-                  onClick={() => setSearchParams({ section: section.section, issue: issueId })}
-                  className="absolute inset-0 bg-white rounded-5 shadow-lg overflow-hidden transition-all duration-300 cursor-pointer hover:opacity-100"
-                  style={{
-                    zIndex: 10 - idx,
-                    opacity: activeSection === section.section ? 0 : 0.4,
-                    transform: `translateY(${idx * 16}px) scale(${1 - idx * 0.02})`,
-                  }}
-                >
-                  <div className="p-6 text-body-4 text-grey-8 font-medium pointer-events-none">
-                    {section.label}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* JuboPageSystem 마운트 */}
+        <JuboPageSystem issue={issue} onDownloadPdf={handleDownloadPdf} />
       </div>
 
       {/* 숨겨진 PDF 렌더 영역 */}
