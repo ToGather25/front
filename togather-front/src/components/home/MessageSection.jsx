@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import defaultBanner from "@/assets/default_banner.png";
 import rightArrow from "@/assets/icon-svg/right-arrow.svg";
 
@@ -96,8 +97,8 @@ export default function MessageSection() {
           <div className="w-full flex gap-10 items-end">
             {/* 설교 카드 */}
             {loading ? (
-              <div className="flex-[1.5] h-[450px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center animate-pulse shadow-xl">
-                <p className="text-grey-6">로딩 중...</p>
+              <div className="flex-[1.5] h-[450px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center shadow-xl">
+                <BubbleLoader size="lg" />
               </div>
             ) : sermon ? (
               <div

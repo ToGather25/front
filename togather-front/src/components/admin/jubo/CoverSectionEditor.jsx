@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFetch } from "@/hooks/useFetch";
+import BubbleLoader from "@/components/common/BubbleLoader";import { useFetch } from "@/hooks/useFetch";
 import { getCover, updateJuboSection } from "@/services/juboService";
 
 const inputCls =
@@ -57,7 +57,7 @@ export default function CoverSectionEditor({ churchId, juboId }) {
   return (
     <div>
       <h3 className="text-body-3 font-bold text-grey-10 mb-4">표지 사진</h3>
-      {prefillLoading && <p className="text-caption text-grey-5 mb-3">불러오는 중...</p>}
+      {prefillLoading && <div className="flex justify-center py-2"><BubbleLoader size="sm" /></div>}
       {prefillError && (
         <div className="mb-3 flex items-center gap-2">
           <p className="text-caption text-grey-5">직전 발행본을 불러오지 못했습니다.</p>

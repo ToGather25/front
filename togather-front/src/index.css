@@ -1,6 +1,9 @@
 /* Pretendard 폰트 */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
+/* Gowun Batang 폰트 (고운 바탕체) */
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap");
+
 @import "tailwindcss";
 @import "./styles/tokens.css";
 
@@ -211,6 +214,17 @@
     }
   }
 
+  @keyframes fadeInSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .group:hover .animate-bounceRight {
     animation: bounceRight 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   }
@@ -221,6 +235,52 @@
 
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-fadeInSlide {
+    animation: fadeInSlide 0.4s ease-out;
+  }
+
+  /* Bubble Loader */
+  @keyframes bubble {
+    0% {
+      top: 8px;
+      height: 44px;
+    }
+    50%, 100% {
+      top: 24px;
+      height: 12px;
+    }
+  }
+
+  .bubble {
+    width: 60px;
+    height: 60px;
+    position: relative;
+  }
+
+  .bubble div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 12px;
+    background: var(--color-brand-primary, #3b5280);
+    animation: bubble 2.4s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  }
+
+  .bubble div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.48s;
+  }
+
+  .bubble div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.24s;
+  }
+
+  .bubble div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0;
   }
 
   .hover-underline {

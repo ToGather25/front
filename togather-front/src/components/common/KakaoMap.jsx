@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
  * @param {boolean} draggable - false이면 드래그/스크롤/더블클릭 비활성화 (기본 true)
  * @param {string}  className - 컨테이너 클래스
  */
-export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false }) {
+export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false, showControls = true, showInfoWindow = true }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
   const mapRef = useRef(null);
@@ -55,29 +55,32 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
           const marker = new window.kakao.maps.Marker({ map, position: coords });
 
           // 인포윈도우 (주소 표시)
-          const infowindow = new window.kakao.maps.InfoWindow({
-            content: `<div style="padding:6px 12px;font-size:13px;font-family:Pretendard,sans-serif;white-space:nowrap;">${address}</div>`,
-          });
-          infowindow.open(map, marker);
+          if (showInfoWindow) {
+            const infowindow = new window.kakao.maps.InfoWindow({
+              content: `<div style="padding:6px 12px;font-size:13px;font-family:Pretendard,sans-serif;white-space:nowrap;">${address}</div>`,
+            });
+            infowindow.open(map, marker);
+          }
 
-          // 지도 타입 컨트롤
-          map.addControl(
-            new window.kakao.maps.MapTypeControl(),
-            window.kakao.maps.ControlPosition.TOPRIGHT,
-          );
+          // 지도 타입 컨트롤, 확대/축소 컨트롤
+          if (showControls) {
+            map.addControl(
+              new window.kakao.maps.MapTypeControl(),
+              window.kakao.maps.ControlPosition.TOPRIGHT,
+            );
 
-          // 확대/축소 컨트롤
-          map.addControl(
-            new window.kakao.maps.ZoomControl(),
-            window.kakao.maps.ControlPosition.RIGHT,
-          );
+            map.addControl(
+              new window.kakao.maps.ZoomControl(),
+              window.kakao.maps.ControlPosition.RIGHT,
+            );
+          }
         });
       } catch (e) {
         setError("지도를 불러오는 중 오류가 발생했습니다.");
         console.error("[KakaoMap]", e);
       }
     });
-  }, [address, level, draggable, showTraffic]);
+  }, [address, level, draggable, showTraffic, showControls, showInfoWindow]);
 
   if (error) {
     return (

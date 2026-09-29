@@ -92,46 +92,8 @@ export default function Jubo() {
         </div>
       </div>
 
-      {/* 메인 컨텐츠 */}
+      {/* 메인 컨텐츠 - JuboPageSystem이 서브헤더를 포함 */}
       <div className="bg-white">
-        {/* 서브 헤더: 목록으로 | 제목 | PDF 다운로드 */}
-        <div className="border-b border-bluegrey-2">
-          <div className="max-w-[1400px] mx-auto px-8 py-4 flex items-center justify-between">
-            <button
-              onClick={() => setSearchParams({})}
-              className="flex items-center gap-2 text-body-4 font-medium text-primary hover:opacity-70"
-            >
-              <span>←</span>
-              <span>목록으로</span>
-            </button>
-
-            <h2 className="text-headline-5 font-bold text-grey-12">
-              {issue?.dateLabel || "주보"}
-            </h2>
-
-            <button
-              onClick={handleDownloadPdf}
-              className="flex items-center justify-center gap-2 bg-primary text-white rounded-full px-4 py-2.5 hover:opacity-90 transition-opacity text-body-4 font-medium"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5m-4.5 4.5V3"
-                />
-              </svg>
-              <span>PDF 다운로드</span>
-            </button>
-          </div>
-        </div>
-
-        {/* JuboPageSystem 마운트 */}
         <JuboPageSystem issue={issue} onDownloadPdf={handleDownloadPdf} />
       </div>
 
