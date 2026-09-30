@@ -157,7 +157,7 @@ export default function MessageSection() {
 
             {/* 말씀 인용 */}
             <div className="flex-1 flex flex-col items-center justify-center">
-              <img src={quoteRight} alt="" className="w-24 h-24 mb-6 opacity-80" />
+              <img src={quoteRight} alt="" className="w-20 h-20 mb-6 opacity-80" />
               <p className="text-body-2 font-semibold text-grey-9 text-center">
                 샬롬!
               </p>
