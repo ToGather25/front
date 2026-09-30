@@ -1,4 +1,5 @@
 import { useChurch } from "@/contexts/ChurchContext";
+import logo from "@/assets/icons/옥길교회_logo.png";
 
 export default function JuboPage3({ data }) {
   const { church } = useChurch();
@@ -34,21 +35,28 @@ export default function JuboPage3({ data }) {
       </div>
 
       {/* 하단: 향기로운 예물 (남은 공간 차지) */}
-      <div className="flex-3 px-6 pt-3 overflow-y-auto min-h-0">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-1 h-4 bg-primary rounded" />
-          <h3 className="text-sm font-bold text-grey-12">향기로운 예물</h3>
+      <div className="flex-3 px-6 pt-3 overflow-y-auto min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1 h-4 bg-primary rounded" />
+            <h3 className="text-sm font-bold text-grey-12">향기로운 예물</h3>
+          </div>
+
+          <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[500px] flex items-center">
+            <div className="w-full space-y-1">
+              {church.districtMeetings?.slice(0, 3).map((district) => (
+                <div key={district.name} className="flex gap-2 text-xs border-b border-grey-2 last:border-0 pb-0.5 last:pb-0">
+                  <div className="font-semibold text-grey-12 w-14 shrink-0">{district.name}</div>
+                  <div className="text-grey-8 text-xs truncate">{district.leader}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[500px] flex items-center">
-          <div className="w-full space-y-1">
-            {church.districtMeetings?.slice(0, 3).map((district) => (
-              <div key={district.name} className="flex gap-2 text-xs border-b border-grey-2 last:border-0 pb-0.5 last:pb-0">
-                <div className="font-semibold text-grey-12 w-14 shrink-0">{district.name}</div>
-                <div className="text-grey-8 text-xs truncate">{district.leader}</div>
-              </div>
-            ))}
-          </div>
+        {/* 로고 */}
+        <div className="shrink-0 flex justify-center pb-4 pt-2">
+          <img src={church.logoUrl || logo} alt={church.name} className="h-6" />
         </div>
       </div>
     </div>
