@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import floatingDefault from "@/assets/icon-svg/floating-default.svg";
 import floatingHover from "@/assets/icon-svg/floating-hover.svg";
 
@@ -8,6 +8,8 @@ export default function SectionDots() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sectionCount, setSectionCount] = useState(0);
   const [isDark, setIsDark] = useState(false);
+  const scrollTimeoutRef = useRef(null);
+  const isAutoScrollingRef = useRef(false);
 
   useEffect(() => {
     function update() {
@@ -22,12 +24,51 @@ export default function SectionDots() {
       setSectionCount(sections.length);
       setIsDark(sections[idx].dataset.dot === "dark");
     }
+
+    function onScroll() {
+      if (isAutoScrollingRef.current) return;
+
+      update();
+
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        snapToNearest();
+      }, 300);
+    }
+
+    function snapToNearest() {
+      const sections = Array.from(document.querySelectorAll(SECTION_SELECTOR));
+      if (sections.length === 0) return;
+
+      const scrollPos = window.scrollY;
+      let nearestIdx = 0;
+      let minDistance = Math.abs(sections[0].offsetTop - scrollPos);
+
+      for (let i = 1; i < sections.length; i++) {
+        const distance = Math.abs(sections[i].offsetTop - scrollPos);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestIdx = i;
+        }
+      }
+
+      const target = sections[nearestIdx];
+      const offset = nearestIdx === 0 ? 72 : 0;
+
+      isAutoScrollingRef.current = true;
+      window.scrollTo({ top: target.offsetTop - offset, behavior: "smooth" });
+      setTimeout(() => {
+        isAutoScrollingRef.current = false;
+      }, 800);
+    }
+
     update();
-    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", update);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", update);
+      clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 
