@@ -41,10 +41,11 @@ export function ModalOverlay({ children, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl">
+      <div className="relative bg-white rounded-md p-8 max-w-md w-full mx-4 shadow-xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-grey-6 hover:text-grey-9 transition-colors"
+          className="absolute top-4 right-4 text-primary hover:text-blue-8 transition-colors"
+          aria-label="닫기"
         >
           <IconClose />
         </button>

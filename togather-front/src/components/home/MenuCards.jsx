@@ -45,7 +45,7 @@ export default function MenuCards() {
   ];
 
   return (
-    <div className="py-[150px] flex justify-center w-full">
+    <div className="py-20 flex justify-center w-full">
       <div className="flex gap-6 w-[1000px]">
         {menus.map((menu) => {
           const isHovered = hoveredId === menu.id;

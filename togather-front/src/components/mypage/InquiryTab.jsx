@@ -40,7 +40,7 @@ export default function InquiryTab({ inquiries, setInquiries, loadError, onRetry
   const pagedInquiries = inquiries.slice((inquiryPage - 1) * PAGE_SIZE, inquiryPage * PAGE_SIZE);
 
   return (
-    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col">
+    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
       {!inquiryWriteMode ? (
         <>
           <div className="flex items-center justify-between mb-6">
@@ -92,6 +92,7 @@ export default function InquiryTab({ inquiries, setInquiries, loadError, onRetry
                   </div>
                 ))}
               </div>
+              <div className="flex-1" />
               <Pagination
                 total={inquiries.length}
                 perPage={PAGE_SIZE}

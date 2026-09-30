@@ -109,7 +109,7 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
       </button>
 
       <div
-        className="bg-white rounded-2xl w-full max-w-md max-h-[88vh] overflow-hidden flex flex-col shadow-2xl"
+        className="bg-white rounded-md w-full max-w-md max-h-[88vh] overflow-hidden flex flex-col shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative w-full aspect-square bg-grey-11 flex items-center justify-center shrink-0">

@@ -52,12 +52,12 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
   return (
     <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-sub-tit-4 font-bold text-grey-11">내 일정 ({schedules.length})</h2>
+        <h2 className="text-sub-tit-4 font-bold text-grey-11">내 일정</h2>
         <button
           onClick={() => setModal("add-schedule")}
           className="bg-primary text-white text-body-5 rounded-full px-5 py-2 hover:bg-blue-8 transition-colors"
         >
-          + 일정 추가
+          일정 추가
         </button>
       </div>
 

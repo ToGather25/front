@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
     }
     setCurrentUser(null);
     localStorage.clear();
-    void navigate("/login");
+    void navigate("/");
   }
 
   return (

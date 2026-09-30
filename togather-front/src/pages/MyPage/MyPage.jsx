@@ -168,6 +168,11 @@ export default function MyPage() {
                   <img
                     src={activeTab === tab.key ? tab.iconActive : tab.iconInactive}
                     className="w-4 h-4 shrink-0"
+                    style={
+                      activeTab === tab.key && tab.key === "dept"
+                        ? { filter: "brightness(0) invert(1)" }
+                        : {}
+                    }
                     alt=""
                   />
                   {tab.label}

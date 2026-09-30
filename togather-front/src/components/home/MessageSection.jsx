@@ -4,6 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import defaultBanner from "@/assets/default_banner.png";
 import rightArrow from "@/assets/icon-svg/right-arrow.svg";
+import quoteRight from "@/assets/icon-svg/quote-right.svg";
 
 export default function MessageSection() {
   const navigate = useNavigate();
@@ -154,23 +155,12 @@ export default function MessageSection() {
               </div>
             )}
 
-            {/* 예배시간 */}
-            <div className="flex-1 py-2 space-y-0">
-            {schedules.map((schedule, i) => (
-              <div
-                key={i}
-                className={`grid grid-cols-[auto_1fr] items-start gap-8 ${
-                  i === schedules.length - 1 ? "pt-5" : "py-5"
-                } ${i < schedules.length - 1 ? "border-b border-dashed border-bluegrey-3" : ""}`}
-              >
-                <span className="text-sub-tit-4 font-medium text-bluegrey-9 shrink-0">
-                  {schedule.label}
-                </span>
-                <span className="text-body-4 text-grey-7 break-words">
-                  {schedule.time}
-                </span>
-              </div>
-            ))}
+            {/* 말씀 인용 */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <img src={quoteRight} alt="" className="w-24 h-24 mb-6 opacity-80" />
+              <p className="text-body-2 font-semibold text-grey-9 text-center">
+                살롱!
+              </p>
             </div>
           </div>
         </div>

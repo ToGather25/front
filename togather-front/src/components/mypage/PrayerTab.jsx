@@ -46,7 +46,7 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
   );
 
   return (
-    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col">
+    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-sub-tit-4 font-bold text-grey-11">기도 / 상담 내역</h2>
         <button
@@ -106,6 +106,7 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
               </div>
             ))}
           </div>
+          <div className="flex-1" />
           <Pagination
             total={filteredPrayers.length}
             perPage={PRAYER_PAGE_SIZE}

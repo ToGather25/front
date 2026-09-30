@@ -5,6 +5,8 @@ import { useChurch } from "@/contexts/ChurchContext";
 import googleIcon from "@/assets/oAuth/google.png";
 import kakaoIcon from "@/assets/oAuth/kakao.png";
 import naverIcon from "@/assets/oAuth/naver.png";
+import eyeIcon from "@/assets/icon-svg/eye.svg";
+import eyeOffIcon from "@/assets/icon-svg/eye-off.svg";
 
 const OAUTH_PROVIDERS = [
   { key: "kakao", name: "카카오", icon: kakaoIcon },
@@ -12,11 +14,15 @@ const OAUTH_PROVIDERS = [
   { key: "naver", name: "네이버", icon: naverIcon },
 ];
 
+const inputCls =
+  "w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+
 export default function LoginPage() {
   const { login } = useAuth();
   const { church } = useChurch();
   const [error, setError] = useState(null);
   const [isPending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -80,20 +86,34 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                className="w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all"
+                className={inputCls}
                 placeholder="example@email.com"
               />
             </div>
 
             <div>
               <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">비밀번호</label>
-              <input
-                name="password"
-                type="password"
-                required
-                className="w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className={`${inputCls} pr-12`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-grey-6 hover:text-grey-8 transition-colors"
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+                >
+                  <img
+                    src={showPassword ? eyeOffIcon : eyeIcon}
+                    alt=""
+                    className="w-5 h-5"
+                  />
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between">

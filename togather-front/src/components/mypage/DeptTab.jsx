@@ -1,11 +1,17 @@
 import { useState } from "react";
 import UserBlack from "@/assets/icon-svg/mypage-user-black.svg";
 import { MOCK_DEPT, MOCK_GROUPS } from "./mockData";
-import { ReadonlyField, ModalOverlay, IconBack } from "./shared";
+import { ReadonlyField, InputField, ModalOverlay, IconBack } from "./shared";
 
 export default function DeptTab() {
   const [deptChangeMode, setDeptChangeMode] = useState(false);
   const [modal, setModal] = useState(null);
+  const [formData, setFormData] = useState({
+    department: MOCK_DEPT.department,
+    duty: MOCK_DEPT.duty,
+    district: MOCK_DEPT.district,
+    group: MOCK_DEPT.group,
+  });
 
   return (
     <div className="space-y-5">
@@ -58,11 +64,26 @@ export default function DeptTab() {
                 note="사무실 문의로 변경 가능합니다."
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
-                <ReadonlyField label="구역" value={MOCK_DEPT.district} />
+                <InputField
+                  label="직책"
+                  value={formData.duty}
+                  onChange={(e) => setFormData({ ...formData, duty: e.target.value })}
+                  placeholder="직책 입력"
+                />
+                <InputField
+                  label="구역"
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                  placeholder="구역 입력"
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <ReadonlyField label="소그룹 / 셀" value={MOCK_DEPT.group} />
+                <InputField
+                  label="소그룹 / 셀"
+                  value={formData.group}
+                  onChange={(e) => setFormData({ ...formData, group: e.target.value })}
+                  placeholder="소그룹 / 셀 입력"
+                />
                 <ReadonlyField label="임직일" value={MOCK_DEPT.ordainedDate} />
               </div>
             </div>
