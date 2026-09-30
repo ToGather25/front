@@ -132,9 +132,6 @@
 
   html {
     font-size: 112.5%;
-    scroll-snap-type: y mandatory;
-    scroll-padding-top: 72px;
-    scroll-padding-bottom: 120px;
   }
 
   [data-home-section] {
