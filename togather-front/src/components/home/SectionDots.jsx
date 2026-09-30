@@ -35,7 +35,8 @@ export default function SectionDots() {
     const sections = Array.from(document.querySelectorAll(SECTION_SELECTOR));
     const target = sections[index];
     if (!target) return;
-    window.scrollTo({ top: target.offsetTop, behavior: "smooth" });
+    const offset = index === 0 ? 72 : 0;
+    window.scrollTo({ top: target.offsetTop - offset, behavior: "smooth" });
   }, []);
 
   const scrollToTop = useCallback(() => {
