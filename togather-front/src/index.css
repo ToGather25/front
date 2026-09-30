@@ -134,10 +134,6 @@
     font-size: 112.5%;
   }
 
-  [data-home-section] {
-    scroll-snap-align: start;
-  }
-
   body {
     line-height: 1;
     font-family: var(--font-pretendard);

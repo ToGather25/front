@@ -55,7 +55,7 @@ export default function MenuCards() {
               onClick={() => navigate(menu.href)}
               onMouseEnter={() => setHoveredId(menu.id)}
               onMouseLeave={() => setHoveredId(null)}
-              className={`flex-1 h-[220px] rounded-[36px] p-5 flex flex-col gap-5 items-center justify-center transition-all ${
+              className={`flex-1 h-[220px] rounded-3xl p-5 flex flex-col gap-5 items-center justify-center transition-all ${
                 isHovered
                   ? "bg-primary text-white"
                   : "bg-white text-grey-11"
@@ -66,11 +66,13 @@ export default function MenuCards() {
                   : "15px 10px 40px rgba(41, 49, 66, 0.08)"
               }}
             >
-              <img
-                src={isHovered ? menu.iconHover : menu.iconDefault}
-                alt={menu.title}
-                className="w-[36px] h-[36px]"
-              />
+              <div className="p-5 rounded-2xl bg-bluegrey-1">
+                <img
+                  src={isHovered ? menu.iconHover : menu.iconDefault}
+                  alt={menu.title}
+                  className="w-[36px] h-[36px]"
+                />
+              </div>
               <h3
                 className={`text-sub-tit-3 font-medium ${
                   isHovered ? "text-white" : "text-grey-11"

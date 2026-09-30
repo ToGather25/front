@@ -11,6 +11,7 @@ export default function MessageSection() {
   const { church } = useChurch();
   const [sermon, setSermon] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scriptureText, setScriptureText] = useState("");
 
   useEffect(() => {
     const fetchLatestSermon = async () => {
@@ -66,9 +67,27 @@ export default function MessageSection() {
       }
     };
 
+    const fetchLatestJubo = async () => {
+      try {
+        const res = await fetch("/api/jubo/latest");
+        const jubo = await res.json();
+
+        // 성경봉독 구절 추출
+        if (jubo?.sections) {
+          const bibleSection = jubo.sections.find(s => s.title === "성경봉독");
+          if (bibleSection?.content) {
+            setScriptureText(bibleSection.content);
+          }
+        }
+      } catch (error) {
+        console.error("[MessageSection] 주보 조회 실패:", error);
+      }
+    };
+
     if (church.social?.youtubeChannelId) {
       fetchLatestSermon();
     }
+    fetchLatestJubo();
   }, [church.social?.youtubeChannelId, church.pastor]);
 
   const schedules = church.worshipDisplay?.map((display) => ({
@@ -156,10 +175,17 @@ export default function MessageSection() {
             )}
 
             {/* 말씀 인용 */}
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <img src={quoteRight} alt="" className="w-20 h-20 mb-6 opacity-80" />
-              <p className="text-body-2 font-semibold text-grey-9 text-center">
-                샬롬!
+            <div className="flex-1 relative flex flex-col items-start justify-start pt-8 self-start">
+              <img
+                src={quoteRight}
+                alt=""
+                className="absolute top-14 right-0 w-24 h-24 opacity-80"
+              />
+              <p className="text-headline-5 pt-24 font-bold text-primary">
+                이번주 말씀
+              </p>
+              <p className="text-body-2 text-grey-9 mt-4 max-w-xs text-center line-clamp-2">
+                {scriptureText || "말씀을 불러올 수 없습니다"}
               </p>
             </div>
           </div>
