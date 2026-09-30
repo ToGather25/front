@@ -35,8 +35,7 @@ export default function SectionDots() {
     const sections = Array.from(document.querySelectorAll(SECTION_SELECTOR));
     const target = sections[index];
     if (!target) return;
-    const headerHeight = 72;
-    window.scrollTo({ top: target.offsetTop - headerHeight, behavior: "smooth" });
+    window.scrollTo({ top: target.offsetTop - 120, behavior: "smooth" });
   }, []);
 
   const scrollToTop = useCallback(() => {
