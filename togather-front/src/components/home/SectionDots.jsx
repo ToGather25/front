@@ -36,7 +36,9 @@ export default function SectionDots() {
     const target = sections[index];
     if (!target) return;
     const headerHeight = 72;
-    window.scrollTo({ top: target.offsetTop - headerHeight, behavior: "smooth" });
+    const hasNoOffset = target.hasAttribute("data-no-offset");
+    const offset = hasNoOffset ? 0 : headerHeight;
+    window.scrollTo({ top: target.offsetTop - offset, behavior: "smooth" });
   }, []);
 
   const scrollToTop = useCallback(() => {

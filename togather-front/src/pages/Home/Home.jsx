@@ -14,7 +14,7 @@ export default function Home() {
         <MobileHome />
       </div>
       <div className="hidden md:flex md:flex-col">
-        <div data-home-section data-dot="dark">
+        <div data-home-section data-dot="dark" data-no-offset>
           <MainBanner />
         </div>
         <div data-home-section className="flex flex-col justify-center">

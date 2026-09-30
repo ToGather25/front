@@ -159,7 +159,7 @@ export default function MessageSection() {
             <div className="flex-1 flex flex-col items-center justify-center">
               <img src={quoteRight} alt="" className="w-24 h-24 mb-6 opacity-80" />
               <p className="text-body-2 font-semibold text-grey-9 text-center">
-                살롱!
+                샬롬!
               </p>
             </div>
           </div>
