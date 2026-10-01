@@ -27,15 +27,32 @@ export function AuthProvider({ children }) {
 
       try {
         const shouldAutoLogin = import.meta.env.VITE_AUTO_LOGIN === "true";
+        const useMockLogin = import.meta.env.VITE_USE_MOCK_LOGIN === "true";
+
         if (shouldAutoLogin) {
-          const res = await api.post("/auth/login", {
-            email: "okgil@gmail.com",
-            password: "togather"
-          });
-          const user = res.data.data;
-          setCurrentUser(user);
-          localStorage.setItem("token", res.data.token);
-          if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
+          if (useMockLogin) {
+            // Mock 자동 로그인
+            const mockUser = {
+              id: "mock-user-1",
+              email: "okgil@gmail.com",
+              username: "okgil",
+              isAdmin: false,
+              createdAt: new Date().toISOString(),
+            };
+            setCurrentUser(mockUser);
+            localStorage.setItem("token", "mock-token-" + Date.now());
+            localStorage.setItem("refreshToken", "mock-refresh-" + Date.now());
+          } else {
+            // 실제 API 자동 로그인
+            const res = await api.post("/auth/login", {
+              email: "okgil@gmail.com",
+              password: "togather"
+            });
+            const user = res.data.data;
+            setCurrentUser(user);
+            localStorage.setItem("token", res.data.token);
+            if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
+          }
         }
       } catch (error) {
         console.error("[AuthProvider] Auto-login failed:", error);
@@ -48,12 +65,35 @@ export function AuthProvider({ children }) {
   }, [autoLoginAttempted, currentUser]);
 
   async function login({ email, password }) {
-    const res = await api.post("/auth/login", { email, password });
-    const user = res.data.data;
-    setCurrentUser(user);
-    localStorage.setItem("token", res.data.token);
-    if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
-    void navigate(user.isAdmin ? "/admin" : "/");
+    try {
+      // Mock 모드 (백엔드 없이 테스트용)
+      const useMockLogin = import.meta.env.VITE_USE_MOCK_LOGIN === "true";
+
+      if (useMockLogin) {
+        const mockUser = {
+          id: "mock-user-1",
+          email: email,
+          username: email.split("@")[0],
+          isAdmin: email.includes("admin"),
+          createdAt: new Date().toISOString(),
+        };
+        setCurrentUser(mockUser);
+        localStorage.setItem("token", "mock-token-" + Date.now());
+        localStorage.setItem("refreshToken", "mock-refresh-" + Date.now());
+        void navigate(mockUser.isAdmin ? "/admin" : "/");
+        return;
+      }
+
+      // 실제 API 호출
+      const res = await api.post("/auth/login", { email, password });
+      const user = res.data.data;
+      setCurrentUser(user);
+      localStorage.setItem("token", res.data.token);
+      if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
+      void navigate(user.isAdmin ? "/admin" : "/");
+    } catch (error) {
+      throw error;
+    }
   }
 
   async function register(payload) {
