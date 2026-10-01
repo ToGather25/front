@@ -312,20 +312,14 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
 
       {openMenu && (
         <div
-          className={`absolute left-0 right-0 shadow-xl ${
+          className={`absolute left-0 right-0 shadow-xl animate-dropdown-open ${
             transparent ? "bg-white/90" : "bg-bluegrey-1"
           }`}
+          onMouseLeave={() => setOpenMenu(null)}
           style={{
-            animation: "megaFadeIn 0.15s ease-out",
             borderBottom: "2px solid var(--color-primary)",
           }}
         >
-          <style>{`
-            @keyframes megaFadeIn {
-              from { opacity: 0; transform: translateY(-8px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-          `}</style>
           <div className="max-w-[1440px] mx-auto py-5" style={{ paddingRight: "2rem" }}>
             {/* 각 열은 position:absolute + translateX(-50%)로 열의 "중심"을 상위 메뉴
                 항목의 중심(colCenters)에 정확히 맞춘다. 폭이 트랙 크기에 좌우되는
@@ -389,9 +383,10 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                       key={child.label}
                       to={child.to}
                       onClick={() => setOpenMenu(null)}
-                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap hover:text-blue-12 hover:font-semibold transition-colors"
+                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap relative group transition-colors hover:text-blue-12 hover:font-semibold"
                     >
                       {child.label}
+                      <span className="absolute left-1/2 right-1/2 bottom-0 h-0.5 bg-primary origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
                     </Link>
                   ))}
                 </div>

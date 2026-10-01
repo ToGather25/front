@@ -68,32 +68,49 @@ export default function JuboPageSystem({ issue, onDownloadPdf }) {
         </div>
       </div>
 
-      {/* 메인 콘텐츠 + 우측 미리보기 */}
-      <div className="max-w-[1100px] mx-auto px-8 pt-15 py-30">
-        <div className="flex gap-12 items-start relative">
-          {/* 중앙 메인 콘텐츠 - 고정 높이 842px */}
-          <div className="flex-1 relative">
-            {/* 페이지 네비게이션 */}
-            <div className="absolute -top-10 z-10 flex items-center gap-3">
-              <button
-                onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
-                disabled={currentPageIndex === 0}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-bluegrey-2 text-blue-4 hover:opacity-70 disabled:opacity-40 transition-opacity"
-              >
-                &lt;
-              </button>
-              <span className="text-blue-4 px-1 py-1 rounded-sm text-body-5 font-light whitespace-nowrap">
-                {currentPageIndex + 1} / 4
-              </span>
-              <button
-                onClick={() => setCurrentPageIndex(Math.min(3, currentPageIndex + 1))}
-                disabled={currentPageIndex === 3}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-bluegrey-2 text-blue-4 hover:opacity-70 disabled:opacity-40 transition-opacity"
-              >
-                &gt;
-              </button>
-            </div>
+      {/* 메인 콘텐츠 - PDF 스타일 */}
+      <div className="mx-auto pt-15 py-30 flex justify-center">
+        <div className="flex gap-20 items-center relative">
+          {/* 왼쪽 썸네일 사이드바 */}
+          <div className="flex flex-col gap-4" style={{ width: '140px' }}>
+            {PAGES.map((page, idx) => {
+              const scale = 140 / 630;
 
+              return (
+                <div
+                  key={page.id}
+                  onClick={() => handlePageChange(idx)}
+                  className={`relative rounded-3 overflow-hidden transition-all duration-300 cursor-pointer ${
+                    idx === currentPageIndex
+                      ? 'ring-2 ring-primary shadow-lg'
+                      : 'shadow-md hover:shadow-lg hover:ring-1 hover:ring-primary opacity-70'
+                  }`}
+                  style={{
+                    width: '140px',
+                    height: '197px',
+                    backgroundColor: '#f5f5f5',
+                  }}
+                >
+                  {/* 축소된 페이지 미리보기 */}
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '630px',
+                      height: '892px',
+                      transformOrigin: 'top left',
+                      transform: `scale(${scale})`,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <page.Component data={issue} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 오른쪽 메인 콘텐츠 */}
+          <div className="relative">
             <div
               key={currentPage.id}
               className="bg-grey-1 rounded-5 overflow-hidden animate-fadeInSlide h-[892px] w-[630px]"
@@ -105,39 +122,6 @@ export default function JuboPageSystem({ issue, onDownloadPdf }) {
                 ) : null}
               </div>
             </div>
-          </div>
-
-          {/* 우측 미리보기 (세로 배치, 클릭 가능) */}
-          <div className="shrink-0 flex flex-col gap-3 mr-20" style={{ width: '205px', height: '892px' }}>
-            {PAGES.map((page, idx) => {
-              if (idx === currentPageIndex) return null;
-              const scale = 205 / 620;
-
-              return (
-                <div
-                  key={page.id}
-                  onClick={() => handlePageChange(idx)}
-                  className="flex-1 relative bg-white rounded-5 shadow-lg overflow-hidden transition-all duration-300 cursor-pointer hover:shadow-xl hover:opacity-100"
-                  style={{
-                    opacity: 0.6,
-                  }}
-                >
-                  {/* 축소된 페이지 미리보기 */}
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '620px',
-                      height: '875px',
-                      transformOrigin: 'top left',
-                      transform: `scale(${scale})`,
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    <page.Component data={issue} />
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>

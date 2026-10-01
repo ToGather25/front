@@ -10,6 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +20,32 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    const attemptAutoLogin = async () => {
+      if (autoLoginAttempted || currentUser) return;
+
+      try {
+        const shouldAutoLogin = import.meta.env.VITE_AUTO_LOGIN === "true";
+        if (shouldAutoLogin) {
+          const res = await api.post("/auth/login", {
+            email: "okgil@gmail.com",
+            password: "togather"
+          });
+          const user = res.data.data;
+          setCurrentUser(user);
+          localStorage.setItem("token", res.data.token);
+          if (res.data.refreshToken) localStorage.setItem("refreshToken", res.data.refreshToken);
+        }
+      } catch (error) {
+        console.error("[AuthProvider] Auto-login failed:", error);
+      } finally {
+        setAutoLoginAttempted(true);
+      }
+    };
+
+    attemptAutoLogin();
+  }, [autoLoginAttempted, currentUser]);
 
   async function login({ email, password }) {
     const res = await api.post("/auth/login", { email, password });

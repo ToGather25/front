@@ -184,8 +184,8 @@ export default function MessageSection() {
               <p className="text-headline-5 pt-24 font-bold text-primary">
                 이번주 말씀
               </p>
-              <p className="text-body-2 text-grey-9 mt-4 max-w-xs text-center line-clamp-2">
-                {scriptureText || "말씀을 불러올 수 없습니다"}
+              <p className="text-body-2 text-grey-9 mt-10 max-w-xs text-center line-clamp-2">
+                {scriptureText || "아직 준비된 말씀이 없습니다."}
               </p>
             </div>
           </div>

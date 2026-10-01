@@ -23,16 +23,16 @@
      COLORS — Blue scale (blue-1: 가장 연함 → blue-10: 가장 진함)
      Source: Figma 디자인 실측값
   ---------------------------------------------------------- */
-  --color-blue-1: #eceef3;
-  --color-blue-2: #d0d6e2;
-  --color-blue-3: #acb6cc;
-  --color-blue-4: #8395b3;
-  --color-blue-5: #60749d;
-  --color-blue-6: #3d5588;
-  --color-blue-7: #344874;
-  --color-blue-8: #2b3c61;
-  --color-blue-9: #232f4f;
-  --color-blue-10: #1b263d;
+  --color-blue-1: #ECEEF3;
+  --color-blue-2: #D0D6E2;
+  --color-blue-3: #ACB6CC;
+  --color-blue-4: #7D8DAF;
+  --color-blue-5: #6477A0;
+  --color-blue-6: #3D5588;
+  --color-blue-7: #384D7C;
+  --color-blue-8: #2B3C61;
+  --color-blue-9: #222F4B;
+  --color-blue-10: #1A2439;
   --color-blue-11: #2098f3;
   --color-blue-12: #0088FF;
 
@@ -40,16 +40,16 @@
      COLORS — Blue-Grey scale (secondary brand neutral)
      Source: Figma secondary/bluegrey palette
   ---------------------------------------------------------- */
-  --color-bluegrey-1: #fafafb;
-  --color-bluegrey-2: #e6e8ea;
-  --color-bluegrey-3: #d3d7db;
-  --color-bluegrey-4: #b1b8be;
-  --color-bluegrey-5: #8d969e;
-  --color-bluegrey-6: #6d7882;
-  --color-bluegrey-7: #58616a;
-  --color-bluegrey-8: #454d54;
-  --color-bluegrey-9: #333a40;
-  --color-bluegrey-10: #1e2124;
+  --color-bluegrey-1: #FAFAFB;
+  --color-bluegrey-2: #F6F6F8;
+  --color-bluegrey-3: #E6E8EC;
+  --color-bluegrey-4: #DBDEE4;
+  --color-bluegrey-5: #D4D7DE;
+  --color-bluegrey-6: #C9CDD6;
+  --color-bluegrey-7: #B7BBC3;
+  --color-bluegrey-8: #8F9298;
+  --color-bluegrey-9: #6F7176;
+  --color-bluegrey-10: #54565A;
 
   /* ----------------------------------------------------------
      COLORS — Point / Brown scale (warm accent)
@@ -68,16 +68,16 @@
   /* ----------------------------------------------------------
      COLORS — Grey scale (grey-1: 가장 밝음 → grey-12: 가장 어두움)
   ---------------------------------------------------------- */
-  --color-grey-1: #fafafa;
-  --color-grey-2: #f5f5f5;
-  --color-grey-3: #eeeeee;
-  --color-grey-4: #e3e3e3;
-  --color-grey-5: #d0d0d0;
-  --color-grey-6: #b8b8b8;
-  --color-grey-7: #9a9a9a;
-  --color-grey-8: #787878;
-  --color-grey-9: #595959;
-  --color-grey-10: #3d3d3d;
+  --color-grey-1: #F5F5F5;
+  --color-grey-2: #DFDFDF;
+  --color-grey-3: #CFCFCF;
+  --color-grey-4: #B9B9B9;
+  --color-grey-5: #ACACAC;
+  --color-grey-6: #979797;
+  --color-grey-7: #898989;
+  --color-grey-8: #6B6B6B;
+  --color-grey-9: #535353;
+  --color-grey-10: #3F3F3F;
   --color-grey-11: #272727;
   --color-grey-12: #141414;
 

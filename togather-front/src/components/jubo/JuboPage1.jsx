@@ -58,7 +58,7 @@ export default function JuboPage1({ data }) {
           {/* 날짜 - 오른쪽 위에 띠 모양 */}
           <div className="self-end pr-3">
             <div
-              className="text-xs text-primary font-semibold px-3 py-2 bg-grey-2"
+              className="text-xs text-primary font-semibold px-3 py-2 bg-bluegrey-2"
               style={{ borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}
             >
               {data?.dateLabel || "연/월/일"}
@@ -78,7 +78,7 @@ export default function JuboPage1({ data }) {
               style={{ borderTopRightRadius: '40px', borderBottomLeftRadius: '40px' }}
             >
               <img src={quoteLeft} alt="" className="absolute w-10 h-10 flex-shrink-0" style={{ top: '15px', left: '15px' }} />
-              <div className="text-headline-2 font-semibold text-grey-12 text-center leading-snug max-w-[200px] break-words" style={{ fontFamily: '"Gowun Batang", serif' }}>
+              <div className="text-headline-3 font-semibold text-grey-12 text-center leading-snug max-w-[200px] break-words whitespace-pre-wrap" style={{ fontFamily: '"Gowun Batang", serif' }}>
                 {church.slogan?.title}
               </div>
               <img src={quoteRight} alt="" className="absolute w-10 h-10 flex-shrink-0" style={{ bottom: '15px', right: '15px' }} />

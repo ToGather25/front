@@ -30,21 +30,30 @@ export default function JuboPage2({ data }) {
           <span className="text-xs">{data?.dateLabel || ""}</span>
         </div>
       </div>
-      {/* 상단: 예배 시간 (높이 제한) */}
+      {/* 상단: 예배 시간 + 부분 예배 안내 (높이 제한) */}
       <div className="flex-2 px-6 pt-6 overflow-y-auto min-h-0">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-1 h-4 bg-primary rounded" />
           <h3 className="text-sm font-bold text-grey-12">예배 안내</h3>
         </div>
 
-        <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[470px] flex items-center">
-          <div className="w-full space-y-1">
-            {church.worshipSchedule?.regular?.slice(0, 4).map((worship, i) => (
-              <div key={i} className="flex gap-2 text-xs border-b border-grey-2 last:border-0 pb-0.5 last:pb-0">
-                <div className="font-semibold text-grey-12 w-16 shrink-0">{worship.name}</div>
-                <div className="text-grey-8 text-xs">{worship.time}</div>
+        <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[470px] flex flex-col justify-center">
+          {/* 부분 예배 안내 */}
+          <div className="space-y-1">
+            {loading ? (
+              <div className="flex justify-center w-full">
+                <BubbleLoader size="xs" />
               </div>
-            ))}
+            ) : order.length === 0 ? (
+              <p className="text-center text-xs text-grey-6">정보 없음</p>
+            ) : (
+              order.map(({ role, name }, i) => (
+                <div key={i} className="flex gap-2 text-xs">
+                  <div className="font-bold text-grey-12 min-w-fit">{role}</div>
+                  <div className="text-grey-8">{name}</div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
