@@ -10,7 +10,7 @@ export default function Greeting() {
 
   return (
     <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-stretch">
-      <div className="flex-1">
+      <div className="md:flex-[2]">
         <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-4">{title}</h2>
         <p className="text-body-1 text-primary font-medium">{church.name} 홈페이지를 방문해주셔서 감사합니다.</p>
         <div className="w-12 h-px bg-grey-3 my-10" />
@@ -29,7 +29,7 @@ export default function Greeting() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 md:w-48 md:shrink-0">
+      <div className="flex flex-col gap-4 md:flex-[1]">
         <FallbackImage
           src={pastorImage}
           alt="담임목사 사진"
