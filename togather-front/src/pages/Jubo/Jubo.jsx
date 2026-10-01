@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -81,6 +82,21 @@ export default function Jubo() {
       console.error("PDF 생성 실패:", error);
     }
   };
+
+  // 주보 목록에서 "PDF" 버튼(?download=1)으로 들어온 경우, 상세 페이지의 숨겨진
+  // 렌더 영역이 그려진 뒤 자동으로 다운로드를 트리거한다.
+  const autoDownloadedRef = useRef(false);
+  useEffect(() => {
+    if (!issue || searchParams.get("download") !== "1" || autoDownloadedRef.current) return;
+    autoDownloadedRef.current = true;
+    void handleDownloadPdf();
+    const next = new URLSearchParams(searchParams);
+    next.delete("download");
+    setSearchParams(next, { replace: true });
+    // oxlint-disable-next-line exhaustive-deps -- handleDownloadPdf/setSearchParams는
+    // 매 렌더 새로 생성되는 함수라 deps에 넣으면 autoDownloadedRef 가드와 무관하게
+    // 매번 재실행된다. issue/searchParams 변경 시에만 반응하면 된다.
+  }, [issue, searchParams]);
 
   return (
     <div className="w-full bg-grey-1">

@@ -5,8 +5,8 @@ import { useFetch } from "@/hooks/useFetch";
 import { getJuboIssues } from "@/services/juboService";
 import { getDaysInMonth, getFirstDayOfMonth, toDateKey, parseLocalDate } from "@/utils/date";
 import WordTabBar from "@/components/word/WordTabBar";
+import NumberedPagination from "@/components/common/NumberedPagination";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
-import IcoChurch from "@/assets/icon-svg/none-thumb.png";
 
 const PAGE_SIZE = 8;
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -60,7 +60,6 @@ export default function JuboList({ hideHeader = false }) {
   const filtered = (issues ?? []).filter(
     (issue) => (issue.sermonTitle ?? '').includes(query) || (issue.verse ?? '').includes(query),
   );
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
@@ -104,14 +103,10 @@ export default function JuboList({ hideHeader = false }) {
         </div>
 
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+          <div className="border-t border-b border-grey-3 mb-10 animate-pulse">
             {Array.from({ length: PAGE_SIZE }, (_, i) => (
-              <div key={i} className="rounded-2xl border border-bluegrey-2 overflow-hidden animate-pulse">
-                <div className="h-40 bg-grey-2" />
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-grey-2 rounded w-4/5" />
-                  <div className="h-3 bg-grey-2 rounded w-2/5" />
-                </div>
+              <div key={i} className="h-[87px] border-b border-grey-3 last:border-b-0 px-6 flex items-center">
+                <div className="h-4 bg-grey-2 rounded w-2/5" />
               </div>
             ))}
           </div>
@@ -137,47 +132,53 @@ export default function JuboList({ hideHeader = false }) {
 
         {!loading && !error && filtered.length > 0 && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-              {pageItems.map((issue) => (
-                <Link
+            <div className="border-t border-b border-grey-3 mb-8">
+              {/* 테이블 헤더 */}
+              <div className="grid grid-cols-[72px_1fr_140px_140px] bg-grey-1 border-b border-grey-3 py-4 text-body-5 font-semibold text-grey-7">
+                <span className="text-center">번호</span>
+                <span className="text-center">제목</span>
+                <span className="text-center">다운로드</span>
+                <span className="text-center">일자</span>
+              </div>
+
+              {pageItems.map((issue, i) => (
+                <div
                   key={issue.id}
-                  to={`/주보?issue=${issue.id}`}
-                  className="group rounded-2xl border border-bluegrey-2 overflow-hidden hover:shadow-lg transition-all bg-white"
+                  className="grid grid-cols-[72px_1fr_140px_140px] items-center border-b border-grey-3 last:border-b-0 hover:bg-bluegrey-2 transition-colors"
                 >
-                  <div className="relative h-40 bg-grey-2 flex flex-col items-center justify-center gap-2 px-4 overflow-hidden">
-                    {issue.coverImageUrl ? (
-                      <img src={issue.coverImageUrl} alt="주보 표지" className="w-full h-full object-cover" />
-                    ) : (
-                      <img src={IcoChurch} className="w-10 h-12 opacity-60 invert" alt="" />
-                    )}
-                    {issue.current && (
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-grey-6 text-body-6 font-semibold">
-                        이번 주 주보
-                      </span>
-                    )}
+                  <span className="text-center text-body-4 text-grey-6">
+                    {(page - 1) * PAGE_SIZE + i + 1}
+                  </span>
+                  <Link
+                    to={`/주보?issue=${issue.id}`}
+                    className="flex items-center justify-center px-4 py-5 min-w-0"
+                  >
+                    <span className="truncate text-body-3 font-medium text-grey-10 hover:text-primary transition-colors">
+                      {issue.sermonTitle?.trim() || `${issue.dateLabel} 주보`}
+                    </span>
+                  </Link>
+                  <div className="flex justify-center">
+                    <Link
+                      to={`/주보?issue=${issue.id}&download=1`}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-3xl border border-bluegrey-4 text-body-5 font-semibold text-grey-8 hover:border-blue-6 hover:bg-blue-6 hover:text-white transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                      </svg>
+                      PDF
+                    </Link>
                   </div>
-                  <div className="p-4">
-                    <p className="text-body-4">{issue.dateLabel} 주보</p>
-                    <h3 className="text-body-3 font-semibold text-grey-11 group-hover:text-primary transition-colors line-clamp-2 mb-1.5">
-                      {issue.sermonTitle}
-                    </h3>
-                    <p className="text-body-5 text-grey-6">{issue.verse}</p>
-                  </div>
-                </Link>
+                  <span className="text-center text-body-5 text-grey-6">{issue.dateLabel}</span>
+                </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-center gap-1">
-              <PageBtn onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} label="‹" />
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <PageBtn key={p} onClick={() => setPage(p)} active={p === page} label={String(p)} />
-              ))}
-              <PageBtn
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                label="›"
-              />
-            </div>
+            <NumberedPagination
+              total={filtered.length}
+              perPage={PAGE_SIZE}
+              current={page}
+              onChange={setPage}
+            />
           </>
         )}
       </div>
@@ -354,23 +355,5 @@ function DateJumpPicker({ issues, onSelectWeek }) {
         </>
       )}
     </div>
-  );
-}
-
-function PageBtn({ onClick, disabled, active, label }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`w-9 h-9 rounded-lg text-body-3 font-medium transition-colors ${
-        active
-          ? "bg-blue-7 text-white"
-          : disabled
-            ? "text-grey-4 cursor-not-allowed"
-            : "text-grey-8 hover:bg-blue-1 hover:text-blue-7"
-      }`}
-    >
-      {label}
-    </button>
   );
 }
