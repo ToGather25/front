@@ -131,13 +131,13 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-36 md:px-8 md:pt-10 md:pb-40">
         <h1 className="text-headline-4 font-bold text-grey-11 mb-8">마이페이지</h1>
 
         <div className="flex flex-col md:flex-row md:gap-6 md:items-start">
           {/* ── Sidebar ── */}
           <aside className="md:w-60 md:shrink-0 space-y-3">
-            <div className="bg-grey-1 border border-grey-3 rounded-2xl p-5">
+            <div className="bg-white border border-grey-3 rounded-2xl p-5">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-grey-5 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
                   {(currentUser.name ?? MOCK_USER.name)[0]}
@@ -154,7 +154,7 @@ export default function MyPage() {
               </div>
             </div>
 
-            <div className="bg-grey-1 border border-grey-3 rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto">
+            <div className="bg-white border border-grey-3 rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto">
               {TABS.map((tab) => (
                 <button
                   key={tab.key}

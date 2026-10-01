@@ -11,8 +11,11 @@ export default function Greeting() {
   return (
     <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-start">
       <div className="flex-1">
-        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-6">{title}</h2>
-        <div className="flex flex-col gap-2 text-body-3 text-grey-8">
+        <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-4">{title}</h2>
+        <p className="text-body-4 text-grey-7 mb-4">{church.name} 홈페이지를 방문해주셔서 감사합니다.</p>
+        <div className="w-12 h-px bg-grey-3 mb-6" />
+
+        <div className="flex flex-col gap-2 text-body-3 text-bluegrey-9">
           {paragraphs.map((text, i) => (
             <p key={i}>
               {text.split("\n").map((line, j) => (
