@@ -48,7 +48,7 @@ export default function FloorGuide() {
                   className={`w-full px-4 py-2 rounded-xl text-body-3 font-semibold text-left transition-colors ${
                     idx === displayIdx
                       ? "bg-primary text-white"
-                      : "text-grey-9 hover:bg-blue-1 hover:text-primary"
+                      : "text-grey-9 hover:text-primary"
                   }`}
                 >
                   {floor}
@@ -62,6 +62,7 @@ export default function FloorGuide() {
                     </div>
                   </div>
                 )}
+                {idx !== church.floorGuide.length - 1 && <div className="bg-grey-2 mx-4" style={{ height: '0.5px' }} />}
               </div>
             );
           })}

@@ -88,13 +88,13 @@ export default function History() {
             position: absolute;
             left: 50%;
             transform: translateX(-50%) translateY(-50%);
-            width: 16px;
-            height: 16px;
-            background: white;
-            border: 3px solid var(--color-blue-7);
+            width: 8px;
+            height: 8px;
+            background: rgba(59, 82, 128);
             border-radius: 50%;
             pointer-events: none;
             z-index: 11;
+            box-shadow: 0 0 0 12px rgba(59, 82, 128, 0.1);
           }
         `}</style>
 

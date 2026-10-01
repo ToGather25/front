@@ -144,17 +144,19 @@ export default function Notice() {
             </div>
 
             {/* 데스크톱 필터 */}
-            <div className="hidden md:flex md:flex-col gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
-              {TABS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => handleTabChange(t)}
-                  className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                    t === tab ? "bg-primary text-white" : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-                  }`}
-                >
-                  {t}
-                </button>
+            <div className="hidden md:flex md:flex-col bg-white border border-bluegrey-2 rounded-[20px] p-5">
+              {TABS.map((t, idx) => (
+                <div key={t}>
+                  <button
+                    onClick={() => handleTabChange(t)}
+                    className={`w-full px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                      t === tab ? "bg-primary text-white" : "text-grey-9 hover:text-primary"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                  {idx !== TABS.length - 1 && <div className="bg-grey-2 mx-4" style={{ height: '0.5px' }} />}
+                </div>
               ))}
             </div>
           </div>

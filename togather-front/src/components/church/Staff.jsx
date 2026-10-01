@@ -97,19 +97,21 @@ export default function Staff() {
             </button>
           ))}
         </div>
-        <div className="hidden md:flex md:flex-col md:w-[300px] shrink-0 gap-1 bg-white border border-bluegrey-2 rounded-[20px] p-5">
-          {STAFF_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              onClick={() => setActiveChip(chip)}
-              className={`px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
-                activeChip === chip
-                  ? "bg-primary text-white"
-                  : "text-grey-9 hover:bg-blue-1 hover:text-primary"
-              }`}
-            >
-              {chip}
-            </button>
+        <div className="hidden md:flex md:flex-col md:w-[300px] shrink-0 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+          {STAFF_CHIPS.map((chip, idx) => (
+            <div key={chip}>
+              <button
+                onClick={() => setActiveChip(chip)}
+                className={`w-full px-4 py-2.5 rounded-xl text-body-3 font-semibold text-left transition-colors ${
+                  activeChip === chip
+                    ? "bg-primary text-white"
+                    : "text-grey-9 hover:text-primary"
+                }`}
+              >
+                {chip}
+              </button>
+              {idx !== STAFF_CHIPS.length - 1 && <div className="bg-grey-2 mx-4" style={{ height: '0.5px' }} />}
+            </div>
           ))}
         </div>
 
