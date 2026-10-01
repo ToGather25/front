@@ -9,11 +9,11 @@ export default function Greeting() {
   const { image: pastorImage } = church.staff.headPastor;
 
   return (
-    <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-start">
+    <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-stretch">
       <div className="flex-1">
         <h2 className="text-sub-tit-1 font-bold text-grey-11 mb-4">{title}</h2>
-        <p className="text-body-4 text-grey-7 mb-4">{church.name} 홈페이지를 방문해주셔서 감사합니다.</p>
-        <div className="w-12 h-px bg-grey-3 mb-6" />
+        <p className="text-body-1 text-primary font-medium">{church.name} 홈페이지를 방문해주셔서 감사합니다.</p>
+        <div className="w-12 h-px bg-grey-3 my-10" />
 
         <div className="flex flex-col gap-2 text-body-3 text-bluegrey-9">
           {paragraphs.map((text, i) => (
@@ -26,31 +26,24 @@ export default function Greeting() {
               ))}
             </p>
           ))}
-          <div className="flex items-center justify-end gap-3 mt-12">
-            <p className="text-body-3 text-grey-7">
-              {signature.church} {signature.title} <strong>{signature.name}</strong>
-            </p>
-            <FallbackImage
-              src={signature.signatureImage}
-              alt="서명"
-              className="h-10 w-auto object-contain"
-              fallback={
-                <ChurchLogo alt="교회 로고" className="h-10 w-auto object-contain opacity-40" />
-              }
-            />
-          </div>
         </div>
       </div>
-      <FallbackImage
-        src={pastorImage}
-        alt="담임목사 사진"
-        className="w-full h-48 md:w-48 md:h-64 rounded-2xl shrink-0 object-cover"
-        fallback={
-          <div className="w-full h-48 md:w-48 md:h-64 bg-grey-3 rounded-2xl shrink-0 flex items-center justify-center">
-            <img src={AvatarIcon} alt="" className="w-12 h-12 opacity-60" />
-          </div>
-        }
-      />
+
+      <div className="flex flex-col gap-4 md:w-48 md:shrink-0">
+        <FallbackImage
+          src={pastorImage}
+          alt="담임목사 사진"
+          className="w-full h-48 md:h-auto md:flex-1 rounded-2xl object-cover"
+          fallback={
+            <div className="w-full h-48 md:h-auto md:flex-1 bg-grey-3 rounded-2xl flex items-center justify-center">
+              <img src={AvatarIcon} alt="" className="w-12 h-12 opacity-60" />
+            </div>
+          }
+        />
+        <p className="text-body-3 text-grey-7 text-right">
+          {signature.church} {signature.title} <strong>{signature.name}</strong>
+        </p>
+      </div>
     </div>
   );
 }
