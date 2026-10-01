@@ -93,6 +93,29 @@ function useMeasuredHeight(ref) {
   return height;
 }
 
+// 메가 메뉴의 흰색 하이라이트 배경 — 가운데서 양옆으로 퍼지듯 열리게, 매번 다른
+// 메뉴로 전환될 때마다(key로 리마운트) 같은 효과가 다시 재생되도록 한다. 마운트된
+// 바로 그 프레임에 scale-x-100을 적용하면 브라우저가 scale-x-0인 프레임을 아예
+// 그리지 않고 건너뛰므로, 한 프레임 쉬었다가 적용해야 확장이 눈에 보인다.
+function ExpandingHighlight({ left, width }) {
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setExpanded(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`absolute bg-white origin-center transition-transform duration-500 ease-out ${
+        expanded ? "scale-x-100" : "scale-x-0"
+      }`}
+      style={{ top: "-1.25rem", bottom: "-1.25rem", left, width }}
+    />
+  );
+}
+
 // ─────────────────────────────────────────────────────
 // Desktop Header (md 이상에서만 표시)
 // ─────────────────────────────────────────────────────
@@ -102,11 +125,43 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
   const NAV_ITEMS = church.nav;
   const menuItems = NAV_ITEMS.filter((item) => item.children);
   const [openMenu, setOpenMenu] = useState(null);
+  // 패널이 닫힐 때도 close 애니메이션이 끝까지 재생되도록, 실제 렌더링에 쓰는
+  // displayMenu는 openMenu가 null이 된 뒤에도 애니메이션 시간만큼 지연 유지한다.
+  const [displayMenu, setDisplayMenu] = useState(null);
+  const closeTimeoutRef = useRef(null);
+  const displayMenuRef = useRef(null);
   const rowRef = useRef(null);
   const itemRefs = useRef({});
   const colRefs = useRef({});
+  const panelContentRef = useRef(null);
   const [colCenters, setColCenters] = useState({});
   const [panelHeight, setPanelHeight] = useState(0);
+  const [wrapHeight, setWrapHeight] = useState(0);
+
+  useEffect(() => {
+    displayMenuRef.current = displayMenu;
+  }, [displayMenu]);
+
+  useEffect(() => {
+    if (openMenu) {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      // 완전히 닫혀 있던 상태에서 새로 열 때만 0부터 다시 자라도록 초기화한다 —
+      // 이미 열린 패널에서 다른 메뉴로 바로 넘어갈 때는 기존 높이에서
+      // 자연스럽게 이어서 전환되어야 하므로 건드리지 않는다.
+      if (!displayMenuRef.current) setWrapHeight(0);
+      setDisplayMenu(openMenu);
+    } else if (displayMenuRef.current) {
+      closeTimeoutRef.current = setTimeout(() => {
+        setDisplayMenu(null);
+      }, 450); // 아래 close transition duration과 맞춤
+    }
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, [openMenu]);
 
   // 메가 메뉴 각 열의 중심이 상단 메뉴 항목의 중심과 같은 x축 위치에 오도록, 메뉴
   // 항목의 실제 렌더 위치(중심 좌표)를 측정해둔다. 열의 왼쪽 끝을 메뉴 항목의 왼쪽
@@ -130,17 +185,35 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [openMenu, NAV_ITEMS]);
+  }, [displayMenu, NAV_ITEMS]);
 
   // 각 열은 position:absolute + translateX(-50%)로 중심을 고정하므로 문서 흐름에서
   // 빠진다 — 패널이 가장 긴 열의 높이만큼 자기 높이를 확보하도록 렌더 후 별도로 측정.
   useLayoutEffect(() => {
-    if (!openMenu) return;
+    if (!displayMenu) return;
     const heights = Object.values(colRefs.current)
       .filter(Boolean)
       .map((el) => el.offsetHeight);
     setPanelHeight(heights.length ? Math.max(...heights) : 0);
-  }, [openMenu, colCenters]);
+  }, [displayMenu, colCenters]);
+
+  // 커튼/칠판을 내리듯 패널 전체 높이를 0→실제 높이로 키워서 보여준다 — 내용이
+  // 늘어나 보이지 않도록(overflow:hidden) 실제 콘텐츠 높이를 측정해 그 값으로
+  // height를 트랜지션한다. 완전히 닫힌 상태에서 새로 열 때는 height:0인 프레임이
+  // 실제로 한 번 그려진 뒤에 목표 높이를 적용해야 0→목표 구간이 눈에 보인다 —
+  // 같은 동기 커밋에서 바로 목표 높이를 적용하면 브라우저가 0인 프레임을 아예
+  // 그리지 않아(배치) 트랜지션이 생략된 것처럼 보인다.
+  useLayoutEffect(() => {
+    if (!displayMenu) return;
+    const el = panelContentRef.current;
+    if (!el) return;
+    const target = el.offsetHeight;
+    if (wrapHeight === 0 && openMenu) {
+      requestAnimationFrame(() => setWrapHeight(target));
+    } else {
+      setWrapHeight(target);
+    }
+  }, [displayMenu, panelHeight, colCenters, openMenu, wrapHeight]);
 
   // 메뉴가 열린 채로 스크롤하면 헤더는 translateY로 숨는데 드롭다운 패널은 헤더와
   // 무관하게 별도로 떠 있어서 화면에 그대로 남는다 — 스크롤이 시작되면 닫는다.
@@ -164,13 +237,13 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
     if (effectiveTransparent) {
       return active ? "text-white font-bold" : "text-white hover:text-white/90";
     }
-    return active ? "text-blue-12 font-bold" : "text-grey-10 hover:text-blue-12";
+    return active ? "text-blue-6 font-bold" : "text-grey-10 hover:text-blue-6";
   };
   const navUnderlineCls = (active) => {
     if (effectiveTransparent) {
       return active ? "bg-white" : "bg-transparent group-hover:bg-white/70";
     }
-    return active ? "bg-blue-12" : "bg-transparent group-hover:bg-blue-12";
+    return active ? "bg-blue-6" : "bg-transparent group-hover:bg-blue-6";
   };
 
   const authBtnOutlineCls = effectiveTransparent
@@ -243,9 +316,9 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                         {item.label}
                       </button>
                       <span
-                        className={`absolute bottom-0 -left-7 -right-7 h-0.5 transition-colors ${navUnderlineCls(
-                          openMenu === item.label,
-                        )}`}
+                        className={`absolute bottom-0 -left-7 -right-7 h-0.5 origin-center transition-transform duration-500 ease-out ${
+                          openMenu === item.label ? "scale-x-100" : "scale-x-0"
+                        } ${navUnderlineCls(true)}`}
                       />
                     </>
                   ) : (
@@ -310,17 +383,26 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
         </div>
       </div>
 
-      {openMenu && (
+      {displayMenu && (
         <div
-          className={`absolute left-0 right-0 shadow-xl animate-dropdown-open ${
+          className={`absolute left-0 right-0 shadow-xl overflow-hidden ${
             transparent ? "bg-white/90" : "bg-bluegrey-1"
           }`}
           onMouseLeave={() => setOpenMenu(null)}
           style={{
-            borderBottom: "2px solid var(--color-primary)",
+            height: openMenu ? wrapHeight : 0,
+            // 커튼/칠판을 내리듯: 열릴 땐 묵직하게 내려오다 바닥에서 부드럽게 멈추고,
+            // 닫힐 땐 스르륵 말려 올라가듯 가속한다.
+            transition: openMenu
+              ? "height 950ms cubic-bezier(0.22, 1, 0.36, 1)"
+              : "height 450ms cubic-bezier(0.64, 0, 0.78, 0)",
           }}
         >
-          <div className="max-w-[1440px] mx-auto py-5" style={{ paddingRight: "2rem" }}>
+          <div
+            ref={panelContentRef}
+            className="max-w-[1440px] mx-auto py-5"
+            style={{ paddingRight: "2rem" }}
+          >
             {/* 각 열은 position:absolute + translateX(-50%)로 열의 "중심"을 상위 메뉴
                 항목의 중심(colCenters)에 정확히 맞춘다. 폭이 트랙 크기에 좌우되는
                 grid 대신 이 방식을 쓰는 이유: 하위 항목 중 가장 긴 것이 열 폭을
@@ -339,9 +421,9 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                   (bg-bluegrey-1)으로 깔아두므로 흰색 하이라이트가 항상 도드라진다.
                   이웃 메뉴 중심까지의 절반 지점을 경계로 삼아 폭을 정한다. */}
               {(() => {
-                const activeIndex = menuItems.findIndex((item) => item.label === openMenu);
+                const activeIndex = menuItems.findIndex((item) => item.label === displayMenu);
                 if (activeIndex === -1) return null;
-                const activeCenter = colCenters[openMenu] ?? 0;
+                const activeCenter = colCenters[displayMenu] ?? 0;
                 const prevCenter =
                   activeIndex > 0 ? (colCenters[menuItems[activeIndex - 1].label] ?? null) : null;
                 const nextCenter =
@@ -356,15 +438,10 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                       : 160;
                 const rightGap = nextCenter !== null ? nextCenter - activeCenter : leftGap;
                 return (
-                  <div
-                    aria-hidden="true"
-                    className="absolute bg-white"
-                    style={{
-                      top: "-1.25rem",
-                      bottom: "-1.25rem",
-                      left: activeCenter - leftGap / 2,
-                      width: (leftGap + rightGap) / 2,
-                    }}
+                  <ExpandingHighlight
+                    key={displayMenu}
+                    left={activeCenter - leftGap / 2}
+                    width={(leftGap + rightGap) / 2}
                   />
                 );
               })()}
@@ -383,7 +460,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                       key={child.label}
                       to={child.to}
                       onClick={() => setOpenMenu(null)}
-                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap relative group transition-colors hover:text-blue-12 hover:font-semibold"
+                      className="px-2 py-1.5 text-body-3 text-grey-7 whitespace-nowrap relative group transition-colors hover:text-blue-6 hover:font-semibold"
                     >
                       {child.label}
                       <span className="absolute left-1/2 right-1/2 bottom-0 h-0.5 bg-primary origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />

@@ -28,6 +28,19 @@ export default function SectionDots() {
       const sections = Array.from(document.querySelectorAll(SECTION_SELECTOR));
       if (sections.length === 0) return;
       const scrollPos = window.scrollY + window.innerHeight / 2;
+
+      // 마지막 섹션의 끝 위치 확인
+      const lastSection = sections[sections.length - 1];
+      const lastSectionEnd = lastSection.offsetTop + lastSection.offsetHeight;
+
+      // 푸터 영역(페이지 끝)에 있으면 활성화된 점이 없도록 설정
+      const pageHeight = document.documentElement.scrollHeight;
+      if (window.scrollY + window.innerHeight > pageHeight - 200) {
+        setCurrentIndex(sections.length);
+        setSectionCount(sections.length);
+        return;
+      }
+
       let idx = 0;
       for (let i = 0; i < sections.length; i++) {
         if (sections[i].offsetTop <= scrollPos) idx = i;
@@ -85,36 +98,37 @@ export default function SectionDots() {
 
   if (sectionCount === 0) return null;
 
-  const isLastSection = currentIndex >= sectionCount - 1;
+  const isFooterArea = currentIndex >= sectionCount;
 
-  if (isLastSection) {
-    return (
+  return (
+    <>
+      <div className={`hidden md:flex fixed left-8 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-4 transition-opacity ${
+        currentIndex >= sectionCount ? "opacity-0 pointer-events-none" : "opacity-70 hover:opacity-100"
+      }`}>
+        {Array.from({ length: sectionCount }).map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => scrollToSectionRef(idx)}
+            aria-label={`섹션 ${idx + 1}로 이동`}
+            className={`w-2 h-2 rounded-full transition-all ${
+              currentIndex === idx
+                ? `ring-5 ring-blue-2 ${isDark ? "bg-white" : "bg-primary-darker"}`
+                : "bg-bluegrey-3 hover:bg-grey-6"
+            }`}
+          />
+        ))}
+      </div>
       <button
         type="button"
         onClick={scrollToTop}
         aria-label="맨 위로 이동"
-        className="hidden md:flex fixed right-8 bottom-8 z-40 items-center justify-center transition-all group"
+        className={`hidden md:flex fixed right-8 bottom-20 z-40 items-center justify-center transition-all group ${
+          currentIndex >= sectionCount ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       >
         <img src={floatingDefault} alt="위로" className="w-16 h-16 group-hover:hidden transition-all" />
         <img src={floatingHover} alt="위로" className="w-16 h-16 hidden group-hover:block transition-all" />
       </button>
-    );
-  }
-
-  return (
-    <div className="hidden md:flex fixed left-8 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-4 opacity-70 hover:opacity-100 transition-opacity">
-      {Array.from({ length: sectionCount }).map((_, idx) => (
-        <button
-          key={idx}
-          onClick={() => scrollToSectionRef(idx)}
-          aria-label={`섹션 ${idx + 1}로 이동`}
-          className={`w-2 h-2 rounded-full transition-all ${
-            currentIndex === idx
-              ? `ring-5 ring-blue-2 ${isDark ? "bg-white" : "bg-primary-darker"}`
-              : "bg-bluegrey-3 hover:bg-grey-6"
-          }`}
-        />
-      ))}
-    </div>
+    </>
   );
 }

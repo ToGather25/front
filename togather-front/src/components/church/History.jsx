@@ -121,10 +121,10 @@ export default function History() {
               Math.abs(index - activeIndex) <= 1 ? "opacity-100" : "opacity-40"
             }`}
           >
-            <div className={`flex gap-20 ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}>
+            <div className={`flex gap-50 ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}>
               {/* 이미지 영역 */}
               <div className="flex-1">
-                <div className="w-full h-80 bg-grey-2 rounded-2xl" />
+                <div className="w-full h-80 bg-grey-2 rounded-2xl" style={{ boxShadow: '55px 40px 60px rgba(0, 0, 0, 0.1)' }} />
               </div>
 
               {/* 콘텐츠 */}
@@ -132,11 +132,14 @@ export default function History() {
                 <h3 className="text-headline-3 font-bold text-grey-11 mb-4">{item.era}</h3>
                 <div className="space-y-2">
                   {item.events.map((event, i) => (
-                    <div key={i} className="flex gap-3">
-                      <span className="text-body-4 font-medium text-blue-7 w-20 shrink-0">
+                    <div key={i} className="flex gap-2 items-start">
+                      <span className="text-body-4 font-medium text-bluegrey-9 w-20 shrink-0">
                         {event.date}
                       </span>
-                      <span className="text-body-4 text-grey-8">{event.content}</span>
+                      <span className="text-body-4 font-light text-bluegrey-9 shrink-0">|</span>
+                      <span className="text-body-4 font-light text-bluegrey-9 line-clamp-2 break-words">
+                        {event.content.slice(0, 50)}
+                      </span>
                     </div>
                   ))}
                 </div>

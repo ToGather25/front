@@ -13,7 +13,7 @@ export default function Footer({ isHome = false }) {
   const textColorClass = isHome ? "text-white" : "text-grey-10";
   const linkColorClass = isHome ? "hover:text-white/80" : "hover:text-blue-7";
   const bodyColorClass = isHome ? "text-white/80" : "text-grey-9";
-  const snsBorderClass = isHome ? "border-white/30" : "border-bluegrey-2";
+  const snsBorderClass = isHome ? "border-white/30" : "border-bluegrey-4";
   const snsColorClass = isHome ? "text-white/60 hover:text-white" : "text-grey-7 hover:text-primary";
 
   return (
