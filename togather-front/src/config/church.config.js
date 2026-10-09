@@ -126,6 +126,8 @@ const churchConfig = {
     title: "만민에게\n전파하라!",
     subtitle:
       "또 이르시되 너희는 온 천하에 다니며 만민에게 복음을 전파하라! (막 16:15)",
+    // "nanum-myeongjo" | "cafe24-shiningstar" | "cafe24-ssurround-air"
+    titleFont: "nanum-myeongjo",
   },
 
   // ── 인사말 ────────────────────────────────────────────

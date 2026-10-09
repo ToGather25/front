@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
@@ -7,14 +7,39 @@ import defaultBanner from "@/assets/default_banner.png";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 import IcoClose from "@/assets/icon-svg/popup-close.svg";
 
+// church.config.js의 mainBanner.titleFont 값 → 실제 CSS font-family/weight
+const TITLE_FONTS = {
+  "nanum-myeongjo": { family: "'Nanum Myeongjo', serif", weight: 800 },
+  "cafe24-shiningstar": { family: "'Cafe24 Shiningstar', sans-serif", weight: 400 },
+  "cafe24-ssurround-air": { family: "'Cafe24 Ssurround Air', sans-serif", weight: 400 },
+};
+
 export default function MainBanner() {
   const navigate = useNavigate();
   const { church } = useChurch();
   const { data: profile } = useFetch(() => getChurchProfile(church.id), [church.id], null);
-  const { title, subtitle } = church.mainBanner;
+  const { title, subtitle, titleFont } = church.mainBanner;
+  const titleFontStyle = TITLE_FONTS[titleFont] ?? TITLE_FONTS["nanum-myeongjo"];
   const bgImage = profile?.representativeImageUrl || defaultBanner;
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
+  const [honorBreaks, setHonorBreaks] = useState(true);
+
+  // 제목에 들어간 줄바꿈(\n)은 한 줄로 이어붙였을 때 화면 절반을 넘게
+  // 채우는 경우에만 실제로 반영한다 — 짧은 제목이 의도치 않게 둘로
+  // 쪼개지는 것을 막기 위함.
+  useEffect(() => {
+    const measure = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.font = `${titleFontStyle.weight} 80px ${titleFontStyle.family}`;
+      const singleLineWidth = ctx.measureText(title.replace(/\n/g, " ")).width;
+      setHonorBreaks(singleLineWidth > window.innerWidth / 2);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [title, titleFontStyle]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -73,14 +98,16 @@ export default function MainBanner() {
       <div className="relative h-full max-w-[1400px] mx-auto px-[50px] pt-[240px] flex flex-col justify-center">
         {/* Verse */}
         <p
-          className="m-0 text-white font-semibold leading-[1.12] tracking-[-2px]"
+          className="m-0 text-white leading-[1.12] tracking-[-2px]"
           style={{
+            fontFamily: titleFontStyle.family,
+            fontWeight: titleFontStyle.weight,
             fontSize: "80px",
-            whiteSpace: "pre-line",
+            whiteSpace: honorBreaks ? "pre-line" : "normal",
             textShadow: "0 4px 30px rgba(0,0,0,.35)",
           }}
         >
-          {title}
+          {honorBreaks ? title : title.replace(/\n/g, " ")}
         </p>
 
         {/* Citation */}

@@ -8,6 +8,38 @@
 @import "./styles/tokens.css";
 
 /*
+ * 메인 배너 타이틀 전용 로컬 폰트 3종 — church.config.js의
+ * mainBanner.titleFont 값에 따라 MainBanner.jsx에서 선택 적용된다.
+ */
+@font-face {
+  font-family: "Nanum Myeongjo";
+  src: url("/fonts/nanum-myeongjo/NanumMyeongjoExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cafe24 Shiningstar";
+  src:
+    url("/fonts/cafe24-shiningstar/Cafe24Shiningstar-v2.0.woff2") format("woff2"),
+    url("/fonts/cafe24-shiningstar/Cafe24Shiningstar-v2.0.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cafe24 Ssurround Air";
+  src:
+    url("/fonts/cafe24-ssurround-air/Cafe24SsurroundAir-v1.1.woff2") format("woff2"),
+    url("/fonts/cafe24-ssurround-air/Cafe24SsurroundAir-v1.1.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
  * 헤더 스크롤 숨김/등장 애니메이션이 쓰는 커스텀 프로퍼티를 <length> 타입으로
  * 등록한다. 등록하지 않으면 값이 바뀔 때(예: 89px → 0px) 브라우저가 이를
  * 보간 가능한 길이값이 아니라 불연속적인 문자열 교체로 취급해, 이 값을
@@ -316,6 +348,19 @@
     transition: width 0.3s ease-out;
   }
 
+
+  /*
+   * 주보 썸네일 사이드바: OS 스크롤바는 유휴 상태에서 자동으로 숨어
+   * "항상 보이는 스크롤바" 요구사항을 CSS만으로 보장할 수 없어, 네이티브
+   * 스크롤바는 숨기고 JuboPageSystem에서 위치를 계산한 커스텀 바를 그린다.
+   */
+  .jubo-thumb-scroll {
+    scrollbar-width: none;
+  }
+
+  .jubo-thumb-scroll::-webkit-scrollbar {
+    display: none;
+  }
 
   select {
     appearance: none;
