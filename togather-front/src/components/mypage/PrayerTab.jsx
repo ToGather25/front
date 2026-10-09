@@ -164,7 +164,7 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
                 value={prayerForm.content}
                 onChange={(e) => setPrayerForm((f) => ({ ...f, content: e.target.value }))}
                 placeholder="기도 제목을 간략히 작성해 주세요."
-                rows={4}
+                rows={10}
                 className="w-full border border-grey-4 rounded-lg px-4 py-3 text-body-4 text-grey-10 bg-white outline-none focus:border-primary transition-colors resize-none"
               />
             </div>
