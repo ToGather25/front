@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import { getMySchedules, getMyPrayers, getMyInquiries } from "@/services/myPageService";
+import { DUMMY_MY_SCHEDULES, DUMMY_MY_PRAYERS } from "@/data/dummy/mypage";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import UserBlue from "@/assets/icon-svg/mypage-user-blue.svg";
 import UserWhite from "@/assets/icon-svg/mypage-user-white.svg";
@@ -57,6 +58,10 @@ export default function MyPage() {
   // 각 fetch는 마운트 시 useEffect에서 한 번, "다시 시도" 버튼 클릭 시 한 번 더
   // 호출된다. cancelledRef는 useEffect의 cleanup(언마운트/의존성 변경) 시점에만
   // 넘겨 stale response로 인한 setState를 막고, 재시도 호출에서는 생략한다.
+  //
+  // 일정/기도·상담은 백엔드 API가 아직 준비되지 않아 실패 시 더미 데이터로
+  // 폴백한다 — 백엔드 연동이 완료되면 이 catch 분기를 지우고 setScheduleError/
+  // setPrayerError(true)로 되돌리면 된다.
   function fetchSchedules(cancelledRef) {
     setScheduleError(false);
     return getMySchedules(church.id)
@@ -64,7 +69,7 @@ export default function MyPage() {
         if (!cancelledRef?.current) setSchedules(list);
       })
       .catch(() => {
-        if (!cancelledRef?.current) setScheduleError(true);
+        if (!cancelledRef?.current) setSchedules(DUMMY_MY_SCHEDULES);
       });
   }
 
@@ -75,7 +80,7 @@ export default function MyPage() {
         if (!cancelledRef?.current) setPrayers(list);
       })
       .catch(() => {
-        if (!cancelledRef?.current) setPrayerError(true);
+        if (!cancelledRef?.current) setPrayers(DUMMY_MY_PRAYERS);
       });
   }
 
@@ -136,10 +141,10 @@ export default function MyPage() {
 
         <div className="flex flex-col md:flex-row md:gap-6 md:items-start">
           {/* ── Sidebar ── */}
-          <aside className="md:w-60 md:shrink-0 space-y-3">
-            <div className="bg-white border border-grey-3 rounded-2xl p-5">
+          <aside className="md:w-60 md:shrink-0 space-y-6">
+            <div className="bg-white shadow-[0_0_20px_rgba(0,0,0,0.1)] rounded-2xl p-5">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-grey-5 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
+                <div className="w-11 h-11 rounded-full bg-grey-2 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
                   {(currentUser.name ?? MOCK_USER.name)[0]}
                 </div>
                 <div className="min-w-0">
@@ -147,8 +152,8 @@ export default function MyPage() {
                     {currentUser.name ?? MOCK_USER.name}
                     <span className="font-normal text-body-4 text-grey-7 ml-0.5">님</span>
                   </p>
-                  <p className="text-body-5 text-grey-6 mt-0.5 truncate">
-                    {MOCK_USER.role} · {MOCK_USER.district} · {MOCK_USER.group}
+                  <p className="text-body-5 text-grey-2 mt-0.5 truncate">
+                    <span className="text-primary font-bold pr-2">{MOCK_USER.role}</span> {MOCK_USER.district} · {MOCK_USER.group}
                   </p>
                 </div>
               </div>
@@ -161,20 +166,26 @@ export default function MyPage() {
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-body-4 transition-colors shrink-0 md:w-full whitespace-nowrap ${
                     activeTab === tab.key
-                      ? "bg-primary text-white font-semibold"
-                      : "text-grey-8 hover:bg-grey-2"
+                      ? "bg-grey-1 text-primary font-semibold"
+                      : "text-grey-9 hover:bg-grey-1"
                   }`}
                 >
-                  <img
-                    src={activeTab === tab.key ? tab.iconActive : tab.iconInactive}
-                    className="w-4 h-4 shrink-0"
-                    style={
-                      activeTab === tab.key && tab.key === "dept"
-                        ? { filter: "brightness(0) invert(1)" }
-                        : {}
-                    }
-                    alt=""
-                  />
+                  <span
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                      activeTab === tab.key ? "bg-primary" : "bg-grey-1"
+                    }`}
+                  >
+                    <img
+                      src={activeTab === tab.key ? tab.iconActive : tab.iconInactive}
+                      className="w-4 h-4 shrink-0"
+                      style={
+                        activeTab === tab.key && tab.key === "dept"
+                          ? { filter: "brightness(0) invert(1)" }
+                          : {}
+                      }
+                      alt=""
+                    />
+                  </span>
                   {tab.label}
                 </button>
               ))}

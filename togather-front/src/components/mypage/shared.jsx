@@ -183,12 +183,12 @@ export function StatusBadge({ status }) {
     "답변 완료": "text-green-700 bg-green-50 border border-green-200",
     "답변 대기": "text-amber-600 bg-amber-50 border border-amber-200",
     "진행 중": "text-blue-600 bg-blue-50 border border-blue-200",
-    "참석 예정": "text-teal-700 bg-teal-50 border border-teal-200",
-    미정: "text-grey-6 bg-grey-2 border border-grey-4",
+    "참석 예정": "text-green bg-green/20",
+    미정: "text-blue-6 bg-blue-1",
   };
   return (
     <span
-      className={`text-body-5 rounded-full px-3 py-1 whitespace-nowrap ${styles[status] ?? "text-grey-7 bg-grey-2"}`}
+      className={`text-body-6 font-bold rounded-full px-2.5 py-1 whitespace-nowrap ${styles[status] ?? "text-grey-7 bg-grey-2"}`}
     >
       {status}
     </span>

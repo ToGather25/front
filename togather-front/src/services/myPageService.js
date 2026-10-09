@@ -1,7 +1,7 @@
 import api from "./api";
 
-/** @typedef {{id:number, title:string, date:string, memo:string}} MySchedule */
-/** @typedef {{id:number, type:string, content:string, status:string, createdAt:string}} MyPrayer */
+/** @typedef {{id:number, title:string, date:string, memo:string, status?:string}} MySchedule */
+/** @typedef {{id:number, type:string, title?:string, content:string, status:string, reply?:{author:string, text:string}|null, createdAt:string}} MyPrayer */
 /** @typedef {{id:number, title:string, content:string, status:string, answer:string|null, createdAt:string}} MyInquiry */
 
 /**
@@ -23,6 +23,18 @@ export async function getMySchedules(churchId) {
  */
 export async function addMySchedule(churchId, payload) {
   const res = await api.post(`/my/schedules`, payload);
+  return res.data.data;
+}
+
+/**
+ * 내 일정 수정
+ * @param {string} churchId
+ * @param {number} id
+ * @param {{ title?:string, date?:string, memo?:string }} payload
+ * @returns {Promise<MySchedule>}
+ */
+export async function updateMySchedule(churchId, id, payload) {
+  const res = await api.patch(`/my/schedules/${id}`, payload);
   return res.data.data;
 }
 

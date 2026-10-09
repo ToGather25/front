@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { addMyPrayer } from "@/services/myPageService";
-import { formatDotDate } from "@/utils/date";
-import { StatusBadge, Pagination, ModalOverlay } from "./shared";
+import { Pagination, ModalOverlay } from "./shared";
 
 const PRAYER_PAGE_SIZE = 4;
 const PRAYER_TYPES = ["기도", "상담"];
+
+// ponytail: 백엔드 MyPrayer에 담당 교역자 답변 필드가 아직 없어, 답변 완료 건은
+// 디자인 확인용으로 공통 안내 문구를 보여준다. item.reply가 내려오기 시작하면
+// 이 분기를 지우고 item.reply만 쓰면 된다.
+function getPastorReply(item) {
+  if (item.reply) return item.reply;
+  if (item.status !== "답변 완료") return null;
+  return { author: "담당 교역자", text: "함께 마음 모아 기도하고 있습니다. 조만간 연락드리겠습니다." };
+}
 
 export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
   const { church } = useChurch();
@@ -46,8 +54,8 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
   );
 
   return (
-    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[600px]">
-      <div className="flex items-center justify-between mb-5">
+    <div className="bg-white border border-grey-3 rounded-2xl p-8 flex flex-col min-h-[840px]">
+      <div className="flex items-center justify-between mb-5 shrink-0">
         <h2 className="text-sub-tit-4 font-bold text-grey-11">기도 / 상담 내역</h2>
         <button
           onClick={() => setModal("add-prayer")}
@@ -56,13 +64,15 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
           신청하기
         </button>
       </div>
-      <div className="flex gap-2 mb-5">
+      <div className="flex gap-2 mb-5 shrink-0">
         {["전체", ...PRAYER_TYPES].map((f) => (
           <button
             key={f}
             onClick={() => handlePrayerFilter(f)}
             className={`text-body-5 rounded-full px-4 py-1.5 transition-colors ${
-              prayerFilter === f ? "bg-primary text-white" : "bg-grey-2 text-grey-7 hover:bg-grey-3"
+              prayerFilter === f
+                ? "bg-primary text-white"
+                : "border border-grey-3 text-grey-8 bg-white hover:bg-grey-1"
             }`}
           >
             {f}
@@ -78,35 +88,50 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
         </div>
       ) : (
         <>
-          <div className="space-y-4">
-            {pagedPrayers.map((item) => (
-              <div key={item.id} className="border border-grey-3 rounded-xl p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <span
-                    className={`text-body-5 rounded px-2 py-0.5 ${
-                      item.type === "기도" ? "bg-grey-2 text-grey-7" : "bg-blue-1 text-primary"
-                    }`}
-                  >
-                    {item.type}
-                  </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-body-5 text-grey-6">
-                      {formatDotDate(item.createdAt?.slice(0, 10))}
+          <div className="flex-1 space-y-3">
+            {pagedPrayers.map((item) => {
+              const reply = getPastorReply(item);
+              return (
+                <div
+                  key={item.id}
+                  className={`border border-grey-3 rounded-xl p-5 ${
+                    item.status === "답변 완료" ? "bg-grey-1" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`shrink-0 text-body-6 rounded-lg px-2.5 py-0.5 font-bold ${
+                        item.type === "기도" ? "bg-primary/10 text-primary" : "bg-orange/20 text-orange"
+                      }`}
+                    >
+                      {item.type}
                     </span>
-                    <StatusBadge status={item.status} />
+                    <p className="text-body-4 font-bold text-grey-11">{item.title ?? item.content}</p>
                   </div>
+                  {item.title && <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>}
+                  {reply && (
+                    <div className="mt-3 pt-3 border-t border-grey-2">
+                      <div className="flex items-start gap-2 pl-1">
+                        <span className="text-primary font-bold shrink-0">|</span>
+                        <p className="text-body-5 text-grey-6">
+                          <span className="font-semibold text-grey-8">{reply.author}</span> —{" "}
+                          {reply.text}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <p className="text-body-5 text-grey-7 mt-2">{item.content}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="flex-1" />
-          <Pagination
-            total={filteredPrayers.length}
-            perPage={PRAYER_PAGE_SIZE}
-            current={prayerPage}
-            onChange={setPrayerPage}
-          />
+          <div className="shrink-0">
+            <Pagination
+              total={filteredPrayers.length}
+              perPage={PRAYER_PAGE_SIZE}
+              current={prayerPage}
+              onChange={setPrayerPage}
+            />
+          </div>
         </>
       )}
 
