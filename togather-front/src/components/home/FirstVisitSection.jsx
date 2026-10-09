@@ -11,7 +11,7 @@ const STEPS = [
 export default function FirstVisitSection() {
   return (
     <div
-      className="relative -mx-8 px-8 py-20"
+      className="relative px-8 py-20"
       style={{
         backgroundImage: `url('${defaultBanner}')`,
         backgroundPosition: "center",

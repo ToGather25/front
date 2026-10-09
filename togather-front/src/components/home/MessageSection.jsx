@@ -111,7 +111,7 @@ export default function MessageSection() {
       {/* 본문 - 배경과 overlap */}
       <div className="relative">
         {/* 배경 - 화면 전체 너비, 예배시간 약간 위부터 시작 */}
-        <div className="absolute top-1/3 left-0 right-0 w-screen bg-bluegrey-1 py-45 -mt-12" />
+        <div className="absolute top-1/3 left-0 right-0 bg-bluegrey-1 py-45 -mt-12" />
 
         <div className="px-[180px] flex justify-center relative z-10">
           <div className="w-full flex gap-10 items-end">
