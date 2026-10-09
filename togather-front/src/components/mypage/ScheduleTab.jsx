@@ -63,13 +63,7 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
 
       {loadError ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
-          <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다. 다시 시도해 주세요.</p>
-          <button
-            onClick={onRetry}
-            className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
-          >
-            다시 시도
-          </button>
+          <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다.</p>
         </div>
       ) : (
         <>

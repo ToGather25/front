@@ -71,16 +71,10 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
       </div>
 
       {loadError ? (
-        <div className="flex flex-col items-center justify-center gap-4 py-10 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-body-4 text-grey-7">
-            기도/상담 내역을 불러오지 못했습니다. 다시 시도해 주세요.
+            기도/상담 내역을 불러오지 못했습니다.
           </p>
-          <button
-            onClick={onRetry}
-            className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
-          >
-            다시 시도
-          </button>
         </div>
       ) : (
         <>
@@ -131,7 +125,7 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
                     className={`text-body-4 rounded-full px-5 py-2 transition-colors ${
                       prayerForm.type === t
                         ? "bg-primary text-white"
-                        : "bg-grey-2 text-grey-7 hover:bg-grey-3"
+                        : "bg-bluegrey-2 text-bluegrey-7 hover:bg-bluegrey-3"
                     }`}
                   >
                     {t}
