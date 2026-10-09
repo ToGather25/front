@@ -99,11 +99,14 @@ export default function SectionDots() {
   if (sectionCount === 0) return null;
 
   const isFooterArea = currentIndex >= sectionCount;
+  // 점점점 색 버전: 메인/찾아오시는 길(어두운 배경)은 화이트, 중간 섹션들은
+  // 메인컬러, 푸터 영역은 디폴트 색 + 60% 투명도로 숨기지 않고 보여준다.
+  const dotVariant = isFooterArea ? "footer" : isDark ? "white" : "primary";
 
   return (
     <>
       <div className={`hidden md:flex fixed left-8 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-4 transition-opacity ${
-        currentIndex >= sectionCount ? "opacity-0 pointer-events-none" : "opacity-70 hover:opacity-100"
+        dotVariant === "footer" ? "opacity-60 hover:opacity-100" : "opacity-70 hover:opacity-100"
       }`}>
         {Array.from({ length: sectionCount }).map((_, idx) => (
           <button
@@ -112,8 +115,16 @@ export default function SectionDots() {
             aria-label={`섹션 ${idx + 1}로 이동`}
             className={`w-2 h-2 rounded-full transition-all ${
               currentIndex === idx
-                ? `ring-5 ring-blue-2 ${isDark ? "bg-white" : "bg-primary-darker"}`
-                : "bg-bluegrey-3 hover:bg-grey-6"
+                ? dotVariant === "white"
+                  ? "ring-5 ring-blue-2 bg-white"
+                  : dotVariant === "primary"
+                    ? "ring-5 ring-blue-2 bg-primary"
+                    : "ring-5 ring-blue-2 bg-primary-darker"
+                : dotVariant === "white"
+                  ? "bg-white/40 hover:bg-white/70"
+                  : dotVariant === "primary"
+                    ? "bg-primary/30 hover:bg-primary/60"
+                    : "bg-bluegrey-3 hover:bg-grey-6"
             }`}
           />
         ))}
@@ -122,12 +133,29 @@ export default function SectionDots() {
         type="button"
         onClick={scrollToTop}
         aria-label="맨 위로 이동"
-        className={`hidden md:flex fixed right-8 bottom-20 z-40 items-center justify-center transition-all group ${
+        className={`hidden md:flex fixed right-8 bottom-30 z-40 items-center justify-center transition-all group ${
           currentIndex >= sectionCount ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
+        style={{ animation: "floatBounce 0.8s ease-in-out infinite" }}
       >
-        <img src={floatingDefault} alt="위로" className="w-16 h-16 group-hover:hidden transition-all" />
-        <img src={floatingHover} alt="위로" className="w-16 h-16 hidden group-hover:block transition-all" />
+        <style>{`
+          @keyframes floatBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+          }
+        `}</style>
+        <img
+          src={floatingDefault}
+          alt="위로"
+          className="w-16 h-16 group-hover:hidden transition-all"
+          style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.3))" }}
+        />
+        <img
+          src={floatingHover}
+          alt="위로"
+          className="w-16 h-16 hidden group-hover:block transition-all"
+          style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.3))" }}
+        />
       </button>
     </>
   );
