@@ -39,7 +39,7 @@ export default function BibleSidebar({
         }`}
       >
         {sidebarOpen && (
-          <ChurchLogo className="hidden md:block h-6 w-auto pl-2 object-contain" alt="" />
+          <ChurchLogo className="hidden md:block h-8 w-auto object-contain" alt="" />
         )}
         {/* 모바일에서는 사이드바 폭이 항상 아이콘 레일로 고정돼 토글이 아무 효과가
             없다 — 눌러도 아무 일도 안 일어나는 버튼을 보이지 않게 한다. */}

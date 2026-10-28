@@ -4,7 +4,6 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { getRecentSermons } from "@/services/sermonService";
 import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
 import BtnArrow from "@/assets/icon-svg/btn-arrow.svg";
-import BtnArrow1 from "@/assets/icon-svg/btn-arrow-1.svg";
 
 const FETCH_LIMIT = 50;
 
@@ -105,23 +104,11 @@ export default function WordSermonDetail() {
         {/* 목록으로 버튼 */}
         <button
           onClick={() => navigate("/말씀/설교")}
-          className="flex items-center gap-1.5 text-bluegrey-3 hover:text-primary transition-colors text-body-4 mb-6 group"
+          className="flex items-center gap-3 text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-6 group"
         >
-          <img src={ArrowLeft} alt="" className="w-4 h-4 opacity-30 group-hover:opacity-100 transition-opacity" />
+          <img src={ArrowLeft} alt="" className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
           목록으로
         </button>
-
-        {/* 주보 보기 버튼 */}
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => navigate("/주보")}
-            className="flex items-center gap-2 text-body-4 text-primary hover:text-primary transition-all group"
-          >
-            주보 보기
-            <img src={BtnArrow} alt="" className="w-4 h-4 group-hover:hidden" />
-            <img src={BtnArrow1} alt="" className="w-4 h-4 hidden group-hover:block" />
-          </button>
-        </div>
 
         {/* 영상 플레이어 */}
         <div
@@ -156,8 +143,17 @@ export default function WordSermonDetail() {
 
         {/* 설교 정보 */}
         <div className="flex items-center justify-between mb-6 px-2">
-          <h2 className="text-sub-tit-3 font-bold text-grey-11">{sermon.title}</h2>
-          <p className="text-body-4 text-grey-5">{sermon.sermonDate}</p>
+          <h2 className="text-body-4 text-bluegrey-8">{sermon.title}</h2>
+          {/* 주보 보기 버튼 */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => navigate("/주보")}
+              className="flex items-center gap-2 text-body-4 text-primary hover:text-primary transition-all group"
+            >
+              주보 보기
+              <img src={BtnArrow} alt="" className="w-4 h-4 group-hover:hidden" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
