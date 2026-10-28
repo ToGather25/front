@@ -58,13 +58,13 @@ export default function JuboPage7({ data }) {
                   <div key={title} className="flex gap-2 py-4 text-sm">
                     <div className="font-bold text-grey-12 w-16 shrink-0">{title}</div>
                     <div className="flex-1 flex flex-wrap font-light gap-x-4 gap-y-0.5 text-bluegrey-8">
-                      {items.map((item) => {
+                      {items.map((item, i) => {
                         const [role, name] = item.split("|").map((s) => s.trim());
-                        if (!name) return <span key={item}>{role}</span>;
+                        if (!name) return <span key={i}>{role}</span>;
                         // 찬양팀만 "이름 | 역할"로, 나머지(교역자/장로 등)는 "이름(역할)"로 표기.
                         const label =
                           title === "찬양팀" ? `${name} | ${role}` : `${name}(${role})`;
-                        return <span key={item}>{label}</span>;
+                        return <span key={i}>{label}</span>;
                       })}
                     </div>
                   </div>

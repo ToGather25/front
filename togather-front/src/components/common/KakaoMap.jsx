@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import BubbleLoader from "./BubbleLoader";
+import { fetchKakaoStaticMapDataUrl } from "@/services/kakaoStaticMap";
 
 /**
  * 카카오맵 공통 컴포넌트
@@ -10,14 +12,31 @@ import { useEffect, useRef, useState } from "react";
  * @param {number}  level     - 확대 수준 (기본 4, 낮을수록 확대)
  * @param {boolean} draggable - false이면 드래그/스크롤/더블클릭 비활성화 (기본 true)
  * @param {string}  className - 컨테이너 클래스
+ * @param {boolean} printMode - true면 인터랙티브 지도 대신 정적 이미지를 그린다
+ *   (html2canvas 등으로 캡처할 때 쓴다 — 동적 지도 타일은 CORS 미허용이라 캡처가 안 됨)
  */
-export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false, showControls = true, showInfoWindow = true }) {
+export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false, showControls = true, showInfoWindow = true, printMode = false }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
+  const [staticUrl, setStaticUrl] = useState(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !printMode) return;
+    let cancelled = false;
+    fetchKakaoStaticMapDataUrl(address, { level }).then((url) => {
+      if (cancelled) return;
+      if (url) setStaticUrl(url);
+      else setError("지도를 불러올 수 없습니다.");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [address, level, printMode]);
+
+  useEffect(() => {
+    if (!address || printMode) return;
+
 
     if (!window.kakao || !window.kakao.maps) {
       setError("카카오맵 SDK를 불러올 수 없습니다.");
@@ -80,7 +99,7 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
         console.error("[KakaoMap]", e);
       }
     });
-  }, [address, level, draggable, showTraffic, showControls, showInfoWindow]);
+  }, [address, level, draggable, showTraffic, showControls, showInfoWindow, printMode]);
 
   if (error) {
     return (
@@ -89,6 +108,24 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
         style={style}
       >
         {error}
+      </div>
+    );
+  }
+
+  if (printMode) {
+    if (staticUrl) {
+      return (
+        <img
+          src={staticUrl}
+          alt={address}
+          className={className}
+          style={{ ...style, objectFit: "cover" }}
+        />
+      );
+    }
+    return (
+      <div className={`flex items-center justify-center bg-bluegrey-1 rounded-xl ${className}`} style={style}>
+        <BubbleLoader size="sm" />
       </div>
     );
   }

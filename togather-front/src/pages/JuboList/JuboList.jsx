@@ -6,6 +6,7 @@ import { getJuboIssues } from "@/services/juboService";
 import { getDaysInMonth, getFirstDayOfMonth, toDateKey, parseLocalDate } from "@/utils/date";
 import WordTabBar from "@/components/word/WordTabBar";
 import NumberedPagination from "@/components/common/NumberedPagination";
+import { useJuboPdfDownload } from "@/components/jubo/useJuboPdfDownload";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
 
 const PAGE_SIZE = 8;
@@ -56,6 +57,7 @@ export default function JuboList({ hideHeader = false }) {
   );
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const { PrintArea, download } = useJuboPdfDownload();
 
   const filtered = (issues ?? []).filter(
     (issue) => (issue.sermonTitle ?? '').includes(query) || (issue.verse ?? '').includes(query),
@@ -158,15 +160,16 @@ export default function JuboList({ hideHeader = false }) {
                     </span>
                   </Link>
                   <div className="flex justify-center">
-                    <Link
-                      to={`/주보?issue=${issue.id}&download=1`}
+                    <button
+                      type="button"
+                      onClick={() => download(issue)}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-3xl border border-bluegrey-4 text-body-5 font-semibold text-grey-8 hover:border-blue-6 hover:bg-blue-6 hover:text-white transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
                       </svg>
                       PDF
-                    </Link>
+                    </button>
                   </div>
                   <span className="text-center text-body-5 text-grey-6">{issue.dateLabel}</span>
                 </div>
@@ -182,6 +185,7 @@ export default function JuboList({ hideHeader = false }) {
           </>
         )}
       </div>
+      {PrintArea}
     </div>
   );
 }

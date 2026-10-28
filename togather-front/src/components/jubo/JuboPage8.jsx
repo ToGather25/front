@@ -1,12 +1,15 @@
+import { useContext } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
+import { JuboPrintModeContext } from "./juboPrintMode";
 import locationIcon from "@/assets/icon-svg/footer-location.svg";
 import phoneIcon from "@/assets/icon-svg/footer-phone.svg";
 import mailIcon from "@/assets/icon-svg/footer-email.svg";
 
 export default function JuboPage8({ data }) {
   const { church } = useChurch();
+  const printMode = useContext(JuboPrintModeContext);
   const regular = (church.worshipSchedule?.regular ?? []).filter((s) => !s.name?.includes("학교"));
   const departments = church.worshipSchedule?.departments ?? [];
 
@@ -57,6 +60,7 @@ export default function JuboPage8({ data }) {
                 level={4}
                 draggable={false}
                 showControls={false}
+                printMode={printMode}
                 style={{ width: "100%", height: "100%" }}
               />
             </div>
