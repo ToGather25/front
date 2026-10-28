@@ -5,7 +5,6 @@ import { useFetch } from "@/hooks/useFetch";
 import { getChurchProfile } from "@/services/churchProfileService";
 import defaultBanner from "@/assets/default_banner.png";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
-import IcoClose from "@/assets/icon-svg/popup-close.svg";
 
 // church.config.js의 mainBanner.titleFont 값 → 실제 CSS font-family/weight
 const TITLE_FONTS = {
@@ -95,14 +94,14 @@ export default function MainBanner() {
       />
 
       {/* Content */}
-      <div className="relative h-full max-w-[1400px] mx-auto px-[50px] pt-[240px] flex flex-col justify-center">
+      <div className="relative h-full max-w-[1400px] mx-auto px-10 pt-[240px] flex flex-col justify-center">
         {/* Verse */}
         <p
           className="m-0 text-white leading-[1.12] tracking-[-2px]"
           style={{
             fontFamily: titleFontStyle.family,
             fontWeight: titleFontStyle.weight,
-            fontSize: "80px",
+            fontSize: "72px",
             whiteSpace: honorBreaks ? "pre-line" : "normal",
             textShadow: "0 4px 30px rgba(0,0,0,.35)",
           }}
@@ -112,7 +111,7 @@ export default function MainBanner() {
 
         {/* Citation */}
         <div
-          className="mt-7 text-[19px] leading-[1.7]"
+          className="mt-7 text-sub-tit-5 leading-[1.7]"
           style={{ color: "rgba(255,255,255,.85)", whiteSpace: "pre-line", maxWidth: "720px" }}
         >
           {subtitle}

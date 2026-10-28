@@ -19,8 +19,8 @@ export default function Direction() {
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(26, 36, 57, 0.8)" }} />
 
       {/* 콘텐츠 */}
-      <div className="relative px-[180px] flex justify-center">
-        <div className="w-full flex flex-col gap-16">
+      <div className="relative max-w-[1400px] mx-auto px-8">
+        <div className="flex flex-col gap-16">
           {/* 타이틀 */}
           <div className="text-center">
             <p className="text-pale text-headline-5 font-semibold mb-4">Contact Us</p>

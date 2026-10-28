@@ -100,9 +100,9 @@ export default function MessageSection() {
 
   return (
     <div className="pb-[120px]">
-      <div className="px-[180px] flex justify-center">
+      <div className="max-w-[1400px] mx-auto px-8">
         {/* 타이틀 */}
-        <div className="w-full text-center mb-16">
+        <div className="text-center mb-16">
           <p className="text-pale text-headline-5 font-semibold mb-4">Message</p>
           <h2 className="text-grey-12 text-section-title font-bold">{church.name} 말씀</h2>
         </div>
@@ -113,8 +113,8 @@ export default function MessageSection() {
         {/* 배경 - 화면 전체 너비, 예배시간 약간 위부터 시작 */}
         <div className="absolute top-1/3 left-0 right-0 bg-bluegrey-1 py-45 -mt-12" />
 
-        <div className="px-[180px] flex justify-center relative z-10">
-          <div className="w-full flex gap-10 items-end">
+        <div className="max-w-[1400px] mx-auto px-8 relative z-10">
+          <div className="flex gap-10 items-end">
             {/* 설교 카드 */}
             {loading ? (
               <div className="flex-[1.5] h-[450px] bg-grey-2 rounded-3xl p-[60px] flex items-center justify-center shadow-xl">

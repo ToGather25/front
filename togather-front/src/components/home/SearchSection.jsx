@@ -95,7 +95,7 @@ export default function SearchSection() {
   };
 
   return (
-    <section className="w-full py-[100px] pb-[100px] flex flex-col items-center">
+    <section className="w-full py-[100px] pb-[100px] px-8 flex flex-col items-center">
       <h2 className="text-[38px] font-bold tracking-[-1.2px] text-grey-12 mb-8 text-center leading-[1.3]">
         원하는 기능을 빠르게 검색해보세요
       </h2>

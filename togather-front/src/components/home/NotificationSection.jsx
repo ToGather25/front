@@ -41,8 +41,8 @@ export default function NotificationSection() {
   }, [photos.length]);
 
   return (
-    <div className="pb-[140px] px-[200px] flex justify-center w-full">
-      <div className="w-[1520px]">
+    <div className="pb-[140px] w-full">
+      <div className="max-w-[1520px] mx-auto px-8">
         {/* 타이틀 */}
         <div className="text-center mb-14">
           <p className="text-pale text-headline-5 font-semibold mb-4">Notice</p>
