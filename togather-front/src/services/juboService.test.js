@@ -36,11 +36,11 @@ describe("juboService — 실 API 경로", () => {
     expect(result).toEqual({ issueNo: "제10-7", date: "2026년 2월 15일" });
   });
 
-  it("getWorshipServices는 GET .../worship-services를 호출한다", async () => {
-    api.get.mockResolvedValue({ data: { data: [{ label: "주일 오전예배", time: "오전 9:00" }] } });
+  it("getWorshipServices는 GET .../worship-services를 호출하고 레이블 문자열을 {label,time}으로 감싼다", async () => {
+    api.get.mockResolvedValue({ data: { data: ["주일 오전예배"] } });
     const result = await getWorshipServices("church-1");
     expect(api.get).toHaveBeenCalledWith("/churches/church-1/jubo/worship-services");
-    expect(result).toEqual([{ label: "주일 오전예배", time: "오전 9:00" }]);
+    expect(result).toEqual([{ label: "주일 오전예배", time: "" }]);
   });
 
   it("getWorshipOrder는 serviceType 없이 GET .../worship-order를 호출한다", async () => {

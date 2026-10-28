@@ -9,9 +9,10 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
+// 백엔드 실제 응답 모양 — {category, items}(juboService.getSupport가 title/items로 변환한다).
 const SUPPORT = [
-  { organization: "베트남 | 호치민", target: "선교사님 성함", region: "후원구역명" },
-  { organization: "일본 | 동경", target: "선교사님 성함", region: "후원구역명" },
+  { category: "국내 선교", items: ["베트남 | 호치민", "일본 | 동경"] },
+  { category: "해외 선교", items: ["후원구역명"] },
 ];
 
 describe("Support — 후원", () => {
@@ -22,8 +23,10 @@ describe("Support — 후원", () => {
   it("모든 후원 기관 행을 렌더한다", async () => {
     api.get.mockResolvedValue({ data: { data: SUPPORT } });
     renderWithChurch(<Support />);
-    for (const { organization } of SUPPORT) {
-      expect(await screen.findByText(organization)).toBeInTheDocument();
+    for (const { items } of SUPPORT) {
+      for (const item of items) {
+        expect(await screen.findByText(item)).toBeInTheDocument();
+      }
     }
   });
 

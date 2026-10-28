@@ -68,20 +68,20 @@ export default function JuboPage1({ data }) {
           {/* 표어 - 왼쪽 정렬, 위 아래 rounded 띠 */}
           <div className="flex-1 flex flex-col justify-center gap-2 px-3">
             <div className="inline-flex items-center gap-2 w-fit">
-              <div className="w-1 h-4 bg-primary rounded" />
+              <div className="w-1 h-4 bg-primary/30 rounded" />
               <span className="text-xs text-grey-6 font-semibold">{church.slogan?.year}년 표어</span>
             </div>
 
             {/* 큰 제목 - quote 아이콘 포함 */}
             <div
-              className="relative flex items-center justify-center bg-bluegrey-1 py-15 px-3 mt-2"
+              className="relative flex items-center justify-center bg-bluegrey-1 py-20 px-3 mt-2"
               style={{ borderTopRightRadius: '40px', borderBottomLeftRadius: '40px' }}
             >
-              <img src={quoteLeft} alt="" className="absolute w-10 h-10 flex-shrink-0" style={{ top: '15px', left: '15px' }} />
-              <div className="text-headline-3 font-semibold text-grey-12 text-center leading-snug max-w-[200px] break-words whitespace-pre-wrap" style={{ fontFamily: '"Gowun Batang", serif' }}>
+              <img src={quoteLeft} alt="" className="absolute w-6 h-6 flex-shrink-0" style={{ top: '30px', left: '30px' }} />
+              <div className="text-headline-3 font-semibold text-grey-12 text-center leading-snug max-w-[250px] break-words whitespace-pre-wrap" style={{ fontFamily: '"Gowun Batang", serif' }}>
                 {church.slogan?.title}
               </div>
-              <img src={quoteRight} alt="" className="absolute w-10 h-10 flex-shrink-0" style={{ bottom: '15px', right: '15px' }} />
+              <img src={quoteRight} alt="" className="absolute w-6 h-6 flex-shrink-0" style={{ bottom: '30px', right: '30px' }} />
             </div>
           </div>
 

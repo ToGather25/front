@@ -42,23 +42,21 @@ export default function Support() {
           </button>
         </div>
       ) : Array.isArray(support) && support.length > 0 ? (
-        <table className="w-full text-body-4 mt-1 border-collapse">
-          <thead>
-            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
-              <th className="py-3 px-6 text-grey-7 font-semibold text-center">기관</th>
-              <th className="py-3 px-6 text-grey-7 font-semibold text-center">대상</th>
-              <th className="py-3 px-6 text-grey-7 font-semibold text-center">후원구역</th>
-            </tr>
-          </thead>
-          <tbody>
-            {support.map(({ organization, target, region }, i) => (
-              <tr key={i} className="border-b border-grey-3 last:border-b-0">
-                <td className="py-5 px-6 text-grey-9 text-center">{organization}</td>
-                <td className="py-5 px-6 text-grey-7 text-center">{target}</td>
-                <td className="py-5 px-6 text-grey-7 text-center">{region}</td>
+        <table className="w-full text-caption mt-1">
+          {support.map(({ title, items }) => (
+            <tbody key={title}>
+              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+                <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
+                  {title}
+                </td>
               </tr>
-            ))}
-          </tbody>
+              {items.map((item, i) => (
+                <tr key={i} className="border-b border-grey-3">
+                  <td className="py-3 px-4 text-grey-7">{item}</td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
         </table>
       ) : (
         <p className="text-center text-caption text-grey-5 py-10">후원 기관 정보를 불러올 수 없습니다.</p>

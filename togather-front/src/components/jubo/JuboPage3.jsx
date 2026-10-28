@@ -1,64 +1,67 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import logo from "@/assets/icons/옥길교회_logo.png";
+import { useFetch } from "@/hooks/useFetch";
+import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
+import {
+  JuboBookHeader,
+  JuboBookFooter,
+  JuboSectionTitle,
+  JuboGreyBox,
+  JuboOrderList,
+} from "./shared";
 
 export default function JuboPage3({ data }) {
   const { church } = useChurch();
+  const { data: services = [], loading: servicesLoading } = useFetch(
+    () => getWorshipServices(church.id),
+    [church.id],
+    [],
+  );
+  const { data: orderMap = {}, loading: orderLoading } = useFetch(
+    () => getWorshipOrder(church.id),
+    [church.id],
+    {},
+  );
+  const loading = servicesLoading || orderLoading;
+
+  // 대표 예배(JuboPage2)와 새벽기도회(JuboPage4)를 제외한 나머지 예배(오후예배/수요기도회 등).
+  const mainLabel = services[0]?.label;
+  const otherServices = services.filter(
+    (s) => s.label !== mainLabel && !s.label?.includes("새벽"),
+  );
+
+  // "설교"는 예배에 따라 "말씀"으로 불리기도 해서 둘 다 확인한다. "사회"는 현재 백엔드에
+  // 없는 역할이지만, 추가되면 바로 채워지도록 똑같이 찾아둔다 — 없으면 "-".
+  const clean = (r) => r?.replace(/\s/g, "");
+  const findPreacher = (order) =>
+    order?.find((r) => clean(r.role) === "설교" || clean(r.role) === "말씀")?.name ?? "-";
+  const findLeader = (order) => order?.find((r) => clean(r.role) === "사회")?.name ?? "-";
 
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
-      {/* 상단 헤더 */}
-      <div className="flex items-stretch">
-        <div className="flex-3 bg-primary text-white px-4 py-2">
-          <h2 className="text-sm font-bold">봉사 및 예물</h2>
-        </div>
-        <div className="flex-1 bg-blue-3 text-white px-4 py-2 flex items-center justify-center">
-          <span className="text-xs">{data?.dateLabel || ""}</span>
-        </div>
-      </div>
-      {/* 상단: 다음주 봉사 안내 (높이 제한) */}
-      <div className="flex-1 px-6 pt-6 overflow-y-auto min-h-0">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-1 h-4 bg-primary rounded" />
-          <h3 className="text-sm font-bold text-grey-12">다음주 봉사 안내</h3>
-        </div>
+      <JuboBookHeader title="예배 안내" dateLabel={data?.dateLabel} />
 
-        <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[160px] flex items-center">
-          <div className="w-full space-y-1">
-            {church.nurturePrograms?.slice(0, 3).map((program, i) => (
-              <div key={i} className="flex gap-2 text-xs border-b border-grey-2 last:border-0 pb-0.5 last:pb-0">
-                <div className="font-semibold text-grey-12 w-14 shrink-0">{program.title}</div>
-                <div className="text-grey-8 text-xs truncate">{program.schedule}</div>
+      <div className="flex-1 overflow-y-auto min-h-0 px-6 pt-4 flex flex-col gap-4">
+        {!loading && otherServices.length === 0 ? (
+          <p className="text-center text-xs text-grey-6 py-8">정보 없음</p>
+        ) : (
+          otherServices.map((s) => {
+            const order = orderMap[s.label];
+            return (
+              <div key={s.label}>
+                <JuboSectionTitle
+                  title={s.label}
+                  right={`사회: ${findLeader(order)} · 설교: ${findPreacher(order)}`}
+                />
+                <JuboGreyBox>
+                  <JuboOrderList order={order} loading={loading} />
+                </JuboGreyBox>
               </div>
-            ))}
-          </div>
-        </div>
+            );
+          })
+        )}
       </div>
 
-      {/* 하단: 향기로운 예물 (남은 공간 차지) */}
-      <div className="flex-3 px-6 pt-3 overflow-y-auto min-h-0 flex flex-col">
-        <div className="flex-1 min-h-0">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-1 h-4 bg-primary rounded" />
-            <h3 className="text-sm font-bold text-grey-12">향기로운 예물</h3>
-          </div>
-
-          <div className="bg-grey-1 rounded-2 px-3 py-2 min-h-[500px] flex items-center">
-            <div className="w-full space-y-1">
-              {church.districtMeetings?.slice(0, 3).map((district) => (
-                <div key={district.name} className="flex gap-2 text-xs border-b border-grey-2 last:border-0 pb-0.5 last:pb-0">
-                  <div className="font-semibold text-grey-12 w-14 shrink-0">{district.name}</div>
-                  <div className="text-grey-8 text-xs truncate">{district.leader}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 로고 */}
-        <div className="shrink-0 flex justify-center pb-4 pt-2">
-          <img src={church.logoUrl || logo} alt={church.name} className="h-6" />
-        </div>
-      </div>
+      <JuboBookFooter church={church} />
     </div>
   );
 }

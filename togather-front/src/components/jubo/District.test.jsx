@@ -9,10 +9,17 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-const DISTRICTS = [
-  { name: "1구역", location: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
-  { name: "2구역", location: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
+// 백엔드 실제 필드명(zone/place) — juboService.getDistricts가 name/location으로 변환한다.
+const DISTRICTS_API = [
+  { zone: "1구역", place: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
+  { zone: "2구역", place: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
 ];
+const DISTRICTS = DISTRICTS_API.map(({ zone, place, time, leader }) => ({
+  name: zone,
+  location: place,
+  time,
+  leader,
+}));
 
 describe("District — 구역", () => {
   beforeEach(() => {
@@ -20,7 +27,7 @@ describe("District — 구역", () => {
   });
 
   it("모든 구역 행을 렌더한다", async () => {
-    api.get.mockResolvedValue({ data: { data: DISTRICTS } });
+    api.get.mockResolvedValue({ data: { data: DISTRICTS_API } });
     renderWithChurch(<District />);
     for (const { name } of DISTRICTS) {
       expect(await screen.findByText(name)).toBeInTheDocument();
@@ -32,7 +39,7 @@ describe("District — 구역", () => {
     renderWithChurch(<District />);
     expect(await screen.findByText("구역 안내를 불러오지 못했습니다.")).toBeInTheDocument();
 
-    api.get.mockResolvedValue({ data: { data: DISTRICTS } });
+    api.get.mockResolvedValue({ data: { data: DISTRICTS_API } });
     fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
 
     expect(await screen.findByText("1구역")).toBeInTheDocument();

@@ -67,10 +67,10 @@ export async function getJuboIssue(churchId, issueId) {
   };
 }
 
-/** @returns {Promise<WorshipService[]>} */
+/** 백엔드는 레이블 문자열 배열만 반환한다(시간 정보 없음) — WorshipService{label,time} 모양으로 감싼다. @returns {Promise<WorshipService[]>} */
 export async function getWorshipServices(churchId) {
   const res = await api.get(`/churches/${churchId}/jubo/worship-services`);
-  return res.data.data;
+  return (res.data.data ?? []).map((label) => ({ label, time: "" }));
 }
 
 /** serviceType 없이 호출해 전체 맵을 받는다 — 클라이언트에서 라벨로 조회한다 @returns {Promise<WorshipOrderMap>} */
@@ -79,10 +79,22 @@ export async function getWorshipOrder(churchId) {
   return res.data.data;
 }
 
-/** @returns {Promise<VolunteerRow[]>} */
+/** 백엔드는 {weeks:[{label:"이번주"|"다음주", roles:[{role,name}]}]} 모양으로 준다 —
+ * 두 주를 part1/part2로 짝지어 VolunteerRow[] 모양으로 합친다. @returns {Promise<VolunteerRow[]>} */
 export async function getVolunteer(churchId) {
   const res = await api.get(`/churches/${churchId}/jubo/volunteer`);
-  return res.data.data;
+  const weeks = res.data.data?.weeks ?? [];
+  const thisWeek = weeks.find((w) => w.label === "이번주")?.roles ?? [];
+  const nextWeek = weeks.find((w) => w.label === "다음주")?.roles ?? [];
+  const roleOrder = [];
+  [...thisWeek, ...nextWeek].forEach(({ role }) => {
+    if (!roleOrder.includes(role)) roleOrder.push(role);
+  });
+  return roleOrder.map((role) => ({
+    role,
+    part1: thisWeek.find((r) => r.role === role)?.name ?? "",
+    part2: nextWeek.find((r) => r.role === role)?.name ?? "",
+  }));
 }
 
 /** @returns {Promise<TitledGroup[]>} */
@@ -91,22 +103,37 @@ export async function getOffering(churchId) {
   return res.data.data;
 }
 
-/** @returns {Promise<SupportRow[]>} */
+/** 백엔드는 {category, items:[기관명...]} 묶음으로 준다 — offering/news와 같은 TitledGroup 모양이라
+ * title/items로 맞춰 반환한다(과거 문서화됐던 organization/target/region 행과는 다름).
+ * @returns {Promise<TitledGroup[]>} */
 export async function getSupport(churchId) {
   const res = await api.get(`/churches/${churchId}/jubo/support`);
-  return res.data.data;
+  return (res.data.data ?? []).map(({ category, items }) => ({ title: category, items }));
 }
 
-/** @returns {Promise<DistrictRow[]>} */
+/** 백엔드 필드명(zone/place)을 DistrictRow(name/location)로 맞춘다. @returns {Promise<DistrictRow[]>} */
 export async function getDistricts(churchId) {
   const res = await api.get(`/churches/${churchId}/jubo/districts`);
-  return res.data.data;
+  return (res.data.data ?? []).map(({ zone, place, time, leader }) => ({
+    name: zone,
+    location: place,
+    time,
+    leader,
+  }));
 }
 
-/** @returns {Promise<TitledGroup[]>} */
+const MINISTER_GROUP_LABELS = { clergy: "교역자", elders: "장로", praise: "찬양팀" };
+
+/** 백엔드는 {clergy:[...], elders:[...], praise:[...]} 객체로 준다(배열 아님) — 각 항목은
+ * "직책 | 이름" 문자열. 그룹별 한글 라벨을 붙여 TitledGroup[] 모양으로 변환한다.
+ * @returns {Promise<TitledGroup[]>} */
 export async function getMinisters(churchId) {
   const res = await api.get(`/churches/${churchId}/jubo/ministers`);
-  return res.data.data;
+  const data = res.data.data ?? {};
+  return Object.entries(data).map(([key, items]) => ({
+    title: MINISTER_GROUP_LABELS[key] ?? key,
+    items,
+  }));
 }
 
 /** @returns {Promise<CoverContent>} */

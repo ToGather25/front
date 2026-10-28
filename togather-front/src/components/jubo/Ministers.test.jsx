@@ -9,9 +9,15 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
+// 백엔드 실제 응답은 {clergy:[...], elders:[...], praise:[...]} 객체 — juboService.getMinisters가
+// 한글 라벨을 붙여 TitledGroup[]로 변환한다.
+const MINISTERS_API = {
+  clergy: ["담임목사 | 홍길동", "부 목 사 | 이철수"],
+  elders: ["시무장로 | 김영수"],
+};
 const MINISTERS = [
-  { title: "교역자", items: ["담임목사 | 홍길동", "부 목 사 | 이철수"] },
-  { title: "장 로", items: ["시무장로 | 김영수"] },
+  { title: "교역자", items: MINISTERS_API.clergy },
+  { title: "장로", items: MINISTERS_API.elders },
 ];
 
 describe("Ministers — 섬기는 분들", () => {
@@ -20,7 +26,7 @@ describe("Ministers — 섬기는 분들", () => {
   });
 
   it("모든 그룹 제목과 항목을 렌더하고 교적부로 링크한다", async () => {
-    api.get.mockResolvedValue({ data: { data: MINISTERS } });
+    api.get.mockResolvedValue({ data: { data: MINISTERS_API } });
     renderWithChurch(<Ministers />, { withRouter: true });
 
     for (const { title } of MINISTERS) {
@@ -37,7 +43,7 @@ describe("Ministers — 섬기는 분들", () => {
       await screen.findByText("섬기는 분들 정보를 불러오지 못했습니다."),
     ).toBeInTheDocument();
 
-    api.get.mockResolvedValue({ data: { data: MINISTERS } });
+    api.get.mockResolvedValue({ data: { data: MINISTERS_API } });
     fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
 
     expect(await screen.findByText("교역자")).toBeInTheDocument();

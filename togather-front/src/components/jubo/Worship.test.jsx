@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent, within } from "@testing-library/react";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import Worship from "./Worship";
 
@@ -9,10 +9,8 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-const SERVICES = [
-  { label: "주일 오전예배", time: "오전 9:00" },
-  { label: "수요예배", time: "오전 11:00" },
-];
+// 백엔드는 레이블 문자열만 준다(시간 정보 없음) — juboService.getWorshipServices가 {label,time:""}로 감싼다.
+const SERVICES = ["주일 오전예배", "수요예배"];
 const ORDER_MAP = {
   "주일 오전예배": [{ role: "예배 부름", name: "성가대" }],
   수요예배: [{ role: "말씀", name: "김영수 목사" }],
@@ -45,11 +43,12 @@ describe("Worship — 예배", () => {
     expect(screen.queryByText("예배 부름")).not.toBeInTheDocument();
   });
 
-  it("예배 및 모임 안내 패널에 전체 예배 목록과 시간을 렌더한다", async () => {
+  it("예배 및 모임 안내 패널에 전체 예배 목록을 렌더한다", async () => {
     renderWithChurch(<Worship />);
     await screen.findByText("예배 부름");
-    expect(screen.getByText("오전 9:00")).toBeInTheDocument();
-    expect(screen.getByText("오전 11:00")).toBeInTheDocument();
+    const panel = screen.getByText("예배 및 모임 안내").closest("div");
+    expect(within(panel).getByText("주일 오전예배")).toBeInTheDocument();
+    expect(within(panel).getByText("수요예배")).toBeInTheDocument();
   });
 
   it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
