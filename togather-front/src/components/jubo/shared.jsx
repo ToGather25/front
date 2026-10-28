@@ -1,7 +1,9 @@
+import { useContext } from "react";
 import { Link } from "react-router";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import logoFallback from "@/assets/icons/옥길교회_logo.png";
 import { BOOK_ABBREV } from "@/config/bible.config";
+import { JuboPrintModeContext } from "./juboPrintMode";
 
 // JuboPageSystem(북뷰, JuboPage2~8)의 공통 조각 — 상단 타이틀바/날짜, 섹션 소제목,
 // 회색 박스, 예배 순서(역할/담당자) 리스트, 하단 로고. Figma 디자인의 반복 패턴을 공유한다.
@@ -109,6 +111,7 @@ function parseScriptureRef(text) {
 /** 역할/담당자 쌍 리스트(예배 순서, 새벽기도회 순서 등). "성경봉독" 행의 담당자 텍스트는
  * 해당 구절로 바로 이동하는 링크로 렌더한다. */
 export function JuboOrderList({ order, loading, emptyText = "정보 없음" }) {
+  const printMode = useContext(JuboPrintModeContext);
   if (loading) {
     return (
       <div className="flex justify-center py-6">
@@ -131,7 +134,7 @@ export function JuboOrderList({ order, loading, emptyText = "정보 없음" }) {
             >
               {role}
             </div>
-            {scripture ? (
+            {scripture && !printMode ? (
               <Link
                 to="/말씀/읽기"
                 state={scripture}

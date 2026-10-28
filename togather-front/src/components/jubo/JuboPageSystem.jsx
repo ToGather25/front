@@ -1,26 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import JuboPage1 from "./JuboPage1";
-import JuboPage2 from "./JuboPage2";
-import JuboPage3 from "./JuboPage3";
-import JuboPage4 from "./JuboPage4";
-import JuboPage5 from "./JuboPage5";
-import JuboPage6 from "./JuboPage6";
-import JuboPage7 from "./JuboPage7";
-import JuboPage8 from "./JuboPage8";
+import { JUBO_PAGES } from "./juboPages";
 
 // 커스텀 스크롤바 트랙 위아래 여백(px) — 배경 가장자리에서 떨어뜨리는 용도.
 const THUMB_TRACK_INSET = 12;
 
-const PAGES = [
-  { id: "page1", title: "주보", Component: JuboPage1 },
-  { id: "page2", title: "예배 안내", Component: JuboPage2 },
-  { id: "page3", title: "오후·수요예배", Component: JuboPage3 },
-  { id: "page4", title: "새벽기도·교회소식", Component: JuboPage4 },
-  { id: "page5", title: "예물·기도·봉사안내", Component: JuboPage5 },
-  { id: "page6", title: "구역·주차안내", Component: JuboPage6 },
-  { id: "page7", title: "후원·섬기는분들", Component: JuboPage7 },
-  { id: "page8", title: "교회 안내", Component: JuboPage8 },
-];
+const PAGES = JUBO_PAGES;
 
 export default function JuboPageSystem({ issue, onDownloadPdf }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -176,18 +160,6 @@ export default function JuboPageSystem({ issue, onDownloadPdf }) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* PDF 다운로드용 숨겨진 영역 */}
-      <div
-        className="jubo-print-wrapper-all"
-        style={{ display: "none", position: "absolute", left: "-9999px" }}
-      >
-        {PAGES.map((page) => (
-          <div key={page.id}>
-            <page.Component data={issue} />
-          </div>
-        ))}
       </div>
     </div>
   );
