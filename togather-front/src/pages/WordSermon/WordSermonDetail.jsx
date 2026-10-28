@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-import { getSermonDetail, searchSermons } from "@/services/sermonService";
+import { getRecentSermons } from "@/services/sermonService";
 import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
 import BtnArrow from "@/assets/icon-svg/btn-arrow.svg";
 import BtnArrow1 from "@/assets/icon-svg/btn-arrow-1.svg";
 
-const NEIGHBOR_FETCH_SIZE = 50;
+const FETCH_LIMIT = 50;
 
 // 테스트용 mock 데이터
 const MOCK_SERMON = {
@@ -17,7 +17,7 @@ const MOCK_SERMON = {
 };
 
 export default function WordSermonDetail() {
-  const { id } = useParams();
+  const { id: videoId } = useParams();
   const navigate = useNavigate();
   const { church } = useChurch();
   const [sermon, setSermon] = useState(undefined); // undefined=로딩중, null=없음
@@ -26,30 +26,40 @@ export default function WordSermonDetail() {
   useEffect(() => {
     let cancelled = false;
     setSermon(undefined);
-    void Promise.allSettled([
-      getSermonDetail(church.id, id),
-      searchSermons(church.id, { page: 1, size: NEIGHBOR_FETCH_SIZE }),
-    ]).then(([detailResult, neighborsResult]) => {
-      if (cancelled) return;
-      if (detailResult.status === "rejected") {
-        console.error("[WordSermonDetail] 설교 상세 조회 실패:", detailResult.reason);
-        // 테스트 모드: mock 데이터 사용 (URL에 test 파라미터가 있을 때)
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("test") === "true") {
-          setSermon(MOCK_SERMON);
-          setNeighbors([]);
+    // 상세 전용 조회 API가 없다 — 유튜브 채널 최근 업로드 목록(영상ID/제목/날짜/썸네일
+    // 전부 포함) 안에서 같은 videoId를 찾는다. 이전/다음도 이 목록 순서(최신순) 그대로 쓴다.
+    getRecentSermons(church.id, { limit: FETCH_LIMIT })
+      .then((list) => {
+        if (cancelled) return;
+        const found = list.find((s) => s.videoId === videoId);
+        if (!found) {
+          // 테스트 모드: mock 데이터 사용 (URL에 test 파라미터가 있을 때)
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("test") === "true") {
+            setSermon(MOCK_SERMON);
+            setNeighbors([]);
+            return;
+          }
+          setSermon(null);
           return;
         }
+        setSermon({
+          id: found.videoId,
+          title: found.title,
+          sermonDate: found.date,
+          youtubeVideoId: found.videoId,
+        });
+        setNeighbors(list);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("[WordSermonDetail] 설교 목록 조회 실패:", err);
         setSermon(null);
-        return;
-      }
-      setSermon(detailResult.value);
-      setNeighbors(neighborsResult.status === "fulfilled" ? neighborsResult.value.sermons : []);
-    });
+      });
     return () => {
       cancelled = true;
     };
-  }, [church.id, id]);
+  }, [church.id, videoId]);
 
   if (sermon === undefined) {
     return (
@@ -77,7 +87,7 @@ export default function WordSermonDetail() {
   }
 
   // 이전/다음 설교 (검색 결과 순서 기준 — 최신순으로 조회되므로 다음 인덱스가 더 과거)
-  const currentIdx = neighbors.findIndex((s) => s.id === sermon.id);
+  const currentIdx = neighbors.findIndex((s) => s.videoId === sermon.id);
   const prev = currentIdx === -1 ? null : (neighbors[currentIdx + 1] ?? null);
   const next = currentIdx === -1 ? null : (neighbors[currentIdx - 1] ?? null);
 

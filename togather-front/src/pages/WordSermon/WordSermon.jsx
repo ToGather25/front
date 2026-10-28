@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import WorshipInfo from "@/components/church/WorshipInfo";
 import JuboList from "@/pages/JuboList/JuboList";
 import IcoSearch from "@/assets/icon-svg/search-black.svg";
-import { searchSermons } from "@/services/sermonService";
+import { getRecentSermons } from "@/services/sermonService";
 
 const PAGE_SIZE = 12;
+// YouTube playlistItems는 한 번 호출로 최대 50개까지만 주므로, 검색/페이지네이션은
+// 이 안에서 클라이언트 쪽이 담당한다(백엔드가 채널 전체를 훑는 기능 자체가 없음).
+const FETCH_LIMIT = 50;
 
 function SermonThumb() {
   return (
@@ -31,30 +34,21 @@ export default function WordSermon() {
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "예배 목록";
   const { church } = useChurch();
-  const [sermons, setSermons] = useState([]);
-  const [pageInfo, setPageInfo] = useState({ totalPages: 1 });
+  const [allSermons, setAllSermons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const [inputVal, setInputVal] = useState("");
-  const [worshipType, setWorshipType] = useState("");
   const [page, setPage] = useState(1);
-  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(false);
-    searchSermons(church.id, {
-      keyword: query || undefined,
-      worshipType: worshipType || undefined,
-      page,
-      size: PAGE_SIZE,
-    })
-      .then(({ sermons: list, pageInfo: info }) => {
+    getRecentSermons(church.id, { limit: FETCH_LIMIT })
+      .then((list) => {
         if (cancelled) return;
-        setSermons(list);
-        setPageInfo(info);
+        setAllSermons(list);
         setLoading(false);
       })
       .catch((err) => {
@@ -66,9 +60,16 @@ export default function WordSermon() {
     return () => {
       cancelled = true;
     };
-  }, [church.id, query, worshipType, page, reloadToken]);
+  }, [church.id]);
 
-  const totalPages = Math.max(1, pageInfo?.totalPages ?? 1);
+  const sermons = useMemo(() => {
+    if (!query) return allSermons;
+    const q = query.toLowerCase();
+    return allSermons.filter((s) => s.title?.toLowerCase().includes(q));
+  }, [allSermons, query]);
+
+  const totalPages = Math.max(1, Math.ceil(sermons.length / PAGE_SIZE));
+  const pageSermons = sermons.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -121,21 +122,6 @@ export default function WordSermon() {
               </button>
             )}
           </div>
-          <select
-            value={worshipType}
-            onChange={(e) => {
-              setWorshipType(e.target.value);
-              setPage(1);
-            }}
-            className="h-[46px] px-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 bg-white focus:border-blue-6 outline-none transition-all shrink-0"
-          >
-            <option value="">예배 전체</option>
-            {(church.worshipDisplay || []).map((display) => (
-              <option key={display.title} value={display.title}>
-                {display.title}
-              </option>
-            ))}
-          </select>
           <button
             type="submit"
             className="h-[46px] px-5 bg-blue-7 text-white rounded-xl text-body-3 font-medium hover:bg-blue-8 transition-colors shrink-0"
@@ -187,10 +173,10 @@ export default function WordSermon() {
         {!loading && !error && sermons.length > 0 && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
-              {sermons.map((s) => (
+              {pageSermons.map((s) => (
                 <button
-                  key={s.id}
-                  onClick={() => navigate(`/말씀/설교/${s.id}`)}
+                  key={s.videoId}
+                  onClick={() => navigate(`/말씀/설교/${s.videoId}`)}
                   className="group text-left rounded-2xl overflow-hidden hover:shadow-xl transition-all relative cursor-pointer bg-grey-2 flex flex-col"
                   style={{
                     aspectRatio: "9/7",
@@ -200,12 +186,12 @@ export default function WordSermon() {
                   <div
                     className="absolute inset-0"
                     style={{
-                      backgroundImage: s.thumbnail ? `url('${s.thumbnail}')` : undefined,
+                      backgroundImage: s.thumbnailUrl ? `url('${s.thumbnailUrl}')` : undefined,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
                   />
-                  {!s.thumbnail && (
+                  {!s.thumbnailUrl && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <SermonThumb />
                     </div>
@@ -220,7 +206,7 @@ export default function WordSermon() {
                       <span className="hover-underline inline-block">{s.title}</span>
                     </h3>
                     <div className="flex items-center gap-2 text-body-5 text-white/90">
-                      <span>{s.sermonDate}</span>
+                      <span>{s.date}</span>
                     </div>
                   </div>
                 </button>

@@ -116,7 +116,7 @@ export async function getLiveScreen(churchId) {
 }
 
 /**
- * 설교 검색/목록 조회
+ * 설교 검색/목록 조회(관리자 DB 기준 — `WorshipManage.jsx` 설교 관리 전용).
  * @param {string} churchId
  * @param {{ keyword?:string, worshipType?:string, page?:number, size?:number }} params - page는 1-based(프론트 관례)
  * @returns {Promise<{ sermons:object[], pageInfo:object }>}
@@ -134,12 +134,25 @@ export async function searchSermons(churchId, { keyword, worshipType, page = 1, 
 }
 
 /**
- * 설교 상세 조회
+ * 설교 상세 조회(관리자 DB 기준).
  * @param {string} churchId
  * @param {string} publicId
  * @returns {Promise<object|null>}
  */
 export async function getSermonDetail(churchId, publicId) {
   const res = await api.get(`/church/sermons/${publicId}`);
+  return res.data.data;
+}
+
+/**
+ * 최근 설교(유튜브 채널 업로드) 목록 조회 — 백엔드가 교회 유튜브 채널을 직접 조회(키 보호+캐시)한다.
+ * 채널 전체를 페이지로 훑는 기능은 없고 "최근 N개"만 지원(YouTube playlistItems 한 번 호출 상한).
+ * @param {string} churchId
+ * @param {{ limit?:number }} params
+ * @returns {Promise<{videoId:string, title:string, date:string, thumbnailUrl:string}[]>}
+ */
+// oxlint-disable-next-line no-unused-vars
+export async function getRecentSermons(churchId, { limit = 50 } = {}) {
+  const res = await api.get(`/church/broadcast/sermons`, { params: { limit } });
   return res.data.data;
 }
