@@ -4,6 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { getRecentSermons } from "@/services/sermonService";
 import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
 import BtnArrow from "@/assets/icon-svg/btn-arrow.svg";
+import PlayButton from "@/assets/icon-svg/play-button.svg";
 
 const FETCH_LIMIT = 50;
 
@@ -13,6 +14,7 @@ const MOCK_SERMON = {
   title: "믿음으로 사는 삶",
   sermonDate: "2026.09.26",
   youtubeVideoId: "0kpFz0-uGdc",
+  description: "",
 };
 
 export default function WordSermonDetail() {
@@ -21,10 +23,12 @@ export default function WordSermonDetail() {
   const { church } = useChurch();
   const [sermon, setSermon] = useState(undefined); // undefined=로딩중, null=없음
   const [neighbors, setNeighbors] = useState([]);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setSermon(undefined);
+    setPlaying(false);
     // 상세 전용 조회 API가 없다 — 유튜브 채널 최근 업로드 목록(영상ID/제목/날짜/썸네일
     // 전부 포함) 안에서 같은 videoId를 찾는다. 이전/다음도 이 목록 순서(최신순) 그대로 쓴다.
     getRecentSermons(church.id, { limit: FETCH_LIMIT })
@@ -47,6 +51,8 @@ export default function WordSermonDetail() {
           title: found.title,
           sermonDate: found.date,
           youtubeVideoId: found.videoId,
+          thumbnailUrl: found.thumbnailUrl,
+          description: found.description,
         });
         setNeighbors(list);
       })
@@ -116,12 +122,37 @@ export default function WordSermonDetail() {
           style={{ aspectRatio: "16/9" }}
         >
           {sermon.youtubeVideoId ? (
-            <iframe
-              src={`https://www.youtube.com/embed/${sermon.youtubeVideoId}`}
-              title={sermon.title}
-              className="w-full h-full"
-              allowFullScreen
-            />
+            playing ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${sermon.youtubeVideoId}?autoplay=1`}
+                title={sermon.title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; encrypted-media"
+                allowFullScreen
+              />
+            ) : (
+              <button
+                onClick={() => setPlaying(true)}
+                aria-label="영상 재생"
+                className="group relative w-full h-full"
+                style={{
+                  backgroundImage: `url('${sermon.thumbnailUrl || `https://i.ytimg.com/vi/${sermon.youtubeVideoId}/hqdefault.jpg`}')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/70 transition-colors" />
+                <img
+                  src={PlayButton}
+                  alt=""
+                  className="absolute inset-0 m-auto w-16 h-16"
+                />
+                <div className="absolute left-6 bottom-6 text-left">
+                  <p className="text-body-5 text-white/80 mb-1">{sermon.sermonDate}</p>
+                  <p className="text-sub-tit-4 font-bold text-white">{sermon.title}</p>
+                </div>
+              </button>
+            )
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-4">
               <svg className="w-14 h-14 text-grey-5" fill="currentColor" viewBox="0 0 24 24">
@@ -142,16 +173,30 @@ export default function WordSermonDetail() {
         </div>
 
         {/* 설교 정보 */}
-        <div className="flex items-center justify-between mb-6 px-2">
-          <h2 className="text-body-4 text-bluegrey-8">{sermon.title}</h2>
+        <div className="flex justify-between mb-6 px-2">
+          <h2 className="text-body-4 text-bluegrey-8 pt-2">
+            {sermon.description || "설교 설명이 아직 등록되지 않았습니다."}
+          </h2>
           {/* 주보 보기 버튼 */}
           <div className="flex justify-end mb-4">
             <button
               onClick={() => navigate("/주보")}
-              className="flex items-center gap-2 text-body-4 text-primary hover:text-primary transition-all group"
+              className="flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-body-4 text-bluegrey-9 bg-bluegrey-2 hover:text-white hover:bg-blue-6 transition-all group"
             >
-              주보 보기
-              <img src={BtnArrow} alt="" className="w-4 h-4 group-hover:hidden" />
+              예배 주보 보기
+              <svg
+                className="w-5 h-5 text-bluegrey-9 group-hover:text-white transition-colors"
+                viewBox="0 0 36 36"
+                fill="none"
+              >
+                <path
+                  d="M13.5 27L22.5 18L13.5 9"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         </div>
