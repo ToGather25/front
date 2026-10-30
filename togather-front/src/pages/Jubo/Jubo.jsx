@@ -14,7 +14,7 @@ export default function Jubo() {
     [church.id, issueId],
     null,
   );
-  const { PrintArea, download } = useJuboPdfDownload();
+  const { PrintArea, download, isDownloading } = useJuboPdfDownload();
 
   return (
     <div className="w-full bg-grey-1">
@@ -28,7 +28,11 @@ export default function Jubo() {
 
       {/* 메인 컨텐츠 - JuboPageSystem이 서브헤더를 포함 */}
       <div className="bg-white">
-        <JuboPageSystem issue={issue} onDownloadPdf={() => download(issue)} />
+        <JuboPageSystem
+          issue={issue}
+          onDownloadPdf={() => download(issue)}
+          isDownloadingPdf={isDownloading}
+        />
       </div>
 
       {PrintArea}

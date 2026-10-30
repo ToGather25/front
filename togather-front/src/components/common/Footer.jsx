@@ -67,7 +67,7 @@ export default function Footer({ isHome = false }) {
             </div>
           </div>
 
-          <div className="absolute right-40 bottom-8 flex items-center gap-3">
+          <div className="absolute right-15 bottom-8 flex items-center gap-3">
             {church.social?.youtube && (
               <a
                 href={church.social.youtube}
@@ -87,7 +87,7 @@ export default function Footer({ isHome = false }) {
                 aria-label="Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-9 h-9 rounded-2xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
+                className={`w-9 h-9 rounded-xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                   <rect x="3" y="3" width="18" height="18" rx="5" />
@@ -102,7 +102,7 @@ export default function Footer({ isHome = false }) {
                 aria-label="Facebook"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-9 h-9 rounded-2xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
+                className={`w-9 h-9 rounded-xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
               >
                 <span className="text-lg font-bold">f</span>
               </a>

@@ -111,7 +111,7 @@ export default function MainBanner() {
 
         {/* Citation */}
         <div
-          className="mt-7 text-sub-tit-5 leading-[1.7]"
+          className="mt-5 ml-2 text-sub-tit-5 leading-[1.7]"
           style={{ color: "rgba(255,255,255,.85)", whiteSpace: "pre-line", maxWidth: "720px" }}
         >
           {subtitle}
@@ -120,7 +120,7 @@ export default function MainBanner() {
         {/* Search bar */}
         <form
           onSubmit={handleSearch}
-          className={`flex items-center gap-3 px-6 rounded-full transition-all duration-200 mt-10 w-full max-w-[460px]`}
+          className={`flex items-center gap-3 px-6 rounded-full transition-all duration-200 mt-15 w-full max-w-[460px]`}
           style={{
             height: "56px",
             background: focused ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.3)",

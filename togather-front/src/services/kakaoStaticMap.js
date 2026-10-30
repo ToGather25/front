@@ -39,8 +39,7 @@ function blobToDataUrl(blob) {
  * 요청이 실패하면 null을 반환한다 — 호출부가 대체 UI(주소 텍스트 등)를 보여줘야 한다.
  */
 export async function fetchKakaoStaticMapDataUrl(address, { width = 600, height = 400, level = 3 } = {}) {
-  const restKey = import.meta.env.VITE_KAKAO_REST_KEY;
-  if (!restKey || !address) return null;
+  if (!address) return null;
 
   try {
     await waitForKakaoSdk();
@@ -51,9 +50,9 @@ export async function fetchKakaoStaticMapDataUrl(address, { width = 600, height 
       level: String(level),
       markers: `location:${x},${y}|option:false`,
     });
-    const res = await fetch(`https://dapi.kakao.com/v2/maps/staticmap?${params.toString()}`, {
-      headers: { Authorization: `KakaoAK ${restKey}` },
-    });
+    // 카카오 정적 지도 API는 Authorization 헤더가 필요해 브라우저에서 직접 fetch()하면
+    // CORS로 막힌다 — 개발 서버 프록시(vite.config.js의 /kakao-static-map)가 헤더를 붙여 대신 요청한다.
+    const res = await fetch(`/kakao-static-map?${params.toString()}`);
     if (!res.ok) return null;
     return await blobToDataUrl(await res.blob());
   } catch (error) {

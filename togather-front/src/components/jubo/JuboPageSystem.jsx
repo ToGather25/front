@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { JUBO_PAGES } from "./juboPages";
 
 // 커스텀 스크롤바 트랙 위아래 여백(px) — 배경 가장자리에서 떨어뜨리는 용도.
-const THUMB_TRACK_INSET = 12;
+const THUMB_TRACK_INSET = 42;
 
 const PAGES = JUBO_PAGES;
 
-export default function JuboPageSystem({ issue, onDownloadPdf }) {
+export default function JuboPageSystem({ issue, onDownloadPdf, isDownloadingPdf = false }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const thumbScrollRef = useRef(null);
   const [thumbBar, setThumbBar] = useState({ height: 0, top: 0 });
@@ -68,22 +68,35 @@ export default function JuboPageSystem({ issue, onDownloadPdf }) {
 
           <button
             onClick={onDownloadPdf}
-            className="flex items-center justify-center gap-2 text-blue-4 border border-blue-4 rounded-lg px-3 py-1.5 hover:opacity-50 transition-opacity text-body-5 font-medium"
+            disabled={isDownloadingPdf || !issue}
+            aria-busy={isDownloadingPdf}
+            className="flex items-center justify-center gap-2 text-blue-4 border border-blue-4 rounded-lg px-3 py-1.5 hover:opacity-50 transition-opacity text-body-5 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5m-4.5 4.5V3"
-              />
-            </svg>
-            <span>PDF 다운로드</span>
+            {isDownloadingPdf ? (
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5m-4.5 4.5V3"
+                />
+              </svg>
+            )}
+            <span>{isDownloadingPdf ? "PDF 생성 중..." : "PDF 다운로드"}</span>
           </button>
         </div>
       </div>
@@ -107,10 +120,10 @@ export default function JuboPageSystem({ issue, onDownloadPdf }) {
           </div>
 
           {/* 오른쪽 썸네일 사이드바 (스크롤) */}
-          <div className="relative rounded-3 bg-grey-2 h-[892px]" style={{ width: '250px' }}>
+          <div className="relative rounded-3 bg-grey-2 h-[892px] w-[250px] p-10">
             <div
               ref={thumbScrollRef}
-              className="jubo-thumb-scroll flex flex-col gap-6 overflow-y-auto h-full p-10"
+              className="jubo-thumb-scroll flex flex-col gap-6 overflow-y-auto h-full"
             >
               {PAGES.map((page, idx) => {
                 const scale = 160 / 630;

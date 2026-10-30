@@ -1,8 +1,10 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig, lazyPlugins } from "vite-plus";
+import { defineConfig, lazyPlugins, loadEnv } from "vite-plus";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import tailwindcss from "@tailwindcss/vite";
+
+const kakaoRestKey = loadEnv("development", process.cwd(), "VITE_").VITE_KAKAO_REST_KEY;
 
 export default defineConfig({
   fmt: {},
@@ -1342,5 +1344,23 @@ export default defineConfig({
   resolve: {
     // fileURLToPath로 디코드(경로에 비ASCII 문자가 있어도 안전 — .pathname은 퍼센트 인코딩되어 깨짐)
     alias: [{ find: "@", replacement: fileURLToPath(new URL("src", import.meta.url)) }],
+  },
+  server: {
+    proxy: {
+      // 카카오 정적 지도 API는 Authorization 헤더가 필요해서 <img>로 못 불러오고,
+      // 브라우저에서 fetch()로 직접 호출하면 CORS(Access-Control-Allow-Origin 없음)로 막힌다.
+      // 개발 서버가 대신 요청해 헤더를 붙여주면 브라우저는 같은 origin으로만 호출하면 된다.
+      // 프로덕션 빌드에는 이 프록시가 없으니, 배포 환경에서도 쓰려면 백엔드에 동일한 프록시가 필요하다.
+      "/kakao-static-map": {
+        target: "https://dapi.kakao.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/kakao-static-map/, "/v2/maps/staticmap"),
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            proxyReq.setHeader("Authorization", `KakaoAK ${kakaoRestKey}`);
+          });
+        },
+      },
+    },
   },
 });

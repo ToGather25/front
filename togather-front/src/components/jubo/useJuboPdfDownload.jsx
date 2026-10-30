@@ -5,12 +5,13 @@ import { JUBO_PAGES } from "./juboPages";
 import { JuboPrintModeContext } from "./juboPrintMode";
 
 // 화면에 보이는 8페이지를 둘씩 묶어 가로 A4(297x210mm) 한 장에 배치한다.
-// 4장을 양면 인쇄하면 총 2매(앞뒤 4페이지)로 나온다.
+// 4장을 양면 인쇄해 2매로 만든 뒤 가운데서 반으로 접으면 1~8페이지 순서로 읽혀야 하므로,
+// 순서대로 묶지 않고 중철(saddle-stitch) 조판 순서(8|1, 2|7, 6|3, 4|5)로 배치한다.
 const PRINT_ROWS = [
-  [JUBO_PAGES[0], JUBO_PAGES[1]],
-  [JUBO_PAGES[2], JUBO_PAGES[3]],
-  [JUBO_PAGES[4], JUBO_PAGES[5]],
-  [JUBO_PAGES[6], JUBO_PAGES[7]],
+  [JUBO_PAGES[7], JUBO_PAGES[0]], // 1매 앞면: 8 | 1
+  [JUBO_PAGES[1], JUBO_PAGES[6]], // 1매 뒷면: 2 | 7
+  [JUBO_PAGES[5], JUBO_PAGES[2]], // 2매 앞면: 6 | 3
+  [JUBO_PAGES[3], JUBO_PAGES[4]], // 2매 뒷면: 4 | 5
 ];
 
 // JuboPageSystem 뷰어가 각 페이지를 그리는 기준 스테이지 크기(630x892px, A4 비율) —
@@ -36,9 +37,12 @@ async function waitForPrintDataReady(container, timeoutMs = 8000, pollMs = 150) 
  */
 export function useJuboPdfDownload() {
   const [renderIssue, setRenderIssue] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const wrapperRef = useRef(null);
 
   const download = useCallback((issue) => {
+    if (!issue) return;
+    setIsDownloading(true);
     setRenderIssue(issue);
   }, []);
 
@@ -77,7 +81,10 @@ export function useJuboPdfDownload() {
       } catch (error) {
         console.error("PDF 생성 실패:", error);
       } finally {
-        if (!cancelled) setRenderIssue(null);
+        if (!cancelled) {
+          setRenderIssue(null);
+          setIsDownloading(false);
+        }
       }
     })();
 
@@ -107,5 +114,5 @@ export function useJuboPdfDownload() {
     </div>
   ) : null;
 
-  return { PrintArea, download };
+  return { PrintArea, download, isDownloading };
 }

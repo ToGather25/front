@@ -22,6 +22,7 @@ import Mission from "@/pages/Mission/Mission";
 import Nurture from "@/pages/Nurture/Nurture";
 import SundaySchool from "@/pages/SundaySchool/SundaySchool";
 import Gyojeokbu from "@/pages/Gyojeokbu/Gyojeokbu";
+import GyojeokbuDetail from "@/pages/Gyojeokbu/GyojeokbuDetail";
 import WordSermon from "@/pages/WordSermon/WordSermon";
 import WordSermonDetail from "@/pages/WordSermon/WordSermonDetail";
 import Contact from "@/pages/Contact/Contact";
@@ -82,6 +83,7 @@ export const routes = [
       { path: "register/next", element: <SignupNext /> },
       { path: "mypage", element: <MyPage /> },
       { path: "교적부", element: <Gyojeokbu /> },
+      { path: "교적부/:id", element: <GyojeokbuDetail /> },
       { path: "공지사항", element: <Notice /> },
       { path: "문의하기", element: <Contact /> },
       { path: "privacy", element: <Privacy /> },
