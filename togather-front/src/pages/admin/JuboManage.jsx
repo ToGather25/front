@@ -12,6 +12,7 @@ import CoverSectionEditor from "@/components/admin/jubo/CoverSectionEditor";
 import NewsSectionEditor from "@/components/admin/jubo/NewsSectionEditor";
 import PrayerTopicsSectionEditor from "@/components/admin/jubo/PrayerTopicsSectionEditor";
 import SermonNoteSectionEditor from "@/components/admin/jubo/SermonNoteSectionEditor";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 function SectionCard({ title, children }) {
   return (
@@ -90,13 +91,15 @@ export default function JuboManage() {
 
       <div className="bg-white rounded-2xl border border-grey-2 p-5 mb-5">
         <span className="text-body-4 font-semibold text-grey-8">현재 발행된 주보</span>
-        <p className="mt-1 text-body-4 text-grey-9">
-          {infoLoading
-            ? "불러오는 중..."
-            : currentInfo
-              ? `${currentInfo.issueNo} · ${currentInfo.date}`
-              : "발행된 주보가 없습니다."}
-        </p>
+        {infoLoading ? (
+          <div className="mt-2">
+            <BubbleLoader size="sm" />
+          </div>
+        ) : (
+          <p className="mt-1 text-body-4 text-grey-9">
+            {currentInfo ? `${currentInfo.issueNo} · ${currentInfo.date}` : "발행된 주보가 없습니다."}
+          </p>
+        )}
       </div>
 
       {!juboId ? (

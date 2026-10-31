@@ -7,6 +7,8 @@ import { formatKoreanDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
 import RegistrationButton from "@/components/events/RegistrationButton";
 import DefaultBanner from "@/assets/default_banner.png";
+import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -19,8 +21,8 @@ export default function EventDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-6 md:px-8 md:py-10 text-body-3 text-grey-5">
-        불러오는 중...
+      <div className="max-w-2xl mx-auto px-4 py-20 md:px-8 flex justify-center">
+        <BubbleLoader size="sm" />
       </div>
     );
   }
@@ -44,38 +46,38 @@ export default function EventDetail() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-28 md:px-8 md:pt-10 md:pb-10">
-      <div className="flex items-end justify-between mb-4">
-        <h1 className="text-sub-tit-1 font-bold text-grey-11">행사 안내</h1>
-        <Link
-          to="/교회행사"
-          className="pb-3 inline-block text-body-4 text-grey-6 hover:text-blue-7 transition-colors"
-        >
-          ← 목록으로
-        </Link>
-      </div>
-      <hr className="border-bluegrey-2 mb-6" />
+      <Link
+        to="/교회행사"
+        className="flex items-center gap-3 w-fit text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-4 group"
+      >
+        <img src={ArrowLeft} alt="" className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
+        목록으로
+      </Link>
+      <hr className="border-bluegrey-3 mb-6" />
 
-      <div className="mb-2">
-        <p className="text-sub-tit-4 font-bold text-grey-11">{event.title}</p>
-        <p className="text-body-3 text-grey-7 mt-1">{event.location}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <span
+            className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold ${ds.chip}`}
+          >
+            {event.department}
+          </span>
+          <p className="text-sub-tit-4 font-bold text-grey-11 mt-2">{event.title}</p>
+          <p className="text-body-3 text-grey-7 mt-1">{event.location}</p>
+        </div>
+        <div className="flex flex-col items-end text-right gap-1.5 text-body-4 text-grey-7 shrink-0">
+          {event.canRegister && typeof event.capacity === "number" && (
+            <span className="text-body-3 font-bold text-primary">
+              신청 인원 : {event.registeredCount ?? 0} / {event.capacity}명
+            </span>
+          )}
+          <span>날짜 : {formatKoreanDate(event.date)}</span>
+          {event.startTime && (
+            <span>시간 : {formatTimeRange(event.startTime, event.endTime)}</span>
+          )}
+        </div>
       </div>
-      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-body-4 text-grey-7 mb-6">
-        <span
-          className={`inline-flex w-fit px-2 py-0.5 rounded-full text-body-5 font-semibold ${ds.chip}`}
-        >
-          {event.department}
-        </span>
-        <span>
-          행사 날짜 : {formatKoreanDate(event.date)}
-          {event.startTime ? ` · ${formatTimeRange(event.startTime, event.endTime)}` : ""}
-        </span>
-      </div>
-      {event.canRegister && typeof event.capacity === "number" && (
-        <p className="text-body-4 text-grey-7 mb-6">
-          신청 인원 : {event.registeredCount ?? 0} / {event.capacity}명
-        </p>
-      )}
-      <hr className="border-bluegrey-2 mb-6" />
+      <hr className="border-bluegrey-3 mt-6 mb-6" />
 
       {/* Event Image */}
       <img
@@ -98,7 +100,7 @@ export default function EventDetail() {
       {/* 신청 버튼 — 모바일 sticky bar (BottomNav 위, canRegister:false면 미노출) */}
       {regState.status !== "none" && (
         <div
-          className="md:hidden fixed left-0 right-0 z-40 bg-white border-t border-bluegrey-2 px-4 py-3"
+          className="md:hidden fixed left-0 right-0 z-40 bg-white border-t border-bluegrey-3 px-4 py-3"
           style={{ bottom: "calc(64px + env(safe-area-inset-bottom))" }}
         >
           <RegistrationButton event={event} size="lg" className="w-full !px-0" />

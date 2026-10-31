@@ -7,6 +7,7 @@ import {
   createPhoto,
   deletePhoto,
 } from "@/services/galleryService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
@@ -329,7 +330,9 @@ export default function GalleryManage() {
             {deleteError && <p className="text-body-5 text-red-500 mb-3">{deleteError}</p>}
 
             {photoLoading ? (
-              <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+              <div className="flex justify-center py-16">
+          <BubbleLoader size="sm" />
+        </div>
             ) : photoError ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
                 <p className="text-body-4 text-grey-7">불러오지 못했습니다. 다시 시도해 주세요.</p>

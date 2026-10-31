@@ -1,6 +1,7 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboSection2() {
   const { church } = useChurch();
@@ -30,7 +31,9 @@ export default function JuboSection2() {
         </div>
 
         {loading ? (
-          <p className="text-center text-body-4 text-grey-5 py-8">불러오는 중...</p>
+          <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
         ) : error ? (
           <p className="text-center text-body-4 text-grey-5 py-8">예배 정보를 불러오지 못했습니다.</p>
         ) : order.length === 0 ? (

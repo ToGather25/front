@@ -5,6 +5,8 @@ import { useAuth } from "@/contexts/auth";
 import { useFetch } from "@/hooks/useFetch";
 import { getCommunities, getPhotos } from "@/services/galleryService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const PRIMARY_BORDER_COLORS = [
   "#3d5588", // blue-6
@@ -100,19 +102,19 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
       className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 md:p-10"
       onClick={onClose}
     >
-      <button
-        onClick={onClose}
-        aria-label="닫기"
-        className="absolute top-4 right-4 md:top-6 md:right-6 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-      >
-        <CloseIcon />
-      </button>
-
       <div
-        className="bg-white rounded-md w-full max-w-md max-h-[88vh] overflow-hidden flex flex-col shadow-2xl"
+        className="relative bg-white rounded-md w-full max-w-md md:max-w-6xl max-h-[88vh] overflow-hidden flex flex-col md:flex-row shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative w-full aspect-square bg-grey-11 flex items-center justify-center shrink-0">
+        <button
+          onClick={onClose}
+          aria-label="닫기"
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center text-grey-6 hover:text-grey-9 transition-colors"
+        >
+          <CloseIcon />
+        </button>
+
+        <div className="group relative w-full aspect-square md:aspect-auto md:flex-1 md:h-[88vh] bg-grey-11 flex items-center justify-center shrink-0">
           {photo.imageUrl ? (
             <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-contain" />
           ) : (
@@ -126,7 +128,7 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
                 onPrev();
               }}
               aria-label="이전 사진"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronIcon direction="left" className="w-4 h-4" />
             </button>
@@ -138,7 +140,7 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
                 onNext();
               }}
               aria-label="다음 사진"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronIcon direction="right" className="w-4 h-4" />
             </button>
@@ -158,7 +160,7 @@ function PhotoModal({ photo, community, photos, currentIndex, onClose, onPrev, o
           )}
         </div>
 
-        <div className="flex flex-col min-h-0">
+        <div className="flex flex-col min-h-0 md:w-96 shrink-0">
           <div className="flex items-center gap-3 px-5 py-4 border-b border-grey-2 shrink-0">
             <CommunityAvatar community={community} />
             <div className="min-w-0">
@@ -190,31 +192,17 @@ function PhotoGrid({ church, community, onBack }) {
     <div>
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-1 text-body-4 text-grey-6 hover:text-blue-7 transition-colors mb-6"
+        className="flex items-center gap-3 text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-4 group"
       >
-        <ChevronIcon direction="left" className="w-4 h-4" />
-        목록
+        <img src={ArrowLeft} alt="" className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
+        목록으로
       </button>
-
-      <div className="flex items-center gap-6 md:gap-9 pb-6 md:pb-8 border-b border-grey-2">
-        <div
-          style={{ backgroundColor: getPrimaryBorderColor(community.id) }}
-          className="shrink-0 w-28 h-28 md:w-40 md:h-40 rounded-3xl md:rounded-4xl flex items-center justify-center shadow-xl"
-        >
-          <svg className="w-12 h-12 md:w-20 md:h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-          </svg>
-        </div>
-        <div className="min-w-0">
-          <h2 className="text-sub-tit-1 font-bold text-grey-11">{community.name}</h2>
-          {community.desc && (
-            <p className="text-body-2 text-grey-7 mt-2 whitespace-pre-line">{community.desc}</p>
-          )}
-        </div>
-      </div>
+      <div className="border-b border-bluegrey-3 mb-6" />
 
       {loading ? (
-        <div className="text-center py-20 text-body-4 text-bluegrey-5">불러오는 중...</div>
+        <div className="flex justify-center py-20">
+          <BubbleLoader size="sm" />
+        </div>
       ) : photos.length === 0 ? (
         <div className="text-center py-20 text-body-4 text-bluegrey-5">사진이 없습니다.</div>
       ) : (
@@ -314,8 +302,10 @@ export default function Gallery() {
       <div className="relative h-[200px] bg-blue-9 flex items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
-          <h1 className="text-headline-4 font-bold text-white">갤러리</h1>
-          <p className="text-body-3 text-white/80 mt-2">공동체를 선택해 사진을 둘러보세요</p>
+          <h1 className="text-headline-4 font-bold text-white">{selected ? selected.name : "갤러리"}</h1>
+          <p className="text-body-3 text-white/80 mt-2">
+            {selected ? selected.desc : "공동체를 선택해 사진을 둘러보세요"}
+          </p>
         </div>
       </div>
 
@@ -330,7 +320,9 @@ export default function Gallery() {
         {!selected ? (
           /* Community List */
           loading ? (
-            <div className="text-center py-20 text-body-4 text-bluegrey-5">불러오는 중...</div>
+            <div className="flex justify-center py-20">
+          <BubbleLoader size="sm" />
+        </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-12 gap-x-8 justify-items-center">
                 {communities.map((community) => (

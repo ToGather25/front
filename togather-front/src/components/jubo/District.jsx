@@ -2,6 +2,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getDistricts } from "@/services/juboService";
 import { SectionTitle } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function District() {
   const { church } = useChurch();
@@ -31,7 +32,9 @@ export default function District() {
         구역 모임
       </SectionTitle>
       {loading ? (
-        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+        <div className="flex justify-center py-10">
+          <BubbleLoader size="sm" />
+        </div>
       ) : error?.response?.status === 404 ? (
         <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
       ) : error ? (
@@ -44,7 +47,7 @@ export default function District() {
       ) : Array.isArray(districts) && districts.length > 0 ? (
         <table className="w-full text-caption mt-1">
           <thead>
-            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
               <th className="py-2 px-4 text-grey-7 font-semibold text-center">구역</th>
               <th className="py-2 px-4 text-grey-7 font-semibold text-center">모임 장소</th>
               <th className="py-2 px-4 text-grey-7 font-semibold text-center">모임 시간</th>

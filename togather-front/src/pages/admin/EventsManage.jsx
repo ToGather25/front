@@ -12,6 +12,7 @@ import { EVENT_CATEGORIES, getDepartmentStyle } from "@/config/events.config";
 import { formatDotDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary";
@@ -248,7 +249,9 @@ function EventRegistrationsModal({ event, onClose }) {
           </button>
         </div>
         {loading ? (
-          <p className="text-body-4 text-grey-5 text-center py-8">불러오는 중...</p>
+          <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-body-4 text-grey-5 mb-2">신청자 명단을 불러오지 못했습니다.</p>
@@ -431,7 +434,9 @@ export default function EventsManage() {
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+          <div className="flex justify-center py-16">
+          <BubbleLoader size="sm" />
+        </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-grey-5 text-body-3">등록된 행사가 없습니다.</div>
         ) : (

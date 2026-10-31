@@ -2,6 +2,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getSupport } from "@/services/juboService";
 import { SectionTitle } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function Support() {
   const { church } = useChurch();
@@ -31,7 +32,9 @@ export default function Support() {
         우리 교회가 돕고 있는 곳
       </SectionTitle>
       {loading ? (
-        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+        <div className="flex justify-center py-10">
+          <BubbleLoader size="sm" />
+        </div>
       ) : error?.response?.status === 404 ? (
         <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
       ) : error ? (
@@ -45,7 +48,7 @@ export default function Support() {
         <table className="w-full text-caption mt-1">
           {support.map(({ title, items }) => (
             <tbody key={title}>
-              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
                 <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
                   {title}
                 </td>

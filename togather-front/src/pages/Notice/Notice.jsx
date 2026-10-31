@@ -5,6 +5,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import NumberedPagination from "@/components/common/NumberedPagination";
+import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
 
 const TABS = ["전체", "공지", "행사", "소식"];
 
@@ -124,7 +125,7 @@ export default function Notice() {
                   setClientPage(1);
                 }}
                 placeholder="제목 검색"
-                className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all group"
+                className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-3 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all group"
               />
             </div>
 
@@ -135,7 +136,7 @@ export default function Notice() {
                   key={t}
                   onClick={() => handleTabChange(t)}
                   className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
-                    t === tab ? "bg-primary text-white" : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
+                    t === tab ? "bg-primary text-white" : "border border-bluegrey-3 text-grey-8 hover:border-blue-5 hover:text-primary"
                   }`}
                 >
                   {t}
@@ -144,7 +145,7 @@ export default function Notice() {
             </div>
 
             {/* 데스크톱 필터 */}
-            <div className="hidden md:flex md:flex-col bg-white border border-bluegrey-2 rounded-[20px] p-5">
+            <div className="hidden md:flex md:flex-col bg-white border border-bluegrey-3 rounded-[20px] p-5">
               {TABS.map((t, idx) => (
                 <div key={t}>
                   <button
@@ -166,42 +167,45 @@ export default function Notice() {
               {/* 목록 or 상세 */}
               {selected ? (
                 /* 상세 */
-                <div className="border border-grey-3 rounded-2xl overflow-hidden">
-                  {/* 상세 헤더 */}
-                  <div className="border-b border-grey-3 px-8 py-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      {selected.featured && <IconPin />}
-                      <span
-                        className="text-body-5 font-bold px-1 py-1 rounded-md"
-                        style={TAG_STYLES[selected.type] ?? TAG_STYLES["공지"]}
-                      >
-                        {selected.type}
-                      </span>
+                <div>
+                  {/* 목록으로 버튼 */}
+                  <button
+                    onClick={() => {
+                      setSelected(null);
+                      setSearchParams({});
+                    }}
+                    className="flex items-center gap-3 text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-4 group"
+                  >
+                    <img src={ArrowLeft} alt="" className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
+                    목록으로
+                  </button>
+                  <div className="border-b border-bluegrey-3 mb-6" />
+
+                  <div className="border border-grey-3 rounded-2xl overflow-hidden">
+                    {/* 상세 헤더 */}
+                    <div className="border-b border-grey-3 px-8 py-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        {selected.featured && <IconPin />}
+                        <span
+                          className="text-body-5 font-bold px-1 py-1 rounded-md"
+                          style={TAG_STYLES[selected.type] ?? TAG_STYLES["공지"]}
+                        >
+                          {selected.type}
+                        </span>
+                      </div>
+                      <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">{selected.title}</h2>
+                      <div className="flex items-center gap-1 text-body-5 text-grey-6">
+                        <span>{selected.author}</span>
+                        <span>|</span>
+                        <span>{formatDate(selected.date)}</span>
+                      </div>
                     </div>
-                    <h2 className="text-sub-tit-3 font-bold text-grey-11 mb-3">{selected.title}</h2>
-                    <div className="flex items-center gap-1 text-body-5 text-grey-6">
-                      <span>{selected.author}</span>
-                      <span>|</span>
-                      <span>{formatDate(selected.date)}</span>
+                    {/* 본문 */}
+                    <div className="px-8 py-8 min-h-[150px]">
+                      <p className="text-body-3 text-grey-9 leading-relaxed whitespace-pre-wrap">
+                        {selected.body}
+                      </p>
                     </div>
-                  </div>
-                  {/* 본문 */}
-                  <div className="px-8 py-8 min-h-[150px]">
-                    <p className="text-body-3 text-grey-9 leading-relaxed whitespace-pre-wrap">
-                      {selected.body}
-                    </p>
-                  </div>
-                  {/* 하단 */}
-                  <div className="border-t border-grey-3 px-8 py-4 flex justify-end">
-                    <button
-                      onClick={() => {
-                        setSelected(null);
-                        setSearchParams({});
-                      }}
-                      className="border border-grey-4 text-grey-7 rounded-full px-6 py-2 text-body-4 hover:bg-grey-1 transition-colors"
-                    >
-                      목록으로
-                    </button>
                   </div>
                 </div>
               ) : (

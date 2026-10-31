@@ -9,6 +9,7 @@ import {
   startBroadcast,
   endBroadcast,
 } from "@/services/sermonService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 // 관리자 목록은 페이지네이션 UI 없이 전체를 한 번에 보여준다 — 교회 한 곳의
 // 설교 수가 이 상한을 넘으면 다시 짚어볼 필요가 있다(갤러리 사이클과 동일한
@@ -426,7 +427,9 @@ export default function WorshipManage() {
           <span className="text-center">관리</span>
         </div>
         {loading ? (
-          <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+          <div className="flex justify-center py-16">
+          <BubbleLoader size="sm" />
+        </div>
         ) : loadError ? (
           <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
             <p>설교 목록을 불러오지 못했습니다. 다시 시도해 주세요.</p>

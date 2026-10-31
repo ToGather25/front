@@ -3,6 +3,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getMinisters } from "@/services/juboService";
 import { SectionTitle } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function Ministers() {
   const { church } = useChurch();
@@ -33,7 +34,9 @@ export default function Ministers() {
         섬기는 분들
       </SectionTitle>
       {loading ? (
-        <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+        <div className="flex justify-center py-10">
+          <BubbleLoader size="sm" />
+        </div>
       ) : error?.response?.status === 404 ? (
         <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
       ) : error ? (
@@ -55,7 +58,7 @@ export default function Ministers() {
                     <Link
                       key={item}
                       to="/교적부"
-                      className="group flex items-center gap-2.5 p-3 rounded-xl border border-bluegrey-2 bg-white hover:border-primary hover:bg-blue-1 transition-all print:pointer-events-none"
+                      className="group flex items-center gap-2.5 p-3 rounded-xl border border-bluegrey-3 bg-white hover:border-primary hover:bg-blue-1 transition-all print:pointer-events-none"
                     >
                       <div className="w-8 h-8 rounded-full bg-bluegrey-2 group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
                         <svg

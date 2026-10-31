@@ -21,11 +21,11 @@ const STAGE_WIDTH = 630;
 const STAGE_HEIGHT = 892;
 
 /** 인쇄 영역 각 페이지가 자체 useFetch로 불러오는 데이터가 끝날 때까지 기다린다 —
- * 캡처 시점에 로딩 스피너(BubbleLoader, `.bubble`)가 떠 있으면 그대로 캡처돼버린다.
+ * 캡처 시점에 로딩 스피너(BubbleLoader, `.bubble-spinner`)가 떠 있으면 그대로 캡처돼버린다.
  * 타임아웃이 지나면 로딩 중이어도 일단 진행한다(데이터가 영영 안 끝나는 경우 대비). */
 async function waitForPrintDataReady(container, timeoutMs = 8000, pollMs = 150) {
   const start = Date.now();
-  while (container.querySelector(".bubble") && Date.now() - start < timeoutMs) {
+  while (container.querySelector(".bubble-spinner") && Date.now() - start < timeoutMs) {
     await new Promise((resolve) => setTimeout(resolve, pollMs));
   }
 }

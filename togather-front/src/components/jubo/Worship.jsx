@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function Worship() {
   const { church } = useChurch();
@@ -30,9 +31,9 @@ export default function Worship() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row border border-bluegrey-2 rounded-xl overflow-hidden">
+    <div className="flex flex-col md:flex-row border border-bluegrey-3 rounded-xl overflow-hidden">
       {/* 사이드바 */}
-      <div className="md:w-36 md:shrink-0 border-b md:border-b-0 md:border-r border-bluegrey-2 bg-bluegrey-1 py-3 flex md:flex-col overflow-x-auto">
+      <div className="md:w-36 md:shrink-0 border-b md:border-b-0 md:border-r border-bluegrey-3 bg-bluegrey-1 py-3 flex md:flex-col overflow-x-auto">
         {services.map(({ label }) => (
           <button
             key={label}
@@ -56,7 +57,9 @@ export default function Worship() {
         </div>
         <div className="border-t border-grey-11 mb-1" />
         {loading ? (
-          <p className="text-center text-caption text-grey-5 py-10">불러오는 중...</p>
+          <div className="flex justify-center py-10">
+          <BubbleLoader size="sm" />
+        </div>
         ) : servicesError?.response?.status === 404 || orderError?.response?.status === 404 ? (
           <p className="text-center text-caption text-grey-5 py-10">아직 발행된 주보가 없습니다.</p>
         ) : error ? (
@@ -71,7 +74,7 @@ export default function Worship() {
         ) : (
           <table className="w-full text-caption">
             <thead>
-              <tr className="border-b border-bluegrey-2">
+              <tr className="border-b border-bluegrey-3">
                 <th className="text-left py-2.5 px-3 text-grey-7 font-semibold w-1/3">역할</th>
                 <th className="py-2.5 px-3 text-grey-7 font-semibold text-center">담당자</th>
               </tr>
@@ -89,7 +92,7 @@ export default function Worship() {
       </div>
 
       {/* 예배 및 모임 안내 */}
-      <div className="md:w-44 md:shrink-0 border-t md:border-t-0 md:border-l border-bluegrey-2 p-4 md:p-5">
+      <div className="md:w-44 md:shrink-0 border-t md:border-t-0 md:border-l border-bluegrey-3 p-4 md:p-5">
         <h4 className="text-body-5 font-bold text-grey-10 mb-4">예배 및 모임 안내</h4>
         {services.map(({ label, time }) => (
           <div

@@ -13,6 +13,7 @@ import {
 } from "@/utils/date";
 import EventSearchBar from "@/components/events/EventSearchBar";
 import RegistrationButton from "@/components/events/RegistrationButton";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -224,9 +225,9 @@ export default function Events() {
 
       <div className="flex flex-col md:flex-row gap-6 relative">
         {/* Calendar */}
-        <div className="flex-1 border border-bluegrey-2 rounded-xl overflow-hidden md:rounded-xl">
+        <div className="flex-1 border border-bluegrey-3 rounded-xl overflow-hidden md:rounded-xl">
           {/* Day headers */}
-          <div className="grid grid-cols-7 border-b border-bluegrey-2 bg-bluegrey-1">
+          <div className="grid grid-cols-7 border-b border-bluegrey-3 bg-bluegrey-1">
             {WEEKDAYS.map((w, i) => (
               <div
                 key={w}
@@ -245,7 +246,7 @@ export default function Events() {
                 return (
                   <div
                     key={cell.key}
-                    className="border-b border-r border-bluegrey-2 min-h-16 md:min-h-32 p-2"
+                    className="border-b border-r border-bluegrey-3 min-h-16 md:min-h-32 p-2"
                   >
                     <span className="text-body-4 text-grey-4">{cell.day}</span>
                   </div>
@@ -263,7 +264,7 @@ export default function Events() {
                 <div
                   key={cell.key}
                   onClick={() => setSelectedDate(cell.dateStr)}
-                  className={`relative border-b border-r border-bluegrey-2 min-h-16 md:min-h-32 p-2 cursor-pointer transition-colors ${
+                  className={`relative border-b border-r border-bluegrey-3 min-h-16 md:min-h-32 p-2 cursor-pointer transition-colors ${
                     isSelected
                       ? "bg-blue-1/60 outline outline-2 outline-dashed outline-blue-6 -outline-offset-2 z-10"
                       : "hover:bg-bluegrey-1"
@@ -313,8 +314,8 @@ export default function Events() {
 
       {/* Events Drawer */}
       {selectedDate && (
-        <div className="fixed right-0 top-0 bottom-0 w-full sm:w-[400px] bg-white border-l border-bluegrey-2 overflow-hidden flex flex-col z-[70] animate-slideInRight">
-            <div className="flex items-center justify-between border-b border-bluegrey-2 bg-bluegrey-1 sticky top-0 z-10 h-18 px-4 md:px-6 shadow-sm">
+        <div className="fixed right-0 top-0 bottom-0 w-full sm:w-[400px] bg-white border-l border-bluegrey-3 overflow-hidden flex flex-col z-[70] animate-slideInRight">
+            <div className="flex items-center justify-between border-b border-bluegrey-3 bg-bluegrey-1 sticky top-0 z-10 h-18 px-4 md:px-6 shadow-sm">
               <span className="text-body-4 font-semibold text-bluegrey-10">
                 {formatKoreanDate(selectedDate)} 일정
               </span>
@@ -336,8 +337,8 @@ export default function Events() {
             </div>
             <div className="flex-1 overflow-y-auto flex flex-col">
               {loading ? (
-                <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
-                  불러오는 중...
+                <div className="flex justify-center py-10">
+                  <BubbleLoader size="sm" />
                 </div>
               ) : selectedEvents.length === 0 ? (
                 <div className="px-6 py-10 text-center text-body-4 text-bluegrey-5">
@@ -347,7 +348,7 @@ export default function Events() {
                 selectedEvents.map((evt) => {
                   const ds = getDepartmentStyle(evt.department);
                   return (
-                    <div key={evt.id} className="border-b border-bluegrey-2 px-6 py-5 flex flex-col gap-3">
+                    <div key={evt.id} className="border-b border-bluegrey-3 px-6 py-5 flex flex-col gap-3">
                       <div className="flex items-center">
                         <span
                           className={`text-body-5 font-semibold px-2 py-0.5 rounded-full ${ds.chip}`}
@@ -369,7 +370,7 @@ export default function Events() {
                         <div className="flex gap-4 justify-end">
                           <Link
                             to={`/교회행사/${evt.id}`}
-                            className="flex-1 py-2.5 bg-blue-1 border border-bluegrey-4 rounded-full text-body-5 font-medium text-bluegrey-7 hover:bg-blue-2 transition-colors text-center"
+                            className="flex-1 py-2.5 bg-blue-1 border border-bluegrey-4 rounded-full text-body-5 font-medium text-bluegrey-9 hover:bg-blue-2 transition-colors text-center"
                           >
                             상세보기
                           </Link>

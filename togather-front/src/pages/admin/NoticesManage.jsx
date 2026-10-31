@@ -5,6 +5,7 @@ import { getNotices, createNotice, updateNotice, deleteNotice } from "@/services
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import NumberedPagination from "@/components/common/NumberedPagination";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const TABS = ["전체", "공지", "행사", "소식"];
 
@@ -281,7 +282,9 @@ export default function NoticesManage() {
           <span className="text-center">관리</span>
         </div>
         {loading && paged.length === 0 ? (
-          <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+          <div className="flex justify-center py-16">
+          <BubbleLoader size="sm" />
+        </div>
         ) : paged.length === 0 ? (
           <div className="py-16 text-center text-grey-5 text-body-3">공지사항이 없습니다.</div>
         ) : (

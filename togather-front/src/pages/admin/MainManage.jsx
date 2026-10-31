@@ -3,6 +3,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getWorshipSchedule, updateWorshipSchedule } from "@/services/worshipScheduleService";
 import { getChurchProfile, updateChurchProfile } from "@/services/churchProfileService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
@@ -188,7 +189,9 @@ export default function MainManage() {
           description="여기서 저장한 내용이 홈 화면과 예배 안내 페이지에 그대로 표시됩니다."
         >
           {scheduleLoading ? (
-            <p className="text-body-4 text-grey-5">불러오는 중...</p>
+            <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
           ) : scheduleError ? (
             <div className="flex items-center gap-2">
               <p className="text-body-4 text-grey-5">예배 시간표를 불러오지 못했습니다.</p>

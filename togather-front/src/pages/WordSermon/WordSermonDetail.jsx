@@ -110,11 +110,12 @@ export default function WordSermonDetail() {
         {/* 목록으로 버튼 */}
         <button
           onClick={() => navigate("/말씀/설교")}
-          className="flex items-center gap-3 text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-6 group"
+          className="flex items-center gap-3 text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-4 group"
         >
           <img src={ArrowLeft} alt="" className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
           목록으로
         </button>
+        <div className="border-b border-bluegrey-3 mb-6" />
 
         {/* 영상 플레이어 */}
         <div

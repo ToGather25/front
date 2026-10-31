@@ -9,6 +9,7 @@ import {
 } from "@/services/signupRequestService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 
 const EMPTY_PAGE = { page: 0, size: 20, totalElements: 0, totalPages: 0, hasNext: false, hasPrevious: false };
@@ -29,7 +30,9 @@ function MemberDetailModal({ detail, loading, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {loading ? (
-          <p className="text-body-3 text-grey-6 text-center py-8">불러오는 중...</p>
+          <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
         ) : !detail ? (
           <p className="text-body-3 text-grey-6 text-center py-8">정보를 찾을 수 없습니다.</p>
         ) : (
@@ -221,8 +224,10 @@ export default function MembersManage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-grey-5 text-body-3">
-                      불러오는 중...
+                    <td colSpan={7} className="py-16">
+                      <div className="flex justify-center">
+                        <BubbleLoader size="sm" />
+                      </div>
                     </td>
                   </tr>
                 ) : members.length === 0 ? (
@@ -295,7 +300,9 @@ export default function MembersManage() {
               <span className="text-center">처리</span>
             </div>
             {pendingLoading ? (
-              <div className="py-16 text-center text-grey-5 text-body-3">불러오는 중...</div>
+              <div className="flex justify-center py-16">
+          <BubbleLoader size="sm" />
+        </div>
             ) : pendingLoadError ? (
               <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
                 <p>가입 신청 목록을 불러오지 못했습니다.</p>

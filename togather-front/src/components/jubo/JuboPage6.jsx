@@ -8,6 +8,7 @@ import {
   JuboGreyBox,
   JuboWhiteTable,
 } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboPage6({ data }) {
   const { church } = useChurch();
@@ -48,7 +49,9 @@ export default function JuboPage6({ data }) {
           <JuboSectionTitle title="구역 모임" />
           <JuboGreyBox>
             {loading ? (
-              <p className="text-center text-xs text-grey-6 py-4">불러오는 중...</p>
+              <div className="flex justify-center py-4">
+          <BubbleLoader size="sm" />
+        </div>
             ) : districts.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (

@@ -8,6 +8,7 @@ import {
   JuboGreyBox,
   JuboWhiteTable,
 } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토"];
 
@@ -51,7 +52,9 @@ export default function JuboPage4({ data }) {
         <div>
           <JuboSectionTitle title="새벽기도회" />
           {orderLoading ? (
-            <p className="text-center text-xs text-grey-6 py-4">불러오는 중...</p>
+            <div className="flex justify-center py-4">
+          <BubbleLoader size="sm" />
+        </div>
           ) : (
             <JuboWhiteTable rows={dawnRows} rowKey="label" columns={dawnColumns} />
           )}
@@ -61,7 +64,9 @@ export default function JuboPage4({ data }) {
           <JuboSectionTitle title="교회 소식" />
           <JuboGreyBox>
             {newsLoading ? (
-              <p className="text-center text-xs text-grey-6 py-4">불러오는 중...</p>
+              <div className="flex justify-center py-4">
+          <BubbleLoader size="sm" />
+        </div>
             ) : news.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (

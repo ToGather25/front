@@ -2,6 +2,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getSupport, getMinisters } from "@/services/juboService";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboPage7({ data }) {
   const { church } = useChurch();
@@ -25,7 +26,9 @@ export default function JuboPage7({ data }) {
           <JuboSectionTitle title="우리 교회가 돕고 있는 곳" />
           <JuboGreyBox>
             {supportLoading ? (
-              <p className="text-center text-xs text-grey-6 py-4">불러오는 중...</p>
+              <div className="flex justify-center py-4">
+          <BubbleLoader size="sm" />
+        </div>
             ) : support.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
@@ -49,7 +52,9 @@ export default function JuboPage7({ data }) {
           <JuboSectionTitle title="섬기는 분들" />
           <JuboGreyBox>
             {ministersLoading ? (
-              <p className="text-center text-xs text-grey-6 py-4">불러오는 중...</p>
+              <div className="flex justify-center py-4">
+          <BubbleLoader size="sm" />
+        </div>
             ) : ministers.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (

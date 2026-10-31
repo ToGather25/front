@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getChurchProfile, updateChurchProfile } from "@/services/churchProfileService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
@@ -98,7 +99,9 @@ export default function Settings() {
         {/* 실API 연동 — 홈 배너 대표이미지/슬로건 + 푸터 인스타그램 링크 */}
         <Section title="홈 화면 메인 배너 · SNS">
           {profileLoading ? (
-            <p className="text-body-4 text-grey-5">불러오는 중...</p>
+            <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
           ) : profileError ? (
             <div className="flex items-center gap-2">
               <p className="text-body-4 text-grey-5">불러오지 못했습니다.</p>

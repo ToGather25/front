@@ -5,6 +5,7 @@ import { getMembers } from "@/services/memberService";
 import { getSignupRequests } from "@/services/signupRequestService";
 import { getNotices } from "@/services/noticeService";
 import { getEvents } from "@/services/eventsService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 
 const iconCls = { width: 22, height: 22, fill: "none", stroke: "currentColor", strokeWidth: 1.8, viewBox: "0 0 24 24" };
 
@@ -163,7 +164,9 @@ export default function Dashboard() {
           }
         >
           {noticesLoading ? (
-            <p className="py-8 text-center text-body-4 text-grey-5">불러오는 중...</p>
+            <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
           ) : notices.length === 0 ? (
             <p className="py-8 text-center text-body-4 text-grey-5">등록된 공지가 없습니다.</p>
           ) : (
@@ -190,7 +193,9 @@ export default function Dashboard() {
           }
         >
           {eventsLoading ? (
-            <p className="py-8 text-center text-body-4 text-grey-5">불러오는 중...</p>
+            <div className="flex justify-center py-8">
+          <BubbleLoader size="sm" />
+        </div>
           ) : upcoming.length === 0 ? (
             <p className="py-8 text-center text-body-4 text-grey-5">예정된 일정이 없습니다.</p>
           ) : (

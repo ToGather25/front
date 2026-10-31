@@ -1,17 +1,11 @@
-export default function BubbleLoader({ size = "md", fullScreen = false }) {
-  const sizeClasses = {
-    sm: "w-12 h-12",
-    md: "w-16 h-16",
-    lg: "w-20 h-20",
-  };
+const SIZE_FONT = {
+  sm: "text-[6px]",
+  md: "text-[8px]",
+  lg: "text-[10px]",
+};
 
-  const loader = (
-    <div className={`bubble ${sizeClasses[size]}`}>
-      <div className="w-3 h-full" />
-      <div className="w-3 h-full" />
-      <div className="w-3 h-full" />
-    </div>
-  );
+export default function BubbleLoader({ size = "md", fullScreen = false, className = "text-primary" }) {
+  const loader = <div className={`bubble-spinner ${SIZE_FONT[size]} ${className}`} />;
 
   if (fullScreen) {
     return (
@@ -21,9 +15,5 @@ export default function BubbleLoader({ size = "md", fullScreen = false }) {
     );
   }
 
-  return (
-    <div className="flex items-center justify-center">
-      {loader}
-    </div>
-  );
+  return <div className="flex items-center justify-center">{loader}</div>;
 }
