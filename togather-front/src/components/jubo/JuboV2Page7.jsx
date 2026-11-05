@@ -4,7 +4,7 @@ import { getSupport, getMinisters } from "@/services/juboService";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
-export default function JuboPage7({ data }) {
+export default function JuboV2Page7({ data }) {
   const { church } = useChurch();
   const { data: support = [], loading: supportLoading } = useFetch(
     () => getSupport(church.id),

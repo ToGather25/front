@@ -10,7 +10,7 @@ import {
   JuboWhiteTable,
 } from "./shared";
 
-export default function JuboPage2({ data }) {
+export default function JuboV2Page2({ data }) {
   const { church } = useChurch();
   const { data: services = [], loading: servicesLoading } = useFetch(
     () => getWorshipServices(church.id),

@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { JUBO_PAGES } from "./juboPages";
 
 // 커스텀 스크롤바 트랙 위아래 여백(px) — 배경 가장자리에서 떨어뜨리는 용도.
 const THUMB_TRACK_INSET = 42;
 
-const PAGES = JUBO_PAGES;
-
-export default function JuboPageSystem({ issue, onDownloadPdf, isDownloadingPdf = false }) {
+export default function JuboPageSystem({ issue, pages, onDownloadPdf, isDownloadingPdf = false }) {
+  const PAGES = pages;
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const thumbScrollRef = useRef(null);
   const [thumbBar, setThumbBar] = useState({ height: 0, top: 0 });
@@ -46,7 +44,7 @@ export default function JuboPageSystem({ issue, onDownloadPdf, isDownloadingPdf 
       {/* 서브 헤더 */}
       <div>
         {/* 첫 번째 줄: 목록으로, 주보 제목 */}
-        <div className="border-b border-bluegrey-2">
+        <div className="border-b border-bluegrey-3">
           <div className="max-w-[1400px] mx-auto px-8 py-4 flex items-center justify-between">
             <button
               onClick={() => {}} // 목록으로 이동 로직 (아직 미구현)

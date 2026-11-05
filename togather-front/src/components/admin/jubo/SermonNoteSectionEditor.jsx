@@ -84,7 +84,7 @@ export default function SermonNoteSectionEditor({ churchId, juboId }) {
         />
         <input
           className={inputCls}
-          placeholder="본문 말씀 (예: 로마서 2장 27절)"
+          placeholder="본문 말씀 (전체 구절 + 인용구절, 예: 「...」(로마서 2장 27절))"
           aria-label="본문 말씀"
           value={note.scripture}
           onChange={(e) => updateField("scripture", e.target.value)}

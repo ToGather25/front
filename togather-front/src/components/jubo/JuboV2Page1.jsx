@@ -1,4 +1,5 @@
 import { useChurch } from "@/contexts/ChurchContext";
+import churchSermonBg from "@/assets/church_sermon.png";
 import logo from "@/assets/icons/옥길교회_logo.png";
 import locationIcon from "@/assets/icon-svg/footer-location.svg";
 import phoneIcon from "@/assets/icon-svg/footer-phone.svg";
@@ -6,15 +7,16 @@ import mailIcon from "@/assets/icon-svg/footer-email.svg";
 import quoteLeft from "@/assets/icon-svg/quote-left.svg";
 import quoteRight from "@/assets/icon-svg/quote-right.svg";
 
-export default function JuboPage1({ data }) {
+export default function JuboV2Page1({ data }) {
   const { church } = useChurch();
 
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
-      {/* 상단: 이미지 (360px 고정, Figma 493/1372 비율) */}
-      <div className="h-[360px] bg-bluegrey-1 rounded-3 flex-shrink-0 flex items-center justify-center">
-        <span className="text-xs text-grey-6">예배 사진</span>
-      </div>
+      {/* 상단: 이미지 (360px 고정, Figma 493/1372 비율) — 대비를 낮춘 흑백 예배 사진 */}
+      <div
+        className="h-[360px] rounded-3 flex-shrink-0 bg-cover bg-center"
+        style={{ backgroundImage: `url('${churchSermonBg}')`, filter: "grayscale(100%) contrast(70%)" }}
+      />
 
       {/* 하단: 콘텐츠 영역 (235px = 595 - 360) */}
       <div className="flex-1 flex overflow-hidden">

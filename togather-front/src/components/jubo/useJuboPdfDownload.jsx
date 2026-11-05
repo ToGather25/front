@@ -1,18 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { JUBO_PAGES } from "./juboPages";
 import { JuboPrintModeContext } from "./juboPrintMode";
-
-// 화면에 보이는 8페이지를 둘씩 묶어 가로 A4(297x210mm) 한 장에 배치한다.
-// 4장을 양면 인쇄해 2매로 만든 뒤 가운데서 반으로 접으면 1~8페이지 순서로 읽혀야 하므로,
-// 순서대로 묶지 않고 중철(saddle-stitch) 조판 순서(8|1, 2|7, 6|3, 4|5)로 배치한다.
-const PRINT_ROWS = [
-  [JUBO_PAGES[7], JUBO_PAGES[0]], // 1매 앞면: 8 | 1
-  [JUBO_PAGES[1], JUBO_PAGES[6]], // 1매 뒷면: 2 | 7
-  [JUBO_PAGES[5], JUBO_PAGES[2]], // 2매 앞면: 6 | 3
-  [JUBO_PAGES[3], JUBO_PAGES[4]], // 2매 뒷면: 4 | 5
-];
 
 // JuboPageSystem 뷰어가 각 페이지를 그리는 기준 스테이지 크기(630x892px, A4 비율) —
 // 내부 컴포넌트들이 고정 px 레이아웃을 쓰므로 인쇄용 숨김 영역도 같은 크기를 유지해야
@@ -33,9 +22,12 @@ async function waitForPrintDataReady(container, timeoutMs = 8000, pollMs = 150) 
 /**
  * 주보 PDF 다운로드 — 페이지 이동 없이 호출한 자리에서 바로 파일로 저장된다.
  * 반환된 `PrintArea`를 트리 아무 데나 렌더해 두고 `download(issue)`를 호출하면,
- * issue에 해당하는 8페이지를 화면 밖에 숨겨서 그린 뒤 캡처해 저장하고 치운다.
+ * issue에 해당하는 페이지들을 화면 밖에 숨겨서 그린 뒤 캡처해 저장하고 치운다.
+ *
+ * @param {{id:string, Component:Function}[][]} printRows - 가로 A4 한 장에 나란히 들어갈
+ *   페이지 쌍의 배열. 중철(saddle-stitch) 제본 순서로 미리 짝지어 와야 한다(juboVersions.js 참고).
  */
-export function useJuboPdfDownload() {
+export function useJuboPdfDownload(printRows) {
   const [renderIssue, setRenderIssue] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const wrapperRef = useRef(null);
@@ -96,7 +88,7 @@ export function useJuboPdfDownload() {
   const PrintArea = renderIssue ? (
     <div ref={wrapperRef} style={{ position: "absolute", left: "-9999px", top: 0 }}>
       <JuboPrintModeContext.Provider value={true}>
-        {PRINT_ROWS.map(([left, right]) => (
+        {printRows.map(([left, right]) => (
           <div
             key={`${left.id}-${right.id}`}
             className="jubo-print-row"

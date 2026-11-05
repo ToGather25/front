@@ -5,7 +5,7 @@ import logoFallback from "@/assets/icons/옥길교회_logo.png";
 import { BOOK_ABBREV } from "@/config/bible.config";
 import { JuboPrintModeContext } from "./juboPrintMode";
 
-// JuboPageSystem(북뷰, JuboPage2~8)의 공통 조각 — 상단 타이틀바/날짜, 섹션 소제목,
+// JuboPageSystem(북뷰, JuboV2Page2~8)의 공통 조각 — 상단 타이틀바/날짜, 섹션 소제목,
 // 회색 박스, 예배 순서(역할/담당자) 리스트, 하단 로고. Figma 디자인의 반복 패턴을 공유한다.
 
 /** 북뷰 페이지 상단 타이틀바 — 진한 바탕 제목 + 연한 바탕 날짜. */
@@ -157,7 +157,7 @@ export function JuboOrderList({ order, loading, emptyText = "정보 없음" }) {
 // 주보 컨텐츠 래퍼 — 화면: 반응형 / 인쇄: A4
 export function JuboPage({ children, noPadding = false }) {
   return (
-    <div className="jubo-page w-[90%] mx-auto bg-white border border-bluegrey-2 shadow-md overflow-hidden min-h-[750px]">
+    <div className="jubo-page w-[90%] mx-auto bg-white border border-bluegrey-3 shadow-md overflow-hidden min-h-[750px]">
       <div className={noPadding ? "" : "p-4 md:p-8 lg:p-10"}>{children}</div>
     </div>
   );

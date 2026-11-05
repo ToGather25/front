@@ -8,9 +8,20 @@ import { setCurrentChurchId } from "@/services/api";
 
 const ChurchContext = createContext(null);
 
-/** null/undefined 값은 병합에서 제외한다 — 백엔드 미설정 필드가 기본값을 덮어쓰면 안 된다. */
-function definedOnly(obj) {
-  return Object.fromEntries(Object.entries(obj ?? {}).filter(([, v]) => v != null));
+function isPlainObject(v) {
+  return v != null && typeof v === "object" && !Array.isArray(v);
+}
+
+/** base 위에 overrides를 얹는다. null/undefined 값은 건너뛴다(백엔드 미설정 필드가 기본값을
+ * 덮어쓰면 안 된다). 양쪽 다 plain object인 필드(slogan, mainBanner 등)는 한 단계 깊이로
+ * 합쳐서, 백엔드가 그 필드의 일부만 보내도 나머지 기본값(subfield)이 사라지지 않게 한다. */
+function mergeChurchFields(base, overrides) {
+  const out = { ...base };
+  for (const [key, value] of Object.entries(overrides ?? {})) {
+    if (value == null) continue;
+    out[key] = isPlainObject(base[key]) && isPlainObject(value) ? { ...base[key], ...value } : value;
+  }
+  return out;
 }
 
 /**
@@ -68,7 +79,7 @@ export function ChurchProvider({ children, initialChurch }) {
           import.meta.env.VITE_DEV_CHURCH_DOMAIN || window.location.hostname,
         );
         setCurrentChurchId(tenant.id);
-        church = { ...church, ...definedOnly(tenant) };
+        church = mergeChurchFields(church, tenant);
       } catch (err) {
         console.warn("[ChurchProvider] 테넌트 조회 실패 — 로컬 기본 설정으로 표시합니다.", err);
       }
@@ -80,7 +91,7 @@ export function ChurchProvider({ children, initialChurch }) {
         getChurchProfile(church.id),
       ]);
 
-      church = { ...church, ...introToChurchFields(valueOf(intro, "교회소개 콘텐츠")) };
+      church = mergeChurchFields(church, introToChurchFields(valueOf(intro, "교회소개 콘텐츠")));
 
       const worshipSchedule = valueOf(schedule, "예배 시간표");
       if (worshipSchedule?.regular?.length) church = { ...church, worshipSchedule };

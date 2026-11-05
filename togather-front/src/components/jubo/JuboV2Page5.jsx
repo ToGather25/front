@@ -4,7 +4,7 @@ import { getOffering, getPrayerTopics, getVolunteer } from "@/services/juboServi
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
-export default function JuboPage5({ data }) {
+export default function JuboV2Page5({ data }) {
   const { church } = useChurch();
   const { data: offering = [], loading: offeringLoading } = useFetch(
     () => getOffering(church.id),

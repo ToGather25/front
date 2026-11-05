@@ -12,7 +12,7 @@ import BubbleLoader from "@/components/common/BubbleLoader";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토"];
 
-export default function JuboPage4({ data }) {
+export default function JuboV2Page4({ data }) {
   const { church } = useChurch();
   const { data: orderMap = {}, loading: orderLoading } = useFetch(
     () => getWorshipOrder(church.id),

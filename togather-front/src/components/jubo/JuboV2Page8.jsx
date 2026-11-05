@@ -7,7 +7,7 @@ import locationIcon from "@/assets/icon-svg/footer-location.svg";
 import phoneIcon from "@/assets/icon-svg/footer-phone.svg";
 import mailIcon from "@/assets/icon-svg/footer-email.svg";
 
-export default function JuboPage8({ data }) {
+export default function JuboV2Page8({ data }) {
   const { church } = useChurch();
   const printMode = useContext(JuboPrintModeContext);
   const regular = (church.worshipSchedule?.regular ?? []).filter((s) => !s.name?.includes("학교"));

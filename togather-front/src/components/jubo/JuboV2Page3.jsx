@@ -9,7 +9,7 @@ import {
   JuboOrderList,
 } from "./shared";
 
-export default function JuboPage3({ data }) {
+export default function JuboV2Page3({ data }) {
   const { church } = useChurch();
   const { data: services = [], loading: servicesLoading } = useFetch(
     () => getWorshipServices(church.id),

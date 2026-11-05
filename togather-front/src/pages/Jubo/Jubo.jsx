@@ -4,6 +4,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getJuboIssue } from "@/services/juboService";
 import JuboPageSystem from "@/components/jubo/JuboPageSystem";
 import { useJuboPdfDownload } from "@/components/jubo/useJuboPdfDownload";
+import { resolveJuboVersion } from "@/components/jubo/juboVersions";
 
 export default function Jubo() {
   const { church } = useChurch();
@@ -14,7 +15,8 @@ export default function Jubo() {
     [church.id, issueId],
     null,
   );
-  const { PrintArea, download, isDownloading } = useJuboPdfDownload();
+  const { pages, printRows } = resolveJuboVersion(church);
+  const { PrintArea, download, isDownloading } = useJuboPdfDownload(printRows);
 
   return (
     <div className="w-full bg-grey-1">
@@ -30,6 +32,7 @@ export default function Jubo() {
       <div className="bg-white">
         <JuboPageSystem
           issue={issue}
+          pages={pages}
           onDownloadPdf={() => download(issue)}
           isDownloadingPdf={isDownloading}
         />

@@ -10,7 +10,7 @@ import {
 } from "./shared";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
-export default function JuboPage6({ data }) {
+export default function JuboV2Page6({ data }) {
   const { church } = useChurch();
   const { data: districts = [], loading } = useFetch(
     () => getDistricts(church.id),
