@@ -18,7 +18,7 @@ function MobileSearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="px-4 pt-5 py-3">
-      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full border border-bluegrey-2">
+      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full border border-bluegrey-3">
         <button type="submit" aria-label="검색" className="shrink-0">
           <img src={IcoSearch} className="w-4 h-4" alt="" />
         </button>
@@ -110,7 +110,7 @@ function NoticeAlertSection({ notices }) {
       {top && (
         <Link
           to={`/공지사항?id=${top.id}`}
-          className="flex items-center justify-between pb-4 mb-4 border-b border-bluegrey-2"
+          className="flex items-center justify-between pb-4 mb-4 border-b border-bluegrey-3"
         >
           <span className="text-[14px] font-medium text-grey-9 truncate">
             [{top.type}] {top.title}
@@ -123,7 +123,7 @@ function NoticeAlertSection({ notices }) {
           <Link
             key={n.id}
             to={`/공지사항?id=${n.id}`}
-            className="shrink-0 w-[150px] rounded-xl border border-bluegrey-2 px-4 py-3.5"
+            className="shrink-0 w-[150px] rounded-xl border border-bluegrey-3 px-4 py-3.5"
           >
             <p className="text-[13px] font-bold text-grey-11 leading-snug line-clamp-2 mb-1.5">
               {n.title}

@@ -34,7 +34,7 @@ export default function LoginRequiredModal({ message, onCancel }) {
         <div className="flex gap-3 w-full">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 md:py-3.5 rounded-full border border-bluegrey-2 text-body-4 md:text-body-3 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"
+            className="flex-1 py-3 md:py-3.5 rounded-full border border-bluegrey-3 text-body-4 md:text-body-3 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"
           >
             취소
           </button>

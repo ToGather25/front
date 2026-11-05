@@ -84,14 +84,14 @@ export default function Register() {
   };
 
   const inputCls =
-    "w-full px-4 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+    "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
   const birthSelectCls =
-    "px-3 py-3 border border-bluegrey-2 rounded-xl text-body-3 text-grey-10 bg-white focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+    "px-3 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 bg-white focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
 
   if (status === "done") {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center bg-grey-1 px-6">
-        <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-2 p-12 text-center">
+        <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-3 p-12 text-center">
           <div className="w-16 h-16 rounded-full bg-blue-1 flex items-center justify-center mx-auto mb-6">
             <svg
               width="28"

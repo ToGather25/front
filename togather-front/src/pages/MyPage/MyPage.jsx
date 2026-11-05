@@ -152,7 +152,7 @@ export default function MyPage() {
                     {currentUser.name ?? MOCK_USER.name}
                     <span className="font-normal text-body-4 text-grey-7 ml-0.5">님</span>
                   </p>
-                  <p className="text-body-5 text-grey-2 mt-0.5 truncate">
+                  <p className="text-body-5 text-grey-4 mt-0.5 truncate">
                     <span className="text-primary font-bold pr-2">{MOCK_USER.role}</span> {MOCK_USER.district} · {MOCK_USER.group}
                   </p>
                 </div>

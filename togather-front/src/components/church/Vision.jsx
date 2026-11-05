@@ -134,7 +134,7 @@ export default function Vision() {
                       <p className="text-body-4 text-grey-7">{detail.text}</p>
                     </div>
                   </div>
-                  {idx < arr.length - 1 && <div className="mt-2 ml-4 border-t border-dotted border-bluegrey-2" />}
+                  {idx < arr.length - 1 && <div className="mt-2 ml-4 border-t border-dotted border-bluegrey-3" />}
                 </div>
               ))}
             </div>

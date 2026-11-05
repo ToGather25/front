@@ -120,7 +120,7 @@ function GoalModal({ onClose, onSave }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-7 py-4 border-b border-bluegrey-2 shrink-0">
+        <div className="flex items-center justify-between px-7 py-4 border-b border-bluegrey-3 shrink-0">
           <div>
             <h3 className="text-sub-tit-4 font-bold text-grey-11">{label}</h3>
             <p className="text-body-5 text-grey-5 mt-0.5">이번 달에 읽을 성경 권을 선택해 주세요</p>
@@ -170,7 +170,7 @@ function GoalModal({ onClose, onSave }) {
                 className={`py-2 rounded-lg text-body-5 font-medium border transition-all ${
                   selected.has(abbr)
                     ? "bg-primary border-primary text-white"
-                    : "border-bluegrey-2 text-grey-8 hover:border-blue-4 hover:bg-blue-1"
+                    : "border-bluegrey-3 text-grey-8 hover:border-blue-4 hover:bg-blue-1"
                 }`}
               >
                 {abbr}
@@ -196,7 +196,7 @@ function GoalModal({ onClose, onSave }) {
                 className={`py-2 rounded-lg text-body-5 font-medium border transition-all ${
                   selected.has(abbr)
                     ? "bg-primary border-primary text-white"
-                    : "border-bluegrey-2 text-grey-8 hover:border-blue-4 hover:bg-blue-1"
+                    : "border-bluegrey-3 text-grey-8 hover:border-blue-4 hover:bg-blue-1"
                 }`}
               >
                 {abbr}
@@ -206,7 +206,7 @@ function GoalModal({ onClose, onSave }) {
         </div>
 
         {/* 하단 버튼 */}
-        <div className="flex items-center gap-3 px-7 py-4 border-t border-bluegrey-2 shrink-0">
+        <div className="flex items-center gap-3 px-7 py-4 border-t border-bluegrey-3 shrink-0">
           <span className="text-body-5 text-grey-5 flex-1">
             {selected.size > 0 ? `${selected.size}권 선택됨` : ""}
           </span>
@@ -251,7 +251,7 @@ function GoalBanner({ totalPct, monthGoalPct, hasGoal, onGoalSaved }) {
       {/* 2열 가로 배치 */}
       <div className="mb-5 grid grid-cols-2 gap-4">
         {/* 전체 완독률 */}
-        <div className="border border-bluegrey-2 rounded-2xl px-5 py-4">
+        <div className="border border-bluegrey-3 rounded-2xl px-5 py-4">
           <p className="text-body-5 text-grey-6 mb-2">전체 완독률</p>
           <p className="text-sub-tit-2 font-bold text-grey-11 mb-3">{totalPct}%</p>
           <div className="h-1.5 bg-grey-3 rounded-full overflow-hidden">
@@ -263,7 +263,7 @@ function GoalBanner({ totalPct, monthGoalPct, hasGoal, onGoalSaved }) {
         </div>
 
         {/* 이번 달 목표 */}
-        <div className="border border-bluegrey-2 rounded-2xl px-5 py-4">
+        <div className="border border-bluegrey-3 rounded-2xl px-5 py-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-body-5 text-grey-6">이번 달 목표</p>
             <button
@@ -288,7 +288,7 @@ function GoalBanner({ totalPct, monthGoalPct, hasGoal, onGoalSaved }) {
             </>
           ) : (
             <div className="flex flex-col items-start gap-2 mt-1">
-              <p className="text-body-4 text-grey-5">목표는 단기 목표부터!</p>
+              <p className="text-body-4 text-grey-5">단기 목표부터 세워보세요!</p>
               <div className="h-1.5 bg-grey-3 rounded-full overflow-hidden w-full">
                 <div className="h-full w-0" />
               </div>
@@ -302,9 +302,30 @@ function GoalBanner({ totalPct, monthGoalPct, hasGoal, onGoalSaved }) {
   );
 }
 
-function StreakCalendar({ readDates = MOCK_READ_DATES, streakDays, calDate, setCalDate }) {
+// 오늘(또는 오늘 아직 안 읽었다면 어제)부터 거슬러 올라가며 끊기지 않고 읽은
+// 날짜 수를 센다 — 표시 중인 달이 실제 이번 달이 아니면 "현재 연속" 자체를
+// 판단할 근거가 없으므로 0을 반환한다. readDates가 월 경계를 모르는 mock이라
+// 이전 달로 이어지는 연속은 계산하지 못한다 — 백엔드 연동 시 달 경계를 넘는
+// 날짜까지 받아오도록 교체해야 한다.
+function computeStreakDays(readDates, yr, mo) {
+  const today = new Date();
+  if (yr !== today.getFullYear() || mo !== today.getMonth()) return 0;
+
+  const readSet = new Set(readDates);
+  const todayDate = today.getDate();
+  let day = readSet.has(todayDate) ? todayDate : todayDate - 1;
+  let streak = 0;
+  while (day >= 1 && readSet.has(day)) {
+    streak++;
+    day--;
+  }
+  return streak;
+}
+
+function StreakCalendar({ readDates = MOCK_READ_DATES, calDate, setCalDate, mode }) {
   const yr = calDate.getFullYear(),
     mo = calDate.getMonth();
+  const streakDays = computeStreakDays(readDates, yr, mo);
   const dim = new Date(yr, mo + 1, 0).getDate();
   const offset = (() => {
     const d = new Date(yr, mo, 1).getDay();
@@ -321,13 +342,15 @@ function StreakCalendar({ readDates = MOCK_READ_DATES, streakDays, calDate, setC
   const hasRight = (d, weekArr, di) => di < 6 && isRead(weekArr[di + 1]);
 
   return (
-    <div className="border border-bluegrey-2 rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <p className="text-body-3 font-bold text-grey-11">{streakDays}일 연속 읽기중!</p>
-          <p className="text-body-5 text-grey-5">
-            {yr}년 {mo + 1}월
-          </p>
+    <div className="border border-bluegrey-3 rounded-2xl p-6">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-baseline gap-2">
+          <p className="text-body-3 font-bold text-grey-11">{yr}년 {mo + 1}월</p>
+          {streakDays > 0 && (
+            <p className="text-body-5 text-grey-5">
+              {streakDays}일 연속 {mode === "write" ? "필사중" : "읽기중"}!
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {!isThisMonth && (
@@ -439,7 +462,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
             <button
               key={key}
               onClick={() => handleTab(key)}
-              className={`px-3 py-1 rounded-lg text-body-5 border transition-colors ${bookTab === key ? "border-grey-9 text-grey-9 font-semibold" : "border-bluegrey-2 text-grey-6 hover:border-grey-6"}`}
+              className={`px-3 py-1 rounded-lg text-body-5 border transition-colors ${bookTab === key ? "border-grey-9 text-grey-9 font-semibold" : "border-bluegrey-3 text-grey-6 hover:border-grey-6"}`}
             >
               {label}
             </button>
@@ -478,7 +501,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          <div className="flex border border-bluegrey-2 rounded-lg overflow-hidden">
+          <div className="flex border border-bluegrey-3 rounded-lg overflow-hidden">
             <button
               onClick={() => handleViewMode("list")}
               className={`px-2.5 py-1 transition-colors ${viewMode === "list" ? "bg-blue-7 text-white" : "text-grey-6 hover:bg-bluegrey-1"}`}
@@ -519,7 +542,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
                     state: lastChapter ? { book, chapter: lastChapter } : { book },
                   });
                 }}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-bluegrey-2 hover:border-blue-4 hover:bg-blue-1 transition-all text-left group"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-bluegrey-3 hover:border-blue-4 hover:bg-blue-1 transition-all text-left group"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
@@ -572,7 +595,7 @@ function BibleProgress({ bookProgress, bookTab, setBookTab, navigate, mode }) {
                     ? "bg-blue-7 border-blue-7 text-white"
                     : pct > 0
                       ? "bg-blue-1 border-blue-3 text-blue-8"
-                      : "bg-white border-bluegrey-2 text-grey-7 hover:border-blue-3"
+                      : "bg-white border-bluegrey-3 text-grey-7 hover:border-blue-3"
                 }`}
               >
                 <span className="text-body-5 font-bold leading-none">{abbr}</span>
@@ -624,18 +647,14 @@ export default function BibleStatusView({ bookProgress = {}, config = {}, mode =
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             {statCards.map(({ label, value }) => (
-              <div key={label} className="border border-bluegrey-2 rounded-xl px-4 py-4">
+              <div key={label} className="border border-bluegrey-3 rounded-xl px-4 py-4">
                 <p className="text-sub-tit-3 font-bold text-grey-11 leading-tight">{value}</p>
                 <p className="text-body-5 text-grey-5 mt-1">{label}</p>
               </div>
             ))}
           </div>
 
-          <StreakCalendar
-            streakDays={config.streakDays ?? 0}
-            calDate={calDate}
-            setCalDate={setCalDate}
-          />
+          <StreakCalendar calDate={calDate} setCalDate={setCalDate} mode={mode} />
         </div>
 
         <BibleProgress

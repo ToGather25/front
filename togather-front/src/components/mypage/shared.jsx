@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import PopupClose from "@/assets/icon-svg/popup-close.svg";
 import ArrowBack from "@/assets/icon-svg/mypage-arrow-back.svg";
-import CalendarBlue from "@/assets/icon-svg/mypage-calendar-blue.svg";
 import {
   getDaysInMonth,
   getFirstDayOfMonth,
@@ -105,38 +104,138 @@ function CalendarPopover({ value, onSelect, onClose }) {
   );
 }
 
+function CalendarIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M14 6.66683H2M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M5.2 14.6668H10.8C11.9201 14.6668 12.4802 14.6668 12.908 14.4488C13.2843 14.2571 13.5903 13.9511 13.782 13.5748C14 13.147 14 12.5869 14 11.4668V5.86683C14 4.74672 14 4.18667 13.782 3.75885C13.5903 3.38252 13.2843 3.07656 12.908 2.88482C12.4802 2.66683 11.9201 2.66683 10.8 2.66683H5.2C4.0799 2.66683 3.51984 2.66683 3.09202 2.88482C2.71569 3.07656 2.40973 3.38252 2.21799 3.75885C2 4.18667 2 4.74672 2 5.86683V11.4668C2 12.5869 2 13.147 2.21799 13.5748C2.40973 13.9511 2.71569 14.2571 3.09202 14.4488C3.51984 14.6668 4.0799 14.6668 5.2 14.6668Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ClockIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="9" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
+    </svg>
+  );
+}
+
+const TIME_HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+const TIME_MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
+
+function TimePopover({ value, onSelect }) {
+  const [h, m] = (value || "").split(":");
+  const hour = h || "00";
+  const minute = m || "00";
+
+  return (
+    <div className="absolute right-0 top-full mt-2 z-50 w-32 bg-white border border-grey-3 rounded-xl shadow-lg p-2 flex gap-1">
+      <div className="flex-1 max-h-48 overflow-y-auto">
+        {TIME_HOURS.map((hh) => (
+          <button
+            key={hh}
+            type="button"
+            onClick={() => onSelect(`${hh}:${minute}`)}
+            className={`w-full text-center py-1.5 rounded-lg text-body-5 transition-colors ${
+              hh === hour ? "bg-primary text-white font-semibold" : "text-grey-9 hover:bg-grey-2"
+            }`}
+          >
+            {hh}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 max-h-48 overflow-y-auto">
+        {TIME_MINUTES.map((mm) => (
+          <button
+            key={mm}
+            type="button"
+            onClick={() => onSelect(`${hour}:${mm}`)}
+            className={`w-full text-center py-1.5 rounded-lg text-body-5 transition-colors ${
+              mm === minute ? "bg-primary text-white font-semibold" : "text-grey-9 hover:bg-grey-2"
+            }`}
+          >
+            {mm}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function InputField({ label, value, onChange, placeholder, type = "text", note }) {
-  const isDate = type === "date";
+  const isDateTime = type === "datetime-local";
+  const isDate = type === "date" || isDateTime;
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
   const wrapRef = useRef(null);
 
   useEffect(() => {
-    if (!isDate || !calendarOpen) return;
+    if (!isDate || (!calendarOpen && !timeOpen)) return;
     function onDocClick(e) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setCalendarOpen(false);
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setCalendarOpen(false);
+        setTimeOpen(false);
+      }
     }
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
-  }, [isDate, calendarOpen]);
+  }, [isDate, calendarOpen, timeOpen]);
 
   if (isDate) {
+    const [datePart, timePart] = (value || "").split("T");
+
     return (
       <div ref={wrapRef} className="relative">
         <label className="block text-body-5 text-grey-7 mb-1">{label}</label>
-        <button
-          type="button"
-          onClick={() => setCalendarOpen((v) => !v)}
-          className="w-full flex items-center justify-between border border-grey-4 rounded-lg px-4 py-3 text-body-4 bg-white outline-none focus:border-primary transition-colors"
-        >
-          <span className={value ? "text-grey-10" : "text-grey-5"}>
-            {value ? formatDotDate(value) : placeholder || "연도. 월. 일."}
-          </span>
-          <img src={CalendarBlue} alt="" className="w-4 h-4" />
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setCalendarOpen((v) => !v);
+              setTimeOpen(false);
+            }}
+            className="flex-1 flex items-center justify-between border border-grey-4 rounded-lg px-3 py-3 text-body-4 bg-white outline-none focus:border-primary transition-colors"
+          >
+            <span className={datePart ? "text-grey-10" : "text-grey-5"}>
+              {datePart ? formatDotDate(datePart) : placeholder || "연도. 월. 일."}
+            </span>
+            <CalendarIcon className="w-4 h-4 text-grey-5" />
+          </button>
+          {isDateTime && (
+            <div className="relative flex-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setTimeOpen((v) => !v);
+                  setCalendarOpen(false);
+                }}
+                className="w-full flex items-center justify-between border border-grey-4 rounded-lg px-3 py-3 text-body-4 bg-white outline-none focus:border-primary transition-colors"
+              >
+                <span className={timePart ? "text-grey-10" : "text-grey-5"}>{timePart || "--:--"}</span>
+                <ClockIcon className="w-4 h-4 text-grey-5" />
+              </button>
+              {timeOpen && (
+                <TimePopover
+                  value={timePart}
+                  onSelect={(time) => onChange({ target: { value: `${datePart || ""}T${time}` } })}
+                />
+              )}
+            </div>
+          )}
+        </div>
         {calendarOpen && (
           <CalendarPopover
-            value={value}
-            onSelect={(key) => onChange({ target: { value: key } })}
+            value={datePart}
+            onSelect={(key) =>
+              onChange({ target: { value: isDateTime ? `${key}T${timePart || ""}` : key } })
+            }
             onClose={() => setCalendarOpen(false)}
           />
         )}

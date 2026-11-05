@@ -61,6 +61,10 @@ export default function InquiryTab({ inquiries, setInquiries, loadError, onRetry
             <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
               <p className="text-body-4 text-grey-7">문의 내역을 불러오지 못했습니다.</p>
             </div>
+          ) : inquiries.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-body-4 text-grey-5">등록된 문의 내역이 없습니다.</p>
+            </div>
           ) : (
             <>
               <div className="space-y-3">

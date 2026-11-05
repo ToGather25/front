@@ -60,7 +60,7 @@ export default function Direction() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-body-5 font-semibold text-grey-9 border border-bluegrey-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-body-5 font-semibold text-grey-9 border border-bluegrey-3">
                     <svg
                       className="w-3.5 h-3.5 shrink-0"
                       fill="none"
@@ -105,13 +105,13 @@ export default function Direction() {
           )}
         </div>
 
-        <div className="flex items-center justify-between mb-4 pt-8 border-t border-bluegrey-2">
+        <div className="flex items-center justify-between mb-4 pt-8 border-t border-bluegrey-3">
           <h3 className="text-sub-tit-3 font-bold text-grey-11">주차 안내</h3>
           {lots.length > 1 && (
             <select
               value={selectedLot}
               onChange={(e) => setSelectedLot(Number(e.target.value))}
-              className="pl-3 pr-8 py-1.5 border border-bluegrey-2 rounded-lg text-body-4 text-grey-8 bg-white"
+              className="pl-3 pr-8 py-1.5 border border-bluegrey-3 rounded-lg text-body-4 text-grey-8 bg-white"
             >
               {lots.map((lot, i) => (
                 <option key={lot.name} value={i}>

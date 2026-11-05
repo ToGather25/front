@@ -15,7 +15,7 @@ export default function JuboSection4() {
         <div className="bg-bluegrey-1 rounded-5 px-12 py-10">
           <div className="space-y-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-5 pb-6 border-b border-bluegrey-2 last:border-0 last:pb-0">
+              <div key={i} className="flex gap-5 pb-6 border-b border-bluegrey-3 last:border-0 last:pb-0">
                 <div className="text-body-3 font-semibold text-grey-12 w-40 shrink-0">후원지명</div>
                 <div className="text-body-3 text-grey-8">후원 내용을 입력하세요.</div>
               </div>
@@ -34,7 +34,7 @@ export default function JuboSection4() {
         <div className="bg-bluegrey-1 rounded-5 px-12 py-10">
           <div className="space-y-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-5 pb-6 border-b border-bluegrey-2 last:border-0 last:pb-0">
+              <div key={i} className="flex gap-5 pb-6 border-b border-bluegrey-3 last:border-0 last:pb-0">
                 <div className="text-body-3 font-semibold text-grey-12 w-40 shrink-0">구역명</div>
                 <div className="text-body-3 text-grey-8">구역 내용을 입력하세요.</div>
               </div>

@@ -108,13 +108,13 @@ export default function SignupNext() {
 
   const inputCls = (field) =>
     `w-full px-4 py-3 border rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all ${
-      errors[field] ? "border-red-400 bg-red-50" : "border-bluegrey-2"
+      errors[field] ? "border-red-400 bg-red-50" : "border-bluegrey-3"
     }`;
 
   if (status === "invalid") {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center bg-grey-1 px-6">
-        <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-2 p-12 text-center">
+        <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-bluegrey-3 p-12 text-center">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
             <svg
               width="28"

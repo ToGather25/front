@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import BibleTutorial from "@/components/bible/BibleTutorial";
+import BibleSourceNotice from "@/components/bible/BibleSourceNotice";
 import { saveLastPosition } from "@/utils/bibleReadingProgress";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
@@ -222,8 +224,6 @@ const READ_STATUS_CONFIG = {
   totalValue: "128,450 절",
   visitCount: "215 일",
   completeCount: "1번",
-  streakDays: 5,
-  streakLabel: "연속 읽기중!",
   monthCount: "12일",
   monthCountLabel: "이번달 읽기 횟수",
   monthVerse: "248절",
@@ -294,6 +294,22 @@ export default function BibleRead() {
   const [searchQuery, setSearchQuery] = useState("");
   const [lastChapterModal, setLastChapterModal] = useState(false);
   const clickTimers = useRef({});
+  const fontSizeBtnRef = useRef(null);
+  const bookBtnRef = useRef(null);
+  const chapterBtnRef = useRef(null);
+
+  // 드롭다운을 트리거 버튼의 relative 부모가 아니라 body에 포털로 띄운다 — 툴바가
+  // overflow-x-auto라 overflow-y도 auto로 묶여(overflow-x/y 불일치 시 둘 다 auto가
+  // 되는 스펙 규칙) top-full로 띄운 패널이 그 안에서 잘려 클릭해도 안 보였었다.
+  const dropdownPosition = (ref, align = "left") => {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return { position: "fixed", top: 0, left: 0 };
+    return {
+      position: "fixed",
+      top: r.bottom + 8,
+      ...(align === "left" ? { left: r.left } : { right: window.innerWidth - r.right }),
+    };
+  };
 
   useEffect(() => {
     if (state?.book) {
@@ -431,10 +447,11 @@ export default function BibleRead() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Bar — 성경읽기 메뉴에서만 표시 */}
           {activeMenu === "성경읽기" && (
-            <div className="shrink-0 flex items-center gap-3 px-6 pt-3 md:pt-0 md:h-[60px] md:border-b md:border-bluegrey-2 bg-white overflow-x-auto">
+            <div className="shrink-0 flex items-center gap-3 px-6 pt-3 md:pt-0 md:h-[70px] md:border-b md:border-bluegrey-3 bg-white overflow-x-auto">
               {/* 글씨 크기 */}
               <div className="relative shrink-0">
                 <button
+                  ref={fontSizeBtnRef}
                   onClick={() => {
                     setFontSizeOpen((v) => !v);
                     setBookOpen(false);
@@ -445,37 +462,42 @@ export default function BibleRead() {
                   <span className="text-[15px] font-medium text-grey-8">가</span>
                   <span className="text-[11px] font-medium text-grey-8">가</span>
                 </button>
-                {fontSizeOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setFontSizeOpen(false)} />
-                    <div className="absolute top-full left-0 mt-2 z-20 bg-grey-1 rounded-2xl p-5 shadow-lg w-72">
-                      <p className="text-body-3 font-semibold text-grey-10 mb-4">글씨 크기</p>
-                      <div className="flex gap-3">
-                        {[
-                          { key: "small", label: "작게", gaSize: "text-caption" },
-                          { key: "medium", label: "보통", gaSize: "text-body-1" },
-                          { key: "large", label: "크게", gaSize: "text-sub-tit-2" },
-                        ].map(({ key, label, gaSize }) => (
-                          <button
-                            key={key}
-                            onClick={() => {
-                              setFontSize(key);
-                              setFontSizeOpen(false);
-                            }}
-                            className={`flex-1 flex flex-col items-center justify-center gap-2 py-5 rounded-xl border-2 transition-colors ${
-                              fontSize === key
-                                ? "bg-primary border-primary text-white"
-                                : "bg-white border-bluegrey-2 text-grey-9 hover:border-blue-5"
-                            }`}
-                          >
-                            <span className={`${gaSize} font-medium leading-none`}>가</span>
-                            <span className="text-body-5">{label}</span>
-                          </button>
-                        ))}
+                {fontSizeOpen &&
+                  createPortal(
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setFontSizeOpen(false)} />
+                      <div
+                        className="z-20 bg-grey-1 rounded-2xl p-5 shadow-lg w-72"
+                        style={dropdownPosition(fontSizeBtnRef, "left")}
+                      >
+                        <p className="text-body-3 font-semibold text-grey-10 mb-4">글씨 크기</p>
+                        <div className="flex gap-3">
+                          {[
+                            { key: "small", label: "작게", gaSize: "text-caption" },
+                            { key: "medium", label: "보통", gaSize: "text-body-1" },
+                            { key: "large", label: "크게", gaSize: "text-sub-tit-2" },
+                          ].map(({ key, label, gaSize }) => (
+                            <button
+                              key={key}
+                              onClick={() => {
+                                setFontSize(key);
+                                setFontSizeOpen(false);
+                              }}
+                              className={`flex-1 flex flex-col items-center justify-center gap-2 py-5 rounded-xl border-2 transition-colors ${
+                                fontSize === key
+                                  ? "bg-primary border-primary text-white"
+                                  : "bg-white border-bluegrey-3 text-grey-9 hover:border-blue-5"
+                              }`}
+                            >
+                              <span className={`${gaSize} font-medium leading-none`}>가</span>
+                              <span className="text-body-5">{label}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>,
+                    document.body,
+                  )}
               </div>
 
               {/* 전체 선택 */}
@@ -484,7 +506,7 @@ export default function BibleRead() {
                 className={`h-9 shrink-0 flex items-center gap-1.5 px-4 rounded-full text-body-4 border transition-colors ${
                   allChecked
                     ? "bg-primary border-primary text-white"
-                    : "border-bluegrey-2 text-grey-7 hover:border-blue-5"
+                    : "border-bluegrey-3 text-grey-7 hover:border-blue-5"
                 }`}
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -526,113 +548,125 @@ export default function BibleRead() {
               {/* 책 선택 */}
               <div className="relative shrink-0">
                 <button
+                  ref={bookBtnRef}
                   onClick={() => {
                     setBookOpen((v) => !v);
                     setChapterOpen(false);
                     setFontSizeOpen(false);
                     setBookTab(OT.includes(BOOK_ABBREV[selectedBook]) ? "OT" : "NT");
                   }}
-                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors whitespace-nowrap"
+                  className="px-4 py-2 rounded-full border border-bluegrey-3 text-body-4 text-grey-8 hover:border-blue-5 transition-colors whitespace-nowrap"
                 >
                   {selectedBook}
                 </button>
-                {bookOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setBookOpen(false)} />
-                    <div className="absolute top-full right-0 mt-2 z-20 bg-white rounded-2xl shadow-xl p-5 w-[92vw] max-w-[500px]">
-                      <div className="flex justify-end gap-2 mb-4">
-                        {["OT", "NT"].map((t) => (
-                          <button
-                            key={t}
-                            onClick={() => setBookTab(t)}
-                            className={`px-5 py-2 rounded-full text-body-4 font-medium transition-colors ${
-                              bookTab === t
-                                ? "bg-primary text-white"
-                                : "border border-bluegrey-2 text-grey-8 hover:border-blue-5"
-                            }`}
-                          >
-                            {t === "OT" ? "구약" : "신약"}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="grid grid-cols-5 sm:grid-cols-7 gap-2">
-                        {(bookTab === "OT" ? OT : NT).map((abbr) => {
-                          const fullName = BOOK_MAP[abbr];
-                          const isSelected = selectedBook === fullName;
-                          return (
+                {bookOpen &&
+                  createPortal(
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setBookOpen(false)} />
+                      <div
+                        className="z-20 bg-white rounded-2xl shadow-xl p-5 w-[92vw] max-w-[500px]"
+                        style={dropdownPosition(bookBtnRef, "right")}
+                      >
+                        <div className="flex justify-start gap-2 mb-4">
+                          {["OT", "NT"].map((t) => (
                             <button
-                              key={abbr}
-                              onClick={() => {
-                                setSelectedBook(fullName);
-                                setChapter(1);
-                                setCheckedVerses({});
-                                setBookOpen(false);
-                              }}
-                              className={`flex flex-col items-center py-2 px-1 rounded-xl border-2 transition-colors ${
-                                isSelected
-                                  ? "border-primary"
-                                  : "border-bluegrey-2 hover:border-blue-4"
+                              key={t}
+                              onClick={() => setBookTab(t)}
+                              className={`px-5 py-2 rounded-full text-body-4 font-medium transition-colors ${
+                                bookTab === t
+                                  ? "bg-primary text-white"
+                                  : "border border-bluegrey-3 text-grey-8 hover:border-blue-5"
                               }`}
                             >
-                              <span className="text-body-3 font-bold text-grey-10">{abbr}</span>
-                              <span className="text-[10px] text-grey-6 mt-0.5 truncate w-full text-center">
-                                {fullName}
-                              </span>
+                              {t === "OT" ? "구약" : "신약"}
                             </button>
-                          );
-                        })}
+                          ))}
+                        </div>
+                        <div className="grid grid-cols-5 sm:grid-cols-7 gap-2">
+                          {(bookTab === "OT" ? OT : NT).map((abbr) => {
+                            const fullName = BOOK_MAP[abbr];
+                            const isSelected = selectedBook === fullName;
+                            return (
+                              <button
+                                key={abbr}
+                                onClick={() => {
+                                  setSelectedBook(fullName);
+                                  setChapter(1);
+                                  setCheckedVerses({});
+                                  setBookOpen(false);
+                                }}
+                                className={`flex flex-col items-center py-2 px-1 rounded-xl border-2 transition-colors ${
+                                  isSelected
+                                    ? "border-primary"
+                                    : "border-bluegrey-3 hover:border-blue-4"
+                                }`}
+                              >
+                                <span className="text-body-3 font-bold text-grey-10">{abbr}</span>
+                                <span className="text-[10px] text-grey-6 mt-0.5 truncate w-full text-center">
+                                  {fullName}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>,
+                    document.body,
+                  )}
               </div>
 
               {/* 장 선택 */}
               <div className="relative shrink-0">
                 <button
+                  ref={chapterBtnRef}
                   onClick={() => {
                     setChapterOpen((v) => !v);
                     setBookOpen(false);
                     setFontSizeOpen(false);
                   }}
-                  className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
+                  className="px-4 py-2 rounded-full border border-bluegrey-3 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
                 >
                   {chapter}
                   {selectedBook === "시편" ? "편" : "장"}
                 </button>
-                {chapterOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setChapterOpen(false)} />
-                    <div className="absolute top-full right-0 mt-2 z-20 bg-white rounded-2xl shadow-xl p-4 w-48 max-h-64 overflow-y-auto">
-                      <div className="grid grid-cols-5 gap-1">
-                        {chapters.map((ch) => (
-                          <button
-                            key={ch}
-                            onClick={() => {
-                              setChapter(ch);
-                              setCheckedVerses({});
-                              setChapterOpen(false);
-                            }}
-                            className={`py-2 rounded-lg text-body-4 transition-colors ${
-                              chapter === ch
-                                ? "bg-primary text-white font-semibold"
-                                : "hover:bg-grey-1 text-grey-8"
-                            }`}
-                          >
-                            {ch}
-                          </button>
-                        ))}
+                {chapterOpen &&
+                  createPortal(
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setChapterOpen(false)} />
+                      <div
+                        className="z-20 bg-white rounded-2xl shadow-xl p-4 w-48 max-h-64 overflow-y-auto"
+                        style={dropdownPosition(chapterBtnRef, "right")}
+                      >
+                        <div className="grid grid-cols-5 gap-1">
+                          {chapters.map((ch) => (
+                            <button
+                              key={ch}
+                              onClick={() => {
+                                setChapter(ch);
+                                setCheckedVerses({});
+                                setChapterOpen(false);
+                              }}
+                              className={`py-2 rounded-lg text-body-4 transition-colors ${
+                                chapter === ch
+                                  ? "bg-primary text-white font-semibold"
+                                  : "hover:bg-grey-1 text-grey-8"
+                              }`}
+                            >
+                              {ch}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>,
+                    document.body,
+                  )}
               </div>
 
               {/* 장 이동 < > */}
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={goPrevChapter}
-                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-3 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
                   title="이전 장"
                 >
                   <svg
@@ -651,7 +685,7 @@ export default function BibleRead() {
                 </button>
                 <button
                   onClick={goNextChapter}
-                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-2 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
+                  className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full border border-bluegrey-3 text-grey-7 hover:border-blue-5 hover:text-blue-7 transition-colors"
                   title="다음 장"
                 >
                   <svg
@@ -673,9 +707,18 @@ export default function BibleRead() {
               {/* 검색 — 클릭 시 오른쪽 사이드 모달 오픈 */}
               <button
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 shrink-0 text-left hover:border-blue-4 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-bluegrey-3 rounded-full w-56 shrink-0 text-left hover:border-blue-4 focus:border-primary outline-none transition-colors"
               >
-                <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
+                <svg
+                  className="w-4 h-4 shrink-0 text-bluegrey-8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path strokeLinecap="round" d="m21 21-4.35-4.35" />
+                </svg>
                 <span className="text-body-4 text-grey-5">검색할 내용을 입력하세요.</span>
               </button>
             </div>
@@ -683,8 +726,8 @@ export default function BibleRead() {
 
           {/* 콘텐츠 분기 */}
           {activeMenu === "성경읽기" && (
-            <div className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="flex flex-col gap-1">
+            <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col">
+              <div className="flex-1 flex flex-col gap-1">
                 {verses.map(({ num, text }, idx) => {
                   const saveKey = `${selectedBook}-${chapter}-${num}`;
                   const isSaved = !!savedVerses[saveKey];
@@ -740,6 +783,7 @@ export default function BibleRead() {
                   );
                 })}
               </div>
+              <BibleSourceNotice className="mt-8 mb-2 text-center" />
             </div>
           )}
 
@@ -795,7 +839,7 @@ export default function BibleRead() {
           searchOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-bluegrey-2">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-bluegrey-3">
           <button
             onClick={() => {
               setSearchOpen(false);
@@ -805,7 +849,7 @@ export default function BibleRead() {
           >
             ✕
           </button>
-          <div className="flex-1 flex items-center gap-2 border border-bluegrey-2 rounded-xl px-3 py-1.5">
+          <div className="flex-1 flex items-center gap-2 border border-bluegrey-3 rounded-xl px-3 py-1.5">
             <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
             <input
               autoFocus={searchOpen}

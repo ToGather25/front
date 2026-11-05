@@ -28,7 +28,7 @@ export default function TransportGuide() {
           <tbody>
             {validRoutes.map((route) => (
               route.waypoints?.map((wp, idx) => (
-                <tr key={`${route.name}-${idx}`} className="border-b border-bluegrey-2">
+                <tr key={`${route.name}-${idx}`} className="border-b border-bluegrey-3">
                   {/* 코스명 (첫 행만) */}
                   {idx === 0 && (
                     <td className="py-4 px-5 text-center align-middle font-semibold text-grey-11 bg-bluegrey-1" rowSpan={route.waypoints.length}>

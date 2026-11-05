@@ -20,7 +20,7 @@ export default function Search() {
     <div className="max-w-3xl mx-auto px-4 py-6 md:px-8 md:py-10">
       <form
         onSubmit={handleSearch}
-        className="sticky z-30 bg-white border-b border-bluegrey-2 py-3 mb-6"
+        className="sticky z-30 bg-white border-b border-bluegrey-3 py-3 mb-6"
         style={{ top: "var(--header-offset)" }}
       >
         <label className="flex items-center gap-3 h-12 px-4 rounded-full bg-bluegrey-1 border border-transparent focus-within:border-blue-6 focus-within:bg-white transition-all">

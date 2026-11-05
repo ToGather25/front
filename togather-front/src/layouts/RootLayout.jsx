@@ -248,7 +248,7 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
 
   const authBtnOutlineCls = effectiveTransparent
     ? "border-white/60 text-white hover:bg-white/10 hover:border-white"
-    : "border-bluegrey-2 text-grey-9 hover:text-primary hover:border-blue-5";
+    : "border-bluegrey-3 text-grey-9 hover:text-primary hover:border-blue-5";
 
   // 회원가입은 배경 없는 텍스트 링크로, 로그인은 히어로 배경 위(투명 헤더)에서는
   // 흰 배경, 그 외(흰 헤더)에서는 진한 남색 배경으로 — 헤더 배경과 항상 대비되게.
@@ -351,13 +351,13 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
                 <>
                   <Link
                     to="/mypage"
-                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
+                    className={`px-4 py-2 rounded-full border border-bluegrey-3 text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
                   >
                     마이페이지
                   </Link>
                   <button
                     onClick={logout}
-                    className={`px-4 py-2 rounded-full border text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
+                    className={`px-4 py-2 rounded-full border border-bluegrey-3 text-body-3 font-semibold transition-colors whitespace-nowrap ${authBtnOutlineCls}`}
                   >
                     로그아웃
                   </button>
@@ -551,7 +551,7 @@ function MobileDrawer({ isOpen, onClose }) {
         className={`fixed top-0 right-0 bottom-0 z-[70] w-[280px] bg-white shadow-2xl flex flex-col transition-transform duration-300 md:hidden ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* 드로어 헤더 */}
-        <div className="flex items-center justify-between px-5 h-14 border-b border-bluegrey-2 shrink-0">
+        <div className="flex items-center justify-between px-5 h-14 border-b border-bluegrey-3 shrink-0">
           <span className="text-[17px] font-bold text-primary">{church.name}</span>
           <button onClick={onClose} className="p-1.5 -mr-1 text-grey-8" aria-label="메뉴 닫기">
             <svg
@@ -598,7 +598,7 @@ function MobileDrawer({ isOpen, onClose }) {
 
         {/* 로그인/유틸 */}
         <div
-          className="px-5 py-5 border-t border-bluegrey-2 shrink-0"
+          className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
           style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
         >
           {currentUser ? (
@@ -615,7 +615,7 @@ function MobileDrawer({ isOpen, onClose }) {
                   logout();
                   onClose();
                 }}
-                className="w-full text-center py-2.5 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9"
+                className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
               >
                 로그아웃
               </button>
@@ -625,7 +625,7 @@ function MobileDrawer({ isOpen, onClose }) {
               <Link
                 to="/register"
                 onClick={onClose}
-                className="flex-1 text-center py-2.5 rounded-full border border-bluegrey-2 text-[14px] font-semibold text-grey-9"
+                className="flex-1 text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
               >
                 회원가입
               </Link>
@@ -783,7 +783,7 @@ function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-bluegrey-2 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-bluegrey-3 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-end h-[64px]">

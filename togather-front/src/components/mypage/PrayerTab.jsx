@@ -86,6 +86,10 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
             기도/상담 내역을 불러오지 못했습니다.
           </p>
         </div>
+      ) : prayers.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-body-4 text-grey-5">등록된 기도/상담 내역이 없습니다.</p>
+        </div>
       ) : (
         <>
           <div className="flex-1 space-y-3">
@@ -163,7 +167,11 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
               <textarea
                 value={prayerForm.content}
                 onChange={(e) => setPrayerForm((f) => ({ ...f, content: e.target.value }))}
-                placeholder="기도 제목을 간략히 작성해 주세요."
+                placeholder={
+                  prayerForm.type === "기도"
+                    ? "기도 제목을 작성해주세요."
+                    : "상담 내용을 작성해주세요."
+                }
                 rows={10}
                 className="w-full border border-grey-4 rounded-lg px-4 py-3 text-body-4 text-grey-10 bg-white outline-none focus:border-primary transition-colors resize-none"
               />

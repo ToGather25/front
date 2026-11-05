@@ -95,7 +95,7 @@ export default function NotificationSection() {
                       </div>
                     </button>
                     {i < notices.length - 1 && (
-                      <div className="mt-4 ml-7 border-t border-dotted border-bluegrey-2" />
+                      <div className="mt-4 ml-7 border-t border-dotted border-bluegrey-3" />
                     )}
                   </div>
                 ))}

@@ -110,7 +110,7 @@ export default function WordSermon() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="설교 제목 검색"
-              className="w-full h-[46px] pl-10 pr-10 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
+              className="w-full h-[46px] pl-10 pr-10 border border-bluegrey-3 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
             />
             {inputVal && (
               <button
@@ -136,7 +136,7 @@ export default function WordSermon() {
             {Array.from({ length: PAGE_SIZE }, (_, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-bluegrey-2 overflow-hidden animate-pulse"
+                className="rounded-2xl border border-bluegrey-3 overflow-hidden animate-pulse"
               >
                 <div className="w-full bg-grey-2" style={{ aspectRatio: "16/9" }} />
                 <div className="p-4 space-y-2">

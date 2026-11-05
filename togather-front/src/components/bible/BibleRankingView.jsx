@@ -30,7 +30,7 @@ function RankTable({ title, rows, unit }) {
       <div className="bg-grey-2 rounded-t-xl px-4 py-2.5 text-center shrink-0">
         <span className="text-body-3 font-semibold text-grey-10">{title}</span>
       </div>
-      <div className="border border-t-0 border-bluegrey-2 rounded-b-xl overflow-hidden flex flex-col flex-1">
+      <div className="border border-t-0 border-bluegrey-3 rounded-b-xl overflow-hidden flex flex-col flex-1">
         {rows.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 flex-1 text-grey-4">
             <svg
@@ -49,7 +49,7 @@ function RankTable({ title, rows, unit }) {
             {rows.map(({ rank, name, count, trend }, i) => (
               <div
                 key={rank}
-                className={`flex items-center px-4 py-3 gap-3 ${i < rows.length - 1 ? "border-b border-bluegrey-2" : ""}`}
+                className={`flex items-center px-4 py-3 gap-3 ${i < rows.length - 1 ? "border-b border-bluegrey-3" : ""}`}
               >
                 <span className="w-5 text-body-4 text-grey-7 font-medium shrink-0 text-center">
                   {rank}

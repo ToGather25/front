@@ -26,7 +26,7 @@ export default function BibleSidebar({
   // md 이상에서만 sidebarOpen 토글이 실제 너비 차이를 만든다.
   return (
     <div
-      className={`bg-grey-1 border-r border-bluegrey-2 flex flex-col transition-all duration-300 overflow-hidden w-14 ${
+      className={`bg-grey-1 border-r border-bluegrey-3 flex flex-col transition-all duration-300 overflow-hidden w-14 ${
         sidebarOpen ? "md:w-56" : "md:w-14"
       }`}
     >
@@ -34,7 +34,7 @@ export default function BibleSidebar({
           전체를 차지할 이유가 없다 — md 이상에서만 표시하고, 모바일에서는
           그 공간만큼 메뉴 아이콘들이 위로 당겨진다. */}
       <div
-        className={`hidden md:flex items-center h-[60px] shrink-0 border-b border-bluegrey-2 justify-center ${
+        className={`hidden md:flex items-center h-[60px] shrink-0 border-b border-bluegrey-3 justify-center ${
           sidebarOpen ? "md:justify-between md:pl-3 md:pr-3" : ""
         }`}
       >

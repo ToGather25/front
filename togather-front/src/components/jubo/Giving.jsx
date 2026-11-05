@@ -74,7 +74,7 @@ export default function Giving() {
       <div className="mt-5 flex flex-col gap-4">
         <button
           onClick={handleCopyAccount}
-          className="text-left border border-bluegrey-2 rounded-xl p-5 hover:border-primary transition-colors print:pointer-events-none"
+          className="text-left border border-bluegrey-3 rounded-xl p-5 hover:border-primary transition-colors print:pointer-events-none"
         >
           <p className="text-body-5 text-grey-6 mb-1">{profile.offeringBankName}</p>
           <p className="text-sub-tit-4 font-bold text-grey-11 mb-1">
@@ -84,7 +84,7 @@ export default function Giving() {
         </button>
 
         {qrCodeUrl && (
-          <div className="border border-bluegrey-2 rounded-xl p-5 flex flex-col items-center gap-3">
+          <div className="border border-bluegrey-3 rounded-xl p-5 flex flex-col items-center gap-3">
             <img src={qrCodeUrl} alt="헌금 QR 코드" className="w-40 h-40 object-contain" />
             <p className="text-body-5 text-grey-6">QR 코드를 스캔해 온라인 헌금 페이지로 이동</p>
           </div>

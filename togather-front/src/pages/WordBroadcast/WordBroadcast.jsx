@@ -159,7 +159,7 @@ export default function WordBroadcast() {
                 {/* 방송 예정 */}
                 {status === "BEFORE" && (
                   <section className="mb-14">
-                    <div className="w-full bg-bluegrey-1 border border-bluegrey-2 flex flex-col items-center justify-center py-20 gap-3">
+                    <div className="w-full bg-bluegrey-1 border border-bluegrey-3 flex flex-col items-center justify-center py-20 gap-3">
                       <p className="text-sub-tit-4 font-semibold text-grey-7">곧 예배가 시작됩니다.</p>
                     </div>
                     {screen.sermon && (
@@ -216,7 +216,7 @@ export default function WordBroadcast() {
             className="bg-white shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-bluegrey-2">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-bluegrey-3">
               <h3 className="text-sub-tit-4 font-bold text-grey-11">이번 주 주보</h3>
               <button
                 onClick={() => setJuboOpen(false)}

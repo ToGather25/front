@@ -8,25 +8,47 @@ const PAGE_SIZE = 5;
 
 export default function ScheduleTab({ schedules, setSchedules, loadError, onRetry }) {
   const { church } = useChurch();
-  const [scheduleForm, setScheduleForm] = useState({ date: "", title: "", memo: "" });
+  const [scheduleForm, setScheduleForm] = useState({ datetime: "", title: "", location: "" });
   const [schedulePage, setSchedulePage] = useState(1);
   const [modal, setModal] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [addError, setAddError] = useState("");
 
   const [editingItem, setEditingItem] = useState(null);
-  const [editForm, setEditForm] = useState({ date: "", title: "", memo: "", status: "참석 예정" });
+  const [editForm, setEditForm] = useState({
+    datetime: "",
+    title: "",
+    location: "",
+    status: "참석 예정",
+  });
   const [editError, setEditError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
 
+  // memo는 "장소 · HH:mm" 관례로 저장된다(백엔드에 location/time 전용 필드가 없어 memo 하나로 합침) —
+  // 폼에서는 두 칸으로 나눠 보여주되, 제출 시 다시 이 포맷으로 합쳐서 보낸다.
+  function splitMemo(memo) {
+    if (!memo) return { location: "", time: "" };
+    const idx = memo.lastIndexOf(" · ");
+    if (idx === -1) return { location: memo, time: "" };
+    const time = memo.slice(idx + 3);
+    return /^\d{2}:\d{2}$/.test(time) ? { location: memo.slice(0, idx), time } : { location: memo, time: "" };
+  }
+
+  function toPayload(form) {
+    const [date, time] = form.datetime.split("T");
+    const memo = time ? (form.location ? `${form.location} · ${time}` : time) : form.location;
+    return { title: form.title, date, memo };
+  }
+
   async function handleAddSchedule() {
-    if (!scheduleForm.title || !scheduleForm.date) return;
+    const payload = toPayload(scheduleForm);
+    if (!payload.title || !payload.date) return;
     setSubmitting(true);
     setAddError("");
     try {
-      const created = await addMySchedule(church.id, scheduleForm);
+      const created = await addMySchedule(church.id, payload);
       setSchedules((prev) => [...prev, created]);
-      setScheduleForm({ date: "", title: "", memo: "" });
+      setScheduleForm({ datetime: "", title: "", location: "" });
       setSchedulePage(1);
       setModal(null);
     } catch {
@@ -38,10 +60,11 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
 
   function openEdit(item) {
     setEditingItem(item);
+    const { location, time } = splitMemo(item.memo);
     setEditForm({
-      date: item.date,
+      datetime: `${item.date}${time ? `T${time}` : ""}`,
       title: item.title,
-      memo: item.memo ?? "",
+      location,
       status: item.status ?? "참석 예정",
     });
     setEditError("");
@@ -53,13 +76,14 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
   }
 
   async function handleUpdateSchedule() {
-    if (!editForm.title || !editForm.date) return;
+    const payload = { ...toPayload(editForm), status: editForm.status };
+    if (!payload.title || !payload.date) return;
     setSubmitting(true);
     setEditError("");
     try {
-      const updated = await updateMySchedule(church.id, editingItem.id, editForm);
+      const updated = await updateMySchedule(church.id, editingItem.id, payload);
       setSchedules((prev) =>
-        prev.map((s) => (s.id === editingItem.id ? { ...s, ...editForm, ...updated } : s)),
+        prev.map((s) => (s.id === editingItem.id ? { ...s, ...payload, ...updated } : s)),
       );
       closeEdit();
     } catch {
@@ -101,6 +125,10 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
       {loadError ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다.</p>
+        </div>
+      ) : schedules.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-body-4 text-grey-5">등록된 일정이 없습니다.</p>
         </div>
       ) : (
         <>
@@ -145,11 +173,11 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">일정 추가</h3>
           <div className="space-y-4">
             <InputField
-              label="날짜"
-              type="date"
-              value={scheduleForm.date}
-              onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))}
-              placeholder="03.15"
+              label="날짜 · 시간"
+              type="datetime-local"
+              value={scheduleForm.datetime}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, datetime: e.target.value }))}
+              placeholder="연.월.일"
             />
             <InputField
               label="제목"
@@ -158,10 +186,10 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
               placeholder="예) 새가족 모임"
             />
             <InputField
-              label="시간 · 장소"
-              value={scheduleForm.memo}
-              onChange={(e) => setScheduleForm((f) => ({ ...f, memo: e.target.value }))}
-              placeholder="예) 본당 · 14:00"
+              label="장소"
+              value={scheduleForm.location}
+              onChange={(e) => setScheduleForm((f) => ({ ...f, location: e.target.value }))}
+              placeholder="예) 본당"
             />
           </div>
           {addError && <p className="text-body-5 text-red-500 mt-3">{addError}</p>}
@@ -188,10 +216,10 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
           <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-6">일정 수정</h3>
           <div className="space-y-4">
             <InputField
-              label="날짜"
-              type="date"
-              value={editForm.date}
-              onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
+              label="날짜 · 시간"
+              type="datetime-local"
+              value={editForm.datetime}
+              onChange={(e) => setEditForm((f) => ({ ...f, datetime: e.target.value }))}
             />
             <InputField
               label="제목"
@@ -199,9 +227,9 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
               onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
             />
             <InputField
-              label="시간 · 장소"
-              value={editForm.memo}
-              onChange={(e) => setEditForm((f) => ({ ...f, memo: e.target.value }))}
+              label="장소"
+              value={editForm.location}
+              onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))}
             />
             <div className="flex items-center justify-between pt-2">
               <label className="text-body-5 text-grey-7">참석 여부</label>

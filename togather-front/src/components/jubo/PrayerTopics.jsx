@@ -31,7 +31,7 @@ export default function PrayerTopics() {
       ) : (
         <div className="mt-5 flex flex-col gap-3">
           {prayerTopics.map((item, i) => (
-            <div key={i} className="border border-bluegrey-2 rounded-xl p-4 flex items-start gap-3">
+            <div key={i} className="border border-bluegrey-3 rounded-xl p-4 flex items-start gap-3">
               {item.category && (
                 <span className="text-xl shrink-0" aria-hidden="true">
                   {CATEGORY_EMOJI[item.category] ?? "🙏"}

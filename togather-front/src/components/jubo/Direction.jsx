@@ -36,7 +36,7 @@ export default function Direction() {
         </SectionTitle>
         <table className="w-full text-caption mt-1">
           <thead>
-            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
               <th className="text-left py-2 px-4 text-grey-7 font-semibold">운행 코스</th>
               <th className="text-left py-2 px-4 text-grey-7 font-semibold">시간 및 경유지</th>
             </tr>

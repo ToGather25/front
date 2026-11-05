@@ -1,5 +1,4 @@
 import { useState } from "react";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 import IcoHeartRed from "@/assets/icon-svg/heart-red.svg";
 
 export default function BibleVersesView({
@@ -39,10 +38,19 @@ export default function BibleVersesView({
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col">
-      {/* 상단 검색 바 — 사이드바 헤더(h-[60px])와 높이를 맞춰 경계선이 나란히 온다 */}
-      <div className="shrink-0 flex items-center gap-4 px-4 md:px-8 pt-3 md:pt-0 md:h-[60px] md:border-b md:border-bluegrey-2 bg-white">
-        <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full flex-1 min-w-0 max-w-sm">
-          <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
+      {/* 상단 검색 바 */}
+      <div className="shrink-0 flex items-center gap-4 px-4 md:px-8 pt-3 md:pt-0 md:h-[70px] md:border-b md:border-bluegrey-3 bg-white">
+        <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-3 rounded-full flex-1 min-w-0 max-w-sm focus-within:border-primary transition-colors">
+          <svg
+            className="w-4 h-4 shrink-0 text-bluegrey-8"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path strokeLinecap="round" d="m21 21-4.35-4.35" />
+          </svg>
           <input
             className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5 bg-transparent"
             placeholder="검색할 내용을 입력하세요"
@@ -132,7 +140,7 @@ export default function BibleVersesView({
                 return (
                   <div
                     key={v.key}
-                    className={`relative flex flex-col bg-white border border-bluegrey-2 rounded-2xl hover:border-blue-4 transition-all duration-200 ${
+                    className={`relative flex flex-col bg-white border border-bluegrey-3 rounded-2xl hover:border-blue-4 transition-all duration-200 ${
                       isRemoving ? "scale-0 opacity-0" : "scale-100 opacity-100"
                     }`}
                   >

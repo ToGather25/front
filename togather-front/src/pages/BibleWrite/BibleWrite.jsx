@@ -4,11 +4,11 @@ import { useAuth } from "@/contexts/auth";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
+import BibleSourceNotice from "@/components/bible/BibleSourceNotice";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
 // ── 유틸 ───────────────────────────────────────────────
 function getChapters(bookAbbr) {
@@ -44,7 +44,7 @@ function BookModal({ current, onSelect, onClose }) {
         className="bg-white rounded-2xl shadow-xl w-[92vw] max-w-[480px] max-h-[70vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-bluegrey-2">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-bluegrey-3">
           <span className="text-sub-tit-4 font-semibold text-grey-11">성경 선택</span>
           <button onClick={onClose} className="text-grey-6 hover:text-grey-11">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +57,7 @@ function BookModal({ current, onSelect, onClose }) {
             </svg>
           </button>
         </div>
-        <div className="flex border-b border-bluegrey-2">
+        <div className="flex border-b border-bluegrey-3">
           {["OT", "NT"].map((t) => (
             <button
               key={t}
@@ -186,8 +186,6 @@ const WRITE_STATUS_CONFIG = {
   totalValue: "240,021절",
   visitCount: "320일",
   completeCount: "1번",
-  streakDays: 7,
-  streakLabel: "연속 필사중!",
   monthCount: "8일",
   monthCountLabel: "이번달 필사 횟수",
   monthVerse: "360절",
@@ -377,7 +375,7 @@ export default function BibleWrite() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar — 성경쓰기 메뉴에서만 표시 */}
         {activeMenu === "성경쓰기" && (
-          <div className="shrink-0 flex items-center gap-3 px-6 pt-3 md:pt-0 md:h-[60px] md:border-b md:border-bluegrey-2 bg-white overflow-x-auto">
+          <div className="shrink-0 flex items-center gap-3 px-6 pt-3 md:pt-0 md:h-[70px] md:border-b md:border-bluegrey-3 bg-white overflow-x-auto">
             {/* 글씨 크기 */}
             <div className="relative shrink-0">
               <button
@@ -411,7 +409,7 @@ export default function BibleWrite() {
                           className={`flex-1 flex flex-col items-center justify-center gap-2 py-5 rounded-xl border-2 transition-colors ${
                             fontSize === key
                               ? "bg-primary border-primary text-white"
-                              : "bg-white border-bluegrey-2 text-grey-9 hover:border-blue-5"
+                              : "bg-white border-bluegrey-3 text-grey-9 hover:border-blue-5"
                           }`}
                         >
                           <span className={`${gaSize} font-medium leading-none`}>가</span>
@@ -434,7 +432,7 @@ export default function BibleWrite() {
                 setVerseOpen(false);
                 setFontSizeOpen(false);
               }}
-              className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors shrink-0 whitespace-nowrap"
+              className="px-4 py-2 rounded-full border border-bluegrey-3 text-body-4 text-grey-8 hover:border-blue-5 transition-colors shrink-0 whitespace-nowrap"
             >
               {BOOK_MAP[selectedBook]}
             </button>
@@ -447,7 +445,7 @@ export default function BibleWrite() {
                   setVerseOpen(false);
                   setFontSizeOpen(false);
                 }}
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
+                className="px-4 py-2 rounded-full border border-bluegrey-3 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
               >
                 {selectedChapter}
                 {BOOK_MAP[selectedBook] === "시편" ? "편" : "장"}
@@ -483,7 +481,7 @@ export default function BibleWrite() {
                   setChapterOpen(false);
                   setFontSizeOpen(false);
                 }}
-                className="px-4 py-2 rounded-full border border-bluegrey-2 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
+                className="px-4 py-2 rounded-full border border-bluegrey-3 text-body-4 text-grey-8 hover:border-blue-5 transition-colors min-w-[52px] text-center whitespace-nowrap"
               >
                 {selectedVerse}절
               </button>
@@ -511,8 +509,17 @@ export default function BibleWrite() {
             </div>
 
             {/* 검색 */}
-            <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-2 rounded-full w-56 shrink-0">
-              <img src={IcoSearch} className="w-4 h-4 shrink-0" alt="" />
+            <div className="flex items-center gap-2 px-4 py-2 border border-bluegrey-3 rounded-full w-56 shrink-0 focus-within:border-primary transition-colors">
+              <svg
+                className="w-4 h-4 shrink-0 text-bluegrey-8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path strokeLinecap="round" d="m21 21-4.35-4.35" />
+              </svg>
               <input
                 className="flex-1 outline-none text-body-4 text-grey-8 placeholder:text-grey-5 bg-transparent"
                 placeholder="검색할 내용을 입력하세요."
@@ -526,10 +533,10 @@ export default function BibleWrite() {
           (() => {
             const fontSizeClass =
               fontSize === "large"
-                ? "text-[22px]"
+                ? "text-[26px]"
                 : fontSize === "small"
-                  ? "text-body-2"
-                  : "text-body-1";
+                  ? "text-body-1"
+                  : "text-sub-tit-3";
             const chapterDone = completedVerses.filter(
               (v) => v.bookAbbr === selectedBook && v.chapter === selectedChapter,
             ).length;
@@ -576,8 +583,8 @@ export default function BibleWrite() {
                               clipRule="evenodd"
                             />
                           </svg>
-                          <p className="text-body-4 text-grey-6 leading-relaxed line-clamp-2">
-                            <span className="text-grey-4 text-caption mr-1">{v.verse}</span>
+                          <p className="text-body-2 text-grey-8 leading-relaxed line-clamp-2">
+                            <span className="text-caption mr-2 align-[0.1em]">{v.verse}</span>
                             {v.text}
                           </p>
                         </div>
@@ -677,10 +684,10 @@ export default function BibleWrite() {
                       return (
                         <p
                           key={v.verse}
-                          className="text-body-4 text-grey-5 leading-relaxed line-clamp-2 select-none"
+                          className="text-body-2 text-grey-5 leading-relaxed line-clamp-2 select-none"
                           style={{ opacity }}
                         >
-                          <span className="text-grey-3 text-caption mr-1.5">{v.verse}</span>
+                          <span className="text-grey-3 text-caption mr-1.5 align-[0.1em]">{v.verse}</span>
                           {v.text}
                         </p>
                       );
@@ -689,10 +696,11 @@ export default function BibleWrite() {
                 </div>
 
                 {/* 하단 바 */}
-                <div className="shrink-0 border-t border-bluegrey-2 h-25 flex items-center px-4 md:px-10 bg-white">
+                <div className="shrink-0 border-t border-bluegrey-3 h-25 flex items-center justify-between px-4 md:px-10 bg-white">
                   <p className="text-body-4 text-grey-8 font-medium">
                     오늘 쓴 절 수 : {completedVerses.length}절
                   </p>
+                  <BibleSourceNotice className="hidden md:block text-right" />
                 </div>
 
                 {/* 다음 장으로 버튼 */}

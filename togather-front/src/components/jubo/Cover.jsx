@@ -28,7 +28,7 @@ export default function Cover({ issue }) {
   return (
     <div className="flex flex-col gap-2 p-2">
       {/* 헤더 */}
-      <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-2">
+      <div className="flex justify-between items-center px-6 py-3 bg-white rounded-xl border border-bluegrey-3">
         {juboInfoError?.response?.status === 404 ? (
           <span className="w-full text-center text-caption text-grey-5">
             아직 발행된 주보가 없습니다.
@@ -51,7 +51,7 @@ export default function Cover({ issue }) {
       {/* 올해 표어 + 성경구절 */}
       {sloganTitle && sloganScripture && (
         <div
-          className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2 min-h-[150px]"
+          className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-3 min-h-[150px]"
         >
           <div className="flex flex-col justify-center gap-4 px-6 py-6 sm:w-[38%] sm:shrink-0">
             <span className="self-start px-3 py-1 rounded-full bg-primary text-white text-[11px] font-semibold">
@@ -78,13 +78,13 @@ export default function Cover({ issue }) {
       )}
 
       {/* 파노라마 사진 */}
-      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-2 h-[250px]">
+      <div className="w-full rounded-xl overflow-hidden border border-bluegrey-3 h-[250px]">
         <img src={panoramaPhoto} alt="예배 전경" className="w-full h-full object-cover" />
       </div>
 
       {/* 3대 실천사항 + 단체 사진 */}
       <div
-        className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-2 min-h-[150px]"
+        className="flex flex-col sm:flex-row rounded-xl overflow-hidden border border-bluegrey-3 min-h-[150px]"
       >
         <div
           className="flex flex-col items-center justify-center gap-3 px-8 py-6 sm:w-[38%] sm:shrink-0"

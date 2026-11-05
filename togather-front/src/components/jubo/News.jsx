@@ -31,7 +31,7 @@ export default function News() {
         <table className="w-full text-caption mt-1">
           {news.map((section, i) => (
             <tbody key={i}>
-              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-2">
+              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
                 <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
                   {i + 1}. {section.title}
                 </td>

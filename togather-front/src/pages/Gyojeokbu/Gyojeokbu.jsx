@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/auth";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import NumberedPagination from "@/components/common/NumberedPagination";
 import MEMBERS from "@/config/members.config";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/icon-svg/search-black.svg";
 import { Avatar, RoleChip } from "./shared";
 
 const PAGE_SIZE = 8;

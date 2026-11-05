@@ -31,14 +31,14 @@ export default function FloorGuide() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="층 또는 시설명을 검색하세요."
-          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all"
+          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-3 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all"
         />
       </div>
 
       {/* 층별 버튼과 사진 */}
       <div className="grid gap-12 items-start" style={{ gridTemplateColumns: "300px 1fr" }}>
         {/* 층별 버튼 그룹 */}
-        <div className="flex flex-col w-[300px] shrink-0 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+        <div className="flex flex-col w-[300px] shrink-0 bg-white border border-bluegrey-3 rounded-[20px] p-5">
           {church.floorGuide.map(({ floor, rooms }, idx) => {
             const matchesFloor = matchesQuery(floor) || matchesQuery(rooms);
             return (

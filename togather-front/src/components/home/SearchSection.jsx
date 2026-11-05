@@ -104,7 +104,7 @@ export default function SearchSection() {
       <form
         onSubmit={handleSearch}
         className={`flex items-center gap-3 px-6 rounded-full transition-all duration-200 w-full max-w-[760px] border-2 ${
-          focused ? "border-primary" : "border-bluegrey-2 hover:border-primary"
+          focused ? "border-primary" : "border-bluegrey-3 hover:border-primary"
         }`}
         style={{
           height: "56px",
@@ -140,7 +140,7 @@ export default function SearchSection() {
           <Link
             key={s.label}
             to={s.to}
-            className="px-4 py-2 rounded-full border border-bluegrey-2 bg-white text-sm font-medium text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
+            className="px-4 py-2 rounded-full border border-bluegrey-3 bg-white text-sm font-medium text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
           >
             # {s.label}
           </Link>
@@ -157,7 +157,7 @@ export default function SearchSection() {
             className={`group aspect-square rounded-2xl border p-4 flex flex-col items-center justify-center text-center gap-2 hover:-translate-y-1 transition-all duration-200 ${
               activeMenu === item.id
                 ? "bg-primary border-primary text-white"
-                : "bg-white border-bluegrey-2 hover:bg-primary hover:border-primary"
+                : "bg-white border-bluegrey-3 hover:bg-primary hover:border-primary"
             }`}
           >
             <div className={`shrink-0 transition-colors pb-5 ${

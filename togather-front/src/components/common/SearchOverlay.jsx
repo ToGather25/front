@@ -188,7 +188,7 @@ export default function SearchOverlay() {
                       <button
                         key={r.label}
                         onClick={() => go(r.label, r.to)}
-                        className="group flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full border border-bluegrey-2 bg-white text-[14px] text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
+                        className="group flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full border border-bluegrey-3 bg-white text-[14px] text-grey-9 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
                       >
                         <svg
                           className="w-3.5 h-3.5 text-grey-5 group-hover:text-primary transition-colors shrink-0"
@@ -223,7 +223,7 @@ export default function SearchOverlay() {
                     <button
                       key={s.label}
                       onClick={() => go(s.label, s.to)}
-                      className="px-3.5 py-1.5 rounded-full border border-bluegrey-2 bg-bluegrey-1 text-[14px] font-medium text-grey-8 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
+                      className="px-3.5 py-1.5 rounded-full border border-bluegrey-3 bg-bluegrey-1 text-[14px] font-medium text-grey-8 hover:border-blue-5 hover:text-primary hover:bg-blue-1 transition-all"
                     >
                       # {s.label}
                     </button>
@@ -233,7 +233,7 @@ export default function SearchOverlay() {
             </div>
           ) : filtered.length > 0 ? (
             /* ── 검색 결과 ── */
-            <ul className="divide-y divide-bluegrey-1 rounded-xl overflow-hidden border border-bluegrey-2">
+            <ul className="divide-y divide-bluegrey-1 rounded-xl overflow-hidden border border-bluegrey-3">
               {filtered.map((item) => (
                 <li key={item.label}>
                   <button

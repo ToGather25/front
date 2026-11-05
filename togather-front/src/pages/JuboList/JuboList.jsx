@@ -95,7 +95,7 @@ export default function JuboList({ hideHeader = false }) {
                 setPage(1);
               }}
               placeholder="설교 제목, 말씀 검색"
-              className="w-full h-[46px] pl-10 pr-4 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
+              className="w-full h-[46px] pl-10 pr-4 border border-bluegrey-3 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-blue-6 outline-none transition-all"
             />
           </div>
           <DateJumpPicker
@@ -238,7 +238,7 @@ function DateJumpPicker({ issues, onSelectWeek }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="h-[46px] flex items-center gap-2 px-5 rounded-xl border border-bluegrey-2 text-body-3 font-medium text-grey-8 hover:border-blue-5 hover:text-primary transition-colors"
+        className="h-[46px] flex items-center gap-2 px-5 rounded-xl border border-bluegrey-3 text-body-3 font-medium text-grey-8 hover:border-blue-5 hover:text-primary transition-colors"
       >
         <svg
           className="w-4 h-4"
@@ -256,7 +256,7 @@ function DateJumpPicker({ issues, onSelectWeek }) {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full right-0 mt-2 z-20 w-80 bg-white rounded-2xl border border-bluegrey-2 shadow-lg p-5">
+          <div className="absolute top-full right-0 mt-2 z-20 w-80 bg-white rounded-2xl border border-bluegrey-3 shadow-lg p-5">
             <div className="flex items-center justify-between mb-4">
               <button
                 type="button"

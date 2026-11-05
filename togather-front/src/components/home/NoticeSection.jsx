@@ -62,7 +62,7 @@ function MiniCalendar({ year, month, countByDay, detailByDay }) {
   const today = new Date();
 
   return (
-    <div className="flex-1 flex flex-col bg-white rounded-2xl border border-bluegrey-2 p-4">
+    <div className="flex-1 flex flex-col bg-white rounded-2xl border border-bluegrey-3 p-4">
       <div className="grid grid-cols-7 mb-1">
         {WEEK_LABELS.map((w, i) => (
           <span
@@ -201,14 +201,14 @@ export default function NoticeSection() {
 
           {/* Notice list — 실제 항목이 MAX_NOTICE_ROWS보다 적어도(0건 포함) 빈 자리를
               투명 placeholder 행으로 채워 카드 높이가 항상 5행분으로 고정되게 한다. */}
-          <div className="relative bg-white rounded-[20px] overflow-hidden border border-bluegrey-2">
+          <div className="relative bg-white rounded-[20px] overflow-hidden border border-bluegrey-3">
             {rows.map((n, i) => {
               const tagStyle = TAG_STYLES[n.type] ?? TAG_STYLES["공지"];
               return (
                 <Link
                   key={n.id ?? i}
                   to={`/공지사항?id=${n.id}`}
-                  className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-2 last:border-b-0`}
+                  className={`flex items-center gap-5 px-7 py-[22px] hover:bg-bluegrey-1 transition-colors border-b border-bluegrey-3 last:border-b-0`}
                 >
                   <span
                     className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0"
@@ -248,7 +248,7 @@ export default function NoticeSection() {
               <div
                 key={`notice-pad-${i}`}
                 aria-hidden="true"
-                className="invisible flex items-center gap-5 px-7 py-[22px] border-b border-bluegrey-2 last:border-b-0"
+                className="invisible flex items-center gap-5 px-7 py-[22px] border-b border-bluegrey-3 last:border-b-0"
               >
                 <span className="text-body-3 font-bold px-2.5 py-1.5 rounded-[6px] min-w-[44px] text-center shrink-0">
                   -

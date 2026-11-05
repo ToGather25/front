@@ -26,7 +26,7 @@ function DeptContent({ dept }) {
       {/* 카드 3열 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* 예배 안내 */}
-        <div className="border border-bluegrey-2 rounded-2xl p-6">
+        <div className="border border-bluegrey-3 rounded-2xl p-6">
           <h3 className="text-sub-tit-5 font-semibold text-grey-10 mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 rounded-full bg-blue-7 inline-block" />
             예배 안내
@@ -44,7 +44,7 @@ function DeptContent({ dept }) {
         </div>
 
         {/* 담당 교역자 */}
-        <div className="border border-bluegrey-2 rounded-2xl p-6">
+        <div className="border border-bluegrey-3 rounded-2xl p-6">
           <h3 className="text-sub-tit-5 font-semibold text-grey-10 mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 rounded-full bg-blue-7 inline-block" />
             담당 교역자
@@ -60,7 +60,7 @@ function DeptContent({ dept }) {
         </div>
 
         {/* 주요 활동 */}
-        <div className="border border-bluegrey-2 rounded-2xl p-6">
+        <div className="border border-bluegrey-3 rounded-2xl p-6">
           <h3 className="text-sub-tit-5 font-semibold text-grey-10 mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 rounded-full bg-blue-7 inline-block" />
             주요 활동
@@ -133,7 +133,7 @@ export default function SundaySchool() {
 
       {/* Sub-tab Navigation */}
       <div
-        className="border-b border-bluegrey-2 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
+        className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
         style={{ top: "var(--header-offset)" }}
       >
         <div className="max-w-[1400px] mx-auto px-4 md:px-8">

@@ -4,7 +4,7 @@ import { Avatar } from "./shared";
 
 function Card({ title, children }) {
   return (
-    <div className="bg-white border border-bluegrey-2 rounded-2xl p-6 md:p-7">
+    <div className="bg-white border border-bluegrey-3 rounded-2xl p-6 md:p-7">
       <h4 className="text-body-2 font-bold text-grey-10 mb-5">{title}</h4>
       {children}
     </div>
@@ -82,7 +82,7 @@ export default function GyojeokbuMemberDetail({
         <button
           onClick={() => window.print()}
           aria-label="인쇄"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-bluegrey-2 text-body-4 font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-8 transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-bluegrey-3 text-body-4 font-semibold text-grey-8 hover:border-blue-5 hover:text-blue-8 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
             <path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -102,12 +102,12 @@ export default function GyojeokbuMemberDetail({
 
       <div className="grid md:grid-cols-[320px_1fr] gap-8">
         {/* 왼쪽: 프로필 카드 */}
-        <div className="bg-white border border-bluegrey-2 rounded-2xl p-8 flex flex-col items-center text-center h-fit">
+        <div className="bg-white border border-bluegrey-3 rounded-2xl p-8 flex flex-col items-center text-center h-fit">
           <Avatar name={m.name} tone={m.avatarTone} size="xl" />
           <div className="mt-4 text-[22px] font-bold text-grey-12 tracking-[-0.5px]">{m.name}</div>
           {m.nameRoman && <div className="text-body-4 text-grey-5 mt-0.5">{m.nameRoman}</div>}
 
-          <div className="w-full flex flex-col gap-2 mt-6 pt-6 border-t border-bluegrey-2">
+          <div className="w-full flex flex-col gap-2 mt-6 pt-6 border-t border-bluegrey-3">
             <a
               href={`tel:${m.phone}`}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-bluegrey-1 text-body-4 font-semibold text-grey-9 hover:bg-blue-1 hover:text-blue-8 transition-colors"
@@ -183,7 +183,7 @@ export default function GyojeokbuMemberDetail({
                       key={i}
                       disabled={!target}
                       onClick={() => target && onSelectMember(target.id)}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-bluegrey-2 hover:border-blue-3 hover:bg-blue-1 transition-all text-left disabled:opacity-60 disabled:cursor-default"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-bluegrey-3 hover:border-blue-3 hover:bg-blue-1 transition-all text-left disabled:opacity-60 disabled:cursor-default"
                     >
                       <Avatar name={f.name} tone={target?.avatarTone ?? 8} />
                       <div className="flex-1 min-w-0">

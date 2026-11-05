@@ -78,7 +78,7 @@ export default function GyojeokbuTab() {
         aria-label="교적부 열기"
         className={`fixed bottom-90 right-0 z-40 w-10 h-25 rounded-l-lg flex flex-col items-center justify-center gap-0.5 transition-colors duration-300 hover:opacity-90 ${
           isDarkBehind
-            ? "bg-white text-primary border border-bluegrey-2 shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+            ? "bg-white text-primary border border-bluegrey-3 shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
             : "bg-primary text-white border border-primary-darker shadow-[0_4px_16px_rgba(59,82,128,0.35)]"
         }`}
       >
@@ -101,7 +101,7 @@ export default function GyojeokbuTab() {
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="sticky top-0 bg-white border-b border-bluegrey-2 px-5 py-4 flex items-center justify-between z-10">
+          <div className="sticky top-0 bg-white border-b border-bluegrey-3 px-5 py-4 flex items-center justify-between z-10">
             <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
             <button
               type="button"

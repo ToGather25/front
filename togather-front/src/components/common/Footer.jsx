@@ -9,7 +9,7 @@ export default function Footer({ isHome = false }) {
   const { church } = useChurch();
 
   const bgClass = isHome ? "bg-primary-darker" : "bg-bluegrey-1";
-  const borderClass = isHome ? "border-primary" : "border-bluegrey-2";
+  const borderClass = isHome ? "border-primary" : "border-bluegrey-3";
   const textColorClass = isHome ? "text-white" : "text-grey-10";
   const linkColorClass = isHome ? "hover:text-white/80" : "hover:text-blue-7";
   const bodyColorClass = isHome ? "text-white/80" : "text-grey-9";

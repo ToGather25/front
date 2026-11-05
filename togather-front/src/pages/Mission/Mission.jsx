@@ -30,7 +30,7 @@ export default function Mission() {
       {selectedNews && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="sticky top-0 z-10 bg-white border-b border-bluegrey-2 flex items-center justify-between p-6 rounded-t-2xl">
+            <div className="sticky top-0 z-10 bg-white border-b border-bluegrey-3 flex items-center justify-between p-6 rounded-t-2xl">
               <h3 className="text-sub-tit-3 font-bold text-grey-11">{selectedNews.title}</h3>
               <button
                 onClick={() => setSelectedNews(null)}
@@ -87,7 +87,7 @@ export default function Mission() {
 
       {/* Tab Navigation */}
       <div
-        className="border-b border-bluegrey-2 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
+        className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
         style={{ top: "var(--header-offset)" }}
       >
         <div className="max-w-[1400px] mx-auto px-8">
@@ -120,7 +120,7 @@ export default function Mission() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 max-w-2xl">
-              <div className="border border-bluegrey-2 rounded-2xl p-5 flex items-start gap-3">
+              <div className="border border-bluegrey-3 rounded-2xl p-5 flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-blue-7" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
@@ -134,7 +134,7 @@ export default function Mission() {
                   <p className="text-body-5 text-grey-6">{EVANGELISM_INFO.leader.tel}</p>
                 </div>
               </div>
-              <div className="border border-bluegrey-2 rounded-2xl p-5 flex items-start gap-3">
+              <div className="border border-bluegrey-3 rounded-2xl p-5 flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-blue-7" fill="currentColor" viewBox="0 0 20 20">
                     <path
@@ -158,7 +158,7 @@ export default function Mission() {
               {EVANGELISM_INFO.activities.map(({ name, schedule, location }) => (
                 <div
                   key={name}
-                  className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
+                  className="border border-bluegrey-3 rounded-2xl p-6 flex items-start gap-6"
                 >
                   <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
                     <svg
@@ -207,7 +207,7 @@ export default function Mission() {
                     {MISSION_CONTENT[type].items.map(({ name, schedule, location }) => (
                       <div
                         key={name}
-                        className="border border-bluegrey-2 rounded-2xl p-6 flex items-start gap-6"
+                        className="border border-bluegrey-3 rounded-2xl p-6 flex items-start gap-6"
                       >
                         <div className="w-10 h-10 rounded-full bg-blue-1 flex items-center justify-center shrink-0">
                           <svg
@@ -257,7 +257,7 @@ export default function Mission() {
                 <div
                   key={news.id}
                   onClick={() => setSelectedNews(news)}
-                  className="border border-bluegrey-2 rounded-2xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                  className="border border-bluegrey-3 rounded-2xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="h-56 bg-bluegrey-1 flex items-center justify-center">
                     <svg

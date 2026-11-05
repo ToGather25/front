@@ -21,7 +21,7 @@ function StaffAvatar({ image, name, className }) {
 
 function StaffCard({ name, role, image, titleLabel, highlight }) {
   return (
-    <div className="border border-bluegrey-2 rounded-2xl p-5 md:p-6 flex gap-5 md:gap-6">
+    <div className="border border-bluegrey-3 rounded-2xl p-5 md:p-6 flex gap-5 md:gap-6">
       <StaffAvatar
         image={image}
         name={name}
@@ -76,7 +76,7 @@ export default function Staff() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="이름 또는 직책으로 검색하세요."
-          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-2 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all"
+          className="w-full pl-10 pr-4 py-2.5 border border-bluegrey-3 rounded-xl text-body-3 text-grey-9 placeholder:text-grey-5 focus:border-primary outline-none transition-all"
         />
       </div>
 
@@ -90,14 +90,14 @@ export default function Staff() {
               className={`px-5 py-2 rounded-full text-body-3 font-semibold transition-all ${
                 activeChip === chip
                   ? "bg-primary text-white"
-                  : "border border-bluegrey-2 text-grey-8 hover:border-blue-5 hover:text-primary"
+                  : "border border-bluegrey-3 text-grey-8 hover:border-blue-5 hover:text-primary"
               }`}
             >
               {chip}
             </button>
           ))}
         </div>
-        <div className="hidden md:flex md:flex-col md:w-[300px] shrink-0 bg-white border border-bluegrey-2 rounded-[20px] p-5">
+        <div className="hidden md:flex md:flex-col md:w-[300px] shrink-0 bg-white border border-bluegrey-3 rounded-[20px] p-5">
           {STAFF_CHIPS.map((chip, idx) => (
             <div key={chip}>
               <button

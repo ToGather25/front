@@ -80,7 +80,7 @@ export default function Privacy() {
           {SECTIONS.map(({ title, content }) => (
             <section key={title}>
               <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-3">{title}</h2>
-              <div className="border-t border-bluegrey-2 pt-4">
+              <div className="border-t border-bluegrey-3 pt-4">
                 <p className="text-body-3 text-grey-8 leading-[1.9] whitespace-pre-line">
                   {content}
                 </p>

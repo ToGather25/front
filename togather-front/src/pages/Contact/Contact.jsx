@@ -89,7 +89,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="홍길동"
-                    className="px-4 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
+                    className="px-4 py-3 rounded-xl border border-bluegrey-3 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -104,7 +104,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="010-0000-0000"
-                    className="px-4 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
+                    className="px-4 py-3 rounded-xl border border-bluegrey-3 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
                   />
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function Contact() {
                   value={form.email}
                   onChange={handleChange}
                   placeholder="example@email.com"
-                  className="px-4 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
+                  className="px-4 py-3 rounded-xl border border-bluegrey-3 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors"
                 />
               </div>
 
@@ -134,7 +134,7 @@ export default function Contact() {
                   value={form.category}
                   onChange={handleChange}
                   required
-                  className="pl-4 pr-10 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors bg-white"
+                  className="pl-4 pr-10 py-3 rounded-xl border border-bluegrey-3 text-body-3 text-grey-10 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors bg-white"
                 >
                   <option value="">선택해 주세요</option>
                   {categories.map((c) => (
@@ -157,7 +157,7 @@ export default function Contact() {
                   required
                   rows={8}
                   placeholder="문의하실 내용을 입력해 주세요."
-                  className="px-4 py-3 rounded-xl border border-bluegrey-2 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors resize-none"
+                  className="px-4 py-3 rounded-xl border border-bluegrey-3 text-body-3 text-grey-10 placeholder:text-grey-5 focus:outline-none focus:border-blue-6 focus:ring-1 focus:ring-blue-6 transition-colors resize-none"
                 />
               </div>
 
@@ -184,7 +184,7 @@ export default function Contact() {
 
               <div className="flex flex-col gap-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-3 flex items-center justify-center shrink-0">
                     <img src={IcoPhone} className="w-5 h-5" alt="" />
                   </div>
                   <div className="pt-1">
@@ -199,7 +199,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-3 flex items-center justify-center text-blue-6 shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -220,7 +220,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-3 flex items-center justify-center text-blue-6 shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -242,7 +242,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-2 flex items-center justify-center text-blue-6 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-bluegrey-3 flex items-center justify-center text-blue-6 shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="none"

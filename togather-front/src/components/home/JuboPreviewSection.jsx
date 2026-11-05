@@ -30,9 +30,9 @@ export default function JuboPreviewSection() {
           </Link>
         </div>
 
-        <div className="bg-white border border-bluegrey-2 rounded-2xl p-6 flex items-center gap-5">
+        <div className="bg-white border border-bluegrey-3 rounded-2xl p-6 flex items-center gap-5">
           {/* 이전 버튼 */}
-          <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-2 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
+          <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-3 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
             <svg
               className="w-4 h-4"
               fill="none"
@@ -70,7 +70,7 @@ export default function JuboPreviewSection() {
           </div>
 
           {/* 다음 버튼 */}
-          <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-2 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
+          <button className="w-10 h-10 rounded-full bg-white border border-bluegrey-3 flex items-center justify-center hover:border-blue-5 hover:text-blue-6 transition-colors shrink-0">
             <svg
               className="w-4 h-4"
               fill="none"
