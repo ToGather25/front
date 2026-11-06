@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UserBlack from "@/assets/icon-svg/mypage-user-black.svg";
+import UserBlack from "@/assets/web-icon/mypage-user-black.svg";
 import { MOCK_DEPT, MOCK_GROUPS } from "./mockData";
 import { ReadonlyField, InputField, ModalOverlay, IconBack } from "./shared";
 

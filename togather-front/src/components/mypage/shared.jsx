@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import PopupClose from "@/assets/icon-svg/popup-close.svg";
-import ArrowBack from "@/assets/icon-svg/mypage-arrow-back.svg";
+import PopupClose from "@/assets/web-icon/popup-close.svg";
+import ArrowBack from "@/assets/web-icon/mypage-arrow-back.svg";
 import {
   getDaysInMonth,
   getFirstDayOfMonth,

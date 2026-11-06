@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { getRecentSermons } from "@/services/sermonService";
-import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
-import BtnArrow from "@/assets/icon-svg/btn-arrow.svg";
-import PlayButton from "@/assets/icon-svg/play-button.svg";
+import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
+import BtnArrow from "@/assets/web-icon/btn-arrow.svg";
+import PlayButton from "@/assets/web-icon/play-button.svg";
 
 const FETCH_LIMIT = 50;
 

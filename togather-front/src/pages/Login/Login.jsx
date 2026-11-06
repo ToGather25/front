@@ -5,8 +5,8 @@ import { useChurch } from "@/contexts/ChurchContext";
 import googleIcon from "@/assets/oAuth/google.png";
 import kakaoIcon from "@/assets/oAuth/kakao.png";
 import naverIcon from "@/assets/oAuth/naver.png";
-import eyeIcon from "@/assets/icon-svg/eye.svg";
-import eyeOffIcon from "@/assets/icon-svg/eye-off.svg";
+import eyeIcon from "@/assets/web-icon/eye.svg";
+import eyeOffIcon from "@/assets/web-icon/eye-off.svg";
 
 const OAUTH_PROVIDERS = [
   { key: "kakao", name: "카카오", icon: kakaoIcon },

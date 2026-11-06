@@ -7,7 +7,7 @@ import { formatKoreanDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
 import RegistrationButton from "@/components/events/RegistrationButton";
 import DefaultBanner from "@/assets/default_banner.png";
-import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function EventDetail() {

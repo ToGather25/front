@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import IcoChurchDefault from "@/assets/icon-svg/church-default.svg";
-import IcoChurchHover from "@/assets/icon-svg/church-hover.svg";
-import IcoAnnouncementDefault from "@/assets/icon-svg/annotation-check-default.svg";
-import IcoAnnouncementHover from "@/assets/icon-svg/annotation-check-hover.svg";
-import IcoNotiDefault from "@/assets/icon-svg/notification-text-default.svg";
-import IcoNotiHover from "@/assets/icon-svg/notification-text-hover.svg";
-import IcoBookDefault from "@/assets/icon-svg/book-open-default.svg";
-import IcoBookHover from "@/assets/icon-svg/book-open-hover.svg";
+import IcoChurchDefault from "@/assets/web-icon/church-default.svg";
+import IcoChurchHover from "@/assets/web-icon/church-hover.svg";
+import IcoAnnouncementDefault from "@/assets/web-icon/annotation-check-default.svg";
+import IcoAnnouncementHover from "@/assets/web-icon/annotation-check-hover.svg";
+import IcoNotiDefault from "@/assets/web-icon/notification-text-default.svg";
+import IcoNotiHover from "@/assets/web-icon/notification-text-hover.svg";
+import IcoBookDefault from "@/assets/web-icon/book-open-default.svg";
+import IcoBookHover from "@/assets/web-icon/book-open-hover.svg";
 
 export default function MenuCards() {
   const navigate = useNavigate();

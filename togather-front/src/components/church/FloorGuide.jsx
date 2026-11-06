@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 export default function FloorGuide() {
   const { church } = useChurch();

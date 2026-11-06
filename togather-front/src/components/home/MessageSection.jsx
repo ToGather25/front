@@ -5,8 +5,8 @@ import { BOOK_ABBREV } from "@/config/bible.config";
 import bibleData from "@/data/bible.json";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import defaultBanner from "@/assets/default_banner.png";
-import rightArrow from "@/assets/icon-svg/right-arrow.svg";
-import quoteRight from "@/assets/icon-svg/quote-right.svg";
+import rightArrow from "@/assets/web-icon/right-arrow.svg";
+import quoteRight from "@/assets/web-icon/quote-right.svg";
 
 /** "골로새서 3:15-17" 같은 표기를 분해해 해당 구절 본문을 찾는다. 범위(-17)가 없으면 한 절만. */
 function lookupVerseText(scripture) {

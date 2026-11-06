@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import FallbackImage from "./FallbackImage";
-import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import AvatarIcon from "@/assets/web-icon/mypage-user-blue.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 function StaffAvatar({ image, name, className }) {
   return (

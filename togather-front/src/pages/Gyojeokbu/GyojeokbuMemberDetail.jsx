@@ -1,5 +1,5 @@
-import IcoPhone from "@/assets/icon-svg/footer-phone.svg";
-import IcoEmail from "@/assets/icon-svg/footer-email.svg";
+import IcoPhone from "@/assets/web-icon/footer-phone.svg";
+import IcoEmail from "@/assets/web-icon/footer-email.svg";
 import { Avatar } from "./shared";
 
 function Card({ title, children }) {

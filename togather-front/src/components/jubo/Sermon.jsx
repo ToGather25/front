@@ -1,6 +1,6 @@
 import { useState } from "react";
-import IcoHeartRed from "@/assets/icon-svg/heart-red.svg";
-import IcoHeartStroke from "@/assets/icon-svg/heart-stroke.svg";
+import IcoHeartRed from "@/assets/web-icon/heart-red.svg";
+import IcoHeartStroke from "@/assets/web-icon/heart-stroke.svg";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getSermonNote } from "@/services/juboService";

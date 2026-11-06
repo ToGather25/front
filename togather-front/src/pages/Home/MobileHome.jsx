@@ -4,7 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
 import defaultBanner from "@/assets/default_banner.png";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 function MobileSearchBar() {
   const navigate = useNavigate();

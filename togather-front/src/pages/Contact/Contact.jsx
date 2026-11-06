@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { submitContact } from "@/services/contactService";
 import { getErrorMessage } from "@/utils/apiErrors";
-import IcoPhone from "@/assets/icon-svg/main-phone.svg";
+import IcoPhone from "@/assets/web-icon/main-phone.svg";
 
 export default function Contact() {
   const { church } = useChurch();

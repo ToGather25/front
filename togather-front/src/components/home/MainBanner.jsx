@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import defaultBanner from "@/assets/default_banner.png";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 // church.config.js의 mainBanner.titleFont 값 → 실제 CSS font-family/weight
 const TITLE_FONTS = {

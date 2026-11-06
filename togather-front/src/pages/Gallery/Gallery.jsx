@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/auth";
 import { useFetch } from "@/hooks/useFetch";
 import { getCommunities, getPhotos } from "@/services/galleryService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
-import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
 const PRIMARY_BORDER_COLORS = [

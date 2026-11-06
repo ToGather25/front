@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
-import Vision1 from "@/assets/icon-svg/vision-1.png";
-import Vision2 from "@/assets/icon-svg/vision-2.png";
-import Vision3 from "@/assets/icon-svg/vision-3.png";
-import Vision4 from "@/assets/icon-svg/vision-4.png";
-import Vision5 from "@/assets/icon-svg/vision-5.png";
-import Vision6 from "@/assets/icon-svg/vision-6.png";
-import Vision7 from "@/assets/icon-svg/vision-7.png";
-import Polygon from "@/assets/icon-svg/polygon.svg";
+import Vision1 from "@/assets/web-icon/vision-1.png";
+import Vision2 from "@/assets/web-icon/vision-2.png";
+import Vision3 from "@/assets/web-icon/vision-3.png";
+import Vision4 from "@/assets/web-icon/vision-4.png";
+import Vision5 from "@/assets/web-icon/vision-5.png";
+import Vision6 from "@/assets/web-icon/vision-6.png";
+import Vision7 from "@/assets/web-icon/vision-7.png";
+import Polygon from "@/assets/web-icon/polygon.svg";
 
 const VISION_ICONS = [Vision1, Vision2, Vision3, Vision4, Vision5, Vision6, Vision7];
 

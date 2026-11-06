@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { addMyInquiry } from "@/services/myPageService";
 import { formatDotDate } from "@/utils/date";
-import MailIcon from "@/assets/icon-svg/mypage-mail.svg";
+import MailIcon from "@/assets/web-icon/mypage-mail.svg";
 import { MOCK_USER } from "./mockData";
 import { StatusBadge, Pagination, InputField, ReadonlyField, IconBack } from "./shared";
 

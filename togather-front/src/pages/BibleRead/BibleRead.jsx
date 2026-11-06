@@ -12,7 +12,7 @@ import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/confi
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 // 성경 전체 검색 (키워드 → [{book, chapter, num, text}])
 function searchBible(query) {

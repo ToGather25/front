@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearch } from "@/contexts/SearchContext";
 import { ALL_KEYWORDS, QUICK_SUGGESTIONS } from "@/config/search.config";
-import IcoSearch from "@/assets/icon-svg/search-black.svg";
+import IcoSearch from "@/assets/web-icon/search-black.svg";
 
 const RECENT_KEY = "togather_recent_searches";
 

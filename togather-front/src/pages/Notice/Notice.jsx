@@ -5,7 +5,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import NumberedPagination from "@/components/common/NumberedPagination";
-import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
 
 const TABS = ["전체", "공지", "행사", "소식"];
 

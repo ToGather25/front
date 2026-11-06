@@ -4,7 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import Section from "@/components/common/Section";
 import defaultBanner from "@/assets/default_banner.png";
 import { getLiveScreen } from "@/services/sermonService";
-import ArrowExternal from "@/assets/icon-svg/arrow-external.svg";
+import ArrowExternal from "@/assets/web-icon/arrow-external.svg";
 
 function VideoThumb({ isLive, onClick, sermon }) {
   return (

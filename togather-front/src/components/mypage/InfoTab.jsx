@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import { withdrawAccount } from "@/services/myPageService";
-import ImgUpload from "@/assets/icon-svg/mypage-img-upload.svg";
+import ImgUpload from "@/assets/web-icon/mypage-img-upload.svg";
 import { MOCK_USER } from "./mockData";
 import { ReadonlyField, InputField, ModalOverlay } from "./shared";
 

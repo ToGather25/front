@@ -3,9 +3,9 @@ import { useChurch } from "@/contexts/ChurchContext";
 import KakaoMap from "@/components/common/KakaoMap";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
 import { JuboPrintModeContext } from "./juboPrintMode";
-import locationIcon from "@/assets/icon-svg/footer-location.svg";
-import phoneIcon from "@/assets/icon-svg/footer-phone.svg";
-import mailIcon from "@/assets/icon-svg/footer-email.svg";
+import locationIcon from "@/assets/web-icon/footer-location.svg";
+import phoneIcon from "@/assets/web-icon/footer-phone.svg";
+import mailIcon from "@/assets/web-icon/footer-email.svg";
 
 export default function JuboV2Page8({ data }) {
   const { church } = useChurch();

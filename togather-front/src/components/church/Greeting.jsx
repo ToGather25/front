@@ -1,7 +1,7 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import FallbackImage from "./FallbackImage";
 import ChurchLogo from "@/components/common/ChurchLogo";
-import AvatarIcon from "@/assets/icon-svg/mypage-user-blue.svg";
+import AvatarIcon from "@/assets/web-icon/mypage-user-blue.svg";
 
 export default function Greeting() {
   const { church } = useChurch();

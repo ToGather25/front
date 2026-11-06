@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useAuth } from "@/contexts/auth";
 import { getErrorMessage } from "@/utils/apiErrors";
-import IcoPhone from "@/assets/icon-svg/main-phone.svg";
+import IcoPhone from "@/assets/web-icon/main-phone.svg";
 
 
 const CURRENT_YEAR = new Date().getFullYear();

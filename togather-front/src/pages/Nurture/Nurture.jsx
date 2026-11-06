@@ -5,7 +5,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
-import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
+import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
 
 const TABS = [
   "구역모임",

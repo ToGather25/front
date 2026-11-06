@@ -8,7 +8,7 @@ import {
   rejectSignupRequest,
 } from "@/services/signupRequestService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
 

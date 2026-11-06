@@ -1,11 +1,11 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import churchSermonBg from "@/assets/church_sermon.png";
 import logo from "@/assets/icons/옥길교회_logo.png";
-import locationIcon from "@/assets/icon-svg/footer-location.svg";
-import phoneIcon from "@/assets/icon-svg/footer-phone.svg";
-import mailIcon from "@/assets/icon-svg/footer-email.svg";
-import quoteLeft from "@/assets/icon-svg/quote-left.svg";
-import quoteRight from "@/assets/icon-svg/quote-right.svg";
+import locationIcon from "@/assets/web-icon/footer-location.svg";
+import phoneIcon from "@/assets/web-icon/footer-phone.svg";
+import mailIcon from "@/assets/web-icon/footer-email.svg";
+import quoteLeft from "@/assets/web-icon/quote-left.svg";
+import quoteRight from "@/assets/web-icon/quote-right.svg";
 
 export default function JuboV2Page1({ data }) {
   const { church } = useChurch();

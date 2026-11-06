@@ -4,7 +4,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getNotices, createNotice, updateNotice, deleteNotice } from "@/services/noticeService";
 import PrevNextPagination from "@/components/common/PrevNextPagination";
 import NumberedPagination from "@/components/common/NumberedPagination";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
 const TABS = ["전체", "공지", "행사", "소식"];

@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-import FooterLocation from "@/assets/icon-svg/footer-location.svg";
-import FooterPhone from "@/assets/icon-svg/footer-phone.svg";
-import FooterEmail from "@/assets/icon-svg/footer-email.svg";
+import FooterLocation from "@/assets/web-icon/footer-location.svg";
+import FooterPhone from "@/assets/web-icon/footer-phone.svg";
+import FooterEmail from "@/assets/web-icon/footer-email.svg";
 import ChurchLogo from "@/components/common/ChurchLogo";
 
 export default function Footer({ isHome = false }) {

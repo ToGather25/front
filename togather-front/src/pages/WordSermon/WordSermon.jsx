@@ -4,7 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import WorshipInfo from "@/components/church/WorshipInfo";
 import JuboList from "@/pages/JuboList/JuboList";
-import IcoSearch from "@/assets/icon-svg/search-black.svg";
+import IcoSearch from "@/assets/web-icon/search-black.svg";
 import { getRecentSermons } from "@/services/sermonService";
 
 const PAGE_SIZE = 12;

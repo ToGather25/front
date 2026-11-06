@@ -7,7 +7,7 @@ import { getDaysInMonth, getFirstDayOfMonth, toDateKey, parseLocalDate } from "@
 import WordTabBar from "@/components/word/WordTabBar";
 import NumberedPagination from "@/components/common/NumberedPagination";
 import { useJuboPdfDownload } from "@/components/jubo/useJuboPdfDownload";
-import IcoSearch from "@/assets/icon-svg/search-black.svg";
+import IcoSearch from "@/assets/web-icon/search-black.svg";
 
 const PAGE_SIZE = 8;
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import floatingDefault from "@/assets/icon-svg/floating-default.svg";
-import floatingHover from "@/assets/icon-svg/floating-hover.svg";
+import floatingDefault from "@/assets/web-icon/floating-default.svg";
+import floatingHover from "@/assets/web-icon/floating-hover.svg";
 
 const SECTION_SELECTOR = "[data-home-section]";
 

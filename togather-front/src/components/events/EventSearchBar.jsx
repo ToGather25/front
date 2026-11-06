@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
-import IcoClose from "@/assets/icon-svg/popup-close.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
+import IcoClose from "@/assets/web-icon/popup-close.svg";
 
 /**
  * 행사 검색 입력창. 캘린더 헤더 / 검색결과 페이지 상단에서 공용으로 사용.

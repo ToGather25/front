@@ -1,5 +1,5 @@
 import { useState } from "react";
-import IcoHeartRed from "@/assets/icon-svg/heart-red.svg";
+import IcoHeartRed from "@/assets/web-icon/heart-red.svg";
 
 export default function BibleVersesView({
   mode = "read",

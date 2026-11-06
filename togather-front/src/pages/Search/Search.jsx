@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { searchKeywords } from "@/config/search.config";
 import HighlightText from "@/components/common/HighlightText";
-import IcoSearch from "@/assets/icon-svg/search-grey.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();

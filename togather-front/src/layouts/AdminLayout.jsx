@@ -1,15 +1,15 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useEffect } from "react";
-import IcoChart from "@/assets/icon-svg/admin-chart-white.svg";
-import IcoMonitor from "@/assets/icon-svg/admin-monitor-white.svg";
-import IcoBook from "@/assets/icon-svg/admin-book-white.svg";
-import IcoAnnounce from "@/assets/icon-svg/admin-announcement-white.svg";
-import IcoUsers from "@/assets/icon-svg/admin-users-white.svg";
-import IcoFile from "@/assets/icon-svg/admin-file-white.svg";
-import IcoGallery from "@/assets/icon-svg/admin-gallery-white.svg";
-import IcoSiteSettings from "@/assets/icon-svg/admin-site-settings-white.svg";
-import IcoCalendar from "@/assets/icon-svg/mypage-calendar-white.svg";
+import IcoChart from "@/assets/web-icon/admin-chart-white.svg";
+import IcoMonitor from "@/assets/web-icon/admin-monitor-white.svg";
+import IcoBook from "@/assets/web-icon/admin-book-white.svg";
+import IcoAnnounce from "@/assets/web-icon/admin-announcement-white.svg";
+import IcoUsers from "@/assets/web-icon/admin-users-white.svg";
+import IcoFile from "@/assets/web-icon/admin-file-white.svg";
+import IcoGallery from "@/assets/web-icon/admin-gallery-white.svg";
+import IcoSiteSettings from "@/assets/web-icon/admin-site-settings-white.svg";
+import IcoCalendar from "@/assets/web-icon/mypage-calendar-white.svg";
 
 const MENU = [
   { label: "대시보드", to: "/admin", end: true, icon: IcoChart },
