@@ -26,4 +26,4 @@ dist-ssr
 
 # Local git worktrees (superpowers subagent-driven-development)
 .worktrees
-/docs
+docs
