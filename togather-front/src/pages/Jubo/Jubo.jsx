@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getJuboIssue } from "@/services/juboService";
+import { getJuboWithSections } from "@/services/juboService";
 import JuboPageSystem from "@/components/jubo/JuboPageSystem";
 import { useJuboPdfDownload } from "@/components/jubo/useJuboPdfDownload";
 import { resolveJuboVersion } from "@/components/jubo/juboVersions";
@@ -10,8 +10,10 @@ export default function Jubo() {
   const { church } = useChurch();
   const [searchParams] = useSearchParams();
   const issueId = searchParams.get("issue");
+  // 메타(호수/날짜/설교제목)와 섹션 전체(예배순서·헌금·소식 등)를 한 번에 받는다 — 각 페이지
+  // 컴포넌트는 더 이상 섹션별로 따로 fetch하지 않고 issue.sections를 읽기만 한다.
   const { data: issue } = useFetch(
-    () => (issueId ? getJuboIssue(church.id, issueId) : Promise.resolve(null)),
+    () => getJuboWithSections(church.id, issueId || undefined),
     [church.id, issueId],
     null,
   );

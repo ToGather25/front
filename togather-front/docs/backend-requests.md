@@ -1,6 +1,6 @@
 # 백엔드 요청 사항
 
-작성일: 2026-09-26
+작성일: 2026-09-26 (업데이트: 2026-11-06 — §7 추가)
 작성: 프론트엔드 (togather-front)
 기준 백엔드: `/Users/myewon/Desktop/back` (main), `docs/api-spec-v2.md`
 
@@ -31,24 +31,21 @@
 
 ### 화면이 필요로 하는데 `MemberRegistry`에 없는 필드
 
+> **(2026-11-06) 해결 확인**: `email`/`address`/`baptismDate`/`note`는 `MemberRegistry` 도메인과
+> `GET /church/admin/members/{publicId}`(`MemberDetailResponse`)에 이미 추가되어 있습니다.
+> `GET /church/members/{publicId}`(PII 제외 상세)도 이미 구현돼 있습니다. 아래는 남은 것만 정리합니다.
+
 | 필드 | 용도 | 비고 |
 | --- | --- | --- |
-| `email` | 상세 연락처 | |
-| `address` | 상세 정보 / 세대 집계 | PII |
-| `baptismDate` | 세례일 | |
 | `regionLeader` | 구역장 표시 | `region`으로 역참조 가능하면 불필요 |
-| `note` | 관리자 메모 | |
 | `family[]` | `{ relation, name, memberId? }` — 가족 관계 | 별도 테이블 필요 |
 | `history[]` | `{ year, text }` — 등록/임직 이력 | 별도 테이블 필요 |
 | `lastAttendedAt`, `attendanceCount/total` | 최근 출석 · 누적 출석 | 출석 도메인 자체가 없음(§3과 동일) |
 
 ### 요청
 
-1. 위 필드 중 **어디까지 지원 예정인지** 알려주세요. 지원 범위가 정해지면 프론트가 화면을 그 범위로 맞춰 재구성하겠습니다.
-2. `family` / `history`는 스키마가 커서, **이번 범위에서 제외한다면 제외한다고 확정**해 주세요. 그러면 해당 UI를 삭제하겠습니다.
-3. 상세 조회용 엔드포인트 관련 확인
-   - 일반 교인이 다른 교인의 상세를 볼 수 있어야 하는지 (정책 확인 필요)
-   - 가능하다면 `GET /api/church/members/{publicId}` (PII 제외 상세) 추가 요청
+1. `family` / `history`는 스키마가 커서, **이번 범위에서 제외한다면 제외한다고 확정**해 주세요. 그러면 해당 UI를 삭제하겠습니다.
+2. §7-1에 교적부 PII를 로그인 사용자 role에 따라 분기해서 내려주는 구체적인 방식을 새로 제안했습니다. 함께 확인 부탁드립니다.
 
 ### 참고
 
@@ -57,44 +54,13 @@
 
 ---
 
-## 2. P1 — 계정 ↔ 교적부 연동 (마이페이지 프로필)
+## 2. (2026-11-06 해결 확인) 계정 ↔ 교적부 연동 (마이페이지 프로필)
 
-### 현황
+`GET /api/my/profile`가 요청대로 이미 구현되어 있습니다(name/email/phone/birthDate/role/region/department/smallGroup/registeredAt/baptismDate 전부 포함). 프론트가 MOCK_USER를 지우고 이 API로 연결하면 됩니다.
 
-`/mypage`의 내 정보 · 소속 탭이 `src/components/mypage/mockData.js`의
-`MOCK_USER` / `MOCK_DEPT` / `MOCK_GROUPS` 하드코딩을 그대로 렌더합니다.
-로그인해도 **모든 사용자에게 "김민수 장로"가 표시**됩니다.
+다만 **조회만 가능하고 수정 API가 없어** "내 정보 저장" 기능은 아직 동작하지 않습니다 — §7-2에 이어서 요청했습니다.
 
-`FrontAuthController` 주석에 이미 인지된 항목으로 보입니다.
-
-> 표시명(name)은 계정-교적부 연동(P8) 전까지 null이다.
-
-### 요청
-
-`GET /api/my/profile` (로그인 사용자 본인 정보) 추가를 요청합니다. 본인 정보이므로 PII 포함이 가능할 것으로 보입니다.
-
-```jsonc
-{
-  "name": "김민수",
-  "email": "...",
-  "phone": "...",
-  "birthDate": "1972-04-18",
-  "role": "장로",           // 직분
-  "region": "1구역",
-  "department": "남선교회 1지회",
-  "smallGroup": "1조",
-  "registeredAt": "2014-03-09",
-  "baptismDate": "2002-05-19"  // §1에서 추가된다면
-}
-```
-
-추가로 소속 그룹 목록(`MOCK_GROUPS` 대응)이 별도 개념이라면
-`GET /api/my/groups` → `[{ id, name, role, meetingInfo, memberCount }]` 형태를 함께 검토 부탁드립니다.
-
-### 임시 대응
-
-P8 연동 전까지는 최소한 **로그인 응답의 `FrontUser.name`만이라도 채워주시면**,
-프론트가 하드코딩 이름을 지우고 실제 이름을 표시하도록 바꾸겠습니다.
+소속 그룹 목록(`GET /api/my/groups`)은 별도로 생기지 않았다면 여전히 필요합니다 — 확인 부탁드립니다.
 
 ---
 
@@ -110,39 +76,13 @@ P8 연동 전까지는 최소한 **로그인 응답의 `FrontUser.name`만이라
 | 3-1 | 주일학교 (부서 4개) | `sundaySchool` | `intro` 섹션 타입에 `SUNDAY_SCHOOL` 추가 |
 | 3-2 | 전도회 소개 | `evangelism` | `EVANGELISM` |
 | 3-3 | 국내외 선교 | `missions` | `MISSIONS` |
-| 3-4 | 선교지 소식 | `missionNews` | 게시물 성격 → §3-7과 함께 게시판으로 |
 | 3-5 | 구역 모임 | `districtMeetings` | `DISTRICT_MEETINGS` (주보 `DISTRICTS`와 중복 검토) |
 | 3-6 | 제자훈련 · 양육 프로그램 | `discipleTraining`, `nurturePrograms` | `DISCIPLE_TRAINING`, `NURTURE_PROGRAMS` |
-| 3-6-1 | 섬기는사람들(목사/장로/선교사) | `staff` | `STAFF` |
 | 3-7 | 양육·훈련 게시판 | `Nurture.jsx`의 `BOARD_POSTS` | 아래 별도 설명 |
 
-### 3-6-1 섬기는사람들
-
-목사, 장로, 선교사 정보가 현재 church.config.js의 `staff` 필드에만 있습니다.
-
-백엔드에서 `STAFF` 섹션을 추가해 다음 데이터 구조로 제공해주길 요청합니다:
-
-```json
-{
-  "STAFF": {
-    "filterTags": ["#담임목사", "#간사", "#행정장로", "#부목사"],
-    "headPastor": {
-      "name": "임재호 목사",
-      "tel": "02-1234-5678",
-      "email": "gather@gmail.com",
-      "role": "교회 내 역할 및 소속 부서",
-      "image": null,
-      "education": ["OOO대학교 졸업", ...],
-      "career": ["OO교회 사역", ...]
-    },
-    "clergy": [...],
-    "elders": [...],
-    "associateElders": [...],
-    "retiredElders": [...],
-    "missionaries": [...]
-  }
-}
-```
+> **(2026-11-06 해결 확인)**
+> - 3-4(선교지 소식): `intro` 섹션이 아니라 공지 도메인의 `boardType=MISSION_NEWS`(`GET /notices?boardType=MISSION_NEWS`)로 이미 구현되어 있습니다. 프론트 연결만 하면 됩니다.
+> - 3-6-1(섬기는사람들): `ChurchIntroSectionType`에 `STAFF`가 이미 추가되어 있습니다. 프론트가 바로 연결하면 됩니다(실제 데이터가 비어 있으면 관리자 화면에서 입력).
 
 ### 3-5 중복 확인 필요
 
@@ -152,11 +92,7 @@ P8 연동 전까지는 최소한 **로그인 응답의 `FrontUser.name`만이라
 
 ### 3-7 양육·훈련 게시판
 
-게시물(제목/본문/작성자/작성일/카테고리 `공지|후기|나눔`) + 검색 + 카테고리 필터 + 페이지네이션이 필요합니다.
-**기존 공지(`notice`) 도메인에 게시판 종류 구분을 추가**하는 방식이 가장 간단해 보이는데, 어떻게 보시는지 의견 부탁드립니다.
-
-- 안 A: `notice`에 `boardType` 추가 (`ANNOUNCEMENT` | `NURTURE` | `MISSION_NEWS`)
-- 안 B: 범용 게시판 도메인 신설
+> **(2026-11-06 해결 확인)**: 안 A가 이미 구현되어 있습니다 — `notice` 도메인에 `boardType`(`ANNOUNCEMENT`/`NURTURE`/`MISSION_NEWS`) 필드가 추가되었고 `GET /notices?boardType=NURTURE`로 조회됩니다. 프론트 연결만 하면 됩니다.
 
 ---
 
@@ -203,7 +139,7 @@ CHURCH_ADMIN 엔드포인트를 요청합니다. **운영 정책상 현재가 �
 
 | API | 상태 |
 | --- | --- |
-| `GET /api/church/praises`, `/api/church/admin/praises` | 찬양 화면 미기획 |
+| `GET /api/church/praises`, `/api/church/admin/praises` | **(2026-11-06) 기획에서 최종 제외 확정.** 더 이상 필요하지 않습니다. 백엔드 코드는 그대로 두시면 되고 조치 불필요합니다 |
 | `GET /api/church/worship-guides`, `/api/church/admin/worship-guides` | 예배 안내는 현재 예배 시간표(`worship-schedule`)만 사용 중. 자유 텍스트 안내 영역이 화면에 없음 |
 | `POST /api/company/inquiries` | 도입 문의(ToGather 영업용) 페이지 미구현 |
 | `POST /api/auth/oauth/{provider}` | 소셜 로그인 UI 미구현 |
@@ -301,80 +237,13 @@ church.config.js의 기본값만 사용 중입니다.
 
 백엔드에서 위 형식으로 PARKING 섹션 데이터를 intro 응답에 포함해 주길 요청합니다.
 
-### 4-9. (P2) 예배 목록 페이지네이션 PageInfo 명확화 요청
+### 4-9. (2026-11-06 해결 확인) 예배 목록 페이지네이션 PageInfo
 
-예배방송 메뉴의 "예배 목록" 탭(`/예배·방송?tab=예배%20목록`)에서 
-`GET /api/church/sermons` API를 호출하고 있는데, 
-응답의 **pageInfo 구조가 명확하지 않습니다.**
+`GET /api/church/sermons` 응답에 `pageInfo.{page,size,totalElements,totalPages,hasNext,hasPrevious}`가 공통 `PageResponse` 포맷으로 이미 포함되어 있습니다. 프론트 연결만 하면 됩니다.
 
-프론트에서는 현재 `pageInfo.totalPages`를 기대하고 있습니다.
+### 4-10-a. (2026-11-06 해결 확인) 차량운행 안내(TransportGuide)
 
-**확인 요청:**
-
-`GET /api/church/sermons?page={page}&size={size}` 응답의 `pageInfo` 구조를 명확히 해주세요.
-
-**프론트가 기대하는 형식:**
-```json
-{
-  "success": true,
-  "data": {
-    "content": [...],
-    "pageInfo": {
-      "totalPages": 5,
-      "currentPage": 1,
-      "totalElements": 47,
-      "size": 12
-    }
-  }
-}
-```
-
-`totalPages`가 있으면 페이지네이션이 올바르게 작동합니다.
-
-### 4-10. (P2) 차량운행 안내(TransportGuide) API 신설 요청
-
-현재 교회소개의 TransportGuide 화면(`src/components/church/TransportGuide.jsx`)이 
-`church.transportGuide`를 사용하고 있으나, 백엔드에 대응 API가 없어 
-church.config.js의 기본값만 사용 중입니다.
-
-**요청하는 API 및 필드 구조:**
-
-`GET /api/churches/{id}/transport-guide` 또는 intro의 `TRANSPORT_GUIDE` 섹션
-
-```json
-{
-  "TRANSPORT_GUIDE": {
-    "routes": [
-      {
-        "name": "청산역 라인",
-        "color": "#3B5280",
-        "waypoints": [
-          {
-            "lat": 37.4847,
-            "lng": 126.9291,
-            "label": "옥길교회 출발",
-            "time": "06:10"
-          },
-          ...
-        ]
-      },
-      {
-        "name": "천왕역 라인",
-        "color": "#E05C2D",
-        "waypoints": [...]
-      }
-    ],
-    "notes": [
-      "차량 운행 관련 공지사항",
-      "추가 공지사항"
-    ]
-  }
-}
-```
-
-**주의:** 
-- `color`는 각 노선을 구분하는 hex 컬러입니다 (지도 표시용)
-- `waypoints`는 각 노선의 정거점 배열입니다 (순서대로 지도에 표시됨)
+기존 `intro`의 `SHUTTLE` 섹션 타입이 이 용도였습니다(`INTRO_SECTION_TO_CONFIG_KEY`의 `SHUTTLE → transportGuide` 매핑). 프론트가 이미 연결해 정상 동작 확인했습니다. 새 `TRANSPORT_GUIDE` 타입은 필요 없습니다.
 
 ### 4-10. (P3) 비밀번호 재설정 — 발송 인프라 전환 시 알림 요청
 
@@ -384,203 +253,27 @@ church.config.js의 기본값만 사용 중입니다.
 메일/SMS 발송 인프라가 붙어 **링크 발송 방식으로 전환될 때 미리 알려주세요.**
 토큰을 URL 파라미터로 받는 별도 페이지가 필요해집니다.
 
-### 4-11. (P2) 주보 발행호별 Cover 이미지 제공 요청
+### 4-11. (2026-11-06 해결 확인) 주보 발행호별 Cover 이미지
 
-현재 JuboList 화면(`src/pages/JuboList/JuboList.jsx`)에서 각 주보 카드의 썸네일로 
-주보 표지 이미지를 표시하고 싶으나, 백엔드가 발행호별 개별 cover 이미지를 지원하지 않습니다.
+`GET /api/churches/{id}/jubo`(아카이브 목록) 응답의 `JuboSummaryResponse`에 `coverImageUrl`이 이미 발행호별로 포함되어 있습니다. 프론트 연결만 하면 됩니다.
 
-현재 `GET /api/churches/{id}/jubo/cover`는 "현재" 발행호의 cover만 반환하여,
-모든 주보 카드가 같은 이미지를 공유하게 됩니다.
+### 4-12. (2026-11-06 해결 확인) 공지사항 Featured 필드
 
-**요청:**
+`FrontNoticeResponse.featured`가 이미 있습니다. 프론트에서 정렬 로직만 연결하면 됩니다.
 
-주보 list 응답(`GET /api/churches/{id}/jubo`)의 각 아이템에 cover 이미지 URL을 포함해주세요.
+### 4-13. (2026-11-06 해결 확인) 공지사항 페이지네이션 Total
 
-**예상 응답 형식:**
-```json
-{
-  "data": [
-    {
-      "id": "uuid",
-      "issueNo": 1234,
-      "title": "설교 제목",
-      "scripture": "요한복음 3:16",
-      "juboDate": "2026-09-27",
-      "coverImageUrl": "https://..../cover-1234.jpg"
-    },
-    ...
-  ]
-}
-```
+`GET /api/churches/{id}/notices` 응답 본문 최상위에 `total`, `X-Total-Count` 헤더로도 전체 개수가 내려오고 있습니다. 프론트 연결만 하면 됩니다.
 
-또는 발행호별 cover 조회 API를 별도로 제공하면:
-- `GET /api/churches/{id}/jubo/{issueNo}/cover` → image URL 반환
+### 4-13-1. (2026-11-06 해결 확인) 설교 목록 API — YouTube 썸네일
 
-프론트에서 발행호별로 cover를 별도 호출하여 표시하겠습니다.
+`SermonResponse`에 `videoId`, `thumbnail`이 이미 포함되어 있습니다. 프론트 연결만 하면 됩니다.
 
-### 4-12. (P3) 공지사항 Featured 필드 추가 요청
+### 4-14. (2026-11-06 해결 확인) 최신 설교 정보 API — YouTube 연동
 
-현재 홈 화면의 NotificationSection에서 공지사항 목록을 표시할 때,
-**중요 공지(featured=true)를 항상 위쪽에 정렬**하고 있습니다.
+요청대로 `GET /api/churches/{churchId}/sermon/latest`가 구현되어 있고, YouTube API를 직접 호출하지 않고 DB에 저장된 `youtubeVideoId`로 썸네일/URL을 파생하는 방식입니다(라이브 API 키와 무관하게 동작). 프론트 `MessageSection.jsx`를 이 엔드포인트로 교체하면 §4-14가 지적한 키 노출 문제가 해결됩니다.
 
-다만, 백엔드의 `GET /api/churches/{id}/notices` 응답에 `featured` 필드가 
-포함되어 있지 않아, 프론트에서 정렬을 할 수 없습니다.
-
-**요청:**
-
-공지사항 list 응답의 각 아이템에 `featured` 필드를 포함해주세요.
-
-**예상 응답 형식:**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "type": "공지",
-      "featured": true,
-      "title": "중요 공지사항 제목",
-      "body": "...",
-      "date": "2026-09-27",
-      "author": "사무실"
-    },
-    {
-      "id": 2,
-      "type": "행사",
-      "featured": false,
-      "title": "일반 공지사항 제목",
-      "body": "...",
-      "date": "2026-09-26",
-      "author": "교역자실"
-    },
-    ...
-  ]
-}
-```
-
-`featured`가 `true`인 공지사항이 목록 상단에 표시됩니다.
-
-### 4-13. (P2) 공지사항 페이지네이션 Total 필드 추가 요청
-
-현재 `/공지사항` 페이지에서 **전체 탭의 페이지네이션이 작동하지 않습니다.**
-
-이유: 백엔드 응답에 **전체 공지 개수(total)**가 없어서, 
-프론트에서 "다음 페이지가 있는지" 판단할 수 없습니다.
-
-**예시:**
-- 공지가 총 25개 있는데
-- 프론트에서 page=0, limit=10으로 요청하면
-- 응답으로 10개만 받음
-- 이게 전체 10개인지, 아니면 25개 중 10개인지 알 수 없음
-
-**요청:**
-
-`GET /api/churches/{id}/notices` 응답에 **총 개수**를 포함해주세요.
-
-**예상 응답 형식:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "type": "공지",
-      "featured": true,
-      "title": "...",
-      "body": "...",
-      "date": "2026-09-27",
-      "author": "..."
-    },
-    ...
-  ],
-  "total": 25,
-  "page": 0,
-  "size": 10
-}
-```
-
-`total`이 있으면 프론트에서 전체 페이지 수를 계산할 수 있고, 
-다음 페이지 버튼의 활성화/비활성화를 올바르게 처리할 수 있습니다.
-
-### 4-13-1. (P2) 설교 목록 API — YouTube 썸네일 추가 요청
-
-현재 예배방송 > 예배 목록(`/말씀/설교` 또는 `/예배·방송?tab=예배%20목록`)에서
-`GET /api/church/sermons` API를 호출하고 있으나,
-각 설교 카드의 썸네일로 **YouTube 이미지가 없어** 기본 아이콘만 표시됩니다.
-
-**요청:**
-
-설교 목록 응답의 각 아이템에 YouTube 썸네일 정보를 포함해주세요.
-
-**예상 응답 형식:**
-```json
-{
-  "data": [
-    {
-      "id": "uuid",
-      "title": "설교 제목",
-      "worshipType": "1부 예배",
-      "sermonDate": "2026.09.27",
-      "videoId": "youtube-video-id",              // 추가 필요
-      "thumbnail": "https://...high-thumb.jpg"    // 추가 필요 (유튜브 고해상도)
-    },
-    ...
-  ],
-  "pageInfo": { ... }
-}
-```
-
-또는 설교별 cover 조회 API를 별도 제공:
-```
-GET /api/churches/{id}/sermon/{id}/thumbnail
-```
-
-### 4-14. (P2) 최신 설교 정보 API 신설 요청 — YouTube 연동
-
-현재 홈 화면의 MessageSection(`src/components/home/MessageSection.jsx`)에서 
-YouTube API를 **프론트에서 직접 호출**하고 있습니다.
-
-```javascript
-// 현재: 프론트에서 직접 호출
-const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-const channelRes = await fetch(
-  `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`
-);
-```
-
-**문제점:**
-- API 키가 프론트에 노출됨 (보안 위험)
-- 클라이언트에서 YouTube API 호출로 인한 할당량 소모
-- 매 요청마다 YouTube API 호출 (캐싱 불가)
-
-**요청:**
-
-백엔드에서 최신 설교 정보를 제공하는 엔드포인트를 신설해주세요.
-
-```
-GET /api/churches/{churchId}/sermon/latest
-```
-
-**요청하는 응답 형식:**
-```json
-{
-  "success": true,
-  "data": {
-    "title": "설교 제목",
-    "date": "2026.09.27",
-    "preacher": "담임목사명",
-    "scripture": "요한복음 3:16",
-    "videoId": "youtube-video-id",
-    "youtubeUrl": "https://www.youtube.com/watch?v=...",
-    "thumbnail": "https://...thumbnail.jpg",
-    "isLive": false
-  }
-}
-```
-
-**참고:**
-- `thumbnail`: 유튜브 고해상도 썸네일 URL (`maxres` or `high`)
-- `isLive`: 향후 실시간 예배 라이브 상태 플래그 (현재는 항상 false)
-- 백엔드가 YouTube API 키를 관리하고 호출합니다
+**참고**: 이 엔드포인트와 별개로 `/church/broadcast/live`, `/church/broadcast/sermons`(실시간 라이브 감지용, `ChurchBroadcastController`)는 여전히 YouTube API를 직접 호출하며 `YOUTUBE_API_KEY` 환경변수가 필요합니다 — §7-5 참고.
 
 ---
 
@@ -616,13 +309,73 @@ GET /api/churches/{churchId}/sermon/latest
 
 | # | 질문 | 관련 |
 | --- | --- | --- |
-| Q1 | 교적부에 어느 필드까지 추가 가능한가? `family`/`history`는 범위에 포함되는가? | §1 |
-| Q2 | 일반 교인이 다른 교인 상세를 조회할 수 있어야 하는가? | §1 |
-| Q3 | `GET /api/my/profile` 추가 가능한가? 어렵다면 로그인 응답의 `name`만이라도 우선 채울 수 있는가? | §2 |
-| Q4 | 주일학교·전도선교·양육훈련을 `intro` 섹션 방식으로 확장하는 데 동의하는가? | §3 |
-| Q5 | 양육·훈련 게시판 — 안 A(notice에 boardType 추가) vs 안 B(게시판 신설) | §3-7 |
+| Q1 | `family`/`history`(가족·이력)는 이번 범위에 포함되는가, 제외인가? (email/address/baptismDate/note는 이미 해결됨) | §1 |
+| ~~Q2~~ | ~~일반 교인이 다른 교인 상세를 조회할 수 있어야 하는가~~ | **(2026-11-06) 해결됨** — `GET /church/members/{publicId}` 이미 존재 |
+| ~~Q3~~ | ~~`GET /api/my/profile` 추가 가능한가~~ | **(2026-11-06) 해결됨** — §2 |
+| Q4 | 주일학교·전도선교·양육훈련을 `intro` 섹션 방식으로 확장하는 데 동의하는가? (STAFF/MISSION_NEWS/NURTURE는 이미 반영됨) | §3 |
+| ~~Q5~~ | ~~양육·훈련 게시판 — 안 A vs 안 B~~ | **(2026-11-06) 해결됨** — 안 A(`notice.boardType`) 채택 확인 |
 | Q6 | 주보 `DISTRICTS`와 양육훈련 "구역 모임"은 같은 데이터인가? | §3-5 |
 | Q7 | 교회 기본 정보를 교회 관리자가 직접 수정해야 하는가, 운영팀 경유가 맞는가? | §4-1 |
 | Q8 | 파일 업로드(S3) 일정은? | §4-2 |
 | Q9 | 출석 도메인 계획이 있는가? | §4-3 |
 | Q10 | `bulletin` 도메인은 제거 예정인가, 별도 용도인가? | §4-4 |
+| Q11 | 교적부 응답을 역할별로 분기할 때 (A) `/church/members` 하나를 서버가 role 보고 PII까지 채워 내려주는 방식과 (B) 기존 두 엔드포인트를 유지하고 프론트가 role만 보고 호출을 바꾸는 방식 중 어느 쪽이 맞는가? | §7-1 |
+| Q12 | `PATCH /api/my/profile`(address 포함), `PATCH /api/my/schedules/{id}` 추가 가능한가? | §7-2 |
+| Q13 | `jubo/map-image` 프록시 엔드포인트, 언제쯤 가능한가? | §7-4 |
+| Q14 | `YOUTUBE_API_KEY` 환경변수를 지금 실행 중인 백엔드 프로세스에 설정해 재시작할 수 있는가? | §7-5 |
+
+---
+
+## 7. (2026-11-06 추가) 전체 API 재점검 결과
+
+### 7-1. (P1) 교적부 — 권한별로 다른 응답 (§1 보완)
+
+§1에서 이미 PII 비노출 원칙은 확인했습니다. 이번엔 구체적인 분기 방식을 제안합니다.
+
+로그인한 사용자가 CHURCH_ADMIN이면 개인정보까지, 일반 교인이면 지금처럼 비개인정보만 보이게 하려 합니다.
+
+- (A) `GET /api/church/members` 하나로 통합하고, 호출자가 CHURCH_ADMIN이면 서버가 PII 필드까지 채워서 내려준다 (권장 — 프론트 분기 로직 단순화)
+- (B) 기존 두 엔드포인트(`/church/members`, `/church/admin/members`)를 유지하되, 프론트가 로그인 사용자의 role을 보고 관리자면 관리자 엔드포인트를 호출하도록 권한 체크만 완화
+
+어느 쪽이 백엔드 구조상 더 적합한지 판단 부탁드립니다(Q11).
+
+### 7-2. (P1) 마이페이지 — 수정 API 신규 (§2 보완)
+
+`GET /api/my/profile`은 이제 존재함을 확인했습니다. 다만 수정 쪽이 비어 있습니다.
+
+- `PATCH /api/my/profile` — 조회만 있고 수정이 없어 "내 정보" 저장 버튼이 동작하지 않습니다. `MyProfile`에 `address` 필드도 없어 함께 추가 필요합니다.
+- `PATCH /api/my/schedules/{id}` — 프론트(`myPageService.updateMySchedule`)는 이미 PATCH로 호출 중인데 `MyPageController`엔 GET/POST/DELETE만 있어 수정 시 404/405가 납니다.
+- `Prayer`에 `reply {author, text}` 필드 — 기도제목 답변 완료 상태에서 보여줄 교역자 답변 데이터가 없어 프론트가 하드코딩 문구로 대체 중입니다.
+
+### 7-3. (P2) 주보 — 예배 순서에 "사회" 역할 필드 추가
+
+각 예배(`WORSHIP_ORDER` 섹션)의 역할 목록에 "사회"가 없어, 프론트에서 설교/대표기도 등과 나란히 "사회자" 정보를 보여주지 못하고 전부 "-"로 표시 중입니다. 다른 역할(설교/기도/찬양 등)과 같은 방식으로 "사회" 역할을 추가해 주세요.
+
+### 7-4. (P2) 카카오 정적지도 프록시 엔드포인트 (주보 PDF 다운로드용)
+
+**배경**: 주보 PDF 다운로드 시 "오시는 길" 지도를 이미지로 캡처해야 하는데, 프론트에서 Kakao 정적지도 REST API(`https://dapi.kakao.com/v2/maps/staticmap`)를 직접 호출하면 CORS에 막혀 브라우저가 응답을 읽지 못합니다(이 API는 서버-서버 호출 전용으로 설계되어 `Access-Control-Allow-Origin` 헤더를 내려주지 않습니다). 백엔드에서 중계(프록시)해주는 엔드포인트가 필요합니다.
+
+**요청 엔드포인트**
+```
+GET /churches/{churchId}/jubo/map-image?level={level}
+```
+- `churchId`: path param (기존 컨벤션과 동일)
+- `level`: 선택, 지도 확대 레벨 (기본 4)
+- 주소는 교회 정보(`church.address`)에서 백엔드가 직접 가져오면 됩니다(프론트에서 주소를 쿼리로 넘기는 방식도 무방).
+
+**백엔드 동작**: Kakao 정적지도 API를 서버에서 호출해 이미지 바이너리(또는 URL)를 그대로 중계 응답.
+
+### 7-5. (P1, 운영환경) YouTube 연동 — YOUTUBE_API_KEY 환경변수 누락
+
+설교/방송 화면(`/church/broadcast/sermons`, `/church/broadcast/live`)이 둘 다 빈 결과를 반환하고 있습니다. §4-14에서 제안한 "최신 설교 API 신설"과는 별개로, **이미 구현된 YouTube 연동 자체가 지금 동작하지 않는** 더 긴급한 문제입니다.
+
+**원인**: `YouTubeApiAdapter.java`(40, 74행)가 `apiKey`/`channelId`가 비어 있으면 즉시 빈 값을 반환하도록 되어 있고, `application.yml`(54행)의 `api-key: ${YOUTUBE_API_KEY:}`가 환경변수 미설정 시 빈 문자열로 떨어집니다. DB의 `channelId` 설정 자체는 정상입니다(`live` 응답의 `fallbackUrl`에 올바른 채널 UC가 찍힘). 프론트 `.env`의 키값(`VITE_YOUTUBE_API_KEY`)으로 직접 YouTube API를 호출하면 영상 86개가 정상 조회되므로, 키 자체 문제가 아니라 **그 키가 백엔드 프로세스 환경변수로 전달되지 않은 것**이 원인입니다.
+
+**요청**: 백엔드 실행 환경(로컬 실행 스크립트/IDE Run Configuration/배포 환경변수 등)에 `YOUTUBE_API_KEY`를 설정해 주세요. Spring은 기동 시 1회만 환경변수를 읽으므로 재시작이 필요합니다(Q14).
+
+**참고 — 프론트 쪽 키 노출 위험**: 현재 프론트 `.env`에도 `VITE_YOUTUBE_API_KEY`가 들어있습니다. Vite는 `VITE_` 접두사 변수를 빌드 시 클라이언트 번들에 그대로 포함시키므로, 배포되면 누구나 브라우저에서 이 키를 꺼내볼 수 있습니다. §4-14가 제안한 대로 YouTube 연동을 백엔드로 완전히 옮기는 게 맞고, 그 전환이 끝나면 프론트 `.env`에서 `VITE_YOUTUBE_API_KEY`는 제거할 예정입니다. API 키 자체도 가능하면 HTTP 리퍼러 제한 없이 서버 IP 제한으로 재발급하는 걸 권장드립니다.
+
+### 7-6. 참고 — 이번 재점검에서 프론트가 연결/수정 완료한 항목 (백엔드 조치 불필요)
+
+- 공개 주보 화면이 섹션 엔드포인트를 11개 가까이 따로 부르던 것을 `GET /jubo/{id}`(상세, 섹션 전체 포함) 하나로 통합 — 호출 수 10~14회 → 2회로 감소, 지난 호 조회 시 최신 내용이 섞여 나오던 버그도 함께 해결
+- 홈 화면에서 `getChurchProfile`이 두 곳(ChurchContext, MainBanner)에서 중복 호출되던 것을 하나로 통합

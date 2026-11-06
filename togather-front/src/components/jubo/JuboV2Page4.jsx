@@ -1,29 +1,12 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getWorshipOrder, getNews } from "@/services/juboService";
-import {
-  JuboBookHeader,
-  JuboBookFooter,
-  JuboSectionTitle,
-  JuboGreyBox,
-  JuboWhiteTable,
-} from "./shared";
-import BubbleLoader from "@/components/common/BubbleLoader";
+import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox, JuboWhiteTable } from "./shared";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토"];
 
 export default function JuboV2Page4({ data }) {
   const { church } = useChurch();
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
-  const { data: news = [], loading: newsLoading } = useFetch(
-    () => getNews(church.id),
-    [church.id],
-    [],
-  );
+  const orderMap = data?.sections?.worshipOrder ?? {};
+  const news = data?.sections?.news ?? [];
 
   const dawnPrayerOrder = orderMap["새벽기도회"];
   const findDawnRole = (roleName) =>
@@ -51,23 +34,13 @@ export default function JuboV2Page4({ data }) {
       <div className="flex-1 overflow-y-auto min-h-0 px-6 pt-4 flex flex-col gap-4">
         <div>
           <JuboSectionTitle title="새벽기도회" />
-          {orderLoading ? (
-            <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-          ) : (
-            <JuboWhiteTable rows={dawnRows} rowKey="label" columns={dawnColumns} />
-          )}
+          <JuboWhiteTable rows={dawnRows} rowKey="label" columns={dawnColumns} />
         </div>
 
         <div className="flex-1 min-h-0">
           <JuboSectionTitle title="교회 소식" />
           <JuboGreyBox>
-            {newsLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : news.length === 0 ? (
+            {news.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="space-y-2.5">

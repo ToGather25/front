@@ -1,6 +1,4 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getDistricts } from "@/services/juboService";
 import {
   JuboBookHeader,
   JuboBookFooter,
@@ -8,15 +6,10 @@ import {
   JuboGreyBox,
   JuboWhiteTable,
 } from "./shared";
-import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboV2Page6({ data }) {
   const { church } = useChurch();
-  const { data: districts = [], loading } = useFetch(
-    () => getDistricts(church.id),
-    [church.id],
-    [],
-  );
+  const districts = data?.sections?.districts ?? [];
 
   // "오전 9시"/"오후 3시" → "9:00"/"15:00". "종일"처럼 시각이 없는 값은 그대로 둔다.
   const formatHour = (text) => {
@@ -48,11 +41,7 @@ export default function JuboV2Page6({ data }) {
         <div>
           <JuboSectionTitle title="구역 모임" />
           <JuboGreyBox>
-            {loading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : districts.length === 0 ? (
+            {districts.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="divide-y divide-grey-2 pr-8">

@@ -1,8 +1,5 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getSermonNote, getWorshipServices, getWorshipOrder } from "@/services/juboService";
 import { JuboV1SectionBar, JuboV1RunningHeader } from "./shared.v1";
-import BubbleLoader from "@/components/common/BubbleLoader";
 
 /** 예배안내 표 한 열 — 역할/값 줄바꿈 리스트. */
 function ServiceColumn({ label, order }) {
@@ -24,22 +21,10 @@ function ServiceColumn({ label, order }) {
 
 export default function JuboV1Page3({ data }) {
   const { church } = useChurch();
-  const { data: sermon, loading: sermonLoading } = useFetch(
-    () => getSermonNote(church.id),
-    [church.id],
-    null,
-  );
-  const { data: services = [], loading: servicesLoading } = useFetch(
-    () => getWorshipServices(church.id),
-    [church.id],
-    [],
-  );
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
-  const loading = servicesLoading || orderLoading;
+  const sections = data?.sections;
+  const sermon = sections?.sermonNote;
+  const services = sections?.worshipServices ?? [];
+  const orderMap = sections?.worshipOrder ?? {};
 
   // 대표 예배(JuboV1Page1에서 이미 보여준 1부/2부)를 뺀 나머지 예배 — 오후/금요 등.
   const mainLabels = services.slice(0, 2).map((s) => s.label);
@@ -52,11 +37,7 @@ export default function JuboV1Page3({ data }) {
       <div className="flex-1 overflow-y-auto min-h-0 flex flex-col">
         <JuboV1SectionBar title="설교요약" />
         <div className="px-5 py-4 border border-t-0 border-blue-3 flex flex-col gap-3">
-          {sermonLoading ? (
-            <div className="flex justify-center py-6">
-              <BubbleLoader size="sm" />
-            </div>
-          ) : !sermon?.title ? (
+          {!sermon?.title ? (
             <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
           ) : (
             <>
@@ -83,11 +64,7 @@ export default function JuboV1Page3({ data }) {
 
         <div className="mt-3 flex-1 flex flex-col min-h-0">
           <JuboV1SectionBar title="예배안내" />
-          {loading ? (
-            <div className="flex justify-center py-6">
-              <BubbleLoader size="sm" />
-            </div>
-          ) : otherServices.length === 0 ? (
+          {otherServices.length === 0 ? (
             <p className="text-center text-xs text-grey-6 py-4 border border-t-0 border-blue-3">
               정보 없음
             </p>

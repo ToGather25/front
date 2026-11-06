@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getNotices } from "@/services/noticeService";
 
 const TABS = ["전도회 소개", "국내외 선교", "선교지 소식"];
-
-
-
 
 export default function Mission() {
   const { church } = useChurch();
   const EVANGELISM_INFO = church.evangelism;
   const MISSION_CONTENT = church.missions;
-  const MISSION_NEWS = church.missionNews ?? [];
+  // 선교지 소식 — 공지 도메인의 boardType=MISSION_NEWS를 쓴다. 교회소개 missionNews
+  // 목업에 있던 location/missionary 필드는 공지 도메인에 없어 title/author/date/body로 보여준다.
+  const { data: missionNewsResponse = { data: [] } } = useFetch(
+    () => getNotices(church.id, { boardType: "MISSION_NEWS", limit: 50 }),
+    [church.id],
+    { data: [] },
+  );
+  const MISSION_NEWS = missionNewsResponse.data ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "전도회 소개";
   const [selectedNews, setSelectedNews] = useState(null);
@@ -63,15 +69,14 @@ export default function Mission() {
                     d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="absolute top-3 right-3 px-3 py-1 bg-blue-1 text-blue-7 text-body-4 font-semibold rounded-full">
-                  {selectedNews.location}
-                </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-body-3 font-semibold text-grey-11">{selectedNews.missionary}</p>
+                <p className="text-body-3 font-semibold text-grey-11">{selectedNews.author}</p>
                 <span className="text-body-4 text-grey-5">{selectedNews.date}</span>
               </div>
-              <p className="text-body-3 text-grey-7 leading-relaxed">{selectedNews.summary}</p>
+              <p className="text-body-3 text-grey-7 leading-relaxed whitespace-pre-line">
+                {selectedNews.body}
+              </p>
             </div>
           </div>
         </div>
@@ -278,6 +283,10 @@ export default function Mission() {
                     <p className="text-body-2 font-semibold text-grey-11 line-clamp-2">
                       {news.title}
                     </p>
+                    <div className="flex items-center justify-between gap-2 mt-2">
+                      <span className="text-body-5 text-grey-6">{news.author}</span>
+                      <span className="text-body-5 text-grey-5">{news.date}</span>
+                    </div>
                   </div>
                 </div>
               ))}

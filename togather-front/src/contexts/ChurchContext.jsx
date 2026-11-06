@@ -96,8 +96,13 @@ export function ChurchProvider({ children, initialChurch }) {
       const worshipSchedule = valueOf(schedule, "예배 시간표");
       if (worshipSchedule?.regular?.length) church = { ...church, worshipSchedule };
 
+      // church.profile에 통째로 담아둔다 — MainBanner(대표이미지)/Giving(후원계좌) 등
+      // 여러 화면이 각자 getChurchProfile을 다시 부르지 않고 useChurch()로만 읽게 하기 위함.
+      const profileData = valueOf(profile, "교회 프로필");
+      if (profileData) church = { ...church, profile: profileData };
+
       // 인스타그램은 교회 프로필(관리자 설정)에서 온다 — 미설정이면 기본값(보통 null)을 유지한다.
-      const instagram = valueOf(profile, "교회 프로필")?.instagramUrl;
+      const instagram = profileData?.instagramUrl;
       if (instagram) church = { ...church, social: { ...church.social, instagram } };
 
       if (!cancelled) setState({ church: { ...church, nav: defaultConfig.nav }, status: "ready" });

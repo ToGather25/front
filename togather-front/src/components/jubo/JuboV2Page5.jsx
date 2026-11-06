@@ -1,26 +1,11 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getOffering, getPrayerTopics, getVolunteer } from "@/services/juboService";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
-import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboV2Page5({ data }) {
   const { church } = useChurch();
-  const { data: offering = [], loading: offeringLoading } = useFetch(
-    () => getOffering(church.id),
-    [church.id],
-    [],
-  );
-  const { data: prayerTopics = [], loading: prayerLoading } = useFetch(
-    () => getPrayerTopics(church.id),
-    [church.id],
-    [],
-  );
-  const { data: volunteer = [], loading: volunteerLoading } = useFetch(
-    () => getVolunteer(church.id),
-    [church.id],
-    [],
-  );
+  const offering = data?.sections?.offering ?? [];
+  const prayerTopics = data?.sections?.prayerTopics ?? [];
+  const volunteer = data?.sections?.volunteer ?? [];
 
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
@@ -30,11 +15,7 @@ export default function JuboV2Page5({ data }) {
         <div>
           <JuboSectionTitle title="향기로운 예물" />
           <JuboGreyBox>
-            {offeringLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : offering.length === 0 ? (
+            {offering.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="space-y-4">
@@ -56,11 +37,7 @@ export default function JuboV2Page5({ data }) {
         <div>
           <JuboSectionTitle title="기도 제목" />
           <JuboGreyBox>
-            {prayerLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : prayerTopics.length === 0 ? (
+            {prayerTopics.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="space-y-1">
@@ -82,11 +59,7 @@ export default function JuboV2Page5({ data }) {
         <div className="flex-1 min-h-0">
           <JuboSectionTitle title="다음주 봉사 안내" />
           <JuboGreyBox>
-            {volunteerLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : volunteer.length === 0 ? (
+            {volunteer.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="space-y-2">

@@ -1,13 +1,5 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import {
-  getWorshipServices,
-  getWorshipOrder,
-  getVolunteer,
-  getSermonNote,
-} from "@/services/juboService";
 import { JuboV1SectionBar, JuboV1Footer } from "./shared.v1";
-import BubbleLoader from "@/components/common/BubbleLoader";
 import churchSermonBg from "@/assets/church_sermon.png";
 
 /** 예배 순서표 한 열(1부/2부 등) — 왼쪽 라벨 칸 + 오른쪽 값 칸. */
@@ -29,25 +21,13 @@ function OrderColumn({ label, order }) {
   );
 }
 
-export default function JuboV1Page1() {
+export default function JuboV1Page1({ data }) {
   const { church } = useChurch();
-  const { data: services = [], loading: servicesLoading } = useFetch(
-    () => getWorshipServices(church.id),
-    [church.id],
-    [],
-  );
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
-  const { data: volunteer = [], loading: volunteerLoading } = useFetch(
-    () => getVolunteer(church.id),
-    [church.id],
-    [],
-  );
-  const { data: sermon } = useFetch(() => getSermonNote(church.id), [church.id], null);
-  const loading = servicesLoading || orderLoading;
+  const sections = data?.sections;
+  const services = sections?.worshipServices ?? [];
+  const orderMap = sections?.worshipOrder ?? {};
+  const volunteer = sections?.volunteer ?? [];
+  const sermon = sections?.sermonNote;
   const mainServices = services.slice(0, 2);
 
   return (
@@ -70,14 +50,16 @@ export default function JuboV1Page1() {
         )}
         {church.slogan?.title && (
           <p
-          className="relative text-2xl font-semibold whitespace-pre-line mt-1.5 leading-snug"
-          style={{ fontFamily: '"Gowun Batang", serif' }}
+            className="relative text-2xl font-semibold whitespace-pre-line mt-1.5 leading-snug"
+            style={{ fontFamily: '"Gowun Batang", serif' }}
           >
             {church.slogan.title}
           </p>
         )}
         {church.mainBanner?.subtitle && (
-          <p className="w-2/3 relative text-[11px] opacity-90">{church.mainBanner.subtitle}</p>
+          <p className="w-2/3 relative text-[11px] leading-relaxed opacity-90">
+            {church.mainBanner.subtitle}
+          </p>
         )}
       </div>
 
@@ -87,11 +69,7 @@ export default function JuboV1Page1() {
           right="하나님은 영이시니 예배하는 자가 영과 진리로 예배할지니라 (요4:24)"
         />
         <div className="px-5 pt-3 flex flex-col gap-3">
-          {loading ? (
-            <div className="flex justify-center py-6">
-              <BubbleLoader size="sm" />
-            </div>
-          ) : mainServices.length === 0 ? (
+          {mainServices.length === 0 ? (
             <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
           ) : (
             <div className="flex gap-2">
@@ -103,11 +81,7 @@ export default function JuboV1Page1() {
 
           <div>
             <JuboV1SectionBar title="다음주 예배위원" />
-            {volunteerLoading ? (
-              <div className="flex justify-center py-4">
-                <BubbleLoader size="sm" />
-              </div>
-            ) : volunteer.length === 0 ? (
+            {volunteer.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4 border border-t-0 border-blue-3">
                 정보 없음
               </p>

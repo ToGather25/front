@@ -1,27 +1,10 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
-import {
-  JuboBookHeader,
-  JuboBookFooter,
-  JuboSectionTitle,
-  JuboGreyBox,
-  JuboOrderList,
-} from "./shared";
+import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox, JuboOrderList } from "./shared";
 
 export default function JuboV2Page3({ data }) {
   const { church } = useChurch();
-  const { data: services = [], loading: servicesLoading } = useFetch(
-    () => getWorshipServices(church.id),
-    [church.id],
-    [],
-  );
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
-  const loading = servicesLoading || orderLoading;
+  const services = data?.sections?.worshipServices ?? [];
+  const orderMap = data?.sections?.worshipOrder ?? {};
 
   // 대표 예배(JuboPage2)와 새벽기도회(JuboPage4)를 제외한 나머지 예배(오후예배/수요기도회 등).
   const mainLabel = services[0]?.label;
@@ -41,7 +24,7 @@ export default function JuboV2Page3({ data }) {
       <JuboBookHeader title="예배 안내" dateLabel={data?.dateLabel} />
 
       <div className="flex-1 overflow-y-auto min-h-0 px-6 pt-4 flex flex-col gap-4">
-        {!loading && otherServices.length === 0 ? (
+        {otherServices.length === 0 ? (
           <p className="text-center text-xs text-grey-6 py-8">정보 없음</p>
         ) : (
           otherServices.map((s) => {
@@ -53,7 +36,7 @@ export default function JuboV2Page3({ data }) {
                   right={`사회: ${findLeader(order)} · 설교: ${findPreacher(order)}`}
                 />
                 <JuboGreyBox>
-                  <JuboOrderList order={order} loading={loading} />
+                  <JuboOrderList order={order} />
                 </JuboGreyBox>
               </div>
             );

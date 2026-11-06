@@ -1,21 +1,10 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getSupport, getMinisters } from "@/services/juboService";
 import { JuboBookHeader, JuboBookFooter, JuboSectionTitle, JuboGreyBox } from "./shared";
-import BubbleLoader from "@/components/common/BubbleLoader";
 
 export default function JuboV2Page7({ data }) {
   const { church } = useChurch();
-  const { data: support = [], loading: supportLoading } = useFetch(
-    () => getSupport(church.id),
-    [church.id],
-    [],
-  );
-  const { data: ministers = [], loading: ministersLoading } = useFetch(
-    () => getMinisters(church.id),
-    [church.id],
-    [],
-  );
+  const support = data?.sections?.support ?? [];
+  const ministers = data?.sections?.ministers ?? [];
 
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
@@ -25,11 +14,7 @@ export default function JuboV2Page7({ data }) {
         <div>
           <JuboSectionTitle title="우리 교회가 돕고 있는 곳" />
           <JuboGreyBox>
-            {supportLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : support.length === 0 ? (
+            {support.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="divide-y divide-grey-2 pr-8">
@@ -51,11 +36,7 @@ export default function JuboV2Page7({ data }) {
         <div className="flex-1 min-h-0">
           <JuboSectionTitle title="섬기는 분들" />
           <JuboGreyBox>
-            {ministersLoading ? (
-              <div className="flex justify-center py-4">
-          <BubbleLoader size="sm" />
-        </div>
-            ) : ministers.length === 0 ? (
+            {ministers.length === 0 ? (
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="divide-y divide-grey-2 pr-8">

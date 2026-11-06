@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getNotices } from "@/services/noticeService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import ArrowLeft from "@/assets/icon-svg/arrow-narrow-left.svg";
 
@@ -21,57 +23,6 @@ const QT_URL = "https://www.qtland.com/quiet/quiet.php?cate=A";
 
 
 
-
-const BOARD_POSTS = [
-  {
-    id: 1,
-    category: "공지",
-    title: "2026년 상반기 제자훈련 모집 안내",
-    author: "교육부",
-    date: "2026.04.28",
-    body: "2026년 상반기 제자훈련학교를 개설합니다.\n\n제자훈련은 그리스도의 제자로 세워지기 위한 영적 성장의 과정입니다.\n\n관심 있는 성도분들의 많은 참여를 부탁드립니다.\n\n자세한 사항은 교육부로 문의하시기 바랍니다.",
-  },
-  {
-    id: 2,
-    category: "후기",
-    title: "제자훈련 1단계 수료 소감 나눔",
-    author: "이수련 집사",
-    date: "2026.04.20",
-    body: "3개월간의 제자훈련 1단계를 마무리했습니다.\n\n처음에는 시간을 내기가 어려울까 걱정했지만, 말씀과 기도로 하나되는 시간이 정말 귀했습니다.\n\n무엇보다 함께 믿음의 길을 걷는 교우들과의 깊은 교제가 있어서 영적으로 많이 성장할 수 있었습니다.\n\n2단계도 열심히 참여하겠습니다.",
-  },
-  {
-    id: 3,
-    category: "공지",
-    title: "5월 구역모임 일정 변경 안내",
-    author: "교육부",
-    date: "2026.04.18",
-    body: "5월 1주 목요일은 어린이날 연휴로 인해 구역모임을 다음 주로 변경합니다.\n\n변경된 일정은 다음과 같습니다:\n- 목요일 구역: 5월 15일 (목)\n- 금요일 구역: 5월 9일 (금)\n\n유의 부탁드립니다.",
-  },
-  {
-    id: 4,
-    category: "나눔",
-    title: "양육프로그램 참여 후기 공유합니다",
-    author: "박믿음 성도",
-    date: "2026.04.10",
-    body: "신앙의 기초부터 체계적으로 배울 수 있는 좋은 프로그램이었습니다.\n\n매주 만나는 선생님과 교우들의 따뜻한 관심과 격려 속에서 신앙이 자라는 것을 느낄 수 있었습니다.\n\n다음 단계도 계속 참여하고 싶습니다.",
-  },
-  {
-    id: 5,
-    category: "공지",
-    title: "오늘의 묵상 4월 말씀 자료 배포",
-    author: "교육부",
-    date: "2026.04.01",
-    body: "4월 한 달간 사용할 오늘의 묵상 말씀 자료를 배포합니다.\n\n매일 정해진 성경 본문을 읽고 묵상하며 기도하는 시간이 영적 깊이를 더해줄 것입니다.\n\n교육부에서 받으실 수 있습니다.",
-  },
-  {
-    id: 6,
-    category: "나눔",
-    title: "성경통독 40일 완주 도전기",
-    author: "김소망 성도",
-    date: "2026.03.25",
-    body: "성경통독 40일 도전을 마쳤습니다!\n\n처음부터 끝까지 하나님의 말씀을 읽으며 느낀 감동과 도전이 일생의 자산이 될 것 같습니다.\n\n작은 실천의 시간이 모여 큰 영적 자산이 된다는 것을 깨달았습니다.\n\n내년에도 함께 도전해요!",
-  },
-];
 
 const BOARD_PAGE_SIZE = 10;
 
@@ -97,6 +48,22 @@ export default function Nurture() {
   const [selectedZone, setSelectedZone] = useState("전체");
   const [selectedProgram, setSelectedProgram] = useState("전체");
   const [selectedPost, setSelectedPost] = useState(null);
+
+  // 양육·훈련 게시판 — 공지 도메인의 boardType=NURTURE를 그대로 쓴다(공지/후기/나눔은
+  // notice의 type 필드, 이 화면에서는 "분류"로 부른다).
+  const { data: boardResponse = { data: [] } } = useFetch(
+    () => getNotices(church.id, { boardType: "NURTURE", limit: 100 }),
+    [church.id],
+    { data: [] },
+  );
+  const BOARD_POSTS = (boardResponse.data ?? []).map((n) => ({
+    id: n.id,
+    category: n.type,
+    title: n.title,
+    author: n.author,
+    date: n.date,
+    body: n.body,
+  }));
 
   const filteredBoardPosts = BOARD_POSTS.filter(
     (post) => !boardQuery || post.title.toLowerCase().includes(boardQuery.toLowerCase()),

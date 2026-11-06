@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getChurchProfile } from "@/services/churchProfileService";
 import defaultBanner from "@/assets/default_banner.png";
 import IcoSearch from "@/assets/icon-svg/search-grey.svg";
 
@@ -16,10 +14,9 @@ const TITLE_FONTS = {
 export default function MainBanner() {
   const navigate = useNavigate();
   const { church } = useChurch();
-  const { data: profile } = useFetch(() => getChurchProfile(church.id), [church.id], null);
   const { title, subtitle, titleFont } = church.mainBanner;
   const titleFontStyle = TITLE_FONTS[titleFont] ?? TITLE_FONTS["nanum-myeongjo"];
-  const bgImage = profile?.representativeImageUrl || defaultBanner;
+  const bgImage = church.profile?.representativeImageUrl || defaultBanner;
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
   const [honorBreaks, setHonorBreaks] = useState(true);

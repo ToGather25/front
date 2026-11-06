@@ -1,102 +1,53 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { searchSermons } from "@/services/sermonService";
+import { BOOK_ABBREV } from "@/config/bible.config";
+import bibleData from "@/data/bible.json";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import defaultBanner from "@/assets/default_banner.png";
 import rightArrow from "@/assets/icon-svg/right-arrow.svg";
 import quoteRight from "@/assets/icon-svg/quote-right.svg";
 
+/** "골로새서 3:15-17" 같은 표기를 분해해 해당 구절 본문을 찾는다. 범위(-17)가 없으면 한 절만. */
+function lookupVerseText(scripture) {
+  const m = scripture?.match(/^(\S+)\s*(\d+):(\d+)(?:-(\d+))?/);
+  if (!m) return null;
+  const [, book, chapterStr, startStr, endStr] = m;
+  const abbrev = BOOK_ABBREV[book];
+  if (!abbrev) return null;
+  const chapter = Number(chapterStr);
+  const start = Number(startStr);
+  const end = endStr ? Number(endStr) : start;
+  const verses = [];
+  for (let v = start; v <= end; v++) {
+    const text = bibleData[`${abbrev}${chapter}:${v}`];
+    if (text) verses.push(text.trim());
+  }
+  return verses.length ? verses.join(" ") : null;
+}
+
 export default function MessageSection() {
-  const navigate = useNavigate();
   const { church } = useChurch();
-  const [sermon, setSermon] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [scriptureText, setScriptureText] = useState("");
-
-  useEffect(() => {
-    const fetchLatestSermon = async () => {
-      try {
-        const channelId = church.social?.youtubeChannelId;
-        const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-
-        if (!channelId || !apiKey) {
-          setSermon(null);
-          setLoading(false);
-          return;
-        }
-
-        // 채널 업로드 플레이리스트 조회
-        const channelRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`
-        );
-        const channelData = await channelRes.json();
-        const uploadPlaylistId =
-          channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
-
-        if (!uploadPlaylistId) {
-          setLoading(false);
-          return;
-        }
-
-        // 최신 동영상 조회
-        const videosRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadPlaylistId}&maxResults=1&key=${apiKey}`
-        );
-        const videosData = await videosRes.json();
-        const latestVideo = videosData.items?.[0]?.snippet;
-
-        if (latestVideo) {
-          const videoId = latestVideo.resourceId?.videoId;
-          setSermon({
-            title: latestVideo.title,
-            date: new Date(latestVideo.publishedAt).toLocaleDateString(
-              "ko-KR"
-            ),
-            preacher: church.pastor || "담임목사",
-            scripture: latestVideo.description?.split("\n")[0] || "",
-            videoId: videoId,
-            youtubeUrl: videoId ? `https://www.youtube.com/watch?v=${videoId}` : null,
-            thumbnail: latestVideo.thumbnails?.high?.url || defaultBanner,
-            isLive: false, // 백엔드에서 라이브 상태 받기 필요
-          });
-        }
-      } catch (error) {
-        console.error("[MessageSection] YouTube API 조회 실패:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchLatestJubo = async () => {
-      try {
-        const res = await fetch("/api/jubo/latest");
-        const jubo = await res.json();
-
-        // 성경봉독 구절 추출
-        if (jubo?.sections) {
-          const bibleSection = jubo.sections.find(s => s.title === "성경봉독");
-          if (bibleSection?.content) {
-            setScriptureText(bibleSection.content);
-          }
-        }
-      } catch (error) {
-        console.error("[MessageSection] 주보 조회 실패:", error);
-      }
-    };
-
-    if (church.social?.youtubeChannelId) {
-      fetchLatestSermon();
-    }
-    fetchLatestJubo();
-  }, [church.social?.youtubeChannelId, church.pastor]);
-
-  const schedules = church.worshipDisplay?.map((display) => ({
-    label: display.title,
-    time: display.regularIndices
-      ?.map((i) => church.worshipSchedule?.regular?.[i]?.time)
-      .filter(Boolean)
-      .join(" | "),
-  })) || [];
+  // 최근 설교 중 주일예배(1부/2부 등)만 걸러 가장 최근 것을 쓴다. worshipType은 교회마다
+  // 자유 문자열(church.serviceTypes)이라 "주일"로 시작하는지만 본다. 목록은 이미 최신순 정렬.
+  const { data: sermons = [], loading } = useFetch(
+    () => searchSermons(church.id, { size: 10 }).then((r) => r.sermons),
+    [church.id],
+    [],
+  );
+  const sundaySermon = sermons.find((s) => s.worshipType?.startsWith("주일"));
+  const sermon = sundaySermon && {
+    title: sundaySermon.title,
+    date: new Date(sundaySermon.sermonDate).toLocaleDateString("ko-KR"),
+    preacher: sundaySermon.preacher || church.pastor || "담임목사",
+    scripture: sundaySermon.scripture || "",
+    youtubeUrl: sundaySermon.videoId
+      ? `https://www.youtube.com/watch?v=${sundaySermon.videoId}`
+      : null,
+    thumbnail: sundaySermon.thumbnail || defaultBanner,
+    isLive: false,
+  };
+  const verseText = sermon?.scripture ? lookupVerseText(sermon.scripture) : null;
 
   return (
     <div className="pb-[120px]">
@@ -142,7 +93,6 @@ export default function MessageSection() {
                     <p className="text-headline-6">
                       {sermon.date} | {sermon.preacher}
                     </p>
-                    <p className="text-[20px] text-white/80">{sermon.scripture}</p>
                   </div>
                 </div>
 
@@ -184,9 +134,14 @@ export default function MessageSection() {
               <p className="text-headline-5 pt-24 font-bold text-primary">
                 이번주 말씀
               </p>
-              <p className="text-body-2 text-grey-9 mt-10 max-w-xs text-center line-clamp-2">
-                {scriptureText || "아직 준비된 말씀이 없습니다."}
+              <p className="text-body-2 text-grey-9 mt-10 max-w-xs line-clamp-4">
+                {verseText || sermon?.scripture || "아직 준비된 말씀이 없습니다."}
               </p>
+              {verseText && sermon?.scripture && (
+                <p className="text-body-5 text-grey-5 mt-5 w-full">
+                  {sermon.scripture}
+                </p>
+              )}
             </div>
           </div>
         </div>

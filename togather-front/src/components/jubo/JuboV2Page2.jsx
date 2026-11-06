@@ -1,6 +1,4 @@
 import { useChurch } from "@/contexts/ChurchContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getWorshipServices, getWorshipOrder } from "@/services/juboService";
 import {
   JuboBookHeader,
   JuboBookFooter,
@@ -12,17 +10,8 @@ import {
 
 export default function JuboV2Page2({ data }) {
   const { church } = useChurch();
-  const { data: services = [], loading: servicesLoading } = useFetch(
-    () => getWorshipServices(church.id),
-    [church.id],
-    [],
-  );
-  const { data: orderMap = {}, loading: orderLoading } = useFetch(
-    () => getWorshipOrder(church.id),
-    [church.id],
-    {},
-  );
-  const loading = servicesLoading || orderLoading;
+  const services = data?.sections?.worshipServices ?? [];
+  const orderMap = data?.sections?.worshipOrder ?? {};
 
   // 첫 번째 서비스(보통 "주일 오전예배")를 이 페이지의 대표 예배로 삼는다 — 나머지는 JuboPage3에서.
   const mainService = services[0];
@@ -77,7 +66,7 @@ export default function JuboV2Page2({ data }) {
         />
 
         <JuboGreyBox>
-          <JuboOrderList order={mainOrder} loading={loading} />
+          <JuboOrderList order={mainOrder} />
         </JuboGreyBox>
       </div>
 
