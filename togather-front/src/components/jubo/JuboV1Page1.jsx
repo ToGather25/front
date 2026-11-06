@@ -53,7 +53,7 @@ export default function JuboV1Page1() {
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
       {/* 표지 배너 — 대비를 낮춘 흑백 예배 사진 위에 표어/말씀 */}
-      <div className="relative h-[240px] shrink-0 overflow-hidden flex flex-col items-center justify-center text-center text-white px-6 py-4 gap-1.5">
+      <div className="relative h-[190px] shrink-0 overflow-hidden flex flex-col items-center justify-center text-center text-white px-6 py-4 gap-1.5">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('${churchSermonBg}')`, filter: "grayscale(100%) contrast(70%)" }}

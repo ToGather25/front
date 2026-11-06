@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
+import FallbackImage from "@/components/church/FallbackImage";
 
 // 주일학교 부서명 -> 갤러리 공동체명 (갤러리 쪽 명칭이 다른 경우만 매핑)
 const GALLERY_COMMUNITY_MAP = {
@@ -49,10 +50,15 @@ function DeptContent({ dept }) {
             <span className="w-1.5 h-5 rounded-full bg-blue-7 inline-block" />
             담당 교역자
           </h3>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-grey-3 shrink-0" />
+          <div className="flex gap-8">
+            <FallbackImage
+              src={dept.pastor.image}
+              alt={dept.pastor.name}
+              className="w-25 h-30 rounded-lg object-cover shrink-0"
+              fallback={<div className="w-25 h-30 rounded-lg bg-grey-3 shrink-0" />}
+            />
             <div>
-              <p className="text-body-3 font-semibold text-grey-11">{dept.pastor.name}</p>
+              <p className="text-body-3 font-semibold text-grey-11 py-2">{dept.pastor.name}</p>
               <p className="text-body-5 text-grey-6">{dept.pastor.role}</p>
               <p className="text-body-5 text-grey-6">{dept.pastor.tel}</p>
             </div>
@@ -68,7 +74,7 @@ function DeptContent({ dept }) {
           <ul className="flex flex-col gap-2">
             {dept.activities.map((act) => (
               <li key={act} className="flex items-center gap-2 text-body-4 text-grey-8">
-                <span className="text-blue-5 text-body-5">◆</span>
+                <span className="text-blue-5 text-body-5">-</span>
                 {act}
               </li>
             ))}

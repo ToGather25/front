@@ -18,8 +18,8 @@ export default function Greeting() {
       </div>
 
       {/* 하단: 본문 + 사진 2열 */}
-      <div className="flex flex-col-reverse md:flex-row md:gap-10 md:items-center">
-        <div className="md:flex-2 flex flex-col gap-2 text-body-3 text-bluegrey-9">
+      <div className="flex flex-col-reverse md:flex-row md:gap-10">
+        <div className="md:flex-2 flex flex-col gap-2 text-body-3 text-bluegrey-9 pt-2">
           {paragraphs.map((text, i) => (
             <p key={i}>
               {text.split("\n").map((line, j) => (
