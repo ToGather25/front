@@ -323,6 +323,10 @@ export default function Gallery() {
             <div className="flex justify-center py-20">
           <BubbleLoader size="sm" />
         </div>
+          ) : communities.length === 0 ? (
+            <div className="min-h-[320px] flex items-center justify-center text-center text-grey-5 text-body-3">
+              생성된 공동체가 없습니다.
+            </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-12 gap-x-8 justify-items-center">
                 {communities.map((community) => (

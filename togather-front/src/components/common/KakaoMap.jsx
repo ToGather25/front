@@ -104,7 +104,7 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
   if (error) {
     return (
       <div
-        className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-4 text-grey-6 ${className}`}
+        className={`flex items-center justify-center bg-bluegrey-1 rounded-xl text-body-5 text-grey-6 ${className}`}
         style={style}
       >
         {error}

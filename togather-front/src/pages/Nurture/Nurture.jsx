@@ -368,8 +368,8 @@ export default function Nurture() {
                 </div>
 
                 {boardPosts.length === 0 ? (
-                  <div className="border-t border-b border-grey-3 py-24 text-center text-grey-6 text-body-3">
-                    검색 결과가 없습니다.
+                  <div className="py-24 text-center text-grey-6 text-body-3">
+                    {boardQuery ? "검색 결과가 없습니다." : "등록된 게시글이 없습니다."}
                   </div>
                 ) : (
                   <>

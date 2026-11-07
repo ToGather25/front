@@ -150,7 +150,7 @@ export default function Mission() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-body-5 text-grey-5 mb-0.5">정기 집결</p>
+                  <p className="text-body-5 text-grey-5 mb-0.5">정기 일정</p>
                   <p className="text-body-3 font-semibold text-grey-11">
                     {EVANGELISM_INFO.schedule}
                   </p>
