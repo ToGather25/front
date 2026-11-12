@@ -691,7 +691,7 @@ function IconBible({ active }) {
   );
 }
 
-function IconJubo({ active }) {
+function IconWorship({ active }) {
   return (
     <svg
       className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
@@ -703,16 +703,16 @@ function IconJubo({ active }) {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+        d="M7 3.75h7.5L19.5 9v11.25a1 1 0 01-1 1h-11.5a1 1 0 01-1-1V4.75a1 1 0 011-1zM14.5 3.75V9h5M9 13.5h6M9 17h6"
       />
     </svg>
   );
 }
 
-function IconHome() {
+function IconHome({ active }) {
   return (
     <svg
-      className="w-[26px] h-[26px] text-white"
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -774,37 +774,21 @@ function BottomNav() {
   if (HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p))) return null;
 
   const tabs = [
+    { label: "홈", to: "/", icon: (a) => <IconHome active={a} />, match: (p) => p === "/" },
+    {
+      label: "예배",
+      to: "/말씀",
+      icon: (a) => <IconWorship active={a} />,
+      match: (p) => p === "/말씀" || (p.startsWith("/말씀") && !p.startsWith("/말씀/읽기") && !p.startsWith("/말씀/필사")),
+    },
     {
       label: "성경",
       to: "/말씀/읽기",
       icon: (a) => <IconBible active={a} />,
-      match: (p) => p.startsWith("/말씀"),
+      match: (p) => p.startsWith("/말씀/읽기") || p.startsWith("/말씀/필사"),
     },
-    {
-      label: "주보",
-      to: "/주보/목록",
-      icon: (a) => <IconJubo active={a} />,
-      match: (p) => p.startsWith("/주보"),
-    },
-    {
-      label: "홈",
-      to: "/",
-      isHome: true,
-      icon: () => <IconHome />,
-      match: (p) => p === "/",
-    },
-    {
-      label: "캘린더",
-      to: "/교회행사",
-      icon: (a) => <IconCalendar active={a} />,
-      match: (p) => p.startsWith("/교회행사"),
-    },
-    {
-      label: "마이페이지",
-      to: "/mypage",
-      icon: (a) => <IconMyPage active={a} />,
-      match: (p) => p.startsWith("/mypage"),
-    },
+    { label: "캘린더", to: "/교회행사", icon: (a) => <IconCalendar active={a} />, match: (p) => p.startsWith("/교회행사") },
+    { label: "마이페이지", to: "/mypage", icon: (a) => <IconMyPage active={a} />, match: (p) => p.startsWith("/mypage") },
   ];
 
   return (
@@ -815,28 +799,14 @@ function BottomNav() {
       <div className="flex items-end h-[64px]">
         {tabs.map((tab) => {
           const active = tab.match(pathname);
-          if (tab.isHome) {
-            return (
-              <Link key={tab.label} to={tab.to} className="flex-1 flex flex-col items-center pb-2">
-                <div className="w-[52px] h-[52px] rounded-full bg-primary flex items-center justify-center shadow-md -mt-4">
-                  <IconHome />
-                </div>
-                <span
-                  className={`text-[10px] mt-0.5 font-medium ${active ? "text-primary" : "text-grey-6"}`}
-                >
-                  {tab.label}
-                </span>
-              </Link>
-            );
-          }
           return (
             <Link
               key={tab.label}
               to={tab.to}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 pb-2 pt-2 ${active ? "text-primary" : "text-grey-6"}`}
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 mx-1 rounded-full ${active ? "bg-bluegrey-2" : ""}`}
             >
               {tab.icon(active)}
-              <span className="text-[10px] font-medium">{tab.label}</span>
+              <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
             </Link>
           );
         })}
