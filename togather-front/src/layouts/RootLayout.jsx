@@ -602,7 +602,7 @@ function MobileDrawer({ isOpen, onClose }) {
         <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
           {currentUser ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-grey-2 flex items-center justify-center text-[15px] font-bold text-white shrink-0">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-[15px] font-bold text-white shrink-0">
                 {currentUser.name?.[0]}
               </div>
               <span className="text-[15px] font-semibold text-grey-10">
@@ -769,7 +769,10 @@ function IconMyPage({ active }) {
 const HIDE_BOTTOM_NAV_ON = ["/login", "/register"];
 
 function BottomNav() {
-  const { pathname } = useLocation();
+  // useLocation().pathname은 한글 경로에서 percent-encoding된 채로 오므로, 아래
+  // match 비교들이 리터럴 한글 문자열과 맞춰지도록 디코딩해서 사용한다.
+  const { pathname: rawPathname } = useLocation();
+  const pathname = decodeURIComponent(rawPathname);
 
   if (HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p))) return null;
 
@@ -793,9 +796,9 @@ function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] pointer-events-none md:hidden"
     >
-      <nav className="relative w-[337px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)]">
+      <nav className="relative w-[337px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 backdrop-blur-md shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
         <div className="flex items-stretch h-full">
           {tabs.map((tab) => {
             const active = tab.match(pathname);
@@ -822,7 +825,10 @@ function BottomNav() {
 const BIBLE_PAGES = ["/말씀/읽기", "/말씀/필사"];
 
 function Layout() {
-  const { pathname } = useLocation();
+  // 한글 경로의 percent-encoding을 풀어야 BIBLE_PAGES 등 리터럴 한글 문자열
+  // 비교가 실제 브라우저 환경에서도 맞는다(BottomNav의 동일 이슈 참고).
+  const { pathname: rawPathname } = useLocation();
+  const pathname = decodeURIComponent(rawPathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
   const desktopBarRef = useRef(null);
@@ -848,6 +854,10 @@ function Layout() {
         // 홈 히어로 배너가 헤더 아래로 파고들 때 쓰는 고정값 — 숨김 상태와 무관하게
         // 항상 "완전히 펼쳐진" 헤더 높이를 유지해야 스크롤 중 레이아웃이 튀지 않는다.
         "--header-height": `${headerHeight}px`,
+        // 바텀탭 pill이 실제로 차지하는 총 높이(위 패딩 10px + pill 60px + 아래
+        // 패딩 21px) + safe-area. main의 하단 패딩, 모바일 Footer, 상세 페이지의
+        // sticky CTA가 전부 이 값 하나를 참조해야 겹침 없이 일관된다.
+        "--bottom-nav-h": "calc(91px + env(safe-area-inset-bottom))",
       }}
     >
       {/* 데스크탑 헤더 (bible 전체화면 페이지 제외) */}
@@ -870,7 +880,7 @@ function Layout() {
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {/* 페이지 컨텐츠 */}
-      <main className={`flex-1 ${showBottomNav ? "pb-[64px] md:pb-0" : ""}`}>
+      <main className={`flex-1 ${showBottomNav ? "pb-[var(--bottom-nav-h)] md:pb-0" : ""}`}>
         <Outlet />
       </main>
 

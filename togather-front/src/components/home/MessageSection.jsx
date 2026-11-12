@@ -22,9 +22,10 @@ export default function MessageSection() {
     date: new Date(sundaySermon.sermonDate).toLocaleDateString("ko-KR"),
     preacher: sundaySermon.preacher || church.pastor || "담임목사",
     scripture: sundaySermon.scripture || "",
-    youtubeUrl: sundaySermon.videoId
-      ? `https://www.youtube.com/watch?v=${sundaySermon.videoId}`
-      : null,
+    youtubeUrl:
+      sundaySermon.youtubeVideoId ?? sundaySermon.videoId
+        ? `https://www.youtube.com/watch?v=${sundaySermon.youtubeVideoId ?? sundaySermon.videoId}`
+        : null,
     thumbnail: sundaySermon.thumbnail || defaultBanner,
     isLive: false,
   };

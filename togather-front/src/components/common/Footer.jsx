@@ -111,7 +111,7 @@ export default function Footer({ isHome = false }) {
       </footer>
 
       {/* Mobile Footer (md 미만에서만 표시) */}
-      <footer className="bg-bluegrey-2 border-t border-bluegrey-3 md:hidden pb-[calc(64px+env(safe-area-inset-bottom))]">
+      <footer className="bg-bluegrey-2 border-t border-bluegrey-3 md:hidden pb-[var(--bottom-nav-h)]">
         <div className="flex flex-col items-center gap-5 px-6 py-8">
           {/* 로고 */}
           <Link to="/">

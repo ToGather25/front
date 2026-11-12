@@ -224,7 +224,11 @@ function GallerySection({ photos }) {
             to="/갤러리"
             className="relative shrink-0 w-[298px] h-[186px] rounded-[10px] overflow-hidden"
           >
-            <img src={p.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={p.imageUrl || defaultBanner}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/40" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <p className="text-[14px] font-semibold">{p.title}</p>
@@ -263,8 +267,8 @@ export default function MobileHome() {
       <QuickMenu />
       <VideoSection
         youtubeUrl={
-          sundaySermon?.videoId
-            ? `https://www.youtube.com/watch?v=${sundaySermon.videoId}`
+          sundaySermon?.youtubeVideoId ?? sundaySermon?.videoId
+            ? `https://www.youtube.com/watch?v=${sundaySermon.youtubeVideoId ?? sundaySermon.videoId}`
             : church.social?.youtube
         }
         pastor={`${sundaySermon?.preacher || church.pastor || "담임목사"} 목사`}

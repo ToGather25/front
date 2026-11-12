@@ -101,7 +101,7 @@ export default function EventDetail() {
       {regState.status !== "none" && (
         <div
           className="md:hidden fixed left-0 right-0 z-40 bg-white border-t border-bluegrey-3 px-4 py-3"
-          style={{ bottom: "calc(64px + env(safe-area-inset-bottom))" }}
+          style={{ bottom: "var(--bottom-nav-h)" }}
         >
           <RegistrationButton event={event} size="lg" className="w-full !px-0" />
         </div>
