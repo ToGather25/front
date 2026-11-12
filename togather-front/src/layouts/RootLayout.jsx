@@ -792,26 +792,27 @@ function BottomNav() {
   ];
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-bluegrey-3 md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] md:hidden"
     >
-      <div className="flex items-end h-[64px]">
-        {tabs.map((tab) => {
-          const active = tab.match(pathname);
-          return (
-            <Link
-              key={tab.label}
-              to={tab.to}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 mx-1 rounded-full ${active ? "bg-bluegrey-2" : ""}`}
-            >
-              {tab.icon(active)}
-              <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+      <nav className="relative w-[337px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)]">
+        <div className="flex items-stretch h-full">
+          {tabs.map((tab) => {
+            const active = tab.match(pathname);
+            return (
+              <Link
+                key={tab.label}
+                to={tab.to}
+                className={`flex-1 flex flex-col items-center justify-center gap-1 mx-1 my-1 rounded-full ${active ? "bg-bluegrey-2" : ""}`}
+              >
+                {tab.icon(active)}
+                <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
   );
 }
 
