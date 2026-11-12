@@ -66,6 +66,13 @@ export function ChurchProvider({ children, initialChurch }) {
     status: initialChurch ? "ready" : "loading",
   });
 
+  // initialChurch가 리렌더마다 새 객체로 바뀌는 경우(관리자 화면의 실시간 미리보기 — 편집 중인
+  // draft 값을 그대로 흘려보낸다)도 반영한다. useState 초기값은 마운트 시 한 번만 쓰이므로,
+  // 이 effect 없이는 두 번째 렌더부터 draft 변경이 미리보기에 반영되지 않는다.
+  useEffect(() => {
+    if (initialChurch) setState({ church: initialChurch, status: "ready" });
+  }, [initialChurch]);
+
   useEffect(() => {
     if (initialChurch) return;
     let cancelled = false;

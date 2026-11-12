@@ -1,0 +1,64 @@
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { renderWithChurch } from "@/test/renderWithChurch";
+import MainManage from "./MainManage";
+
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+}));
+
+import api from "@/services/api";
+
+const PROFILE = {
+  representativeImageUrl: "https://example.com/hero.jpg",
+  instagramUrl: "https://www.instagram.com/okgil",
+  offeringBankName: "국민은행",
+  offeringAccountNumber: "000-000000-00-000",
+  offeringAccountHolder: "옥길교회",
+};
+
+function mockGet({ schedule = { regular: [], departments: [] }, profile = PROFILE } = {}) {
+  api.get.mockImplementation((url) => {
+    if (url === "/church/worship-schedule") return Promise.resolve({ data: { data: schedule } });
+    if (url === "/church/profile") return Promise.resolve({ data: { data: profile } });
+    return Promise.reject(new Error(`unexpected GET ${url}`));
+  });
+}
+
+describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("마운트 시 배너 이미지/인스타그램/헌금 계좌를 조회해 입력값에 채운다", async () => {
+    mockGet();
+    renderWithChurch(<MainManage />);
+
+    expect(await screen.findByDisplayValue("https://example.com/hero.jpg")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("https://www.instagram.com/okgil")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("국민은행")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("000-000000-00-000")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("옥길교회")).toBeInTheDocument();
+  });
+
+  it("저장을 누르면 예배 시간표와 교회 프로필(배너·인스타그램·헌금 계좌)을 함께 저장한다", async () => {
+    mockGet({ profile: { representativeImageUrl: "", instagramUrl: "", offeringBankName: "" } });
+    api.put.mockResolvedValue({ data: { data: {} } });
+    const user = userEvent.setup();
+    renderWithChurch(<MainManage />);
+
+    const bankInput = await screen.findByLabelText("은행명");
+    await user.type(bankInput, "신한은행");
+    await user.click(screen.getByRole("button", { name: "변경사항 저장" }));
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/profile",
+        expect.objectContaining({ offeringBankName: "신한은행" }),
+      ),
+    );
+    expect(api.put).toHaveBeenCalledWith("/church/admin/worship-schedule", expect.anything());
+    expect(await screen.findByText("저장 완료 ✓")).toBeInTheDocument();
+  });
+});

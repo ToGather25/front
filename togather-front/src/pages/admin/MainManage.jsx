@@ -90,7 +90,8 @@ export default function MainManage() {
 
   const [regular, setRegular] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [banner, setBanner] = useState({ representativeImageUrl: "", slogan: "" });
+  const [banner, setBanner] = useState({ representativeImageUrl: "", instagramUrl: "" });
+  const [offering, setOffering] = useState({ bankName: "", accountNumber: "", accountHolder: "" });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -106,7 +107,12 @@ export default function MainManage() {
     if (initialProfile) {
       setBanner({
         representativeImageUrl: initialProfile.representativeImageUrl ?? "",
-        slogan: initialProfile.slogan ?? "",
+        instagramUrl: initialProfile.instagramUrl ?? "",
+      });
+      setOffering({
+        bankName: initialProfile.offeringBankName ?? "",
+        accountNumber: initialProfile.offeringAccountNumber ?? "",
+        accountHolder: initialProfile.offeringAccountHolder ?? "",
       });
     }
   }, [initialProfile]);
@@ -121,11 +127,13 @@ export default function MainManage() {
         regular: regular.filter(notBlank),
         departments: departments.filter(notBlank),
       });
-      // 프로필도 통째 교체 — 여기서 안 건드리는 필드(인스타그램·헌금 계좌)를 함께 실어 보낸다.
+      // 프로필도 통째 교체 — 교회 프로필 편집 화면이 이 한 곳뿐이므로 모든 필드를 여기서 싣는다.
       await updateChurchProfile(church.id, {
-        ...initialProfile,
         representativeImageUrl: banner.representativeImageUrl || null,
-        slogan: banner.slogan || null,
+        instagramUrl: banner.instagramUrl || null,
+        offeringBankName: offering.bankName || null,
+        offeringAccountNumber: offering.accountNumber || null,
+        offeringAccountHolder: offering.accountHolder || null,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -171,14 +179,56 @@ export default function MainManage() {
               />
             </div>
             <div>
-              <label className={labelCls} htmlFor="banner-slogan">
-                슬로건
+              <label className={labelCls} htmlFor="banner-instagram">
+                인스타그램 URL
               </label>
               <input
-                id="banner-slogan"
+                id="banner-instagram"
                 className={inputCls}
-                value={banner.slogan}
-                onChange={(e) => setBanner((p) => ({ ...p, slogan: e.target.value }))}
+                value={banner.instagramUrl}
+                onChange={(e) => setBanner((p) => ({ ...p, instagramUrl: e.target.value }))}
+                placeholder="https://www.instagram.com/... (비워두면 푸터에서 숨김)"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card title="헌금 안내" description="주보의 헌금 안내 영역에 표시됩니다. 비워두면 해당 영역이 숨겨집니다.">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls} htmlFor="offering-bank">
+                은행명
+              </label>
+              <input
+                id="offering-bank"
+                className={inputCls}
+                value={offering.bankName}
+                onChange={(e) => setOffering((p) => ({ ...p, bankName: e.target.value }))}
+                placeholder="예) OO은행"
+              />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="offering-account">
+                계좌번호
+              </label>
+              <input
+                id="offering-account"
+                className={inputCls}
+                value={offering.accountNumber}
+                onChange={(e) => setOffering((p) => ({ ...p, accountNumber: e.target.value }))}
+                placeholder="예) 000-000000-00-000"
+              />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="offering-holder">
+                예금주
+              </label>
+              <input
+                id="offering-holder"
+                className={inputCls}
+                value={offering.accountHolder}
+                onChange={(e) => setOffering((p) => ({ ...p, accountHolder: e.target.value }))}
+                placeholder="예) OO교회"
               />
             </div>
           </div>

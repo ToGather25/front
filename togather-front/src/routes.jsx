@@ -32,6 +32,7 @@ import Terms from "@/pages/Terms/Terms";
 import PageNotFound from "@/pages/PageNotFound/PageNotFound";
 import Dashboard from "@/pages/admin/Dashboard";
 import MainManage from "@/pages/admin/MainManage";
+import ChurchIntroManage from "@/pages/admin/ChurchIntroManage";
 import WorshipManage from "@/pages/admin/WorshipManage";
 import NoticesManage from "@/pages/admin/NoticesManage";
 import EventsManage from "@/pages/admin/EventsManage";
@@ -97,6 +98,7 @@ export const routes = [
     children: [
       { index: true, element: <Dashboard /> },
       { path: "main", element: <MainManage /> },
+      { path: "church-intro", element: <ChurchIntroManage /> },
       { path: "worship", element: <WorshipManage /> },
       { path: "notices", element: <NoticesManage /> },
       { path: "events", element: <EventsManage /> },

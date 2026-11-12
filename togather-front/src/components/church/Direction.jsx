@@ -121,16 +121,20 @@ export default function Direction() {
             </select>
           )}
         </div>
-        <table className="w-full text-body-4 border-t border-bluegrey-3">
-          <tbody>
-            {lots[selectedLot].details.map(({ label, value }) => (
-              <tr key={label} className="border-b border-grey-3">
-                <td className="py-4 font-semibold text-grey-10 w-36">{label}</td>
-                <td className="py-4 text-grey-6">{value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {lots[selectedLot] ? (
+          <table className="w-full text-body-4 border-t border-bluegrey-3">
+            <tbody>
+              {lots[selectedLot].details.map(({ label, value }) => (
+                <tr key={label} className="border-b border-grey-3">
+                  <td className="py-4 font-semibold text-grey-10 w-36">{label}</td>
+                  <td className="py-4 text-grey-6">{value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-body-4 text-grey-5 text-center py-4">정보가 없습니다.</p>
+        )}
       </div>
     </div>
   );

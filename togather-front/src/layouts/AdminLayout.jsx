@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "@/contexts/auth";
 import { useEffect } from "react";
 import IcoChart from "@/assets/web-icon/admin-chart-white.svg";
 import IcoMonitor from "@/assets/web-icon/admin-monitor-white.svg";
+import IcoChurchIntro from "@/assets/web-icon/admin-settings-white.svg";
 import IcoBook from "@/assets/web-icon/admin-book-white.svg";
 import IcoAnnounce from "@/assets/web-icon/admin-announcement-white.svg";
 import IcoUsers from "@/assets/web-icon/admin-users-white.svg";
@@ -14,6 +15,7 @@ import IcoCalendar from "@/assets/web-icon/mypage-calendar-white.svg";
 const MENU = [
   { label: "대시보드", to: "/admin", end: true, icon: IcoChart },
   { label: "메인 페이지 관리", to: "/admin/main", icon: IcoMonitor },
+  { label: "교회소개 관리", to: "/admin/church-intro", icon: IcoChurchIntro },
   { label: "예배 및 설교 관리", to: "/admin/worship", icon: IcoBook },
   { label: "공지사항 관리", to: "/admin/notices", icon: IcoAnnounce },
   { label: "교회행사 관리", to: "/admin/events", icon: IcoCalendar },
