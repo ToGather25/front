@@ -9,7 +9,6 @@ export default function Footer({ isHome = false }) {
   const { church } = useChurch();
 
   const bgClass = isHome ? "bg-primary-darker" : "bg-bluegrey-1";
-  const borderClass = isHome ? "border-primary" : "border-bluegrey-3";
   const textColorClass = isHome ? "text-white" : "text-grey-10";
   const linkColorClass = isHome ? "hover:text-white/80" : "hover:text-blue-7";
   const bodyColorClass = isHome ? "text-white/80" : "text-grey-9";
@@ -112,7 +111,7 @@ export default function Footer({ isHome = false }) {
       </footer>
 
       {/* Mobile Footer (md 미만에서만 표시) */}
-      <footer className={`${bgClass} border-t ${borderClass} md:hidden pb-[calc(64px+env(safe-area-inset-bottom))]`}>
+      <footer className="bg-bluegrey-2 border-t border-bluegrey-3 md:hidden pb-[var(--bottom-nav-h)]">
         <div className="flex flex-col items-center gap-5 px-6 py-8">
           {/* 로고 */}
           <Link to="/">
@@ -120,27 +119,28 @@ export default function Footer({ isHome = false }) {
           </Link>
 
           {/* 약관 */}
-          <div className={`flex items-center gap-5 text-[13px] font-medium ${isHome ? "text-white/70" : "text-grey-7"}`}>
+          <div className="flex items-center gap-5 text-[13px] font-medium text-grey-7">
             <Link
               to="/privacy"
-              className={`font-bold ${isHome ? "text-white hover:text-white/80" : "text-grey-9 hover:text-primary"} transition-colors`}
+              className="font-bold text-grey-9 hover:text-primary transition-colors"
             >
               개인정보취급방침
             </Link>
-            <span className={`w-px h-3 ${isHome ? "bg-white/30" : "bg-bluegrey-3"}`} />
-            <Link to="/terms" className={`${isHome ? "text-white/70 hover:text-white/80" : "hover:text-primary"} transition-colors`}>
+            <span className="w-px h-3 bg-bluegrey-3" />
+            <Link to="/terms" className="hover:text-primary transition-colors">
               이용 약관
             </Link>
           </div>
 
           {/* 교회 정보 */}
-          <div className={`flex flex-col items-center gap-1.5 text-[12px] ${isHome ? "text-white/60" : "text-grey-6"} text-center`}>
+          <div className="flex flex-col items-center gap-1.5 text-[12px] text-grey-6 text-center">
             <span>{church.address}</span>
             <span>
               TEL {church.tel}
               {church.fax ? ` · FAX ${church.fax}` : ""}
             </span>
             {church.email && <span>{church.email}</span>}
+            <span>Copyright © Togather All rights reserved.</span>
           </div>
 
           {/* SNS 아이콘 */}
@@ -151,7 +151,7 @@ export default function Footer({ isHome = false }) {
                 aria-label="YouTube"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-9 h-9 rounded-xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
+                className="w-9 h-9 rounded-xl border border-bluegrey-4 flex items-center justify-center text-grey-7 hover:text-primary transition-colors"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -164,7 +164,7 @@ export default function Footer({ isHome = false }) {
                 aria-label="Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-9 h-9 rounded-xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
+                className="w-9 h-9 rounded-xl border border-bluegrey-4 flex items-center justify-center text-grey-7 hover:text-primary transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                   <rect x="3" y="3" width="18" height="18" rx="5" />
@@ -179,7 +179,7 @@ export default function Footer({ isHome = false }) {
                 aria-label="Facebook"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-9 h-9 rounded-xl border ${snsBorderClass} flex items-center justify-center ${snsColorClass} transition-colors`}
+                className="w-9 h-9 rounded-xl border border-bluegrey-4 flex items-center justify-center text-grey-7 hover:text-primary transition-colors"
               >
                 <span className="text-sm font-bold">f</span>
               </a>

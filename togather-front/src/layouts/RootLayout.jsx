@@ -5,6 +5,8 @@ import { ChurchProvider, useChurch } from "@/contexts/ChurchContext";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import Footer from "@/components/common/Footer";
+import IcoBell from "@/assets/mob-icon/bell-01.svg";
+import IcoMenu from "@/assets/mob-icon/menu-01.svg";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -492,35 +494,18 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
         ref={barRef}
         className="relative bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
-        <Link to="/교적부" className="p-1.5 -ml-1 text-grey-10" aria-label="교적부">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 19.5A2.5 2.5 0 017 17h11M4.5 19.5A2.5 2.5 0 007 22h11a1 1 0 001-1V4a1 1 0 00-1-1H7a2.5 2.5 0 00-2.5 2.5v14z"
-            />
-          </svg>
+        <Link to="/" className="flex items-center gap-2">
+          <ChurchLogo className="h-6 w-6 object-contain" alt="" />
+          <span className="text-[17px] font-bold text-grey-10">{church.name}</span>
         </Link>
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
-          <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
-        </Link>
-        <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        <div className="flex items-center">
+          <span aria-hidden="true" className="p-1.5">
+            <img src={IcoBell} className="w-6 h-6" alt="" />
+          </span>
+          <button onClick={onMenuOpen} className="p-1.5 -mr-1" aria-label="메뉴 열기">
+            <img src={IcoMenu} className="w-6 h-6" alt="" />
+          </button>
+        </div>
       </div>
     </header>
   );
@@ -529,6 +514,53 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
 // ─────────────────────────────────────────────────────
 // Mobile Drawer
 // ─────────────────────────────────────────────────────
+const MOBILE_NAV = [
+  {
+    section: "교회소개",
+    items: [
+      { label: "예배시간", to: "/말씀?tab=예배 안내" },
+      { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
+      { label: "안내", to: "/교회소개?tab=오시는 길" },
+    ],
+  },
+  {
+    section: "주일학교",
+    items: [
+      { label: "유치부", to: "/주일학교?tab=유치부" },
+      { label: "초등부", to: "/주일학교?tab=초등부" },
+      { label: "중고등부", to: "/주일학교?tab=중·고등부" },
+      { label: "대학청년부", to: "/주일학교?tab=대학·청년부" },
+    ],
+  },
+  {
+    section: "전도・선교",
+    items: [
+      { label: "전도회 소개", to: "/전도선교?tab=전도회 소개" },
+      { label: "국내외 선교", to: "/전도선교?tab=국내외 선교" },
+      { label: "선교지 소식", to: "/전도선교?tab=선교지 소식" },
+    ],
+  },
+  {
+    section: "양육・훈련 게시판",
+    items: [
+      { label: "구역 모임", to: "/양육훈련?tab=구역모임" },
+      { label: "오늘의 묵상", to: "/양육훈련?tab=오늘의 묵상" },
+      { label: "제자 훈련", to: "/양육훈련?tab=제자훈련" },
+      { label: "양육 프로그램", to: "/양육훈련?tab=양육프로그램" },
+      { label: "양육・훈련 게시판", to: "/양육훈련?tab=양육/훈련 게시판" },
+      { label: "성경 읽기/쓰기", to: "/양육훈련?tab=성경읽기/쓰기" },
+    ],
+  },
+  {
+    section: "교회 소식",
+    items: [
+      { label: "공지사항", to: "/공지사항" },
+      { label: "교회행사", to: "/교회행사" },
+      { label: "갤러리", to: "/갤러리" },
+    ],
+  },
+];
+
 function MobileDrawer({ isOpen, onClose }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
@@ -566,59 +598,16 @@ function MobileDrawer({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* 네비게이션 */}
-        <nav className="flex-1 overflow-y-auto py-2">
-          {church.nav.map((item) => (
-            <div key={item.label}>
-              <Link
-                to={item.to ?? item.children?.[0]?.to}
-                onClick={onClose}
-                className="flex items-center px-5 py-3.5 text-[15px] font-semibold text-grey-10 border-b border-bluegrey-1 hover:text-primary transition-colors"
-              >
-                {item.label}
-              </Link>
-              {item.children && (
-                <div className="bg-bluegrey-1 px-5 py-2 flex flex-col gap-0.5">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.label}
-                      to={child.to}
-                      onClick={onClose}
-                      className="flex items-center gap-2 py-2 text-[13px] text-grey-7 hover:text-primary transition-colors"
-                    >
-                      <span className="w-1 h-1 rounded-full bg-bluegrey-4 shrink-0" />
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
-
-        {/* 로그인/유틸 */}
-        <div
-          className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
-          style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-        >
+        {/* 프로필 / 로그인·회원가입 */}
+        <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
           {currentUser ? (
-            <div className="flex flex-col gap-2">
-              <Link
-                to="/mypage"
-                onClick={onClose}
-                className="block text-center py-2.5 rounded-full bg-primary text-white text-[14px] font-semibold"
-              >
-                마이페이지
-              </Link>
-              <button
-                onClick={() => {
-                  logout();
-                  onClose();
-                }}
-                className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
-              >
-                로그아웃
-              </button>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-[15px] font-bold text-white shrink-0">
+                {currentUser.name?.[0]}
+              </div>
+              <span className="text-[15px] font-semibold text-grey-10">
+                {currentUser.name}님
+              </span>
             </div>
           ) : (
             <div className="flex gap-2">
@@ -639,6 +628,43 @@ function MobileDrawer({ isOpen, onClose }) {
             </div>
           )}
         </div>
+
+        {/* 네비게이션 */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          {MOBILE_NAV.map(({ section, items }) => (
+            <div key={section}>
+              <p className="px-5 pt-4 pb-1 text-[12px] font-semibold text-grey-5">{section}</p>
+              {items.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={onClose}
+                  className="block px-5 py-3 text-[15px] font-medium text-grey-10"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </nav>
+
+        {/* 로그아웃 */}
+        {currentUser && (
+          <div
+            className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
+            style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+          >
+            <button
+              onClick={() => {
+                logout();
+                onClose();
+              }}
+              className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
+            >
+              로그아웃
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
@@ -665,7 +691,7 @@ function IconBible({ active }) {
   );
 }
 
-function IconJubo({ active }) {
+function IconWorship({ active }) {
   return (
     <svg
       className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
@@ -677,16 +703,16 @@ function IconJubo({ active }) {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+        d="M7 3.75h7.5L19.5 9v11.25a1 1 0 01-1 1h-11.5a1 1 0 01-1-1V4.75a1 1 0 011-1zM14.5 3.75V9h5M9 13.5h6M9 17h6"
       />
     </svg>
   );
 }
 
-function IconHome() {
+function IconHome({ active }) {
   return (
     <svg
-      className="w-[26px] h-[26px] text-white"
+      className={`w-[22px] h-[22px] ${active ? "text-primary" : "text-grey-6"}`}
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -743,79 +769,53 @@ function IconMyPage({ active }) {
 const HIDE_BOTTOM_NAV_ON = ["/login", "/register"];
 
 function BottomNav() {
-  const { pathname } = useLocation();
+  // useLocation().pathname은 한글 경로에서 percent-encoding된 채로 오므로, 아래
+  // match 비교들이 리터럴 한글 문자열과 맞춰지도록 디코딩해서 사용한다.
+  const { pathname: rawPathname } = useLocation();
+  const pathname = decodeURIComponent(rawPathname);
 
   if (HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p))) return null;
 
   const tabs = [
+    { label: "홈", to: "/", icon: (a) => <IconHome active={a} />, match: (p) => p === "/" },
+    {
+      label: "예배",
+      to: "/말씀",
+      icon: (a) => <IconWorship active={a} />,
+      match: (p) => p === "/말씀" || (p.startsWith("/말씀") && !p.startsWith("/말씀/읽기") && !p.startsWith("/말씀/필사")),
+    },
     {
       label: "성경",
       to: "/말씀/읽기",
       icon: (a) => <IconBible active={a} />,
-      match: (p) => p.startsWith("/말씀"),
+      match: (p) => p.startsWith("/말씀/읽기") || p.startsWith("/말씀/필사"),
     },
-    {
-      label: "주보",
-      to: "/주보/목록",
-      icon: (a) => <IconJubo active={a} />,
-      match: (p) => p.startsWith("/주보"),
-    },
-    {
-      label: "홈",
-      to: "/",
-      isHome: true,
-      icon: () => <IconHome />,
-      match: (p) => p === "/",
-    },
-    {
-      label: "캘린더",
-      to: "/교회행사",
-      icon: (a) => <IconCalendar active={a} />,
-      match: (p) => p.startsWith("/교회행사"),
-    },
-    {
-      label: "마이페이지",
-      to: "/mypage",
-      icon: (a) => <IconMyPage active={a} />,
-      match: (p) => p.startsWith("/mypage"),
-    },
+    { label: "캘린더", to: "/교회행사", icon: (a) => <IconCalendar active={a} />, match: (p) => p.startsWith("/교회행사") },
+    { label: "마이페이지", to: "/mypage", icon: (a) => <IconMyPage active={a} />, match: (p) => p.startsWith("/mypage") },
   ];
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-bluegrey-3 md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] pointer-events-none md:hidden"
     >
-      <div className="flex items-end h-[64px]">
-        {tabs.map((tab) => {
-          const active = tab.match(pathname);
-          if (tab.isHome) {
+      <nav className="relative w-[337px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 backdrop-blur-md shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
+        <div className="flex items-stretch h-full">
+          {tabs.map((tab) => {
+            const active = tab.match(pathname);
             return (
-              <Link key={tab.label} to={tab.to} className="flex-1 flex flex-col items-center pb-2">
-                <div className="w-[52px] h-[52px] rounded-full bg-primary flex items-center justify-center shadow-md -mt-4">
-                  <IconHome />
-                </div>
-                <span
-                  className={`text-[10px] mt-0.5 font-medium ${active ? "text-primary" : "text-grey-6"}`}
-                >
-                  {tab.label}
-                </span>
+              <Link
+                key={tab.label}
+                to={tab.to}
+                className={`flex-1 flex flex-col items-center justify-center gap-1 mx-1 my-1 rounded-full ${active ? "bg-bluegrey-2" : ""}`}
+              >
+                {tab.icon(active)}
+                <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
               </Link>
             );
-          }
-          return (
-            <Link
-              key={tab.label}
-              to={tab.to}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 pb-2 pt-2 ${active ? "text-primary" : "text-grey-6"}`}
-            >
-              {tab.icon(active)}
-              <span className="text-[10px] font-medium">{tab.label}</span>
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+          })}
+        </div>
+      </nav>
+    </div>
   );
 }
 
@@ -825,7 +825,10 @@ function BottomNav() {
 const BIBLE_PAGES = ["/말씀/읽기", "/말씀/필사"];
 
 function Layout() {
-  const { pathname } = useLocation();
+  // 한글 경로의 percent-encoding을 풀어야 BIBLE_PAGES 등 리터럴 한글 문자열
+  // 비교가 실제 브라우저 환경에서도 맞는다(BottomNav의 동일 이슈 참고).
+  const { pathname: rawPathname } = useLocation();
+  const pathname = decodeURIComponent(rawPathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
   const desktopBarRef = useRef(null);
@@ -851,6 +854,10 @@ function Layout() {
         // 홈 히어로 배너가 헤더 아래로 파고들 때 쓰는 고정값 — 숨김 상태와 무관하게
         // 항상 "완전히 펼쳐진" 헤더 높이를 유지해야 스크롤 중 레이아웃이 튀지 않는다.
         "--header-height": `${headerHeight}px`,
+        // 바텀탭 pill이 실제로 차지하는 총 높이(위 패딩 10px + pill 60px + 아래
+        // 패딩 21px) + safe-area. main의 하단 패딩, 모바일 Footer, 상세 페이지의
+        // sticky CTA가 전부 이 값 하나를 참조해야 겹침 없이 일관된다.
+        "--bottom-nav-h": "calc(91px + env(safe-area-inset-bottom))",
       }}
     >
       {/* 데스크탑 헤더 (bible 전체화면 페이지 제외) */}
@@ -873,7 +880,7 @@ function Layout() {
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {/* 페이지 컨텐츠 */}
-      <main className={`flex-1 ${showBottomNav ? "pb-[64px] md:pb-0" : ""}`}>
+      <main className={`flex-1 ${showBottomNav ? "pb-[var(--bottom-nav-h)] md:pb-0" : ""}`}>
         <Outlet />
       </main>
 
