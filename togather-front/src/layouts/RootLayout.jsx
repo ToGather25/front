@@ -5,6 +5,8 @@ import { ChurchProvider, useChurch } from "@/contexts/ChurchContext";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import Footer from "@/components/common/Footer";
+import IcoBell from "@/assets/mob-icon/bell-01.svg";
+import IcoMenu from "@/assets/mob-icon/menu-01.svg";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -492,35 +494,18 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
         ref={barRef}
         className="relative bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
-        <Link to="/교적부" className="p-1.5 -ml-1 text-grey-10" aria-label="교적부">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 19.5A2.5 2.5 0 017 17h11M4.5 19.5A2.5 2.5 0 007 22h11a1 1 0 001-1V4a1 1 0 00-1-1H7a2.5 2.5 0 00-2.5 2.5v14z"
-            />
-          </svg>
+        <Link to="/" className="flex items-center gap-2">
+          <ChurchLogo className="h-6 w-6 object-contain" alt="" />
+          <span className="text-[17px] font-bold text-grey-10">{church.name}</span>
         </Link>
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
-          <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
-        </Link>
-        <button onClick={onMenuOpen} className="p-1.5 -mr-1 text-grey-10" aria-label="메뉴 열기">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        <div className="flex items-center">
+          <span aria-hidden="true" className="p-1.5">
+            <img src={IcoBell} className="w-6 h-6" alt="" />
+          </span>
+          <button onClick={onMenuOpen} className="p-1.5 -mr-1" aria-label="메뉴 열기">
+            <img src={IcoMenu} className="w-6 h-6" alt="" />
+          </button>
+        </div>
       </div>
     </header>
   );
