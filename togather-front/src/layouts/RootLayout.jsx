@@ -514,6 +514,53 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
 // ─────────────────────────────────────────────────────
 // Mobile Drawer
 // ─────────────────────────────────────────────────────
+const MOBILE_NAV = [
+  {
+    section: "교회소개",
+    items: [
+      { label: "예배시간", to: "/말씀?tab=예배 안내" },
+      { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
+      { label: "안내", to: "/교회소개?tab=오시는 길" },
+    ],
+  },
+  {
+    section: "주일학교",
+    items: [
+      { label: "유치부", to: "/주일학교?tab=유치부" },
+      { label: "초등부", to: "/주일학교?tab=초등부" },
+      { label: "중고등부", to: "/주일학교?tab=중·고등부" },
+      { label: "대학청년부", to: "/주일학교?tab=대학·청년부" },
+    ],
+  },
+  {
+    section: "전도・선교",
+    items: [
+      { label: "전도회 소개", to: "/전도선교?tab=전도회 소개" },
+      { label: "국내외 선교", to: "/전도선교?tab=국내외 선교" },
+      { label: "선교지 소식", to: "/전도선교?tab=선교지 소식" },
+    ],
+  },
+  {
+    section: "양육・훈련 게시판",
+    items: [
+      { label: "구역 모임", to: "/양육훈련?tab=구역모임" },
+      { label: "오늘의 묵상", to: "/양육훈련?tab=오늘의 묵상" },
+      { label: "제자 훈련", to: "/양육훈련?tab=제자훈련" },
+      { label: "양육 프로그램", to: "/양육훈련?tab=양육프로그램" },
+      { label: "양육・훈련 게시판", to: "/양육훈련?tab=양육/훈련 게시판" },
+      { label: "성경 읽기/쓰기", to: "/양육훈련?tab=성경읽기/쓰기" },
+    ],
+  },
+  {
+    section: "교회 소식",
+    items: [
+      { label: "공지사항", to: "/공지사항" },
+      { label: "교회행사", to: "/교회행사" },
+      { label: "갤러리", to: "/갤러리" },
+    ],
+  },
+];
+
 function MobileDrawer({ isOpen, onClose }) {
   const { church } = useChurch();
   const { currentUser, logout } = useAuth();
@@ -551,59 +598,16 @@ function MobileDrawer({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* 네비게이션 */}
-        <nav className="flex-1 overflow-y-auto py-2">
-          {church.nav.map((item) => (
-            <div key={item.label}>
-              <Link
-                to={item.to ?? item.children?.[0]?.to}
-                onClick={onClose}
-                className="flex items-center px-5 py-3.5 text-[15px] font-semibold text-grey-10 border-b border-bluegrey-1 hover:text-primary transition-colors"
-              >
-                {item.label}
-              </Link>
-              {item.children && (
-                <div className="bg-bluegrey-1 px-5 py-2 flex flex-col gap-0.5">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.label}
-                      to={child.to}
-                      onClick={onClose}
-                      className="flex items-center gap-2 py-2 text-[13px] text-grey-7 hover:text-primary transition-colors"
-                    >
-                      <span className="w-1 h-1 rounded-full bg-bluegrey-4 shrink-0" />
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
-
-        {/* 로그인/유틸 */}
-        <div
-          className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
-          style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-        >
+        {/* 프로필 / 로그인·회원가입 */}
+        <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
           {currentUser ? (
-            <div className="flex flex-col gap-2">
-              <Link
-                to="/mypage"
-                onClick={onClose}
-                className="block text-center py-2.5 rounded-full bg-primary text-white text-[14px] font-semibold"
-              >
-                마이페이지
-              </Link>
-              <button
-                onClick={() => {
-                  logout();
-                  onClose();
-                }}
-                className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
-              >
-                로그아웃
-              </button>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-grey-2 flex items-center justify-center text-[15px] font-bold text-white shrink-0">
+                {currentUser.name?.[0]}
+              </div>
+              <span className="text-[15px] font-semibold text-grey-10">
+                {currentUser.name}님
+              </span>
             </div>
           ) : (
             <div className="flex gap-2">
@@ -624,6 +628,43 @@ function MobileDrawer({ isOpen, onClose }) {
             </div>
           )}
         </div>
+
+        {/* 네비게이션 */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          {MOBILE_NAV.map(({ section, items }) => (
+            <div key={section}>
+              <p className="px-5 pt-4 pb-1 text-[12px] font-semibold text-grey-5">{section}</p>
+              {items.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={onClose}
+                  className="block px-5 py-3 text-[15px] font-medium text-grey-10"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </nav>
+
+        {/* 로그아웃 */}
+        {currentUser && (
+          <div
+            className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
+            style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+          >
+            <button
+              onClick={() => {
+                logout();
+                onClose();
+              }}
+              className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
+            >
+              로그아웃
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
