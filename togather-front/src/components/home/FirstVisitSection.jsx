@@ -86,7 +86,7 @@ export default function FirstVisitSection() {
           <h2 className="text-headline-3 font-bold text-white mb-4">
             {currentUser?.name ?? "성도"}님, 다시 오셨네요
           </h2>
-          <p className="text-body-2 text-pale max-w-2xl mx-auto mb-10">
+          <p className="text-body-2 text-grey-2 max-w-2xl mx-auto mb-10">
             오늘도 함께해서 반갑습니다.
             <br />
             교적부에서 내 정보와 가족 정보를 확인해 보세요.
