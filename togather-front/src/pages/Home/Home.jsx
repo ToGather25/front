@@ -5,7 +5,6 @@ import MessageSection from "@/components/home/MessageSection";
 import NotificationSection from "@/components/home/NotificationSection";
 import Direction from "@/components/home/Direction";
 import SectionDots from "@/components/home/SectionDots";
-import GyojeokbuTab from "@/components/home/GyojeokbuTab";
 import MobileHome from "@/pages/Home/MobileHome";
 
 export default function Home() {
@@ -33,8 +32,6 @@ export default function Home() {
         </div>
         <SectionDots />
       </div>
-
-      <GyojeokbuTab />
     </>
   );
 }
