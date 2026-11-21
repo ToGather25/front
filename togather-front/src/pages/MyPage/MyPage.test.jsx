@@ -13,7 +13,9 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
-    api.get.mockResolvedValue({ data: { data: [] } });
+    api.get.mockImplementation((url) =>
+      Promise.resolve({ data: { data: url === "/my/profile" ? {} : [] } }),
+    );
   });
 
   it("비로그인 상태면 로그인 필요 모달을 보여주고 탭 콘텐츠는 렌더되지 않는다", () => {
@@ -22,7 +24,7 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
     expect(screen.queryByText("내 프로필")).not.toBeInTheDocument();
   });
 
-  it("로그인하면 5개 탭 버튼과 기본 탭(내 정보) 콘텐츠가 보인다", () => {
+  it("로그인하면 5개 탭 버튼과 기본 탭(내 정보) 콘텐츠가 보인다", async () => {
     localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
     renderWithChurch(<MyPage />, { withAuth: true });
 
@@ -32,18 +34,21 @@ describe("MyPage — 로그인 가드 + 탭 전환", () => {
     ["내 정보", "부서 / 직책", "일정", "기도 / 상담", "문의하기"].forEach((label) => {
       expect(screen.getAllByRole("button", { name: label }).length).toBeGreaterThan(0);
     });
-    expect(screen.getByText("내 프로필")).toBeInTheDocument();
+    // "내 정보" 콘텐츠는 /my/profile 조회가 끝난 뒤에 뜬다(그 전엔 로딩 스피너).
+    expect(await screen.findByText("내 프로필")).toBeInTheDocument();
   });
 
-  it("로그인한 사용자의 실제 이름을 보여준다(목업 이름이 아니라)", () => {
+  it("로그인한 사용자의 실제 이름을 보여준다(목업 이름이 아니라)", async () => {
     localStorage.setItem(
       "user",
       JSON.stringify({ email: "test@togather.com", name: "박신실", community: "청년부" }),
     );
     renderWithChurch(<MyPage />, { withAuth: true });
 
-    // 사이드바 아바타 카드와 "내 프로필" 카드 둘 다 실제 이름을 보여준다.
+    // 사이드바 아바타 카드는 로그인 응답(currentUser.name)으로 즉시 뜬다.
     expect(screen.getAllByText("박신실").length).toBeGreaterThan(0);
+    expect(screen.queryByText("김민수")).not.toBeInTheDocument();
+    await screen.findByText("내 프로필");
     expect(screen.queryByText("김민수")).not.toBeInTheDocument();
   });
 

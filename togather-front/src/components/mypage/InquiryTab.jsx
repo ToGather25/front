@@ -3,7 +3,6 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { addMyInquiry } from "@/services/myPageService";
 import { formatDotDate } from "@/utils/date";
 import MailIcon from "@/assets/web-icon/mypage-mail.svg";
-import { MOCK_USER } from "./mockData";
 import { StatusBadge, Pagination, InputField, ReadonlyField, IconBack } from "./shared";
 
 const PAGE_SIZE = 5;
@@ -12,7 +11,7 @@ function IconMail() {
   return <img src={MailIcon} className="w-[13px] h-[13px]" alt="" />;
 }
 
-export default function InquiryTab({ inquiries, setInquiries, loadError, onRetry }) {
+export default function InquiryTab({ profile, inquiries, setInquiries, loadError, onRetry }) {
   const { church } = useChurch();
   const [inquiryForm, setInquiryForm] = useState({ title: "", content: "" });
   const [inquiryPage, setInquiryPage] = useState(1);
@@ -113,8 +112,8 @@ export default function InquiryTab({ inquiries, setInquiries, loadError, onRetry
           </div>
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <ReadonlyField label="이름" value={MOCK_USER.name} />
-              <ReadonlyField label="연락처" value={MOCK_USER.phone} />
+              <ReadonlyField label="이름" value={profile?.name ?? "-"} />
+              <ReadonlyField label="연락처" value={profile?.phone ?? "-"} />
             </div>
             <InputField
               label="제목"

@@ -1,20 +1,40 @@
-import { describe, it, expect } from "vite-plus/test";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { MOCK_DEPT, MOCK_GROUPS } from "./mockData";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { screen, fireEvent } from "@testing-library/react";
+import { renderWithChurch } from "@/test/renderWithChurch";
 import DeptTab from "./DeptTab";
 
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
+}));
+
+import api from "@/services/api";
+
+const PROFILE = { role: "장로", department: "남선교회 1지회", region: "1구역", smallGroup: "에벤에셀 다락방" };
+const GROUPS = [
+  { type: "DISTRICT", name: "1구역 모임" },
+  { type: "SERVICE", name: "성가대" },
+];
+
 describe("DeptTab — 부서 / 직책", () => {
-  it("조회 화면에 MOCK_DEPT 값과 참여 중인 모임 목록이 렌더된다", () => {
-    render(<DeptTab />);
-    // 주의: MOCK_DEPT.department("남선교회 1지회")는 MOCK_GROUPS[2].name과
-    // 값이 같아서 동시에 렌더되면 getByText가 "multiple elements"로 실패한다.
-    // MOCK_DEPT.duty("안내위원장")는 다른 곳과 겹치지 않아 안전하게 쓸 수 있다.
-    expect(screen.getByText(MOCK_DEPT.duty)).toBeInTheDocument();
-    expect(screen.getByText(MOCK_GROUPS[0].name)).toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.get.mockResolvedValue({ data: { data: GROUPS } });
   });
 
-  it("'변경 신청하기'를 클릭하면 변경 모드로 전환되고, 신청하면 완료 모달이 뜬다", () => {
-    render(<DeptTab />);
+  it("profile의 직분·부서·구역·소그룹과 참여 중인 모임 목록(/my/groups)이 렌더된다", async () => {
+    renderWithChurch(<DeptTab profile={PROFILE} />);
+
+    expect(screen.getByText("장로")).toBeInTheDocument();
+    expect(screen.getByText("남선교회 1지회")).toBeInTheDocument();
+    expect(screen.getByText("에벤에셀 다락방")).toBeInTheDocument();
+    expect(await screen.findByText("1구역 모임")).toBeInTheDocument();
+    expect(screen.getByText("성가대")).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith("/my/groups");
+  });
+
+  it("'변경 신청하기'를 클릭하면 변경 모드로 전환되고, 신청하면 완료 모달이 뜬다", async () => {
+    renderWithChurch(<DeptTab profile={PROFILE} />);
+    await screen.findByText("1구역 모임");
 
     fireEvent.click(screen.getByRole("button", { name: "변경 신청하기" }));
     expect(screen.getByText("부서 / 직책 변경 신청")).toBeInTheDocument();

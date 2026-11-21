@@ -3,6 +3,49 @@ import api from "./api";
 /** @typedef {{id:number, title:string, date:string, memo:string, status?:string}} MySchedule */
 /** @typedef {{id:number, type:string, title?:string, content:string, status:string, reply?:{author:string, text:string}|null, createdAt:string}} MyPrayer */
 /** @typedef {{id:number, title:string, content:string, status:string, answer:string|null, createdAt:string}} MyInquiry */
+/**
+ * @typedef {Object} MyProfile
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} birthDate     - "YYYY-MM-DD"
+ * @property {string} role          - 직분
+ * @property {string} region        - 구역
+ * @property {string} department    - 부서
+ * @property {string} smallGroup    - 소그룹
+ * @property {string} registeredAt  - "YYYY-MM-DD"
+ * @property {string} baptismDate   - "YYYY-MM-DD", 교적부 미연결이면 null
+ * @property {string} address
+ */
+/** @typedef {{type:string, name:string}} MyGroup - type: DISTRICT/DEPARTMENT/SERVICE */
+
+/**
+ * 내 프로필 조회(계정 + 연결된 교적부)
+ * @returns {Promise<MyProfile>}
+ */
+export async function getMyProfile() {
+  const res = await api.get(`/my/profile`);
+  return res.data.data;
+}
+
+/**
+ * 내 프로필 수정 — name/phone/birthDate/address만 수정 가능(email 등 나머지는 교적부 연동 데이터라 읽기 전용)
+ * @param {{ name?:string, phone?:string, birthDate?:string, address?:string }} payload
+ * @returns {Promise<MyProfile>}
+ */
+export async function updateMyProfile(payload) {
+  const res = await api.patch(`/my/profile`, payload);
+  return res.data.data;
+}
+
+/**
+ * 내가 속한 구역/부서/봉사 목록
+ * @returns {Promise<MyGroup[]>}
+ */
+export async function getMyGroups() {
+  const res = await api.get(`/my/groups`);
+  return res.data.data;
+}
 
 /**
  * 내 일정 목록 조회

@@ -1,17 +1,28 @@
 import { useState } from "react";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getMyGroups } from "@/services/myPageService";
 import UserBlack from "@/assets/web-icon/mypage-user-black.svg";
-import { MOCK_DEPT, MOCK_GROUPS } from "./mockData";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import { ReadonlyField, InputField, ModalOverlay, IconBack } from "./shared";
 
-export default function DeptTab() {
+const GROUP_TYPE_LABEL = { DISTRICT: "구역", DEPARTMENT: "부서", SERVICE: "봉사" };
+
+export default function DeptTab({ profile }) {
+  const { church } = useChurch();
   const [deptChangeMode, setDeptChangeMode] = useState(false);
   const [modal, setModal] = useState(null);
   const [formData, setFormData] = useState({
-    department: MOCK_DEPT.department,
-    duty: MOCK_DEPT.duty,
-    district: MOCK_DEPT.district,
-    group: MOCK_DEPT.group,
+    district: profile?.region ?? "",
+    group: profile?.smallGroup ?? "",
   });
+
+  const {
+    data: groups,
+    loading: groupsLoading,
+    error: groupsError,
+    refetch: refetchGroups,
+  } = useFetch(() => getMyGroups(), [church.id], []);
 
   return (
     <div className="space-y-5">
@@ -21,7 +32,10 @@ export default function DeptTab() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-sub-tit-4 font-bold text-grey-11">부서 / 직책 정보</h2>
               <button
-                onClick={() => setDeptChangeMode(true)}
+                onClick={() => {
+                  setFormData({ district: profile?.region ?? "", group: profile?.smallGroup ?? "" });
+                  setDeptChangeMode(true);
+                }}
                 className="text-body-5 text-primary hover:underline"
               >
                 변경 신청하기
@@ -31,18 +45,14 @@ export default function DeptTab() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ReadonlyField
                   label="직분"
-                  value={MOCK_DEPT.position}
+                  value={profile?.role ?? "-"}
                   note="사무실 문의로 변경 가능합니다."
                 />
-                <ReadonlyField label="소속 부서" value={MOCK_DEPT.department} />
+                <ReadonlyField label="소속 부서" value={profile?.department ?? "-"} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <ReadonlyField label="직책" value={MOCK_DEPT.duty} />
-                <ReadonlyField label="구역" value={MOCK_DEPT.district} />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <ReadonlyField label="소그룹 / 셀" value={MOCK_DEPT.group} />
-                <ReadonlyField label="임직일" value={MOCK_DEPT.ordainedDate} />
+                <ReadonlyField label="구역" value={profile?.region ?? "-"} />
+                <ReadonlyField label="소그룹 / 셀" value={profile?.smallGroup ?? "-"} />
               </div>
             </div>
           </>
@@ -60,31 +70,22 @@ export default function DeptTab() {
             <div className="space-y-4">
               <ReadonlyField
                 label="직분"
-                value={MOCK_DEPT.position}
+                value={profile?.role ?? "-"}
                 note="사무실 문의로 변경 가능합니다."
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  label="직책"
-                  value={formData.duty}
-                  onChange={(e) => setFormData({ ...formData, duty: e.target.value })}
-                  placeholder="직책 입력"
-                />
                 <InputField
                   label="구역"
                   value={formData.district}
                   onChange={(e) => setFormData({ ...formData, district: e.target.value })}
                   placeholder="구역 입력"
                 />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField
                   label="소그룹 / 셀"
                   value={formData.group}
                   onChange={(e) => setFormData({ ...formData, group: e.target.value })}
                   placeholder="소그룹 / 셀 입력"
                 />
-                <ReadonlyField label="임직일" value={MOCK_DEPT.ordainedDate} />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
@@ -111,19 +112,39 @@ export default function DeptTab() {
       {!deptChangeMode && (
         <section className="bg-white border border-grey-3 rounded-2xl p-8">
           <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-5">참여 중인 부서 / 모임</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {MOCK_GROUPS.map((g) => (
-              <div key={g.id} className="border border-grey-3 rounded-xl p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-grey-2 flex items-center justify-center shrink-0">
-                  <img src={UserBlack} className="w-4 h-4" alt="" />
+          {groupsLoading ? (
+            <div className="flex justify-center py-8">
+              <BubbleLoader size="sm" />
+            </div>
+          ) : groupsError ? (
+            <div className="py-8 flex flex-col items-center gap-3 text-grey-5 text-body-3">
+              <p>목록을 불러오지 못했습니다.</p>
+              <button
+                onClick={refetchGroups}
+                className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : groups.length === 0 ? (
+            <p className="text-body-5 text-grey-5 py-4">참여 중인 부서 / 모임이 없습니다.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {groups.map((g, i) => (
+                <div key={i} className="border border-grey-3 rounded-xl p-4 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-grey-2 flex items-center justify-center shrink-0">
+                    <img src={UserBlack} className="w-4 h-4" alt="" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-body-4 font-semibold text-grey-10">{g.name}</p>
+                    <p className="text-body-5 text-grey-6 mt-0.5">
+                      {GROUP_TYPE_LABEL[g.type] ?? g.type}
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-body-4 font-semibold text-grey-10">{g.name}</p>
-                  <p className="text-body-5 text-grey-6 mt-0.5 leading-relaxed">{g.info}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 

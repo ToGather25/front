@@ -1,21 +1,24 @@
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
-import { withdrawAccount } from "@/services/myPageService";
+import { withdrawAccount, updateMyProfile } from "@/services/myPageService";
+import { formatDotDate } from "@/utils/date";
 import ImgUpload from "@/assets/web-icon/mypage-img-upload.svg";
-import { MOCK_USER } from "./mockData";
 import { ReadonlyField, InputField, ModalOverlay } from "./shared";
 
 function IconUpload() {
   return <img src={ImgUpload} className="w-4 h-4" alt="" />;
 }
 
-export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
+export default function InfoTab({ profile, userForm, setUserForm, onNavigateDept, onProfileSaved }) {
   const [modal, setModal] = useState(null);
   const fileInputRef = useRef(null);
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   const { church } = useChurch();
   const [withdrawError, setWithdrawError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   async function handleWithdraw() {
     setWithdrawError("");
@@ -27,12 +30,31 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
     }
   }
 
+  async function handleSave() {
+    setSaving(true);
+    setSaveError(false);
+    try {
+      await updateMyProfile({
+        name: userForm.name,
+        phone: userForm.phone,
+        address: userForm.address,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      onProfileSaved?.();
+    } catch (err) {
+      console.error("[InfoTab] 내 정보 저장 실패:", err);
+      setSaveError(true);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function resetInfo() {
     setUserForm({
-      name: currentUser?.name ?? MOCK_USER.name,
-      phone: MOCK_USER.phone,
-      email: currentUser?.email ?? MOCK_USER.email,
-      address: MOCK_USER.address,
+      name: profile?.name ?? "",
+      phone: profile?.phone ?? "",
+      address: profile?.address ?? "",
       currentPw: "",
       newPw: "",
     });
@@ -84,7 +106,7 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
             />
             <ReadonlyField
               label="생년월일"
-              value={MOCK_USER.birthdate}
+              value={formatDotDate(profile?.birthDate) || "-"}
               note="생년월일은 문의로 변경 가능합니다."
             />
           </div>
@@ -94,11 +116,7 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
               value={userForm.phone}
               onChange={(e) => setUserForm((f) => ({ ...f, phone: e.target.value }))}
             />
-            <InputField
-              label="이메일"
-              value={userForm.email}
-              onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))}
-            />
+            <ReadonlyField label="이메일" value={profile?.email ?? "-"} />
           </div>
           <InputField
             label="주소"
@@ -113,8 +131,8 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
         <h2 className="text-sub-tit-4 font-bold text-grey-11 mb-6">교적 정보</h2>
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ReadonlyField label="등록일" value={MOCK_USER.registeredDate} />
-            <ReadonlyField label="세례일" value={MOCK_USER.baptismDate} />
+            <ReadonlyField label="등록일" value={formatDotDate(profile?.registeredAt) || "-"} />
+            <ReadonlyField label="세례일" value={formatDotDate(profile?.baptismDate) || "-"} />
           </div>
           <p className="text-body-5 text-grey-7">
             ※ 부서 · 직책 정보는 좌측{" "}
@@ -147,15 +165,21 @@ export default function InfoTab({ userForm, setUserForm, onNavigateDept }) {
         </div>
       </section>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex items-center justify-end gap-3">
+        {saveError && <span className="text-body-5 text-red-500">저장 실패, 다시 시도해 주세요.</span>}
+        {saved && <span className="text-body-5 text-blue-7">저장됨</span>}
         <button
           onClick={resetInfo}
           className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
         >
           취소
         </button>
-        <button className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors">
-          저장하기
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 font-semibold disabled:opacity-50 hover:bg-blue-8 transition-colors"
+        >
+          {saving ? "저장 중..." : "저장하기"}
         </button>
       </div>
 

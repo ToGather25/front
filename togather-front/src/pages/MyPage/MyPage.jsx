@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
-import { getMySchedules, getMyPrayers, getMyInquiries } from "@/services/myPageService";
+import { useFetch } from "@/hooks/useFetch";
+import { getMySchedules, getMyPrayers, getMyInquiries, getMyProfile } from "@/services/myPageService";
 import { DUMMY_MY_SCHEDULES, DUMMY_MY_PRAYERS } from "@/data/dummy/mypage";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import UserBlue from "@/assets/web-icon/mypage-user-blue.svg";
 import UserWhite from "@/assets/web-icon/mypage-user-white.svg";
 import ChurchIcon from "@/assets/web-icon/mypage-church.svg";
@@ -14,7 +16,6 @@ import HeartHandBlue from "@/assets/web-icon/mypage-heart-hand-blue.svg";
 import HeartHandWhite from "@/assets/web-icon/mypage-heart-hand-white.svg";
 import ChatBlue from "@/assets/web-icon/mypage-chat-blue.svg";
 import ChatWhite from "@/assets/web-icon/mypage-chat-white.svg";
-import { MOCK_USER } from "@/components/mypage/mockData";
 import InfoTab from "@/components/mypage/InfoTab";
 import DeptTab from "@/components/mypage/DeptTab";
 import ScheduleTab from "@/components/mypage/ScheduleTab";
@@ -40,14 +41,38 @@ export default function MyPage() {
   // 부모가 소유한다. 필터/페이지 위치/모달 열림 여부처럼 뷰 상태 성격의
   // 값은 각 탭이 자체 소유해 탭 전환 시 초기화되며, 이는 사용자가 입력한
   // 값이 아니므로 문제없다.
+  const {
+    data: profile,
+    loading: profileLoading,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useFetch(
+    () => (currentUser ? getMyProfile() : Promise.resolve(null)),
+    [church.id, currentUser],
+    null,
+  );
+
   const [userForm, setUserForm] = useState({
-    name: currentUser?.name ?? MOCK_USER.name,
-    phone: MOCK_USER.phone,
-    email: currentUser?.email ?? MOCK_USER.email,
-    address: MOCK_USER.address,
+    name: "",
+    phone: "",
+    address: "",
     currentPw: "",
     newPw: "",
   });
+
+  // 프로필 조회가 끝나면 편집 폼의 기본값을 채운다 — 저장/취소는 여기서 시작한
+  // draft(userForm)를 건드릴 뿐, 원본은 profile에 그대로 남아있다.
+  useEffect(() => {
+    if (!profile) return;
+    setUserForm({
+      name: profile.name ?? "",
+      phone: profile.phone ?? "",
+      address: profile.address ?? "",
+      currentPw: "",
+      newPw: "",
+    });
+  }, [profile]);
+
   const [schedules, setSchedules] = useState([]);
   const [prayers, setPrayers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
@@ -145,15 +170,16 @@ export default function MyPage() {
             <div className="bg-white shadow-[0_0_20px_rgba(0,0,0,0.1)] rounded-2xl p-5">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-grey-2 flex items-center justify-center text-body-3 font-bold text-white shrink-0">
-                  {(currentUser.name ?? MOCK_USER.name)[0]}
+                  {(currentUser.name ?? "성도")[0]}
                 </div>
                 <div className="min-w-0">
                   <p className="text-body-3 font-bold text-grey-11 truncate">
-                    {currentUser.name ?? MOCK_USER.name}
+                    {currentUser.name ?? "성도"}
                     <span className="font-normal text-body-4 text-grey-7 ml-0.5">님</span>
                   </p>
                   <p className="text-body-5 text-grey-4 mt-0.5 truncate">
-                    <span className="text-primary font-bold pr-2">{MOCK_USER.role}</span> {MOCK_USER.district} · {MOCK_USER.group}
+                    <span className="text-primary font-bold pr-2">{profile?.role ?? "-"}</span>{" "}
+                    {profile?.region ?? "-"} · {profile?.smallGroup ?? "-"}
                   </p>
                 </div>
               </div>
@@ -194,14 +220,34 @@ export default function MyPage() {
 
           {/* ── Content ── */}
           <main className="flex-1 min-w-0">
-            {activeTab === "info" && (
-              <InfoTab
-                userForm={userForm}
-                setUserForm={setUserForm}
-                onNavigateDept={() => setActiveTab("dept")}
-              />
+            {(activeTab === "info" || activeTab === "dept") && profileLoading ? (
+              <div className="flex justify-center py-16">
+                <BubbleLoader size="sm" />
+              </div>
+            ) : (activeTab === "info" || activeTab === "dept") && profileError ? (
+              <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
+                <p>내 정보를 불러오지 못했습니다.</p>
+                <button
+                  onClick={refetchProfile}
+                  className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+                >
+                  다시 시도
+                </button>
+              </div>
+            ) : (
+              <>
+                {activeTab === "info" && (
+                  <InfoTab
+                    profile={profile}
+                    userForm={userForm}
+                    setUserForm={setUserForm}
+                    onNavigateDept={() => setActiveTab("dept")}
+                    onProfileSaved={refetchProfile}
+                  />
+                )}
+                {activeTab === "dept" && <DeptTab profile={profile} />}
+              </>
             )}
-            {activeTab === "dept" && <DeptTab />}
             {activeTab === "schedule" && (
               <ScheduleTab
                 schedules={schedules}
@@ -220,6 +266,7 @@ export default function MyPage() {
             )}
             {activeTab === "inquiry" && (
               <InquiryTab
+                profile={profile}
                 inquiries={inquiries}
                 setInquiries={setInquiries}
                 loadError={inquiryError}
