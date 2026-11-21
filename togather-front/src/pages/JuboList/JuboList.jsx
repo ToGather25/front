@@ -115,8 +115,14 @@ export default function JuboList({ hideHeader = false }) {
         )}
 
         {!loading && error && (
-          <div className="py-24 text-center text-grey-6 text-body-2">
-            <p className="mb-4">데이터를 불러오지 못했습니다.</p>
+          <div className="py-24 flex flex-col items-center gap-4 text-center text-grey-6 text-body-2">
+            <p>데이터를 불러오지 못했습니다.</p>
+            <button
+              onClick={refetch}
+              className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+            >
+              다시 시도
+            </button>
           </div>
         )}
 

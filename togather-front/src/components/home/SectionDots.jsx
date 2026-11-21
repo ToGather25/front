@@ -29,10 +29,6 @@ export default function SectionDots() {
       if (sections.length === 0) return;
       const scrollPos = window.scrollY + window.innerHeight / 2;
 
-      // 마지막 섹션의 끝 위치 확인
-      const lastSection = sections[sections.length - 1];
-      const lastSectionEnd = lastSection.offsetTop + lastSection.offsetHeight;
-
       // 푸터 영역(페이지 끝)에 있으면 활성화된 점이 없도록 설정
       const pageHeight = document.documentElement.scrollHeight;
       if (window.scrollY + window.innerHeight > pageHeight - 200) {

@@ -18,7 +18,7 @@ export default function Cover({ issue }) {
   const { data: cover } = useFetch(() => getCover(church.id), [church.id], EMPTY_COVER);
   // 목록에서 과거 발행호를 골라 들어온 경우 그 발행호 정보를, 아니면 현재 발행 주보 정보를 쓴다.
   const juboInfo = issue ? { issueNo: issue.issueNo, date: issue.dateLabel } : currentInfo;
-  const { mainVerse, mainTitle, items, year } = church.vision;
+  const { items } = church.vision;
   const { title: sloganTitle, scripture: sloganScripture, year: sloganYear } = church.slogan || {};
 
   const churchPhoto = cover.photos?.church;

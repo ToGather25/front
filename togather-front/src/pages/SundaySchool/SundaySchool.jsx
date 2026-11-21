@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import FallbackImage from "@/components/church/FallbackImage";

@@ -1,8 +1,4 @@
-import { useChurch } from "@/contexts/ChurchContext";
-
 export default function JuboSection4() {
-  const { church } = useChurch();
-
   return (
     <div className="flex flex-col gap-12 px-15 py-12">
       {/* 우리 교회가 돕고 있는 곳 */}

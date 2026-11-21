@@ -484,7 +484,6 @@ function DesktopHeader({ visible, barRef, transparent = false }) {
 // Mobile Header (md 미만에서만 표시)
 // ─────────────────────────────────────────────────────
 function MobileHeader({ onMenuOpen, visible, barRef }) {
-  const { church } = useChurch();
   return (
     <header
       className="sticky top-0 z-50 overflow-hidden transition-transform duration-300 ease-in-out md:hidden"

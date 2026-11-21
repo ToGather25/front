@@ -125,6 +125,12 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
       {loadError ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다.</p>
+          <button
+            onClick={onRetry}
+            className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+          >
+            다시 시도
+          </button>
         </div>
       ) : schedules.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">

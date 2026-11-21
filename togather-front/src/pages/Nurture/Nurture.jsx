@@ -45,8 +45,6 @@ export default function Nurture() {
   const [showLoginRequired, setShowLoginRequired] = useState(false);
   const [boardPage, setBoardPage] = useState(1);
   const [boardQuery, setBoardQuery] = useState("");
-  const [selectedZone, setSelectedZone] = useState("전체");
-  const [selectedProgram, setSelectedProgram] = useState("전체");
   const [selectedPost, setSelectedPost] = useState(null);
 
   // 양육·훈련 게시판 — 공지 도메인의 boardType=NURTURE를 그대로 쓴다(공지/후기/나눔은

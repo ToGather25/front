@@ -22,7 +22,6 @@ export default function WordSermonDetail() {
   const navigate = useNavigate();
   const { church } = useChurch();
   const [sermon, setSermon] = useState(undefined); // undefined=로딩중, null=없음
-  const [neighbors, setNeighbors] = useState([]);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function WordSermonDetail() {
     setSermon(undefined);
     setPlaying(false);
     // 상세 전용 조회 API가 없다 — 유튜브 채널 최근 업로드 목록(영상ID/제목/날짜/썸네일
-    // 전부 포함) 안에서 같은 videoId를 찾는다. 이전/다음도 이 목록 순서(최신순) 그대로 쓴다.
+    // 전부 포함) 안에서 같은 videoId를 찾는다.
     getRecentSermons(church.id, { limit: FETCH_LIMIT })
       .then((list) => {
         if (cancelled) return;
@@ -40,7 +39,6 @@ export default function WordSermonDetail() {
           const params = new URLSearchParams(window.location.search);
           if (params.get("test") === "true") {
             setSermon(MOCK_SERMON);
-            setNeighbors([]);
             return;
           }
           setSermon(null);
@@ -54,7 +52,6 @@ export default function WordSermonDetail() {
           thumbnailUrl: found.thumbnailUrl,
           description: found.description,
         });
-        setNeighbors(list);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -90,11 +87,6 @@ export default function WordSermonDetail() {
       </div>
     );
   }
-
-  // 이전/다음 설교 (검색 결과 순서 기준 — 최신순으로 조회되므로 다음 인덱스가 더 과거)
-  const currentIdx = neighbors.findIndex((s) => s.videoId === sermon.id);
-  const prev = currentIdx === -1 ? null : (neighbors[currentIdx + 1] ?? null);
-  const next = currentIdx === -1 ? null : (neighbors[currentIdx - 1] ?? null);
 
   return (
     <div>

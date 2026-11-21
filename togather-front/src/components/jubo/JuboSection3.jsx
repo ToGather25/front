@@ -1,8 +1,4 @@
-import { useChurch } from "@/contexts/ChurchContext";
-
 export default function JuboSection3() {
-  const { church } = useChurch();
-
   return (
     <div className="flex flex-col gap-12 px-15 py-12">
       {/* 다음주 봉사 안내 */}

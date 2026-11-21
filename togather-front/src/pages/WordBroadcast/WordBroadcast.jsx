@@ -93,7 +93,6 @@ export default function WordBroadcast() {
 
   const status = loading && !screen ? "loading" : (screen?.state ?? "NONE");
   const liveVideoId = extractYoutubeVideoId(screen?.youtubeLiveUrl);
-  const recentSermons = screen?.recentSermons ?? [];
 
   return (
     <div>
