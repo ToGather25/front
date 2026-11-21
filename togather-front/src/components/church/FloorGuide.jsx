@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import IcoSearch from "@/assets/web-icon/search-grey.svg";
+import defaultBanner from "@/assets/default_banner.png";
 
 export default function FloorGuide() {
   const { church } = useChurch();
@@ -69,33 +70,14 @@ export default function FloorGuide() {
         </div>
 
         {/* 사진 */}
-        <div className="w-full overflow-hidden rounded-2xl bg-bluegrey-2 shrink-0">
-        {currentFloor?.image ? (
+        <div className="w-full overflow-hidden rounded-2xl border border-bluegrey-3 bg-bluegrey-2 shrink-0">
           <img
-            src={currentFloor.image}
-            alt={currentFloor.floor}
+            src={currentFloor?.image || defaultBanner}
+            alt={currentFloor?.floor}
             className="w-full h-auto object-cover"
             style={{ aspectRatio: "4/3" }}
           />
-        ) : (
-          <div
-            className="w-full flex items-center justify-center bg-grey-2 text-grey-5"
-            style={{ aspectRatio: "4/3" }}
-          >
-            <div className="flex flex-col items-center gap-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <p className="text-body-5">{currentFloor?.floor}</p>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
       </div>
     </div>
   );
