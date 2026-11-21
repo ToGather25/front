@@ -283,7 +283,7 @@ function EventRegistrationsModal({ event, onClose }) {
   );
 }
 
-const GRID_COLS = "48px 90px 1fr 130px 120px 110px 150px";
+const GRID_COLS = "48px 90px 1fr 130px 120px 110px 200px";
 
 const STATUS_BADGE = {
   open: "bg-blue-1 text-blue-8",
@@ -489,20 +489,20 @@ export default function EventsManage() {
                   {e.canRegister && (
                     <button
                       onClick={() => setRegistrationsFor(e)}
-                      className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
+                      className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
                     >
                       신청자
                     </button>
                   )}
                   <button
                     onClick={() => setModal(e)}
-                    className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
+                    className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
                   >
                     수정
                   </button>
                   <button
                     onClick={() => handleDelete(e.id)}
-                    className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-red-400 hover:text-red-500 transition-colors"
+                    className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-red-400 hover:text-red-500 transition-colors"
                   >
                     삭제
                   </button>

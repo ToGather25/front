@@ -271,7 +271,7 @@ export default function NoticesManage() {
       <div className="bg-white rounded-2xl border border-grey-2 overflow-hidden">
         <div
           className="grid text-body-5 font-semibold text-grey-7 bg-grey-1 border-b border-grey-2 px-6 py-3"
-          style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 100px" }}
+          style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 120px" }}
         >
           <span className="text-center">No</span>
           <span className="text-center">구분</span>
@@ -292,7 +292,7 @@ export default function NoticesManage() {
             <div
               key={n.id}
               className={`grid items-center px-6 py-3.5 hover:bg-grey-1 transition-colors ${i < paged.length - 1 ? "border-b border-grey-2" : ""}`}
-              style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 100px" }}
+              style={{ gridTemplateColumns: "48px 80px 1fr 80px 100px 80px 120px" }}
             >
               <span className="text-body-5 text-grey-5 text-center">
                 {(displayPage - 1) * PAGE_SIZE + i + 1}
@@ -337,13 +337,13 @@ export default function NoticesManage() {
               <div className="flex gap-1.5 justify-center">
                 <button
                   onClick={() => setModal(n)}
-                  className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
+                  className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
                 >
                   수정
                 </button>
                 <button
                   onClick={() => handleDelete(n.id)}
-                  className="px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-red-400 hover:text-red-500 transition-colors"
+                  className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-red-400 hover:text-red-500 transition-colors"
                 >
                   삭제
                 </button>
