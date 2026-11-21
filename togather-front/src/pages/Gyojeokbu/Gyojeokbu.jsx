@@ -1,9 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getMemberDirectory } from "@/services/memberService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import NumberedPagination from "@/components/common/NumberedPagination";
-import MEMBERS from "@/config/members.config";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import IcoSearch from "@/assets/web-icon/search-black.svg";
 import { Avatar, RoleChip } from "./shared";
 
@@ -28,19 +31,14 @@ function MemberCard({ m, searchQ, onClick }) {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-bluegrey-1 text-left transition-colors active:bg-bluegrey-1"
     >
-      <Avatar name={m.name} tone={m.avatarTone} />
+      <Avatar name={m.name} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-body-3 font-semibold text-grey-12">{highlight(m.name)}</span>
           <RoleChip role={m.role} />
         </div>
         <div className="flex items-center gap-1.5 text-body-5 text-grey-5">
-          <span>
-            {m.region}
-            {m.smallGroup ? ` · ${m.smallGroup}` : ""}
-          </span>
-          <span>·</span>
-          <span className="font-mono">{highlight(m.phone)}</span>
+          <span>{[m.region, m.department, m.smallGroup].filter(Boolean).join(" · ")}</span>
         </div>
       </div>
       <svg
@@ -83,61 +81,69 @@ function MemberRow({ m, isAlt, searchQ, onClick }) {
       <td className="px-4 whitespace-nowrap text-center">
         <RoleChip role={m.role} />
       </td>
-      <td className="px-4 whitespace-nowrap">
-        <span className="text-body-2 font-semibold text-grey-9">{m.region}</span>
-        <span className="text-body-4 font-medium text-bluegrey-7 ml-2">{m.smallGroup || "-"}</span>
+      <td className="px-4 whitespace-nowrap text-body-2 font-semibold text-grey-9">
+        {highlight(m.region) || "-"}
       </td>
-      <td className="px-4 whitespace-nowrap">
-        <span className="text-body-2 font-semibold text-grey-9">{m.birth}</span>
-        <span className="text-body-4 font-medium text-bluegrey-7 ml-2">만 {m.age}세</span>
+      <td className="px-4 whitespace-nowrap text-body-2 font-semibold text-grey-9">
+        {m.department || "-"}
       </td>
-      <td className="px-4 whitespace-nowrap text-body-2 font-semibold text-grey-9">{highlight(m.phone)}</td>
-      <td className="px-4 whitespace-nowrap text-center text-body-4 font-medium text-bluegrey-7">{m.address}</td>
-      <td className="pl-4 pr-10 text-body-3 font-semibold text-bluegrey-6">
-        {m.family.length > 0 ? `${m.family.length}명` : "-"}
+      <td className="pl-4 pr-10 whitespace-nowrap text-body-2 font-semibold text-grey-9">
+        {highlight(m.smallGroup) || "-"}
       </td>
     </tr>
   );
 }
 
 /* ── Main component ── */
-const FILTER_DEFS = [
+const ROLE_FILTER_DEFS = [
   { k: "전체", match: () => true },
   { k: "장로/권사", match: (m) => /장로|권사/.test(m.role) },
   { k: "안수집사", match: (m) => /안수집사/.test(m.role) },
   { k: "집사", match: (m) => /집사/.test(m.role) && !/안수집사/.test(m.role) },
   { k: "청년", match: (m) => /청년/.test(m.role) },
-  { k: "1구역", match: (m) => m.region === "1구역" },
-  { k: "2구역", match: (m) => m.region === "2구역" },
-  { k: "3구역", match: (m) => m.region === "3구역" },
-  { k: "5구역", match: (m) => m.region === "5구역" },
 ];
 
 export default function Gyojeokbu({ onOpenMember }) {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { church } = useChurch();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("전체");
   const [page, setPage] = useState(1);
   const [searchFocused, setSearchFocused] = useState(false);
 
-  // 독립된 /교적부 라우트에서는 상세 페이지로 이동하고, 홈 화면 슬라이드 패널 등
-  // 임베드된 맥락에서는 onOpenMember로 같은 패널 안에서 화면만 바꾼다.
+  const {
+    data: members,
+    loading,
+    error,
+    refetch,
+  } = useFetch(() => getMemberDirectory(), [church.id], []);
+
+  // 구역은 교회마다 이름이 다르고 관리자가 직접 만들고 지우므로(기획서 2-2), 하드코딩된
+  // 구역명 대신 실제로 불러온 명부에 있는 구역만 필터 칩으로 보여준다.
+  const filterDefs = useMemo(() => {
+    const regions = [...new Set(members.map((m) => m.region).filter(Boolean))].sort((a, b) =>
+      a.localeCompare(b, "ko"),
+    );
+    return [...ROLE_FILTER_DEFS, ...regions.map((r) => ({ k: r, match: (m) => m.region === r }))];
+  }, [members]);
+
+  // 독립된 /교적부 라우트에서는 상세 페이지로 이동하고, 임베드된 맥락(onOpenMember가
+  // 주어지는 경우)에서는 같은 패널 안에서 화면만 바꾼다.
   const openMember = onOpenMember ?? ((id) => navigate(`/교적부/${id}`));
 
   const matches = useMemo(() => {
-    const norm = q.replace(/[^0-9]/g, "");
-    const f = FILTER_DEFS.find((x) => x.k === filter);
-    return MEMBERS.filter((m) => {
+    const f = filterDefs.find((x) => x.k === filter);
+    return members.filter((m) => {
       if (f && !f.match(m)) return false;
       if (!q) return true;
-      if (norm.length >= 3 && m.phone?.replace(/-/g, "").includes(norm)) return true;
       if (m.name.includes(q)) return true;
       if (m.region?.includes(q)) return true;
+      if (m.department?.includes(q)) return true;
       if (m.smallGroup?.includes(q)) return true;
       return false;
     });
-  }, [q, filter]);
+  }, [members, filterDefs, q, filter]);
 
   const pageItems = matches.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -161,24 +167,22 @@ export default function Gyojeokbu({ onOpenMember }) {
         {/* Filter + Search */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8">
           <div className="flex gap-2.5 flex-wrap">
-            {FILTER_DEFS.map((f) => {
-              return (
-                <button
-                  key={f.k}
-                  onClick={() => {
-                    setFilter(f.k);
-                    setPage(1);
-                  }}
-                  className={`px-4 py-2 rounded-full text-body-4 font-semibold whitespace-nowrap transition-colors ${
-                    filter === f.k
-                      ? "bg-primary text-white"
-                      : "bg-bluegrey-2 text-bluegrey-9 hover:bg-blue-1 hover:text-blue-6"
-                  }`}
-                >
-                  {f.k}
-                </button>
-              );
-            })}
+            {filterDefs.map((f) => (
+              <button
+                key={f.k}
+                onClick={() => {
+                  setFilter(f.k);
+                  setPage(1);
+                }}
+                className={`px-4 py-2 rounded-full text-body-4 font-semibold whitespace-nowrap transition-colors ${
+                  filter === f.k
+                    ? "bg-primary text-white"
+                    : "bg-bluegrey-2 text-bluegrey-9 hover:bg-blue-1 hover:text-blue-6"
+                }`}
+              >
+                {f.k}
+              </button>
+            ))}
           </div>
 
           <div
@@ -189,7 +193,7 @@ export default function Gyojeokbu({ onOpenMember }) {
             <img src={IcoSearch} className="w-5 h-5 shrink-0" alt="" />
             <input
               type="text"
-              placeholder="이름 또는 휴대폰 번호로 검색"
+              placeholder="이름, 구역, 부서, 소그룹으로 검색"
               value={q}
               onChange={(e) => {
                 setQ(e.target.value);
@@ -216,7 +220,21 @@ export default function Gyojeokbu({ onOpenMember }) {
 
         {/* Table (desktop) / Card list (mobile) */}
         <div>
-          {matches.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center py-24">
+              <BubbleLoader size="sm" />
+            </div>
+          ) : error ? (
+            <div className="py-24 flex flex-col items-center gap-3 text-grey-5 text-body-3">
+              <p>교적부를 불러오지 못했습니다.</p>
+              <button
+                onClick={refetch}
+                className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : matches.length === 0 ? (
             <div className="py-24 text-center border-y border-bluegrey-7">
               <div className="w-[72px] h-[72px] rounded-[18px] bg-blue-1 flex items-center justify-center mx-auto mb-5">
                 <svg
@@ -234,7 +252,7 @@ export default function Gyojeokbu({ onOpenMember }) {
                 검색 결과가 없습니다
               </div>
               <div className="text-body-3 text-grey-5">
-                이름 또는 휴대폰 번호 뒷자리를 다시 확인해 주세요.
+                이름, 구역, 부서, 소그룹명을 다시 확인해 주세요.
               </div>
             </div>
           ) : (
@@ -243,12 +261,7 @@ export default function Gyojeokbu({ onOpenMember }) {
                   세로로 깨져 읽을 수 없다 */}
               <div className="md:hidden border-y border-bluegrey-3">
                 {pageItems.map((m) => (
-                  <MemberCard
-                    key={m.id}
-                    m={m}
-                    searchQ={q}
-                    onClick={() => openMember(m.id)}
-                  />
+                  <MemberCard key={m.id} m={m} searchQ={q} onClick={() => openMember(m.id)} />
                 ))}
               </div>
 
@@ -257,18 +270,16 @@ export default function Gyojeokbu({ onOpenMember }) {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-bluegrey-1">
-                      {["이름", "직분", "구역/소그룹", "생년월일", "휴대폰", "주소", "가족"].map(
-                        (h, i) => (
-                          <th
-                            key={h}
-                            className={`${i === 1 || i === 5 ? "text-center" : "text-left"} text-body-2 font-semibold text-bluegrey-8 tracking-[-1px] py-5 whitespace-nowrap ${
-                              i === 0 ? "pl-10 pr-4" : i === 6 ? "pl-4 pr-10" : "px-4"
-                            }`}
-                          >
-                            {h}
-                          </th>
-                        ),
-                      )}
+                      {["이름", "직분", "구역", "부서", "소그룹"].map((h, i) => (
+                        <th
+                          key={h}
+                          className={`${i === 1 ? "text-center" : "text-left"} text-body-2 font-semibold text-bluegrey-8 tracking-[-1px] py-5 whitespace-nowrap ${
+                            i === 0 ? "pl-10 pr-4" : i === 4 ? "pl-4 pr-10" : "px-4"
+                          }`}
+                        >
+                          {h}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>

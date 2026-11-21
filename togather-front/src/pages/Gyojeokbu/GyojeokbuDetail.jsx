@@ -1,13 +1,21 @@
 import { useParams, useNavigate, Link } from "react-router";
 import { useAuth } from "@/contexts/auth";
+import { useChurch } from "@/contexts/ChurchContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getMemberDirectory } from "@/services/memberService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
-import MEMBERS from "@/config/members.config";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import GyojeokbuMemberDetail from "./GyojeokbuMemberDetail";
 
 export default function GyojeokbuDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { church } = useChurch();
+
+  // 교인 한 명만 조회하는 API가 따로 없어, 목록을 다시 불러와 그 안에서 찾는다
+  // (교적부 목록과 같은 /church/members 응답을 쓴다).
+  const { data: members, loading } = useFetch(() => getMemberDirectory(), [church.id], []);
 
   if (!currentUser) {
     return (
@@ -18,8 +26,16 @@ export default function GyojeokbuDetail() {
     );
   }
 
-  const idx = MEMBERS.findIndex((x) => x.id === id);
-  const m = MEMBERS[idx];
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center py-24">
+        <BubbleLoader size="sm" />
+      </div>
+    );
+  }
+
+  const idx = members.findIndex((x) => x.id === id);
+  const m = members[idx];
 
   if (!m) {
     return (
@@ -36,14 +52,11 @@ export default function GyojeokbuDetail() {
     <div className="bg-white min-h-screen">
       <GyojeokbuMemberDetail
         member={m}
-        allMembers={MEMBERS}
         index={idx}
-        total={MEMBERS.length}
-        isAdmin={currentUser?.isAdmin}
+        total={members.length}
         onBack={() => navigate("/교적부")}
-        onPrev={idx > 0 ? () => navigate(`/교적부/${MEMBERS[idx - 1].id}`) : null}
-        onNext={idx < MEMBERS.length - 1 ? () => navigate(`/교적부/${MEMBERS[idx + 1].id}`) : null}
-        onSelectMember={(targetId) => navigate(`/교적부/${targetId}`)}
+        onPrev={idx > 0 ? () => navigate(`/교적부/${members[idx - 1].id}`) : null}
+        onNext={idx < members.length - 1 ? () => navigate(`/교적부/${members[idx + 1].id}`) : null}
       />
     </div>
   );

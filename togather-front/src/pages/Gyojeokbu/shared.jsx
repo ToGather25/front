@@ -11,8 +11,15 @@ const AVATAR_COLORS = [
   ["#008848", "#e0f5eb"],
 ];
 
-export function Avatar({ name, tone = 1, size = "sm" }) {
-  const [bg, fg] = AVATAR_COLORS[(tone - 1) % AVATAR_COLORS.length];
+/** avatarTone 같은 저장된 필드 없이도 같은 이름이면 항상 같은 색이 나오도록 이름에서 직접 색을 뽑는다. */
+function toneFromName(name) {
+  let hash = 0;
+  for (const ch of name || "") hash = (hash * 31 + ch.charCodeAt(0)) % AVATAR_COLORS.length;
+  return hash + 1;
+}
+
+export function Avatar({ name, tone, size = "sm" }) {
+  const [bg, fg] = AVATAR_COLORS[((tone ?? toneFromName(name)) - 1) % AVATAR_COLORS.length];
   const dim =
     size === "xl"
       ? "w-24 h-24 text-headline-4"

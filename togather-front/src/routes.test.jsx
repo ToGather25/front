@@ -125,7 +125,7 @@ describe("routes — /교적부 인증 가드", () => {
         </SearchProvider>
       </ChurchProvider>,
     );
-    expect(await screen.findByPlaceholderText("이름 또는 휴대폰 번호로 검색")).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText("이름, 구역, 부서, 소그룹으로 검색")).toBeInTheDocument();
   });
 });
 
