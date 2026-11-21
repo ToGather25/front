@@ -495,8 +495,7 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
         className="relative bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
       >
         <Link to="/" className="flex items-center gap-2">
-          <ChurchLogo className="h-6 w-6 object-contain" alt="" />
-          <span className="text-[17px] font-bold text-grey-10">{church.name}</span>
+          <ChurchLogo className="h-24 w-25 object-contain" alt="" />
         </Link>
         <div className="flex items-center">
           <span aria-hidden="true" className="p-1.5">
@@ -798,7 +797,7 @@ function BottomNav() {
     <div
       className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] pointer-events-none md:hidden"
     >
-      <nav className="relative w-[337px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 backdrop-blur-md shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
+      <nav className="relative w-[400px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 backdrop-blur-md shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
         <div className="flex items-stretch h-full">
           {tabs.map((tab) => {
             const active = tab.match(pathname);
