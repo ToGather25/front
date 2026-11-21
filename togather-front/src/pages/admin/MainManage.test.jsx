@@ -72,7 +72,9 @@ describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
     await user.type(screen.getByLabelText("정기 예배 1 예배명"), "2부 예배");
     await user.click(screen.getByRole("button", { name: "주일" }));
     await user.click(screen.getByRole("button", { name: "수" }));
-    await user.type(screen.getByLabelText("정기 예배 1 시간"), "14:00");
+    await user.click(screen.getByLabelText("정기 예배 1 시간"));
+    await user.click(screen.getByRole("button", { name: "14시" }));
+    await user.click(screen.getByRole("button", { name: "00분" }));
 
     await user.click(screen.getByRole("button", { name: "변경사항 저장" }));
 

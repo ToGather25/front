@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getWorshipSchedule, updateWorshipSchedule } from "@/services/worshipScheduleService";
@@ -23,7 +23,7 @@ function Card({ title, children, description }) {
 
 // ── 요일·시간 선택 → 백엔드로 보내는 기존 time 문자열로 조립 ─────────────
 // 백엔드 스키마(name/time/location)는 그대로 둔다 — time 안에 들어갈 문자열을
-// 자유 입력 대신 요일 체크박스 + <input type="time">으로 조립해서 만들 뿐이다.
+// 자유 입력 대신 요일 체크박스 + 시간 선택 패널(TimePicker)로 조립해서 만들 뿐이다.
 const DAY_SHORT = ["주일", "월", "화", "수", "목", "금", "토"];
 const DAY_FULL = ["주일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 
@@ -46,10 +46,88 @@ function composeSchedule(days, hhmm) {
   return [formatDaysKorean(days), formatTimeKorean(hhmm)].filter(Boolean).join(" ");
 }
 
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
+const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+
+/** 시/분을 직접 고르는 패널 — <input type="time">은 브라우저 기본 UI라 accent-color를
+ * 줘도 실제로 색이 반영되는 부분이 거의 없어서, 선택 패널을 직접 그려 primary 색을 쓴다. */
+function TimePicker({ value, onChange, ariaLabel }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const [h, m] = value ? value.split(":").map(Number) : [null, null];
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [open]);
+
+  function pick(nextH, nextM) {
+    const hh = String(nextH ?? h ?? 0).padStart(2, "0");
+    const mm = String(nextM ?? m ?? 0).padStart(2, "0");
+    onChange(`${hh}:${mm}`);
+  }
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        className={`${rowInputCls} w-48 flex items-center justify-between gap-2 ${open ? "border-primary" : ""}`}
+      >
+        <span className={value ? "text-grey-10" : "text-grey-5"}>
+          {value ? formatTimeKorean(value) : "시간 선택"}
+        </span>
+        <svg className="w-4 h-4 text-grey-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path strokeLinecap="round" d="M12 7v5l3 3" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute z-20 mt-1 flex bg-white border border-grey-3 rounded-xl shadow-lg overflow-hidden">
+          <div className="max-h-48 overflow-y-auto py-1">
+            {HOURS.map((hh) => (
+              <button
+                key={hh}
+                type="button"
+                onClick={() => pick(hh, null)}
+                className={`block w-16 px-3 py-1.5 text-body-5 text-center transition-colors ${
+                  h === hh ? "bg-primary text-white font-semibold" : "text-grey-8 hover:bg-grey-1"
+                }`}
+              >
+                {String(hh).padStart(2, "0")}시
+              </button>
+            ))}
+          </div>
+          <div className="max-h-48 overflow-y-auto py-1 border-l border-grey-2">
+            {MINUTES.map((mm) => (
+              <button
+                key={mm}
+                type="button"
+                onClick={() => pick(null, mm)}
+                className={`block w-16 px-3 py-1.5 text-body-5 text-center transition-colors ${
+                  m === mm ? "bg-primary text-white font-semibold" : "text-grey-8 hover:bg-grey-1"
+                }`}
+              >
+                {String(mm).padStart(2, "0")}분
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** 예배 시간표 한 줄 — 백엔드 필드는 name/time/location이다(화면 라벨은 "장소").
  * 요일+시간 선택을 기본으로 보여주고, "직접 입력"을 누르면 자유 텍스트로 전환한다.
  * 기존 데이터는 time이 자유 텍스트라 요일/시간 체크박스로 되돌려 파싱할 수 없으므로,
- * 선택 모드에서는 저장된 값을 안내 문구로만 보여준다(건드리지 않으면 그대로 유지됨). */
+ * 선택 모드에서는 건드리지 않는 한 기존 값이 그대로 유지된다. */
 function ScheduleRow({ row, index, addLabel, onUpdate, onRemove }) {
   const [mode, setMode] = useState("picker");
   const [days, setDays] = useState([]);
@@ -80,25 +158,32 @@ function ScheduleRow({ row, index, addLabel, onUpdate, onRemove }) {
   }
 
   return (
-    <div className="border border-grey-2 rounded-xl p-3 flex flex-col gap-2.5">
-      <div className="grid gap-3 items-center" style={{ gridTemplateColumns: "1fr 1fr auto" }}>
-        <input
-          className={rowInputCls}
-          value={row.name}
-          onChange={(e) => onUpdate("name", e.target.value)}
-          placeholder="예배명"
-          aria-label={`${addLabel} ${index + 1} 예배명`}
-        />
-        <input
-          className={rowInputCls}
-          value={row.location}
-          onChange={(e) => onUpdate("location", e.target.value)}
-          placeholder="장소"
-          aria-label={`${addLabel} ${index + 1} 장소`}
-        />
+    <div className="border border-grey-2 rounded-xl p-3">
+      <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr auto" }}>
+        <div>
+          <label className={labelCls}>예배명</label>
+          <input
+            className={`${rowInputCls} w-full`}
+            value={row.name}
+            onChange={(e) => onUpdate("name", e.target.value)}
+            placeholder="예배명"
+            aria-label={`${addLabel} ${index + 1} 예배명`}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>장소</label>
+          <input
+            className={`${rowInputCls} w-full`}
+            value={row.location}
+            onChange={(e) => onUpdate("location", e.target.value)}
+            placeholder="장소"
+            aria-label={`${addLabel} ${index + 1} 장소`}
+          />
+        </div>
         <button
           onClick={onRemove}
           aria-label={`${addLabel} ${index + 1} 삭제`}
+          style={{ gridRow: mode === "picker" ? "span 2" : "auto" }}
           className="w-9 h-9 flex items-center justify-center rounded-lg text-grey-5 hover:bg-grey-2 hover:text-red-500 transition-colors"
         >
           <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -106,75 +191,81 @@ function ScheduleRow({ row, index, addLabel, onUpdate, onRemove }) {
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
-      </div>
 
-      {mode === "picker" ? (
-        <div className="flex flex-col gap-1.5">
-          {row.time && days.length === 0 && !timeOfDay && (
-            <p className="text-body-5 text-grey-5">현재 저장된 값: {row.time}</p>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
-            {DAY_SHORT.map((label, d) => (
+        {mode === "picker" ? (
+          <>
+            <div>
+              <label className={labelCls}>요일</label>
+              <div className="flex flex-wrap gap-2">
+                {DAY_SHORT.map((label, d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => toggleDay(d)}
+                    aria-pressed={days.includes(d)}
+                    className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
+                      days.includes(d)
+                        ? "bg-primary text-white border-primary"
+                        : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={toggleEveryDay}
+                  aria-pressed={days.length === 7}
+                  className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
+                    days.length === 7
+                      ? "bg-primary text-white border-primary"
+                      : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  매일
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className={labelCls}>시간</label>
+              <div className="flex items-center gap-2">
+                <TimePicker
+                  value={timeOfDay}
+                  onChange={handleTimeOfDayChange}
+                  ariaLabel={`${addLabel} ${index + 1} 시간`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setMode("free")}
+                  className="ml-auto text-body-5 text-grey-5 underline shrink-0"
+                >
+                  텍스트 입력
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div style={{ gridColumn: "span 2" }}>
+            <label className={labelCls}>요일 및 시간</label>
+            <div className="flex items-center gap-2">
+              <input
+                className={`${rowInputCls} flex-1`}
+                value={row.time}
+                onChange={(e) => onUpdate("time", e.target.value)}
+                placeholder="예: * 부서 별 상이"
+                aria-label={`${addLabel} ${index + 1} 시간`}
+              />
               <button
-                key={d}
                 type="button"
-                onClick={() => toggleDay(d)}
-                aria-pressed={days.includes(d)}
-                className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
-                  days.includes(d)
-                    ? "bg-primary text-white border-primary"
-                    : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
-                }`}
+                onClick={switchToPicker}
+                className="text-body-5 text-grey-5 underline shrink-0"
               >
-                {label}
+                버튼 입력
               </button>
-            ))}
-            <button
-              type="button"
-              onClick={toggleEveryDay}
-              aria-pressed={days.length === 7}
-              className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
-                days.length === 7
-                  ? "bg-primary text-white border-primary"
-                  : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
-              }`}
-            >
-              매일
-            </button>
-            <input
-              type="time"
-              value={timeOfDay}
-              onChange={(e) => handleTimeOfDayChange(e.target.value)}
-              className={`${rowInputCls} w-32`}
-              aria-label={`${addLabel} ${index + 1} 시간`}
-            />
-            <button
-              type="button"
-              onClick={() => setMode("free")}
-              className="ml-auto text-body-5 text-grey-5 underline shrink-0"
-            >
-              직접 입력
-            </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          <input
-            className={`${rowInputCls} flex-1`}
-            value={row.time}
-            onChange={(e) => onUpdate("time", e.target.value)}
-            placeholder="예: * 부서 별 상이"
-            aria-label={`${addLabel} ${index + 1} 시간`}
-          />
-          <button
-            type="button"
-            onClick={switchToPicker}
-            className="text-body-5 text-grey-5 underline shrink-0"
-          >
-            요일+시간 선택
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
