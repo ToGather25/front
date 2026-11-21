@@ -61,4 +61,28 @@ describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
     expect(api.put).toHaveBeenCalledWith("/church/admin/worship-schedule", expect.anything());
     expect(await screen.findByText("저장 완료 ✓")).toBeInTheDocument();
   });
+
+  it("요일 체크박스 + 시간 선택으로 예배 시간표 한 줄을 만들어 저장한다", async () => {
+    mockGet();
+    api.put.mockResolvedValue({ data: { data: {} } });
+    const user = userEvent.setup();
+    renderWithChurch(<MainManage />);
+
+    await user.click(await screen.findByText("정기 예배 추가"));
+    await user.type(screen.getByLabelText("정기 예배 1 예배명"), "2부 예배");
+    await user.click(screen.getByRole("button", { name: "주일" }));
+    await user.click(screen.getByRole("button", { name: "수" }));
+    await user.type(screen.getByLabelText("정기 예배 1 시간"), "14:00");
+
+    await user.click(screen.getByRole("button", { name: "변경사항 저장" }));
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        "/church/admin/worship-schedule",
+        expect.objectContaining({
+          regular: [{ name: "2부 예배", time: "매주 주일·수 오후 2시", location: "" }],
+        }),
+      ),
+    );
+  });
 });

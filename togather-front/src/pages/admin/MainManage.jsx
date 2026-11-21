@@ -21,7 +21,164 @@ function Card({ title, children, description }) {
   );
 }
 
-/** 예배 시간표 한 줄 — 백엔드 필드는 name/time/location이다(화면 라벨은 "장소"). */
+// ── 요일·시간 선택 → 백엔드로 보내는 기존 time 문자열로 조립 ─────────────
+// 백엔드 스키마(name/time/location)는 그대로 둔다 — time 안에 들어갈 문자열을
+// 자유 입력 대신 요일 체크박스 + <input type="time">으로 조립해서 만들 뿐이다.
+const DAY_SHORT = ["주일", "월", "화", "수", "목", "금", "토"];
+const DAY_FULL = ["주일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+
+function formatTimeKorean(hhmm) {
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  const period = h < 12 ? "오전" : "오후";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return m > 0 ? `${period} ${hour12}시 ${m}분` : `${period} ${hour12}시`;
+}
+
+function formatDaysKorean(days) {
+  if (days.length === 0) return "";
+  if (days.length === 7) return "매일";
+  if (days.length === 1) return DAY_FULL[days[0]];
+  return "매주 " + [...days].sort((a, b) => a - b).map((d) => DAY_SHORT[d]).join("·");
+}
+
+function composeSchedule(days, hhmm) {
+  return [formatDaysKorean(days), formatTimeKorean(hhmm)].filter(Boolean).join(" ");
+}
+
+/** 예배 시간표 한 줄 — 백엔드 필드는 name/time/location이다(화면 라벨은 "장소").
+ * 요일+시간 선택을 기본으로 보여주고, "직접 입력"을 누르면 자유 텍스트로 전환한다.
+ * 기존 데이터는 time이 자유 텍스트라 요일/시간 체크박스로 되돌려 파싱할 수 없으므로,
+ * 선택 모드에서는 저장된 값을 안내 문구로만 보여준다(건드리지 않으면 그대로 유지됨). */
+function ScheduleRow({ row, index, addLabel, onUpdate, onRemove }) {
+  const [mode, setMode] = useState("picker");
+  const [days, setDays] = useState([]);
+  const [timeOfDay, setTimeOfDay] = useState("");
+
+  function toggleDay(d) {
+    const next = days.includes(d) ? days.filter((x) => x !== d) : [...days, d];
+    setDays(next);
+    onUpdate("time", composeSchedule(next, timeOfDay));
+  }
+
+  function toggleEveryDay() {
+    const next = days.length === 7 ? [] : [0, 1, 2, 3, 4, 5, 6];
+    setDays(next);
+    onUpdate("time", composeSchedule(next, timeOfDay));
+  }
+
+  function handleTimeOfDayChange(v) {
+    setTimeOfDay(v);
+    onUpdate("time", composeSchedule(days, v));
+  }
+
+  function switchToPicker() {
+    setDays([]);
+    setTimeOfDay("");
+    onUpdate("time", "");
+    setMode("picker");
+  }
+
+  return (
+    <div className="border border-grey-2 rounded-xl p-3 flex flex-col gap-2.5">
+      <div className="grid gap-3 items-center" style={{ gridTemplateColumns: "1fr 1fr auto" }}>
+        <input
+          className={rowInputCls}
+          value={row.name}
+          onChange={(e) => onUpdate("name", e.target.value)}
+          placeholder="예배명"
+          aria-label={`${addLabel} ${index + 1} 예배명`}
+        />
+        <input
+          className={rowInputCls}
+          value={row.location}
+          onChange={(e) => onUpdate("location", e.target.value)}
+          placeholder="장소"
+          aria-label={`${addLabel} ${index + 1} 장소`}
+        />
+        <button
+          onClick={onRemove}
+          aria-label={`${addLabel} ${index + 1} 삭제`}
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-grey-5 hover:bg-grey-2 hover:text-red-500 transition-colors"
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      {mode === "picker" ? (
+        <div className="flex flex-col gap-1.5">
+          {row.time && days.length === 0 && !timeOfDay && (
+            <p className="text-body-5 text-grey-5">현재 저장된 값: {row.time}</p>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {DAY_SHORT.map((label, d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => toggleDay(d)}
+                aria-pressed={days.includes(d)}
+                className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
+                  days.includes(d)
+                    ? "bg-primary text-white border-primary"
+                    : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={toggleEveryDay}
+              aria-pressed={days.length === 7}
+              className={`px-3 py-1.5 rounded-full text-body-5 font-semibold border transition-colors ${
+                days.length === 7
+                  ? "bg-primary text-white border-primary"
+                  : "border-grey-3 text-grey-7 hover:border-primary hover:text-primary"
+              }`}
+            >
+              매일
+            </button>
+            <input
+              type="time"
+              value={timeOfDay}
+              onChange={(e) => handleTimeOfDayChange(e.target.value)}
+              className={`${rowInputCls} w-32`}
+              aria-label={`${addLabel} ${index + 1} 시간`}
+            />
+            <button
+              type="button"
+              onClick={() => setMode("free")}
+              className="ml-auto text-body-5 text-grey-5 underline shrink-0"
+            >
+              직접 입력
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <input
+            className={`${rowInputCls} flex-1`}
+            value={row.time}
+            onChange={(e) => onUpdate("time", e.target.value)}
+            placeholder="예: * 부서 별 상이"
+            aria-label={`${addLabel} ${index + 1} 시간`}
+          />
+          <button
+            type="button"
+            onClick={switchToPicker}
+            className="text-body-5 text-grey-5 underline shrink-0"
+          >
+            요일+시간 선택
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ScheduleRows({ rows, onChange, addLabel }) {
   const update = (i, field, val) =>
     onChange(rows.map((r, idx) => (idx === i ? { ...r, [field]: val } : r)));
@@ -29,42 +186,17 @@ function ScheduleRows({ rows, onChange, addLabel }) {
   return (
     <div className="flex flex-col gap-3">
       {rows.map((w, i) => (
-        <div key={i} className="grid gap-3 items-center" style={{ gridTemplateColumns: "1fr 1fr 1fr auto" }}>
-          <input
-            className={rowInputCls}
-            value={w.name}
-            onChange={(e) => update(i, "name", e.target.value)}
-            placeholder="예배명"
-            aria-label={`${addLabel} ${i + 1} 예배명`}
-          />
-          <input
-            className={rowInputCls}
-            value={w.time}
-            onChange={(e) => update(i, "time", e.target.value)}
-            placeholder="시간"
-            aria-label={`${addLabel} ${i + 1} 시간`}
-          />
-          <input
-            className={rowInputCls}
-            value={w.location}
-            onChange={(e) => update(i, "location", e.target.value)}
-            placeholder="장소"
-            aria-label={`${addLabel} ${i + 1} 장소`}
-          />
-          <button
-            onClick={() => onChange(rows.filter((_, idx) => idx !== i))}
-            aria-label={`${addLabel} ${i + 1} 삭제`}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-grey-5 hover:bg-grey-2 hover:text-red-500 transition-colors"
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+        <ScheduleRow
+          key={w._id}
+          row={w}
+          index={i}
+          addLabel={addLabel}
+          onUpdate={(field, val) => update(i, field, val)}
+          onRemove={() => onChange(rows.filter((_, idx) => idx !== i))}
+        />
       ))}
       <button
-        onClick={() => onChange([...rows, { name: "", time: "", location: "" }])}
+        onClick={() => onChange([...rows, { _id: crypto.randomUUID(), name: "", time: "", location: "" }])}
         className="mt-1 flex items-center gap-2 text-body-4 text-primary font-medium hover:underline w-fit"
       >
         <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -98,8 +230,11 @@ export default function MainManage() {
 
   useEffect(() => {
     if (initialSchedule) {
-      setRegular(initialSchedule.regular ?? []);
-      setDepartments(initialSchedule.departments ?? []);
+      // 각 줄에 화면 전용 _id를 붙인다 — 리스트에서 줄을 지워도 다른 줄의 요일/시간
+      // 선택 UI 상태가 엉뚱한 줄로 섞이지 않게 React key로 쓴다. 저장 시 제거한다.
+      const withId = (r) => ({ ...r, _id: crypto.randomUUID() });
+      setRegular((initialSchedule.regular ?? []).map(withId));
+      setDepartments((initialSchedule.departments ?? []).map(withId));
     }
   }, [initialSchedule]);
 
@@ -121,11 +256,16 @@ export default function MainManage() {
     setSaving(true);
     setSaveError(null);
     try {
-      // 예배 시간표는 통째 교체 — 빈 행은 보내지 않는다.
+      // 예배 시간표는 통째 교체 — 빈 행은 보내지 않는다. _id는 화면 전용이라 제외한다.
       const notBlank = (r) => r.name.trim() || r.time.trim() || r.location.trim();
+      const stripId = (r) => {
+        const rest = { ...r };
+        delete rest._id;
+        return rest;
+      };
       await updateWorshipSchedule({
-        regular: regular.filter(notBlank),
-        departments: departments.filter(notBlank),
+        regular: regular.filter(notBlank).map(stripId),
+        departments: departments.filter(notBlank).map(stripId),
       });
       // 프로필도 통째 교체 — 교회 프로필 편집 화면이 이 한 곳뿐이므로 모든 필드를 여기서 싣는다.
       await updateChurchProfile(church.id, {
