@@ -9,16 +9,12 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-// 백엔드 실제 응답은 {clergy:[...], elders:[...], praise:[...]} 객체 — juboService.getMinisters가
-// 한글 라벨을 붙여 TitledGroup[]로 변환한다.
-const MINISTERS_API = {
-  clergy: ["담임목사 | 홍길동", "부 목 사 | 이철수"],
-  elders: ["시무장로 | 김영수"],
-};
-const MINISTERS = [
-  { title: "교역자", items: MINISTERS_API.clergy },
-  { title: "장로", items: MINISTERS_API.elders },
+// 콘텐츠는 자유형식 JSON 패스스루 — 관리자 에디터(MinistersSectionEditor)가 쓰는 모양 그대로 저장/조회한다.
+const MINISTERS_API = [
+  { title: "교역자", items: ["담임목사 | 홍길동", "부 목 사 | 이철수"] },
+  { title: "장로", items: ["시무장로 | 김영수"] },
 ];
+const MINISTERS = MINISTERS_API;
 
 describe("Ministers — 섬기는 분들", () => {
   beforeEach(() => {

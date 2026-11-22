@@ -6,7 +6,7 @@ import UserBlack from "@/assets/web-icon/mypage-user-black.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import { ReadonlyField, InputField, ModalOverlay, IconBack } from "./shared";
 
-const GROUP_TYPE_LABEL = { DISTRICT: "구역", DEPARTMENT: "부서", SERVICE: "봉사" };
+const GROUP_TYPE_LABEL = { REGION: "구역", DEPARTMENT: "부서", SMALL_GROUP: "소그룹" };
 
 export default function DeptTab({ profile }) {
   const { church } = useChurch();
@@ -98,7 +98,7 @@ export default function DeptTab({ profile }) {
               <button
                 onClick={() => {
                   setDeptChangeMode(false);
-                  setModal("dept-change-done");
+                  setModal("dept-change-unavailable");
                 }}
                 className="bg-primary text-white rounded-full px-6 py-2.5 text-body-4 hover:bg-blue-8 transition-colors"
               >
@@ -148,12 +148,15 @@ export default function DeptTab({ profile }) {
         </section>
       )}
 
-      {modal === "dept-change-done" && (
+      {modal === "dept-change-unavailable" && (
         <ModalOverlay onClose={() => setModal(null)}>
           <div className="text-center pt-2">
-            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">신청이 접수되었습니다.</h3>
+            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">
+              부서 / 직책 변경 신청은 준비 중입니다.
+            </h3>
             <p className="text-body-5 text-grey-6 mb-8">
-              검토 후 최종 처리 되며, 처리까지는 약 30일 정도 소요됩니다.
+              온라인 변경 신청은 아직 접수되지 않습니다. 변경이 필요하시면 교회 사무실로 문의해
+              주세요.
             </p>
             <button
               onClick={() => setModal(null)}

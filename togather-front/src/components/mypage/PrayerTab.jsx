@@ -1,21 +1,13 @@
 import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { addMyPrayer } from "@/services/myPageService";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import { Pagination, ModalOverlay } from "./shared";
 
 const PRAYER_PAGE_SIZE = 4;
 const PRAYER_TYPES = ["기도", "상담"];
 
-// ponytail: 백엔드 MyPrayer에 담당 교역자 답변 필드가 아직 없어, 답변 완료 건은
-// 디자인 확인용으로 공통 안내 문구를 보여준다. item.reply가 내려오기 시작하면
-// 이 분기를 지우고 item.reply만 쓰면 된다.
-function getPastorReply(item) {
-  if (item.reply) return item.reply;
-  if (item.status !== "답변 완료") return null;
-  return { author: "담당 교역자", text: "함께 마음 모아 기도하고 있습니다. 조만간 연락드리겠습니다." };
-}
-
-export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
+export default function PrayerTab({ prayers, setPrayers, loading, loadError, onRetry }) {
   const { church } = useChurch();
   const [prayerForm, setPrayerForm] = useState({ type: "기도", content: "" });
   const [prayerFilter, setPrayerFilter] = useState("전체");
@@ -80,7 +72,11 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
         ))}
       </div>
 
-      {loadError ? (
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <BubbleLoader size="sm" />
+        </div>
+      ) : loadError ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-body-4 text-grey-7">
             기도/상담 내역을 불러오지 못했습니다.
@@ -100,7 +96,7 @@ export default function PrayerTab({ prayers, setPrayers, loadError, onRetry }) {
         <>
           <div className="flex-1 space-y-3">
             {pagedPrayers.map((item) => {
-              const reply = getPastorReply(item);
+              const reply = item.reply;
               return (
                 <div
                   key={item.id}

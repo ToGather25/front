@@ -106,10 +106,12 @@ export default function JuboV1Page2({ data }) {
 
           {support.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              {support.map(({ title, items }) => (
-                <div key={title} className="flex gap-3">
-                  <span className="w-16 shrink-0 font-bold">* {title}</span>
-                  <span className="flex-1 text-grey-9">{items.join(" ")}</span>
+              {support.map(({ organization, target, region }, i) => (
+                <div key={i} className="flex gap-3">
+                  <span className="w-16 shrink-0 font-bold">* {organization}</span>
+                  <span className="flex-1 text-grey-9">
+                    {[target, region].filter(Boolean).join(" · ")}
+                  </span>
                 </div>
               ))}
             </div>

@@ -8,8 +8,9 @@ const inputCls =
  * "같은 모양의 행이 여러 개"인 섹션에서 공통으로 쓴다. 필드별 textarea 여부만 다르면 되는
  * 경우를 모두 커버하므로 섹션별로 매번 새 리스트 UI를 만들지 않는다.
  *
- * @param {{key:string, placeholder:string, type?:"text"|"image"}[]} fields - type이 "image"면
- *   텍스트 입력 대신 좁은 셀에 맞는 인라인 이미지 업로드(ImageUploadField compact)를 보여준다.
+ * @param {{key:string, placeholder:string, type?:"text"|"image", aspect?:number}[]} fields -
+ *   type이 "image"면 텍스트 입력 대신 좁은 셀에 맞는 인라인 이미지 업로드(ImageUploadField
+ *   compact)를 보여준다. aspect는 크롭 비율(기본 1:1)이다.
  */
 export default function RepeatableFieldRows({ rows, onChange, fields, addLabel, emptyRow }) {
   const update = (i, key, val) => onChange(rows.map((r, idx) => (idx === i ? { ...r, [key]: val } : r)));
@@ -29,6 +30,7 @@ export default function RepeatableFieldRows({ rows, onChange, fields, addLabel, 
               <ImageUploadField
                 key={f.key}
                 compact
+                aspect={f.aspect ?? 1}
                 value={row[f.key] ?? ""}
                 onChange={(url) => update(i, f.key, url)}
                 ariaLabel={`${addLabel} ${i + 1} ${f.placeholder}`}

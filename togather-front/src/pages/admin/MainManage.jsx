@@ -314,8 +314,13 @@ export default function MainManage() {
 
   const [regular, setRegular] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [banner, setBanner] = useState({ representativeImageUrl: "", instagramUrl: "" });
-  const [offering, setOffering] = useState({ bankName: "", accountNumber: "", accountHolder: "" });
+  const [banner, setBanner] = useState({ representativeImageUrl: "", instagramUrl: "", websiteUrl: "" });
+  const [offering, setOffering] = useState({
+    bankName: "",
+    accountNumber: "",
+    accountHolder: "",
+    note: "",
+  });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -335,11 +340,13 @@ export default function MainManage() {
       setBanner({
         representativeImageUrl: initialProfile.representativeImageUrl ?? "",
         instagramUrl: initialProfile.instagramUrl ?? "",
+        websiteUrl: initialProfile.websiteUrl ?? "",
       });
       setOffering({
         bankName: initialProfile.offeringBankName ?? "",
         accountNumber: initialProfile.offeringAccountNumber ?? "",
         accountHolder: initialProfile.offeringAccountHolder ?? "",
+        note: initialProfile.offeringNote ?? "",
       });
     }
   }, [initialProfile]);
@@ -363,9 +370,11 @@ export default function MainManage() {
       await updateChurchProfile(church.id, {
         representativeImageUrl: banner.representativeImageUrl || null,
         instagramUrl: banner.instagramUrl || null,
+        websiteUrl: banner.websiteUrl || null,
         offeringBankName: offering.bankName || null,
         offeringAccountNumber: offering.accountNumber || null,
         offeringAccountHolder: offering.accountHolder || null,
+        offeringNote: offering.note || null,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -395,13 +404,14 @@ export default function MainManage() {
 
       <div className="grid gap-5">
         <Card title="홈 배너" description="홈 화면 히어로 영역의 대표 이미지와 슬로건입니다.">
-          <div className="grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <ImageUploadField
               id="banner-image"
               label="배너 이미지"
               value={banner.representativeImageUrl}
               onChange={(url) => setBanner((p) => ({ ...p, representativeImageUrl: url }))}
               hint="비워두면 기본 배너 이미지가 표시됩니다"
+              aspect={21 / 9}
             />
             <div>
               <label className={labelCls} htmlFor="banner-instagram">
@@ -412,7 +422,19 @@ export default function MainManage() {
                 className={inputCls}
                 value={banner.instagramUrl}
                 onChange={(e) => setBanner((p) => ({ ...p, instagramUrl: e.target.value }))}
-                placeholder="https://www.instagram.com/... (비워두면 푸터에서 숨김)"
+                placeholder="https://www.instagram.com/..."
+              />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="banner-website">
+                웹사이트 URL
+              </label>
+              <input
+                id="banner-website"
+                className={inputCls}
+                value={banner.websiteUrl}
+                onChange={(e) => setBanner((p) => ({ ...p, websiteUrl: e.target.value }))}
+                placeholder="https://example.com"
               />
             </div>
           </div>
@@ -456,6 +478,19 @@ export default function MainManage() {
                 placeholder="예) OO교회"
               />
             </div>
+          </div>
+          <div className="mt-4">
+            <label className={labelCls} htmlFor="offering-note">
+              안내 문구
+            </label>
+            <textarea
+              id="offering-note"
+              className={inputCls}
+              rows={3}
+              value={offering.note}
+              onChange={(e) => setOffering((p) => ({ ...p, note: e.target.value }))}
+              placeholder="예) 헌금은 예배 전후에 안내함을 이용해 주세요."
+            />
           </div>
         </Card>
 

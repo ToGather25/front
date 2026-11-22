@@ -26,7 +26,7 @@ const STAFF_FIELDS = [
   { key: "role", placeholder: "역할/소개" },
   { key: "tel", placeholder: "연락처" },
   { key: "email", placeholder: "이메일" },
-  { key: "image", placeholder: "사진", type: "image" },
+  { key: "image", placeholder: "사진", type: "image", aspect: 3 / 4 },
 ];
 
 const MISSIONARY_FIELDS = [
@@ -34,7 +34,7 @@ const MISSIONARY_FIELDS = [
   { key: "location", placeholder: "파송 지역/소속" },
   { key: "tel", placeholder: "연락처" },
   { key: "email", placeholder: "이메일" },
-  { key: "image", placeholder: "사진", type: "image" },
+  { key: "image", placeholder: "사진", type: "image", aspect: 3 / 4 },
 ];
 
 const GROUPS = [
@@ -171,31 +171,36 @@ export default function StaffEditor() {
               onChange={(e) => setHeadPastor((p) => ({ ...p, email: e.target.value }))}
             />
           </div>
-          <div className="col-span-2">
-            <ImageUploadField
-              id="head-pastor-image"
-              label="사진"
-              value={headPastor.image}
-              onChange={(url) => setHeadPastor((p) => ({ ...p, image: url }))}
-            />
-          </div>
-          <div>
-            <label className={labelCls}>학력 (줄바꿈으로 여러 줄)</label>
-            <textarea
-              rows={3}
-              className={inputCls}
-              value={headPastor.education}
-              onChange={(e) => setHeadPastor((p) => ({ ...p, education: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelCls}>경력 (줄바꿈으로 여러 줄)</label>
-            <textarea
-              rows={3}
-              className={inputCls}
-              value={headPastor.career}
-              onChange={(e) => setHeadPastor((p) => ({ ...p, career: e.target.value }))}
-            />
+          <div className="col-span-2 flex gap-6 items-start">
+            <div className="w-60 shrink-0">
+              <ImageUploadField
+                id="head-pastor-image"
+                label="담임 목사님 사진"
+                value={headPastor.image}
+                onChange={(url) => setHeadPastor((p) => ({ ...p, image: url }))}
+                aspect={3 / 4}
+              />
+            </div>
+            <div className="flex-1 flex flex-col gap-4">
+              <div>
+                <label className={labelCls}>학력 (줄바꿈으로 여러 줄)</label>
+                <textarea
+                  rows={5}
+                  className={inputCls}
+                  value={headPastor.education}
+                  onChange={(e) => setHeadPastor((p) => ({ ...p, education: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>경력 (줄바꿈으로 여러 줄)</label>
+                <textarea
+                  rows={5}
+                  className={inputCls}
+                  value={headPastor.career}
+                  onChange={(e) => setHeadPastor((p) => ({ ...p, career: e.target.value }))}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </Card>

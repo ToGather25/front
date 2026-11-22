@@ -3,6 +3,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { addMyInquiry } from "@/services/myPageService";
 import { formatDotDate } from "@/utils/date";
 import MailIcon from "@/assets/web-icon/mypage-mail.svg";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import { StatusBadge, Pagination, InputField, ReadonlyField, IconBack } from "./shared";
 
 const PAGE_SIZE = 5;
@@ -11,7 +12,7 @@ function IconMail() {
   return <img src={MailIcon} className="w-[13px] h-[13px]" alt="" />;
 }
 
-export default function InquiryTab({ profile, inquiries, setInquiries, loadError, onRetry }) {
+export default function InquiryTab({ profile, inquiries, setInquiries, loading, loadError, onRetry }) {
   const { church } = useChurch();
   const [inquiryForm, setInquiryForm] = useState({ title: "", content: "" });
   const [inquiryPage, setInquiryPage] = useState(1);
@@ -56,7 +57,11 @@ export default function InquiryTab({ profile, inquiries, setInquiries, loadError
             </button>
           </div>
 
-          {loadError ? (
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <BubbleLoader size="sm" />
+            </div>
+          ) : loadError ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
               <p className="text-body-4 text-grey-7">문의 내역을 불러오지 못했습니다.</p>
               <button

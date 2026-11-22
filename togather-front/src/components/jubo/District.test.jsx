@@ -9,17 +9,12 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-// 백엔드 실제 필드명(zone/place) — juboService.getDistricts가 name/location으로 변환한다.
+// 콘텐츠는 자유형식 JSON 패스스루 — 관리자 에디터(DistrictSectionEditor)가 쓰는 모양 그대로 저장/조회한다.
 const DISTRICTS_API = [
-  { zone: "1구역", place: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
-  { zone: "2구역", place: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
+  { name: "1구역", location: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
+  { name: "2구역", location: "장소를 입력하세요.", time: "시간을 입력하세요.", leader: "OOO 집사" },
 ];
-const DISTRICTS = DISTRICTS_API.map(({ zone, place, time, leader }) => ({
-  name: zone,
-  location: place,
-  time,
-  leader,
-}));
+const DISTRICTS = DISTRICTS_API;
 
 describe("District — 구역", () => {
   beforeEach(() => {

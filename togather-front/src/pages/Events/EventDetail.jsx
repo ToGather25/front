@@ -13,7 +13,7 @@ import BubbleLoader from "@/components/common/BubbleLoader";
 export default function EventDetail() {
   const { id } = useParams();
   const { church } = useChurch();
-  const { data: event, loading } = useFetch(
+  const { data: event, loading, refetch } = useFetch(
     () => getEventById(church.id, id),
     [church.id, id],
     null,
@@ -94,7 +94,7 @@ export default function EventDetail() {
 
       {/* 신청 버튼 — 데스크탑 인라인 */}
       <div className="hidden md:flex flex-col items-center gap-2">
-        <RegistrationButton event={event} size="lg" />
+        <RegistrationButton event={event} size="lg" onRegistered={refetch} />
       </div>
 
       {/* 신청 버튼 — 모바일 sticky bar (BottomNav 위, canRegister:false면 미노출) */}
@@ -103,7 +103,12 @@ export default function EventDetail() {
           className="md:hidden fixed left-0 right-0 z-40 bg-white border-t border-bluegrey-3 px-4 py-3"
           style={{ bottom: "var(--bottom-nav-h)" }}
         >
-          <RegistrationButton event={event} size="lg" className="w-full !px-0" />
+          <RegistrationButton
+            event={event}
+            size="lg"
+            className="w-full !px-0"
+            onRegistered={refetch}
+          />
         </div>
       )}
     </div>

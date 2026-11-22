@@ -16,8 +16,9 @@ export const JUBO_VERSIONS = {
   },
 };
 
-/** church.juboTemplateVersion으로 페이지 배열/PDF 조판 순서를 고른다. 값이 없거나 모르는
- * 값이면 v1(4페이지)을 기본으로 쓴다 — 백엔드가 아직 안 내려주는 교회는 신규 템플릿부터 본다. */
-export function resolveJuboVersion(church) {
-  return JUBO_VERSIONS[church?.juboTemplateVersion] ?? JUBO_VERSIONS.v1;
+/** 호(issue) 자체의 juboTemplateVersion을 교회 기본값보다 우선한다 — 교회 기본 템플릿을 바꿔도
+ * 과거에 다른 버전으로 발행된 호는 그 버전을 유지해야 한다. 둘 다 없거나 모르는 값이면
+ * v1(4페이지)을 기본으로 쓴다. */
+export function resolveJuboVersion(church, issueVersion) {
+  return JUBO_VERSIONS[issueVersion ?? church?.juboTemplateVersion] ?? JUBO_VERSIONS.v1;
 }

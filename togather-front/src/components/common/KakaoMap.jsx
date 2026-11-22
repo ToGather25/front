@@ -9,22 +9,23 @@ import { fetchKakaoStaticMapDataUrl } from "@/services/kakaoStaticMap";
  *   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={KEY}&autoload=false&libraries=services"></script>
  *
  * @param {string}  address   - 지도에 표시할 주소 (좌표 변환 + 마커 인포윈도우에 사용)
+ * @param {string}  churchId  - printMode 정적 지도를 서버(/churches/{id}/jubo/map-image)에서 받아올 때 필요
  * @param {number}  level     - 확대 수준 (기본 4, 낮을수록 확대)
  * @param {boolean} draggable - false이면 드래그/스크롤/더블클릭 비활성화 (기본 true)
  * @param {string}  className - 컨테이너 클래스
  * @param {boolean} printMode - true면 인터랙티브 지도 대신 정적 이미지를 그린다
  *   (html2canvas 등으로 캡처할 때 쓴다 — 동적 지도 타일은 CORS 미허용이라 캡처가 안 됨)
  */
-export default function KakaoMap({ address, level = 4, draggable = true, className = "", style, showTraffic = false, showControls = true, showInfoWindow = true, printMode = false }) {
+export default function KakaoMap({ address, churchId, level = 4, draggable = true, className = "", style, showTraffic = false, showControls = true, showInfoWindow = true, printMode = false }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
   const [staticUrl, setStaticUrl] = useState(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    if (!address || !printMode) return;
+    if (!printMode) return;
     let cancelled = false;
-    fetchKakaoStaticMapDataUrl(address, { level }).then((url) => {
+    fetchKakaoStaticMapDataUrl(churchId, { level }).then((url) => {
       if (cancelled) return;
       if (url) setStaticUrl(url);
       else setError("지도를 불러올 수 없습니다.");
@@ -32,7 +33,7 @@ export default function KakaoMap({ address, level = 4, draggable = true, classNa
     return () => {
       cancelled = true;
     };
-  }, [address, level, printMode]);
+  }, [churchId, level, printMode]);
 
   useEffect(() => {
     if (!address || printMode) return;

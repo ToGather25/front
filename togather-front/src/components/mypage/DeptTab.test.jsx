@@ -11,8 +11,8 @@ import api from "@/services/api";
 
 const PROFILE = { role: "장로", department: "남선교회 1지회", region: "1구역", smallGroup: "에벤에셀 다락방" };
 const GROUPS = [
-  { type: "DISTRICT", name: "1구역 모임" },
-  { type: "SERVICE", name: "성가대" },
+  { type: "REGION", name: "1구역 모임" },
+  { type: "SMALL_GROUP", name: "성가대" },
 ];
 
 describe("DeptTab — 부서 / 직책", () => {
@@ -32,7 +32,7 @@ describe("DeptTab — 부서 / 직책", () => {
     expect(api.get).toHaveBeenCalledWith("/my/groups");
   });
 
-  it("'변경 신청하기'를 클릭하면 변경 모드로 전환되고, 신청하면 완료 모달이 뜬다", async () => {
+  it("'변경 신청하기'를 클릭하면 변경 모드로 전환되고, 신청하면 '준비 중' 안내가 뜬다(실제 접수 아님)", async () => {
     renderWithChurch(<DeptTab profile={PROFILE} />);
     await screen.findByText("1구역 모임");
 
@@ -40,6 +40,7 @@ describe("DeptTab — 부서 / 직책", () => {
     expect(screen.getByText("부서 / 직책 변경 신청")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "신청하기" }));
-    expect(screen.getByText("신청이 접수되었습니다.")).toBeInTheDocument();
+    expect(screen.getByText("부서 / 직책 변경 신청은 준비 중입니다.")).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
   });
 });

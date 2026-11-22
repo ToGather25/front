@@ -141,11 +141,11 @@ export default function Events() {
   const month = currentDate.getMonth();
   const cells = buildCalendarCells(year, month);
 
-  const { data: events = [], loading } = useFetch(
-    () => getEvents(church.id, { year, month: month + 1 }),
-    [church.id, year, month],
-    [],
-  );
+  const {
+    data: events = [],
+    loading,
+    refetch: refetchEvents,
+  } = useFetch(() => getEvents(church.id, { year, month: month + 1 }), [church.id, year, month], []);
 
   const regularWorshipEvents = buildRegularWorshipEvents(year, month, church.worshipSchedule);
   const allEvents = [...events, ...regularWorshipEvents];
@@ -374,7 +374,7 @@ export default function Events() {
                           >
                             상세보기
                           </Link>
-                          <RegistrationButton event={evt} size="sm" />
+                          <RegistrationButton event={evt} size="sm" onRegistered={refetchEvents} />
                         </div>
                       )}
                     </div>

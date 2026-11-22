@@ -49,48 +49,34 @@ export async function getJuboIssues(churchId) {
   return archive.data.map((summary) => toJuboIssue(summary, current?.issueNo));
 }
 
+/** null/undefined는 물론, 배열이 아닌 값(백엔드가 빈 목록을 {}로 내려주는 경우 등)도 전부
+ * 빈 배열로 떨어뜨린다 — "raw ?? []"만으로는 object가 그대로 통과해 rows.map()이 터진다. */
+function asArray(raw) {
+  return Array.isArray(raw) ? raw : [];
+}
+
 // 섹션별 백엔드 원본 → 프론트 shape 변환. 개별 get*와 getCurrentJuboSections(통합 조회)가
 // 공유한다 — 변환 로직을 한 곳에만 두어 두 경로의 결과가 어긋나지 않게 한다.
 const sectionTransforms = {
   /** 백엔드는 레이블 문자열 배열만 반환한다(시간 정보 없음) — WorshipService{label,time}로 감싼다. */
-  WORSHIP_SERVICES: (raw) => (raw ?? []).map((label) => ({ label, time: "" })),
+  /** 콘텐츠는 자유형식 JSON이라 저장 형식은 이 프론트가 정한다 — 레거시 문자열 배열(시간 정보 없음)과
+   * 현재 형식({label,time})을 둘 다 받아들인다. */
+  WORSHIP_SERVICES: (raw) =>
+    asArray(raw).map((item) =>
+      typeof item === "string" ? { label: item, time: "" } : { label: item?.label ?? "", time: item?.time ?? "" },
+    ),
   /** 전체 맵 그대로 — 클라이언트에서 서비스 라벨로 조회한다. */
   WORSHIP_ORDER: (raw) => raw ?? {},
-  /** {weeks:[{label:"이번주"|"다음주", roles:[{role,name}]}]} → 두 주를 part1/part2로 짝짓는다. */
-  VOLUNTEER: (raw) => {
-    const weeks = raw?.weeks ?? [];
-    const thisWeek = weeks.find((w) => w.label === "이번주")?.roles ?? [];
-    const nextWeek = weeks.find((w) => w.label === "다음주")?.roles ?? [];
-    const roleOrder = [];
-    [...thisWeek, ...nextWeek].forEach(({ role }) => {
-      if (!roleOrder.includes(role)) roleOrder.push(role);
-    });
-    return roleOrder.map((role) => ({
-      role,
-      part1: thisWeek.find((r) => r.role === role)?.name ?? "",
-      part2: nextWeek.find((r) => r.role === role)?.name ?? "",
-    }));
-  },
-  OFFERING: (raw) => raw ?? [],
-  /** {category, items:[기관명...]}[] → offering/news와 같은 TitledGroup(title/items) 모양으로. */
-  SUPPORT: (raw) => (raw ?? []).map(({ category, items }) => ({ title: category, items })),
-  /** 백엔드 필드명(zone/place) → DistrictRow(name/location). */
-  DISTRICTS: (raw) =>
-    (raw ?? []).map(({ zone, place, time, leader }) => ({ name: zone, location: place, time, leader })),
-  /** {clergy:[...], elders:[...], praise:[...]}(배열 아님, "직책 | 이름" 문자열 항목) →
-   * 그룹별 한글 라벨을 붙여 TitledGroup[]로. */
-  MINISTERS: (raw) =>
-    Object.entries(raw ?? {}).map(([key, items]) => ({
-      title: MINISTER_GROUP_LABELS[key] ?? key,
-      items,
-    })),
+  VOLUNTEER: asArray,
+  OFFERING: asArray,
+  SUPPORT: asArray,
+  DISTRICTS: asArray,
+  MINISTERS: asArray,
   COVER: (raw) => raw ?? {},
-  NEWS: (raw) => raw ?? [],
-  PRAYER_TOPICS: (raw) => raw ?? [],
+  NEWS: asArray,
+  PRAYER_TOPICS: asArray,
   SERMON_NOTE: (raw) => raw ?? {},
 };
-
-const MINISTER_GROUP_LABELS = { clergy: "교역자", elders: "장로", praise: "찬양팀" };
 
 /** @returns {Promise<WorshipService[]>} */
 export async function getWorshipServices(churchId) {
@@ -190,6 +176,7 @@ export async function getJuboWithSections(churchId, juboId) {
     sermonTitle: d.title,
     verse: d.scripture,
     coverImageUrl: d.coverImageUrl,
+    juboTemplateVersion: d.juboTemplateVersion,
     sections: {
       worshipServices: sectionTransforms.WORSHIP_SERVICES(raw.WORSHIP_SERVICES),
       worshipOrder: sectionTransforms.WORSHIP_ORDER(raw.WORSHIP_ORDER),
@@ -238,4 +225,30 @@ export async function updateJuboSection(churchId, juboId, sectionType, content) 
 export async function publishJubo(churchId, juboId) {
   const res = await api.post(`/church/admin/jubo/${juboId}/publish`);
   return res.data.data;
+}
+
+/**
+ * 미발행 초안 확인 (관리자) — 새로고침 후에도 같은 초안을 이어 편집할 수 있도록 juboId를 복원한다.
+ * 초안이 없으면 null.
+ * @returns {Promise<{id:number,issueNo:string,juboDate:string,juboTemplateVersion?:string,published:boolean}|null>}
+ */
+export async function getJuboDraft() {
+  try {
+    const res = await api.get(`/church/admin/jubo/draft`);
+    return res.data.data;
+  } catch (err) {
+    if (err?.response?.status === 404) return null;
+    throw err;
+  }
+}
+
+/** 교회 기본 주보 템플릿 버전 (관리자) @returns {Promise<"v1"|"v2"|null>} */
+export async function getJuboSettings() {
+  const res = await api.get(`/church/admin/jubo/settings`);
+  return res.data.data?.juboTemplateVersion ?? null;
+}
+
+/** 교회 기본 주보 템플릿 버전 변경 (관리자) @param {"v1"|"v2"} version */
+export async function updateJuboSettings(version) {
+  await api.put(`/church/admin/jubo/settings`, { juboTemplateVersion: version });
 }

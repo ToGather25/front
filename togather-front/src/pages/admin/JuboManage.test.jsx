@@ -12,6 +12,12 @@ import api from "@/services/api";
 
 function mockPrefillGets() {
   api.get.mockImplementation((url) => {
+    if (url.includes("/draft")) {
+      return Promise.reject({ response: { status: 404 } });
+    }
+    if (url.includes("/settings")) {
+      return Promise.resolve({ data: { data: { juboTemplateVersion: "v1" } } });
+    }
     if (url.includes("/current")) {
       return Promise.resolve({ data: { data: { issueNo: "제10-7", date: "2026년 2월 15일" } } });
     }
@@ -103,9 +109,31 @@ describe("JuboManage — 주보 관리", () => {
     expect(api.post).toHaveBeenCalledWith("/church/admin/jubo", {
       issueNo: "제10-8",
       juboDate: "2026-06-01",
+      juboTemplateVersion: "v1",
     });
     expect(screen.getByText("예배")).toBeInTheDocument();
     expect(screen.getByText("봉사")).toBeInTheDocument();
+  });
+
+  it("미발행 초안이 있으면 새로고침 후에도 작성 폼 대신 같은 초안의 섹션 에디터를 바로 보여준다", async () => {
+    api.get.mockImplementation((url) => {
+      if (url.includes("/draft")) {
+        return Promise.resolve({
+          data: { data: { id: 99, issueNo: "제10-9", juboDate: "2026-07-01", published: false } },
+        });
+      }
+      if (url.includes("/settings")) {
+        return Promise.resolve({ data: { data: { juboTemplateVersion: "v1" } } });
+      }
+      if (url.includes("/current")) {
+        return Promise.resolve({ data: { data: { issueNo: "제10-7", date: "2026년 2월 15일" } } });
+      }
+      return Promise.resolve({ data: { data: [] } });
+    });
+    renderWithChurch(<JuboManage />);
+
+    expect(await screen.findByText("예배")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "작성 시작" })).not.toBeInTheDocument();
   });
 
   it("주보 생성이 실패하면 에러 메시지를 보여준다", async () => {

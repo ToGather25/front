@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 
 vi.mock("@/services/api", () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },
   isDummy: () => false,
 }));
 
@@ -27,13 +27,13 @@ describe("churchProfileService — 실 API 경로", () => {
     });
   });
 
-  it("updateChurchProfile은 PUT /church/admin/profile을 정확한 payload로 호출한다", async () => {
-    const payload = { representativeImageUrl: "https://example.com/b.jpg", slogan: "새 슬로건" };
-    api.put.mockResolvedValue({ data: { data: payload } });
+  it("updateChurchProfile은 PATCH /church/admin/profile을 정확한 payload로 호출한다", async () => {
+    const payload = { offeringNote: "안내 문구", websiteUrl: "https://example.com" };
+    api.patch.mockResolvedValue({ data: { data: payload } });
 
     const result = await updateChurchProfile("church-1", payload);
 
-    expect(api.put).toHaveBeenCalledWith("/church/admin/profile", payload);
+    expect(api.patch).toHaveBeenCalledWith("/church/admin/profile", payload);
     expect(result).toEqual(payload);
   });
 });

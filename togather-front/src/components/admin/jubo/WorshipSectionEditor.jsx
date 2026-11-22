@@ -248,11 +248,11 @@ export default function WorshipSectionEditor({ churchId, juboId }) {
         </>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
+          className="px-10 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
           type="button"
         >
           {saving ? "저장 중..." : "저장"}

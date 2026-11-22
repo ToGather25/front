@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { addMySchedule, updateMySchedule, deleteMySchedule } from "@/services/myPageService";
 import { formatMonthDay, getWeekdayLabel, parseLocalDate } from "@/utils/date";
+import BubbleLoader from "@/components/common/BubbleLoader";
 import { Pagination, InputField, ModalOverlay, StatusBadge } from "./shared";
 
 const PAGE_SIZE = 5;
 
-export default function ScheduleTab({ schedules, setSchedules, loadError, onRetry }) {
+export default function ScheduleTab({ schedules, setSchedules, loading, loadError, onRetry }) {
   const { church } = useChurch();
   const [scheduleForm, setScheduleForm] = useState({ datetime: "", title: "", location: "" });
   const [schedulePage, setSchedulePage] = useState(1);
@@ -122,7 +123,11 @@ export default function ScheduleTab({ schedules, setSchedules, loadError, onRetr
         </button>
       </div>
 
-      {loadError ? (
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <BubbleLoader size="sm" />
+        </div>
+      ) : loadError ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-body-4 text-grey-7">일정을 불러오지 못했습니다.</p>
           <button

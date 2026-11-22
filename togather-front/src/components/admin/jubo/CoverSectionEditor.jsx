@@ -69,40 +69,34 @@ export default function CoverSectionEditor({ churchId, juboId }) {
           </button>
         </div>
       )}
-      <div className="flex flex-col gap-3 mb-4">
-        <div>
-          <label className="block text-caption text-grey-6 mb-1">교회 건물 사진</label>
-          <ImageUploadField
-            compact
-            value={photos.church}
-            onChange={(url) => updatePhoto("church", url)}
-            ariaLabel="교회 건물 사진"
-          />
-        </div>
-        <div>
-          <label className="block text-caption text-grey-6 mb-1">예배 전경 사진</label>
-          <ImageUploadField
-            compact
-            value={photos.panorama}
-            onChange={(url) => updatePhoto("panorama", url)}
-            ariaLabel="예배 전경 사진"
-          />
-        </div>
-        <div>
-          <label className="block text-caption text-grey-6 mb-1">공동체 단체 사진</label>
-          <ImageUploadField
-            compact
-            value={photos.group}
-            onChange={(url) => updatePhoto("group", url)}
-            ariaLabel="공동체 단체 사진"
-          />
-        </div>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <ImageUploadField
+          id="cover-church-photo"
+          label="교회 건물 사진"
+          aspect={4 / 3}
+          value={photos.church}
+          onChange={(url) => updatePhoto("church", url)}
+        />
+        <ImageUploadField
+          id="cover-panorama-photo"
+          label="예배 전경 사진"
+          aspect={21 / 9}
+          value={photos.panorama}
+          onChange={(url) => updatePhoto("panorama", url)}
+        />
+        <ImageUploadField
+          id="cover-group-photo"
+          label="공동체 단체 사진"
+          aspect={4 / 3}
+          value={photos.group}
+          onChange={(url) => updatePhoto("group", url)}
+        />
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
+          className="px-10 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
           type="button"
         >
           {saving ? "저장 중..." : "저장"}

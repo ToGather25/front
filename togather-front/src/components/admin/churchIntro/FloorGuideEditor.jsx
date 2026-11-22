@@ -9,7 +9,7 @@ import { filterBlankRows } from "@/components/admin/repeatableRows";
 const FLOOR_FIELDS = [
   { key: "floor", placeholder: "층 (예: 2층)" },
   { key: "rooms", placeholder: "해당 층 시설 (쉼표로 구분)" },
-  { key: "image", placeholder: "도면 이미지", type: "image" },
+  { key: "image", placeholder: "도면 이미지", type: "image", aspect: 4 / 3 },
 ];
 
 export default function FloorGuideEditor() {

@@ -7,7 +7,7 @@ import { getNotices } from "@/services/noticeService";
 import { getEvents } from "@/services/eventsService";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
-const iconCls = { width: 22, height: 22, fill: "none", stroke: "currentColor", strokeWidth: 1.8, viewBox: "0 0 24 24" };
+const iconCls = { width: 35, height: 35, fill: "none", stroke: "currentColor", strokeWidth: 1.8, viewBox: "0 0 24 24" };
 
 const ICONS = {
   members: (
@@ -53,9 +53,9 @@ const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 function StatCard({ label, value, sub, color, icon, loading }) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-grey-2 flex items-start gap-4">
+    <div className="bg-white rounded-2xl p-6 border border-grey-2 flex items-start gap-5">
       <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+        className="w-16 h-16 rounded-xl flex items-center justify-center shrink-0"
         style={{ background: color + "18", color }}
       >
         {icon}

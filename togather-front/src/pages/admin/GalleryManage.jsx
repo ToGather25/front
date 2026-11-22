@@ -141,7 +141,7 @@ function PhotoModal({ onClose, onSave }) {
             label="이미지"
             value={form.imageUrl}
             onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
-            aspectClassName="aspect-square"
+            aspect={1}
           />
         </div>
         {error && <p className="text-body-5 text-red-500 mt-3">{error}</p>}

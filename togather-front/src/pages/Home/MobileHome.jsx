@@ -11,6 +11,7 @@ import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import IcoMenu01 from "@/assets/mob-icon/icon-main-menu-01.svg";
 import IcoMenu02 from "@/assets/mob-icon/icon-main-menu-02.svg";
 import IcoMenu03 from "@/assets/mob-icon/icon-main-menu-03.svg";
+import IcoMenu04 from "@/assets/mob-icon/icon-main-menu-04.svg";
 
 function MobileSearchBar() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ function QuickMenu() {
             {i === 0 && <img src={IcoMenu01} className="w-8 h-8" alt="" />}
             {i === 1 && <img src={IcoMenu02} className="w-8 h-8" alt="" />}
             {i === 2 && <img src={IcoMenu03} className="w-8 h-8" alt="" />}
-            {i === 3 && <IconGyojeokbu />}
+            {i === 3 && <img src={IcoMenu04} className="w-8 h-8" alt="" />}
           </div>
           <span className="text-[12px] font-semibold text-grey-10 text-center">
             {item.label}

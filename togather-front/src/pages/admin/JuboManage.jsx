@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getJuboInfo, createJuboIssue, publishJubo } from "@/services/juboService";
+import {
+  getJuboInfo,
+  createJuboIssue,
+  publishJubo,
+  getJuboDraft,
+  getJuboSettings,
+} from "@/services/juboService";
 import WorshipSectionEditor from "@/components/admin/jubo/WorshipSectionEditor";
 import VolunteerSectionEditor from "@/components/admin/jubo/VolunteerSectionEditor";
 import OfferingSectionEditor from "@/components/admin/jubo/OfferingSectionEditor";
@@ -31,9 +37,19 @@ export default function JuboManage() {
     refetch: refetchInfo,
   } = useFetch(() => getJuboInfo(church.id), [church.id], null);
 
+  // 미발행 초안이 있으면 새로고침 후에도 같은 juboId로 편집을 이어간다 — 작성 폼을
+  // 처음부터 다시 보여주지 않는다.
+  const { data: draft, loading: draftLoading } = useFetch(
+    () => getJuboDraft(),
+    [church.id],
+    undefined,
+  );
+  const { data: defaultVersion } = useFetch(() => getJuboSettings(), [church.id], null);
+
   const [juboId, setJuboId] = useState(null);
   const [issueNo, setIssueNo] = useState("");
   const [juboDate, setJuboDate] = useState("");
+  const [version, setVersion] = useState("v1");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState(false);
 
@@ -41,13 +57,30 @@ export default function JuboManage() {
   const [publishError, setPublishError] = useState(false);
   const [published, setPublished] = useState(false);
 
+  useEffect(() => {
+    if (draft && juboId === null) {
+      setJuboId(draft.id);
+      setIssueNo(draft.issueNo);
+      setJuboDate(draft.juboDate);
+      setVersion(draft.juboTemplateVersion ?? "");
+    }
+  }, [draft, juboId]);
+
+  useEffect(() => {
+    if (defaultVersion) setVersion(defaultVersion);
+  }, [defaultVersion]);
+
   async function handleCreate(e) {
     e.preventDefault();
     if (!issueNo.trim() || !juboDate) return;
     setCreating(true);
     setCreateError(false);
     try {
-      const created = await createJuboIssue(church.id, { issueNo: issueNo.trim(), juboDate });
+      const created = await createJuboIssue(church.id, {
+        issueNo: issueNo.trim(),
+        juboDate,
+        juboTemplateVersion: version || undefined,
+      });
       setJuboId(created.id);
       setPublished(false);
     } catch (err) {
@@ -102,7 +135,11 @@ export default function JuboManage() {
         )}
       </div>
 
-      {!juboId ? (
+      {draftLoading ? (
+        <div className="flex justify-center py-10">
+          <BubbleLoader size="sm" />
+        </div>
+      ) : !juboId ? (
         <div className="bg-white rounded-2xl border border-grey-2 p-6">
           <h2 className="text-sub-tit-5 font-bold text-grey-10 mb-4">새 주보 작성</h2>
           <form onSubmit={handleCreate} className="flex items-end gap-3 flex-wrap">
@@ -129,6 +166,20 @@ export default function JuboManage() {
                 value={juboDate}
                 onChange={(e) => setJuboDate(e.target.value)}
               />
+            </div>
+            <div>
+              <label className="block text-caption text-grey-6 mb-1" htmlFor="jubo-version">
+                템플릿 버전
+              </label>
+              <select
+                id="jubo-version"
+                className="border border-grey-3 rounded-xl px-4 py-2.5 text-body-4"
+                value={version}
+                onChange={(e) => setVersion(e.target.value)}
+              >
+                <option value="v1">4페이지 (v1)</option>
+                <option value="v2">8페이지 (v2)</option>
+              </select>
             </div>
             <button
               type="submit"
@@ -193,11 +244,11 @@ export default function JuboManage() {
             </SectionCard>
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex items-center justify-end gap-3">
             <button
               onClick={handlePublish}
               disabled={publishing || published}
-              className="px-6 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold disabled:opacity-50 transition-colors"
+              className="px-10 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold disabled:opacity-50 transition-colors"
             >
               {published ? "발행 완료" : publishing ? "발행 중..." : "발행하기"}
             </button>

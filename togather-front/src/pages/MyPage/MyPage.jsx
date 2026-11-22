@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getMySchedules, getMyPrayers, getMyInquiries, getMyProfile } from "@/services/myPageService";
-import { DUMMY_MY_SCHEDULES, DUMMY_MY_PRAYERS } from "@/data/dummy/mypage";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import UserBlue from "@/assets/web-icon/mypage-user-blue.svg";
@@ -76,6 +75,9 @@ export default function MyPage() {
   const [schedules, setSchedules] = useState([]);
   const [prayers, setPrayers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [scheduleLoading, setScheduleLoading] = useState(true);
+  const [prayerLoading, setPrayerLoading] = useState(true);
+  const [inquiryLoading, setInquiryLoading] = useState(true);
   const [scheduleError, setScheduleError] = useState(false);
   const [prayerError, setPrayerError] = useState(false);
   const [inquiryError, setInquiryError] = useState(false);
@@ -83,33 +85,38 @@ export default function MyPage() {
   // 각 fetch는 마운트 시 useEffect에서 한 번, "다시 시도" 버튼 클릭 시 한 번 더
   // 호출된다. cancelledRef는 useEffect의 cleanup(언마운트/의존성 변경) 시점에만
   // 넘겨 stale response로 인한 setState를 막고, 재시도 호출에서는 생략한다.
-  //
-  // 일정/기도·상담은 백엔드 API가 아직 준비되지 않아 실패 시 더미 데이터로
-  // 폴백한다 — 백엔드 연동이 완료되면 이 catch 분기를 지우고 setScheduleError/
-  // setPrayerError(true)로 되돌리면 된다.
   function fetchSchedules(cancelledRef) {
+    setScheduleLoading(true);
     setScheduleError(false);
     return getMySchedules(church.id)
       .then((list) => {
         if (!cancelledRef?.current) setSchedules(list);
       })
       .catch(() => {
-        if (!cancelledRef?.current) setSchedules(DUMMY_MY_SCHEDULES);
+        if (!cancelledRef?.current) setScheduleError(true);
+      })
+      .finally(() => {
+        if (!cancelledRef?.current) setScheduleLoading(false);
       });
   }
 
   function fetchPrayers(cancelledRef) {
+    setPrayerLoading(true);
     setPrayerError(false);
     return getMyPrayers(church.id)
       .then((list) => {
         if (!cancelledRef?.current) setPrayers(list);
       })
       .catch(() => {
-        if (!cancelledRef?.current) setPrayers(DUMMY_MY_PRAYERS);
+        if (!cancelledRef?.current) setPrayerError(true);
+      })
+      .finally(() => {
+        if (!cancelledRef?.current) setPrayerLoading(false);
       });
   }
 
   function fetchInquiries(cancelledRef) {
+    setInquiryLoading(true);
     setInquiryError(false);
     return getMyInquiries(church.id)
       .then((list) => {
@@ -117,6 +124,9 @@ export default function MyPage() {
       })
       .catch(() => {
         if (!cancelledRef?.current) setInquiryError(true);
+      })
+      .finally(() => {
+        if (!cancelledRef?.current) setInquiryLoading(false);
       });
   }
 
@@ -252,6 +262,7 @@ export default function MyPage() {
               <ScheduleTab
                 schedules={schedules}
                 setSchedules={setSchedules}
+                loading={scheduleLoading}
                 loadError={scheduleError}
                 onRetry={() => fetchSchedules()}
               />
@@ -260,6 +271,7 @@ export default function MyPage() {
               <PrayerTab
                 prayers={prayers}
                 setPrayers={setPrayers}
+                loading={prayerLoading}
                 loadError={prayerError}
                 onRetry={() => fetchPrayers()}
               />
@@ -269,6 +281,7 @@ export default function MyPage() {
                 profile={profile}
                 inquiries={inquiries}
                 setInquiries={setInquiries}
+                loading={inquiryLoading}
                 loadError={inquiryError}
                 onRetry={() => fetchInquiries()}
               />

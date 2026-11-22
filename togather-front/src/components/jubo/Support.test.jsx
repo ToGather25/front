@@ -9,10 +9,10 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-// 백엔드 실제 응답 모양 — {category, items}(juboService.getSupport가 title/items로 변환한다).
+// 콘텐츠는 자유형식 JSON 패스스루 — 관리자 에디터(SupportSectionEditor)가 쓰는 모양 그대로 저장/조회한다.
 const SUPPORT = [
-  { category: "국내 선교", items: ["베트남 | 호치민", "일본 | 동경"] },
-  { category: "해외 선교", items: ["후원구역명"] },
+  { organization: "베트남", target: "선교사님", region: "구역명" },
+  { organization: "일본", target: "선교사님", region: "구역명" },
 ];
 
 describe("Support — 후원", () => {
@@ -23,10 +23,8 @@ describe("Support — 후원", () => {
   it("모든 후원 기관 행을 렌더한다", async () => {
     api.get.mockResolvedValue({ data: { data: SUPPORT } });
     renderWithChurch(<Support />);
-    for (const { items } of SUPPORT) {
-      for (const item of items) {
-        expect(await screen.findByText(item)).toBeInTheDocument();
-      }
+    for (const { organization } of SUPPORT) {
+      expect(await screen.findByText(organization)).toBeInTheDocument();
     }
   });
 
@@ -38,7 +36,7 @@ describe("Support — 후원", () => {
     api.get.mockResolvedValue({ data: { data: SUPPORT } });
     fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
 
-    expect(await screen.findByText("베트남 | 호치민")).toBeInTheDocument();
+    expect(await screen.findByText("베트남")).toBeInTheDocument();
   });
 
   it("404 응답이면 발행된 주보가 없다는 안내를 보여주고 재시도 버튼은 없다", async () => {

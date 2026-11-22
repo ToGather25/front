@@ -17,7 +17,7 @@ export default function Jubo() {
     [church.id, issueId],
     null,
   );
-  const { pages, printRows } = resolveJuboVersion(church);
+  const { pages, printRows } = resolveJuboVersion(church, issue?.juboTemplateVersion);
   const { PrintArea, download, isDownloading } = useJuboPdfDownload(printRows);
 
   return (

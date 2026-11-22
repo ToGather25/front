@@ -38,3 +38,13 @@ export async function getChurchIntro(churchId) {
 export async function updateChurchIntroSection(section, content) {
   await api.put(`/church/admin/intro/${section}`, content);
 }
+
+/**
+ * 교회소개 섹션 부분 수정 (관리자) — 생략한 키는 보존하고 null인 키는 삭제한다.
+ * 현재는 HISTORY의 foundedDate 편집에만 쓴다(연혁 PUT 전체교체와 별도로).
+ * @param {IntroSectionType} section
+ * @param {Record<string, unknown>} patch
+ */
+export async function patchChurchIntroSection(section, patch) {
+  await api.patch(`/church/admin/intro/${section}`, patch);
+}

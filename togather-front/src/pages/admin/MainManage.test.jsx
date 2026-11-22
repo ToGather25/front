@@ -5,7 +5,7 @@ import { renderWithChurch } from "@/test/renderWithChurch";
 import MainManage from "./MainManage";
 
 vi.mock("@/services/api", () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },
 }));
 
 import api from "@/services/api";
@@ -13,9 +13,11 @@ import api from "@/services/api";
 const PROFILE = {
   representativeImageUrl: "https://example.com/hero.jpg",
   instagramUrl: "https://www.instagram.com/okgil",
+  websiteUrl: "https://okgil.church",
   offeringBankName: "국민은행",
   offeringAccountNumber: "000-000000-00-000",
   offeringAccountHolder: "옥길교회",
+  offeringNote: "헌금은 예배 전후에 안내함을 이용해 주세요.",
 };
 
 function mockGet({ schedule = { regular: [], departments: [] }, profile = PROFILE } = {}) {
@@ -40,23 +42,35 @@ describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
     expect(screen.getByDisplayValue("국민은행")).toBeInTheDocument();
     expect(screen.getByDisplayValue("000-000000-00-000")).toBeInTheDocument();
     expect(screen.getByDisplayValue("옥길교회")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("https://okgil.church")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("헌금은 예배 전후에 안내함을 이용해 주세요."),
+    ).toBeInTheDocument();
   });
 
-  it("저장을 누르면 예배 시간표와 교회 프로필(배너·인스타그램·헌금 계좌)을 함께 저장한다", async () => {
+  it("저장을 누르면 예배 시간표와 교회 프로필(배너·인스타그램·헌금 안내문구·웹사이트)을 함께 저장한다", async () => {
     mockGet({ profile: { representativeImageUrl: "", instagramUrl: "", offeringBankName: "" } });
     api.put.mockResolvedValue({ data: { data: {} } });
+    api.patch.mockResolvedValue({ data: { data: {} } });
     const user = userEvent.setup();
     renderWithChurch(<MainManage />);
 
     const bankInput = await screen.findByLabelText("은행명");
     await user.type(bankInput, "신한은행");
+    await user.type(screen.getByLabelText("웹사이트 URL"), "https://okgil.church");
+    await user.type(screen.getByLabelText("안내 문구"), "현장 헌금함을 이용해 주세요.");
     await user.click(screen.getByRole("button", { name: "변경사항 저장" }));
 
     await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/profile",
-        expect.objectContaining({ offeringBankName: "신한은행" }),
-      ),
+      expect(api.patch).toHaveBeenCalledWith("/church/admin/profile", {
+        representativeImageUrl: null,
+        instagramUrl: null,
+        websiteUrl: "https://okgil.church",
+        offeringBankName: "신한은행",
+        offeringAccountNumber: null,
+        offeringAccountHolder: null,
+        offeringNote: "현장 헌금함을 이용해 주세요.",
+      }),
     );
     expect(api.put).toHaveBeenCalledWith("/church/admin/worship-schedule", expect.anything());
     expect(await screen.findByText("저장 완료 ✓")).toBeInTheDocument();
@@ -65,6 +79,7 @@ describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
   it("요일 체크박스 + 시간 선택으로 예배 시간표 한 줄을 만들어 저장한다", async () => {
     mockGet();
     api.put.mockResolvedValue({ data: { data: {} } });
+    api.patch.mockResolvedValue({ data: { data: {} } });
     const user = userEvent.setup();
     renderWithChurch(<MainManage />);
 

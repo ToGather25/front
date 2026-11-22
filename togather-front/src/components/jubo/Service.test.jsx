@@ -9,30 +9,12 @@ vi.mock("@/services/api", () => ({
 
 import api from "@/services/api";
 
-// 백엔드 실제 응답은 {weeks:[{label:"이번주"|"다음주", roles:[{role,name}]}]} —
-// juboService.getVolunteer가 두 주를 part1/part2로 짝지어 변환한다.
-const VOLUNTEER_API = {
-  weeks: [
-    {
-      label: "이번주",
-      roles: [
-        { role: "예배인도", name: "000" },
-        { role: "설교", name: "000목사" },
-      ],
-    },
-    {
-      label: "다음주",
-      roles: [
-        { role: "예배인도", name: "000" },
-        { role: "설교", name: "000목사" },
-      ],
-    },
-  ],
-};
-const ROLES = [
+// 콘텐츠는 자유형식 JSON 패스스루 — 관리자 에디터(VolunteerSectionEditor)가 쓰는 모양 그대로 저장/조회한다.
+const VOLUNTEER_API = [
   { role: "예배인도", part1: "000", part2: "000" },
   { role: "설교", part1: "000목사", part2: "000목사" },
 ];
+const ROLES = VOLUNTEER_API;
 
 describe("Service — 봉사", () => {
   beforeEach(() => {

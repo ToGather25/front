@@ -73,7 +73,7 @@ function AdminLayoutInner() {
                 <p className="text-[11px] font-semibold text-white/50 leading-none mb-0.5">
                   ToGather
                 </p>
-                <p className="text-[13px] font-bold text-white leading-none">관리자</p>
+                <p className="text-[13px] font-bold text-white leading-none">관리자 모드</p>
               </div>
             </div>
           </div>
@@ -106,28 +106,12 @@ function AdminLayoutInner() {
               </NavLink>
             ))}
           </nav>
-
-          {/* Bottom user info */}
-          <div className="px-4 py-4 border-t" style={{ borderColor: "rgba(255,255,255,.08)" }}>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white"
-                style={{ background: "rgba(255,255,255,.15)" }}
-              >
-                {currentUser?.name?.[0]}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-semibold text-white truncate">{currentUser?.name}</p>
-                <p className="text-[11px] text-white/40 truncate">{currentUser?.email}</p>
-              </div>
-            </div>
-          </div>
         </aside>
 
         {/* Main */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Top bar */}
-          <header className="h-14 bg-white border-b border-grey-3 flex items-center justify-between px-8 shrink-0">
+          <header className="h-20 bg-white border-b border-grey-3 flex items-center justify-between px-8 shrink-0">
             <span />
             <div className="flex items-center gap-3">
               <span className="text-body-4 text-grey-8">

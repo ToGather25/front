@@ -3,17 +3,9 @@ import api from "./api";
 /**
  * @typedef {{ representativeImageUrl: string|null, slogan: string|null,
  *   offeringBankName: string|null, offeringAccountNumber: string|null,
- *   offeringAccountHolder: string|null, instagramUrl: string|null }} ChurchProfile
+ *   offeringAccountHolder: string|null, offeringNote: string|null,
+ *   instagramUrl: string|null, websiteUrl: string|null }} ChurchProfile
  */
-
-const EMPTY_PROFILE = {
-  representativeImageUrl: null,
-  slogan: null,
-  offeringBankName: null,
-  offeringAccountNumber: null,
-  offeringAccountHolder: null,
-  instagramUrl: null,
-};
 
 /**
  * 교회 프로필(메인화면 대표이미지/슬로건) 조회 — 공개
@@ -27,12 +19,12 @@ export async function getChurchProfile(churchId) {
 }
 
 /**
- * 교회 프로필 등록/수정 (관리자) — 교회당 1건 upsert(통째 교체이므로 보낼 필드를 빠뜨리지 말 것)
+ * 교회 프로필 부분 수정 (관리자) — 생략한 필드는 보존하고, null인 필드는 삭제한다.
  * @param {string} churchId
  * @param {Partial<ChurchProfile>} payload
  * @returns {Promise<ChurchProfile>}
  */
 export async function updateChurchProfile(churchId, payload) {
-  const res = await api.put(`/church/admin/profile`, payload);
+  const res = await api.patch(`/church/admin/profile`, payload);
   return res.data.data;
 }

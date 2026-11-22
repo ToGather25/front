@@ -57,6 +57,7 @@ export default function JuboV2Page8({ data }) {
             <div className="flex-1 min-h-[140px] border border-bluegrey-6 rounded-xl overflow-hidden">
               <KakaoMap
                 address={church.address}
+                churchId={church.id}
                 level={4}
                 draggable={false}
                 showControls={false}

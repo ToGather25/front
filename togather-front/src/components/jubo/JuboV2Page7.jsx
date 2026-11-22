@@ -18,13 +18,11 @@ export default function JuboV2Page7({ data }) {
               <p className="text-center text-xs text-grey-6 py-4">정보 없음</p>
             ) : (
               <div className="divide-y divide-grey-2 pr-8">
-                {support.map(({ title, items }) => (
-                  <div key={title} className="flex gap-4 py-4 text-sm">
-                    <div className="font-bold text-grey-12 w-16 shrink-0">{title}</div>
+                {support.map(({ organization, target, region }, i) => (
+                  <div key={i} className="flex gap-4 py-4 text-sm">
+                    <div className="font-bold text-grey-12 w-16 shrink-0">{organization}</div>
                     <div className="flex-1 flex flex-wrap gap-x-3 gap-y-0.5 text-bluegrey-8">
-                      {items.map((item, i) => (
-                        <span key={i}>{item}</span>
-                      ))}
+                      <span>{[target, region].filter(Boolean).join(" · ")}</span>
                     </div>
                   </div>
                 ))}

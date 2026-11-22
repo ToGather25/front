@@ -46,20 +46,22 @@ export default function Support() {
         </div>
       ) : Array.isArray(support) && support.length > 0 ? (
         <table className="w-full text-caption mt-1">
-          {support.map(({ title, items }) => (
-            <tbody key={title}>
-              <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
-                <td colSpan={2} className="py-2 px-4 font-semibold text-grey-8">
-                  {title}
-                </td>
+          <thead>
+            <tr className="bg-bluegrey-1 border-t border-b border-bluegrey-3">
+              <th className="text-left py-2 px-4 text-grey-7 font-semibold">기관</th>
+              <th className="text-left py-2 px-4 text-grey-7 font-semibold">대상</th>
+              <th className="text-left py-2 px-4 text-grey-7 font-semibold">후원구역</th>
+            </tr>
+          </thead>
+          <tbody>
+            {support.map(({ organization, target, region }, i) => (
+              <tr key={i} className="border-b border-grey-3">
+                <td className="py-3 px-4 text-grey-7">{organization}</td>
+                <td className="py-3 px-4 text-grey-7">{target}</td>
+                <td className="py-3 px-4 text-grey-7">{region}</td>
               </tr>
-              {items.map((item, i) => (
-                <tr key={i} className="border-b border-grey-3">
-                  <td className="py-3 px-4 text-grey-7">{item}</td>
-                </tr>
-              ))}
-            </tbody>
-          ))}
+            ))}
+          </tbody>
         </table>
       ) : (
         <p className="text-center text-caption text-grey-5 py-10">후원 기관 정보를 불러올 수 없습니다.</p>

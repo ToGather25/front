@@ -75,6 +75,7 @@ export default function JuboV1Page4() {
           <div className="w-[240px] h-[150px] shrink-0 border border-blue-3 overflow-hidden">
             <KakaoMap
               address={church.address}
+              churchId={church.id}
               level={5}
               draggable={false}
               showControls={false}

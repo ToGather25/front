@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
-import { updateChurchIntroSection } from "@/services/churchIntroService";
+import { updateChurchIntroSection, patchChurchIntroSection } from "@/services/churchIntroService";
 import History from "@/components/church/History";
 import SectionEditorLayout from "@/components/admin/SectionEditorLayout";
 import CharCountTextarea from "@/components/admin/CharCountTextarea";
@@ -45,6 +45,7 @@ export default function HistoryEditor() {
   const { church } = useChurch();
   const [description, setDescription] = useState("");
   const [foundedYear, setFoundedYear] = useState("");
+  const [foundedDate, setFoundedDate] = useState("");
   const [events, setEvents] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -55,9 +56,16 @@ export default function HistoryEditor() {
     if (!h) return;
     setDescription(h.description ?? "");
     setFoundedYear(h.foundedYear ?? "");
+    setFoundedDate(h.foundedDate ?? "");
     setEvents((h.items ?? []).flatMap((group) => group.events ?? []));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [church.history]);
+
+  // 설립일을 입력하면 설립년도도 그 연도로 맞춘다 — 둘이 어긋나면 PUT 저장 시 백엔드가 400을 낸다.
+  function handleFoundedDateChange(value) {
+    setFoundedDate(value);
+    if (value) setFoundedYear(String(new Date(value).getFullYear()));
+  }
 
   const cleanEvents = filterBlankRows(events, EVENT_FIELDS);
   const groupedItems = groupByDecade(cleanEvents);
@@ -66,6 +74,9 @@ export default function HistoryEditor() {
     setSaving(true);
     setError(false);
     try {
+      // 연혁 날짜는 PATCH로 보존/삭제하고, 나머지 연혁 콘텐츠는 기존처럼 PUT 전체교체로 저장한다.
+      // PUT 바디에 foundedDate를 넣지 않으면 백엔드가 방금 PATCH로 저장한 날짜를 보존한다.
+      await patchChurchIntroSection("HISTORY", { foundedDate: foundedDate || null });
       await updateChurchIntroSection("HISTORY", {
         description,
         foundedYear: foundedYear ? Number(foundedYear) : null,
@@ -103,15 +114,30 @@ export default function HistoryEditor() {
     >
       <Card title="설립년도 · 소개 문구">
         <div className="flex flex-col gap-4">
-          <div className="max-w-[200px]">
-            <label className={labelCls}>설립년도</label>
-            <input
-              className={inputCls}
-              value={foundedYear}
-              onChange={(e) => setFoundedYear(e.target.value)}
-              placeholder="예) 1985"
-              inputMode="numeric"
-            />
+          <div className="flex gap-4">
+            <div className="max-w-[220px]">
+              <label className={labelCls} htmlFor="history-founded-date">
+                설립일 (선택)
+              </label>
+              <input
+                id="history-founded-date"
+                type="date"
+                className={inputCls}
+                value={foundedDate}
+                onChange={(e) => handleFoundedDateChange(e.target.value)}
+              />
+            </div>
+            <div className="max-w-[200px]">
+              <label className={labelCls}>설립년도</label>
+              <input
+                className={inputCls}
+                value={foundedYear}
+                onChange={(e) => setFoundedYear(e.target.value)}
+                placeholder="예) 1985"
+                inputMode="numeric"
+                disabled={!!foundedDate}
+              />
+            </div>
           </div>
           <CharCountTextarea
             id="history-description"
