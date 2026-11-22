@@ -186,7 +186,7 @@ export default function Gyojeokbu({ onOpenMember }) {
           </div>
 
           <div
-            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-bluegrey-2 border w-full md:w-[280px] shrink-0 transition-colors ${
+            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-bluegrey-2 border w-full md:w-[300px] shrink-0 transition-colors ${
               searchFocused ? "border-blue-6" : "border-transparent"
             }`}
           >
@@ -227,29 +227,11 @@ export default function Gyojeokbu({ onOpenMember }) {
           ) : error ? (
             <div className="py-24 flex flex-col items-center gap-3 text-grey-5 text-body-3">
               <p>교적부를 불러오지 못했습니다.</p>
-              <button
-                onClick={refetch}
-                className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
-              >
-                다시 시도
-              </button>
             </div>
           ) : matches.length === 0 ? (
             <div className="py-24 text-center border-y border-bluegrey-7">
-              <div className="w-[72px] h-[72px] rounded-[18px] bg-blue-1 flex items-center justify-center mx-auto mb-5">
-                <svg
-                  className="w-8 h-8 text-blue-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-3.5-3.5" />
-                </svg>
-              </div>
               <div className="text-sub-tit-3 font-bold text-grey-12 tracking-[-0.5px] mb-2">
-                검색 결과가 없습니다
+                검색 결과가 없습니다.
               </div>
               <div className="text-body-3 text-grey-5">
                 이름, 구역, 부서, 소그룹명을 다시 확인해 주세요.

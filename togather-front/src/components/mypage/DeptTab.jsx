@@ -119,12 +119,6 @@ export default function DeptTab({ profile }) {
           ) : groupsError ? (
             <div className="py-8 flex flex-col items-center gap-3 text-grey-5 text-body-3">
               <p>목록을 불러오지 못했습니다.</p>
-              <button
-                onClick={refetchGroups}
-                className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
-              >
-                다시 시도
-              </button>
             </div>
           ) : groups.length === 0 ? (
             <p className="text-body-5 text-grey-5 py-4">참여 중인 부서 / 모임이 없습니다.</p>

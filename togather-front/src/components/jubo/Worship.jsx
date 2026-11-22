@@ -65,9 +65,6 @@ export default function Worship() {
         ) : error ? (
           <div className="text-center py-10">
             <p className="text-caption text-grey-5 mb-2">예배 순서를 불러오지 못했습니다.</p>
-            <button onClick={handleRetry} className="text-caption text-primary underline">
-              다시 시도
-            </button>
           </div>
         ) : order.length === 0 ? (
           <p className="text-center text-caption text-grey-5 py-10">예배 순서가 없습니다.</p>

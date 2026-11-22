@@ -237,12 +237,6 @@ export default function MyPage() {
             ) : (activeTab === "info" || activeTab === "dept") && profileError ? (
               <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
                 <p>내 정보를 불러오지 못했습니다.</p>
-                <button
-                  onClick={refetchProfile}
-                  className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
-                >
-                  다시 시도
-                </button>
               </div>
             ) : (
               <>

@@ -254,13 +254,6 @@ function EventRegistrationsModal({ event, onClose }) {
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-body-4 text-grey-5 mb-2">신청자 명단을 불러오지 못했습니다.</p>
-            <button
-              onClick={refetch}
-              className="text-body-5 text-primary underline"
-              type="button"
-            >
-              다시 시도
-            </button>
           </div>
         ) : registrations.length === 0 ? (
           <p className="text-body-4 text-grey-5 text-center py-8">신청자가 없습니다.</p>

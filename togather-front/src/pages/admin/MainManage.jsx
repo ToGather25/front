@@ -505,9 +505,6 @@ export default function MainManage() {
           ) : scheduleError ? (
             <div className="flex items-center gap-2">
               <p className="text-body-4 text-grey-5">예배 시간표를 불러오지 못했습니다.</p>
-              <button onClick={refetchSchedule} className="text-body-5 text-primary underline">
-                다시 시도
-              </button>
             </div>
           ) : (
             <div className="flex flex-col gap-7">

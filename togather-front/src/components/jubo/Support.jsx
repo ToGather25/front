@@ -40,9 +40,6 @@ export default function Support() {
       ) : error ? (
         <div className="text-center py-10">
           <p className="text-caption text-grey-5 mb-2">후원 안내를 불러오지 못했습니다.</p>
-          <button onClick={refetch} className="text-caption text-primary underline">
-            다시 시도
-          </button>
         </div>
       ) : Array.isArray(support) && support.length > 0 ? (
         <table className="w-full text-caption mt-1">

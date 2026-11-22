@@ -432,13 +432,7 @@ export default function WorshipManage() {
         </div>
         ) : loadError ? (
           <div className="py-16 flex flex-col items-center gap-3 text-grey-5 text-body-3">
-            <p>설교 목록을 불러오지 못했습니다. 다시 시도해 주세요.</p>
-            <button
-              onClick={() => setReloadToken((t) => t + 1)}
-              className="px-5 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold hover:bg-blue-8 transition-colors"
-            >
-              다시 시도
-            </button>
+            <p>설교 목록을 불러오지 못했습니다.</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-grey-5 text-body-3">등록된 설교가 없습니다.</div>

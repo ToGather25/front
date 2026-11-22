@@ -281,13 +281,7 @@ export default function GalleryManage() {
 
       {communityError ? (
         <div className="flex flex-col items-center justify-center gap-4 py-16 text-center bg-white rounded-2xl border border-grey-2">
-          <p className="text-body-4 text-grey-7">불러오지 못했습니다. 다시 시도해 주세요.</p>
-          <button
-            onClick={() => fetchCommunities()}
-            className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
-          >
-            다시 시도
-          </button>
+          <p className="text-body-4 text-grey-7">공동체를 불러오지 못했습니다.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -334,13 +328,7 @@ export default function GalleryManage() {
         </div>
             ) : photoError ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-                <p className="text-body-4 text-grey-7">불러오지 못했습니다. 다시 시도해 주세요.</p>
-                <button
-                  onClick={() => fetchPhotos(selectedId)}
-                  className="border border-grey-4 text-grey-8 rounded-full px-6 py-2.5 text-body-4 hover:bg-grey-1 transition-colors"
-                >
-                  다시 시도
-                </button>
+                <p className="text-body-4 text-grey-7">사진을 불러오지 못했습니다.</p>
               </div>
             ) : photos.length === 0 ? (
               <p className="text-body-4 text-grey-6 text-center py-10">등록된 사진이 없습니다.</p>

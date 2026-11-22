@@ -42,9 +42,6 @@ export default function Ministers() {
       ) : error ? (
         <div className="text-center py-10">
           <p className="text-caption text-grey-5 mb-2">섬기는 분들 정보를 불러오지 못했습니다.</p>
-          <button onClick={refetch} className="text-caption text-primary underline">
-            다시 시도
-          </button>
         </div>
       ) : Array.isArray(ministers) && ministers.length > 0 ? (
         <div className="mt-5 flex flex-col gap-6">

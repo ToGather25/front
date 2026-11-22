@@ -64,13 +64,6 @@ export default function DistrictSectionEditor({ churchId, juboId }) {
       {prefillError && (
         <div className="mb-3 flex items-center gap-2">
           <p className="text-caption text-grey-5">직전 발행본을 불러오지 못했습니다.</p>
-          <button
-            onClick={refetchPrefill}
-            className="text-caption text-primary underline"
-            type="button"
-          >
-            다시 시도
-          </button>
         </div>
       )}
       <div className="flex flex-col gap-2 mb-4">
