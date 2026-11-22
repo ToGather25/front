@@ -35,7 +35,7 @@ describe("MainManage — 홈 배너 · 헌금 안내 (실API 연동)", () => {
     mockGet();
     renderWithChurch(<MainManage />);
 
-    expect(await screen.findByDisplayValue("https://example.com/hero.jpg")).toBeInTheDocument();
+    expect(await screen.findByAltText("")).toHaveAttribute("src", "https://example.com/hero.jpg");
     expect(screen.getByDisplayValue("https://www.instagram.com/okgil")).toBeInTheDocument();
     expect(screen.getByDisplayValue("국민은행")).toBeInTheDocument();
     expect(screen.getByDisplayValue("000-000000-00-000")).toBeInTheDocument();

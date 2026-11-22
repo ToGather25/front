@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import BubbleLoader from "@/components/common/BubbleLoader";import { useFetch } from "@/hooks/useFetch";
+import BubbleLoader from "@/components/common/BubbleLoader";
+import ImageUploadField from "@/components/admin/ImageUploadField";
+import { useFetch } from "@/hooks/useFetch";
 import { getCover, updateJuboSection } from "@/services/juboService";
-
-const inputCls =
-  "w-full border border-grey-3 rounded-xl px-3 py-2 text-body-5 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
 const EMPTY_PHOTOS = { church: "", panorama: "", group: "" };
 
@@ -72,39 +71,30 @@ export default function CoverSectionEditor({ churchId, juboId }) {
       )}
       <div className="flex flex-col gap-3 mb-4">
         <div>
-          <label className="block text-caption text-grey-6 mb-1" htmlFor="cover-church-photo">
-            교회 건물 사진 URL
-          </label>
-          <input
-            id="cover-church-photo"
-            className={inputCls}
-            placeholder="https://..."
+          <label className="block text-caption text-grey-6 mb-1">교회 건물 사진</label>
+          <ImageUploadField
+            compact
             value={photos.church}
-            onChange={(e) => updatePhoto("church", e.target.value)}
+            onChange={(url) => updatePhoto("church", url)}
+            ariaLabel="교회 건물 사진"
           />
         </div>
         <div>
-          <label className="block text-caption text-grey-6 mb-1" htmlFor="cover-panorama-photo">
-            예배 전경 사진 URL
-          </label>
-          <input
-            id="cover-panorama-photo"
-            className={inputCls}
-            placeholder="https://..."
+          <label className="block text-caption text-grey-6 mb-1">예배 전경 사진</label>
+          <ImageUploadField
+            compact
             value={photos.panorama}
-            onChange={(e) => updatePhoto("panorama", e.target.value)}
+            onChange={(url) => updatePhoto("panorama", url)}
+            ariaLabel="예배 전경 사진"
           />
         </div>
         <div>
-          <label className="block text-caption text-grey-6 mb-1" htmlFor="cover-group-photo">
-            공동체 단체 사진 URL
-          </label>
-          <input
-            id="cover-group-photo"
-            className={inputCls}
-            placeholder="https://..."
+          <label className="block text-caption text-grey-6 mb-1">공동체 단체 사진</label>
+          <ImageUploadField
+            compact
             value={photos.group}
-            onChange={(e) => updatePhoto("group", e.target.value)}
+            onChange={(url) => updatePhoto("group", url)}
+            ariaLabel="공동체 단체 사진"
           />
         </div>
       </div>

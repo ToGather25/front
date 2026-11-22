@@ -13,6 +13,7 @@ import { formatDotDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
 import IcoSearch from "@/assets/web-icon/search-black.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl pl-4 pr-8 py-2.5 text-body-4 focus:outline-none focus:border-primary";
@@ -152,15 +153,13 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             <p className="text-body-5 text-grey-5 mt-1">줄바꿈은 그대로 반영됩니다.</p>
           </div>
 
-          <div>
-            <label className={labelCls}>대표 이미지 URL</label>
-            <input
-              className={inputCls}
-              value={form.imageUrl}
-              onChange={set("imageUrl")}
-              placeholder="비워두면 기본 배너가 표시됩니다"
-            />
-          </div>
+          <ImageUploadField
+            id="event-image"
+            label="대표 이미지"
+            value={form.imageUrl}
+            onChange={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
+            hint="비워두면 기본 배너가 표시됩니다"
+          />
 
           <label className="flex items-center gap-2 cursor-pointer">
             <input

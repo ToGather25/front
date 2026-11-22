@@ -5,6 +5,7 @@ import Staff from "@/components/church/Staff";
 import SectionEditorLayout from "@/components/admin/SectionEditorLayout";
 import RepeatableFieldRows from "@/components/admin/RepeatableFieldRows";
 import { filterBlankRows } from "@/components/admin/repeatableRows";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
@@ -25,7 +26,7 @@ const STAFF_FIELDS = [
   { key: "role", placeholder: "역할/소개" },
   { key: "tel", placeholder: "연락처" },
   { key: "email", placeholder: "이메일" },
-  { key: "image", placeholder: "사진 URL" },
+  { key: "image", placeholder: "사진", type: "image" },
 ];
 
 const MISSIONARY_FIELDS = [
@@ -33,7 +34,7 @@ const MISSIONARY_FIELDS = [
   { key: "location", placeholder: "파송 지역/소속" },
   { key: "tel", placeholder: "연락처" },
   { key: "email", placeholder: "이메일" },
-  { key: "image", placeholder: "사진 URL" },
+  { key: "image", placeholder: "사진", type: "image" },
 ];
 
 const GROUPS = [
@@ -171,11 +172,11 @@ export default function StaffEditor() {
             />
           </div>
           <div className="col-span-2">
-            <label className={labelCls}>사진 URL</label>
-            <input
-              className={inputCls}
+            <ImageUploadField
+              id="head-pastor-image"
+              label="사진"
               value={headPastor.image}
-              onChange={(e) => setHeadPastor((p) => ({ ...p, image: e.target.value }))}
+              onChange={(url) => setHeadPastor((p) => ({ ...p, image: url }))}
             />
           </div>
           <div>

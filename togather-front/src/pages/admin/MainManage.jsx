@@ -4,6 +4,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getWorshipSchedule, updateWorshipSchedule } from "@/services/worshipScheduleService";
 import { getChurchProfile, updateChurchProfile } from "@/services/churchProfileService";
 import BubbleLoader from "@/components/common/BubbleLoader";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-3 text-body-3 text-grey-10 focus:outline-none focus:border-primary transition-colors";
@@ -395,20 +396,13 @@ export default function MainManage() {
       <div className="grid gap-5">
         <Card title="홈 배너" description="홈 화면 히어로 영역의 대표 이미지와 슬로건입니다.">
           <div className="grid gap-4">
-            <div>
-              <label className={labelCls} htmlFor="banner-image">
-                배너 이미지 URL
-              </label>
-              <input
-                id="banner-image"
-                className={inputCls}
-                value={banner.representativeImageUrl}
-                onChange={(e) =>
-                  setBanner((p) => ({ ...p, representativeImageUrl: e.target.value }))
-                }
-                placeholder="비워두면 기본 배너 이미지가 표시됩니다"
-              />
-            </div>
+            <ImageUploadField
+              id="banner-image"
+              label="배너 이미지"
+              value={banner.representativeImageUrl}
+              onChange={(url) => setBanner((p) => ({ ...p, representativeImageUrl: url }))}
+              hint="비워두면 기본 배너 이미지가 표시됩니다"
+            />
             <div>
               <label className={labelCls} htmlFor="banner-instagram">
                 인스타그램 URL

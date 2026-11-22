@@ -1,3 +1,5 @@
+import ImageUploadField from "./ImageUploadField";
+
 const inputCls =
   "border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
@@ -6,7 +8,8 @@ const inputCls =
  * "같은 모양의 행이 여러 개"인 섹션에서 공통으로 쓴다. 필드별 textarea 여부만 다르면 되는
  * 경우를 모두 커버하므로 섹션별로 매번 새 리스트 UI를 만들지 않는다.
  *
- * @param {{key:string, placeholder:string}[]} fields
+ * @param {{key:string, placeholder:string, type?:"text"|"image"}[]} fields - type이 "image"면
+ *   텍스트 입력 대신 좁은 셀에 맞는 인라인 이미지 업로드(ImageUploadField compact)를 보여준다.
  */
 export default function RepeatableFieldRows({ rows, onChange, fields, addLabel, emptyRow }) {
   const update = (i, key, val) => onChange(rows.map((r, idx) => (idx === i ? { ...r, [key]: val } : r)));
@@ -21,16 +24,26 @@ export default function RepeatableFieldRows({ rows, onChange, fields, addLabel, 
           className="grid gap-3 items-center"
           style={{ gridTemplateColumns: `${fields.map(() => "1fr").join(" ")} auto` }}
         >
-          {fields.map((f) => (
-            <input
-              key={f.key}
-              className={inputCls}
-              value={row[f.key] ?? ""}
-              placeholder={f.placeholder}
-              onChange={(e) => update(i, f.key, e.target.value)}
-              aria-label={`${addLabel} ${i + 1} ${f.placeholder}`}
-            />
-          ))}
+          {fields.map((f) =>
+            f.type === "image" ? (
+              <ImageUploadField
+                key={f.key}
+                compact
+                value={row[f.key] ?? ""}
+                onChange={(url) => update(i, f.key, url)}
+                ariaLabel={`${addLabel} ${i + 1} ${f.placeholder}`}
+              />
+            ) : (
+              <input
+                key={f.key}
+                className={inputCls}
+                value={row[f.key] ?? ""}
+                placeholder={f.placeholder}
+                onChange={(e) => update(i, f.key, e.target.value)}
+                aria-label={`${addLabel} ${i + 1} ${f.placeholder}`}
+              />
+            ),
+          )}
           <button
             type="button"
             onClick={() => remove(i)}

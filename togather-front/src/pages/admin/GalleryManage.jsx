@@ -8,6 +8,7 @@ import {
   deletePhoto,
 } from "@/services/galleryService";
 import BubbleLoader from "@/components/common/BubbleLoader";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-4 py-2.5 text-body-4 focus:outline-none focus:border-primary";
@@ -135,15 +136,13 @@ function PhotoModal({ onClose, onSave }) {
               onChange={(e) => setForm((f) => ({ ...f, desc: e.target.value }))}
             />
           </div>
-          <div>
-            <label className={labelCls}>이미지 URL</label>
-            <input
-              className={inputCls}
-              placeholder="https://..."
-              value={form.imageUrl}
-              onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-            />
-          </div>
+          <ImageUploadField
+            id="gallery-photo-image"
+            label="이미지"
+            value={form.imageUrl}
+            onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+            aspectClassName="aspect-square"
+          />
         </div>
         {error && <p className="text-body-5 text-red-500 mt-3">{error}</p>}
         <div className="flex gap-3 justify-end mt-7">
