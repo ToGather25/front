@@ -104,20 +104,20 @@ const QUICK_MENU = [
 
 function QuickMenu() {
   return (
-    <div className="flex justify-center gap-10 pb-6">
+    <div className="flex justify-center gap-5 pb-6">
       {QUICK_MENU.map((item, i) => (
         <Link
           key={item.label}
           to={item.to}
-          className="flex flex-col items-center gap-3 w-18"
+          className="flex flex-col items-center gap-3 w-14"
         >
-          <div className="w-full h-18 rounded-xl bg-bluegrey-2 flex items-center justify-center">
-            {i === 0 && <img src={IcoMenu01} className="w-10 h-10" alt="" />}
-            {i === 1 && <img src={IcoMenu02} className="w-10 h-10" alt="" />}
-            {i === 2 && <img src={IcoMenu03} className="w-10 h-10" alt="" />}
-            {i === 3 && <img src={IcoMenu04} className="w-10 h-10" alt="" />}
+          <div className="w-full h-14 rounded-xl bg-bluegrey-2 flex items-center justify-center">
+            {i === 0 && <img src={IcoMenu01} className="w8 h8" alt="" />}
+            {i === 1 && <img src={IcoMenu02} className="w8 h8" alt="" />}
+            {i === 2 && <img src={IcoMenu03} className="w8 h8" alt="" />}
+            {i === 3 && <img src={IcoMenu04} className="w8 h8" alt="" />}
           </div>
-          <span className="text-body-4 font-semibold text-grey-10 text-center">
+          <span className="text-body-5 font-semibold text-grey-10 text-center">
             {item.label}
           </span>
         </Link>
