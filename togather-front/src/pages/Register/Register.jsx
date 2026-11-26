@@ -4,16 +4,8 @@ import { useChurch } from "@/contexts/ChurchContext";
 import { useAuth } from "@/contexts/auth";
 import { getErrorMessage } from "@/utils/apiErrors";
 import IcoPhone from "@/assets/web-icon/main-phone.svg";
-
-
-const CURRENT_YEAR = new Date().getFullYear();
-const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => CURRENT_YEAR - i);
-const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
-
-function daysInMonth(year, month) {
-  if (!year || !month) return 31;
-  return new Date(Number(year), Number(month), 0).getDate();
-}
+import MobileRegister from "@/pages/Register/MobileRegister";
+import { YEAR_OPTIONS, MONTH_OPTIONS, daysInMonth } from "@/pages/Register/registerFields";
 
 export default function Register() {
   const { church } = useChurch();
@@ -125,7 +117,63 @@ export default function Register() {
 
   return (
     <>
-      <div className="min-h-[calc(100vh-72px)] flex">
+      <div className="md:hidden">
+        {showDuplicateModal ? (
+          <div
+            data-testid="mobile-duplicate-screen"
+            className="min-h-[calc(100vh-72px)] flex flex-col items-center justify-center px-6 text-center"
+          >
+            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-5">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <h3 className="text-sub-tit-4 font-bold text-grey-11 mb-3">신청을 확인해 주세요</h3>
+            <p className="text-body-3 text-grey-7 leading-relaxed mb-6">
+              이미 등록된 정보거나
+              <br />
+              승인 대기 중인 휴대폰 번호입니다.
+              <br />
+              교회 사무실로 문의해주세요.
+            </p>
+            <button
+              type="button"
+              onClick={handleCopyContact}
+              className="flex items-center justify-center gap-1.5 text-body-4 text-grey-7 mb-8 hover:text-blue-7 transition-colors"
+            >
+              <img src={IcoPhone} className="w-4 h-4 opacity-80" alt="" />
+              {copied ? "복사되었습니다" : adminContact}
+            </button>
+            <button
+              onClick={() => setShowDuplicateModal(false)}
+              className="w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold hover:bg-blue-8 transition-colors"
+            >
+              확인
+            </button>
+          </div>
+        ) : (
+          <MobileRegister
+            form={form}
+            status={status}
+            submitError={submitError}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
+
+      <div data-testid="desktop-register" className="hidden md:flex min-h-[calc(100vh-72px)]">
         {/* 왼쪽 브랜드 패널 */}
         <div className="hidden lg:flex lg:w-[45%] bg-blue-9 flex-col justify-between p-14 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-10 via-blue-9 to-blue-7 opacity-90" />
@@ -164,7 +212,7 @@ export default function Register() {
         <div className="flex-1 flex items-center justify-center bg-white px-8 py-12 overflow-y-auto">
           <div className="w-full max-w-md">
             {/* 단계 표시 */}
-            <div className="flex items-center gap-2 mb-8">
+            <div className="hidden md:flex items-center gap-2 mb-8">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-7 text-white text-body-5 font-bold flex items-center justify-center">
                   1
@@ -180,7 +228,7 @@ export default function Register() {
               </div>
             </div>
 
-            <div className="mb-8">
+            <div className="hidden md:block mb-8">
               <h2 className="text-headline-5 font-bold text-grey-11 mb-2">회원가입</h2>
               <p className="text-body-3 text-grey-6">
                 {church?.name ?? "교회"} 성도이신가요? 먼저 정보를 입력해 주세요.
@@ -198,7 +246,7 @@ export default function Register() {
                   required
                   value={form.name}
                   onChange={handleChange}
-                  placeholder="홍길동"
+                  placeholder="이름을 입력하세요"
                   className={inputCls}
                 />
               </div>
@@ -332,7 +380,7 @@ export default function Register() {
 
             <p className="text-center text-body-4 text-grey-6 mt-8 border-t border-grey-2 pt-6">
               이미 계정이 있으신가요?{" "}
-              <Link to="/login" className="text-blue-7 hover:underline font-semibold">
+              <Link to="/login" className="text-blue-12 hover:underline font-semibold">
                 로그인
               </Link>
             </p>
@@ -340,10 +388,11 @@ export default function Register() {
         </div>
       </div>
 
-      {/* 중복 신청 모달 */}
+      {/* 중복 신청 모달 — 데스크톱 전용(모바일은 위에서 전체 화면으로 보여준다) */}
       {showDuplicateModal && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+          data-testid="desktop-duplicate-modal"
+          className="hidden md:flex fixed inset-0 bg-black/50 items-center justify-center z-50 px-4"
           onClick={() => setShowDuplicateModal(false)}
         >
           <div

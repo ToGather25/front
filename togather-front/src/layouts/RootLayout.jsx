@@ -5,6 +5,7 @@ import { ChurchProvider, useChurch } from "@/contexts/ChurchContext";
 import SearchOverlay from "@/components/common/SearchOverlay";
 import ChurchLogo from "@/components/common/ChurchLogo";
 import Footer from "@/components/common/Footer";
+import SplashScreen from "@/components/common/SplashScreen";
 import IcoBell from "@/assets/mob-icon/bell-01.svg";
 import IcoMenu from "@/assets/mob-icon/menu-01.svg";
 
@@ -580,30 +581,14 @@ function MobileDrawer({ isOpen, onClose }) {
       <div
         className={`fixed top-0 right-0 bottom-0 z-[70] w-[280px] bg-white shadow-2xl flex flex-col transition-transform duration-300 md:hidden ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* 드로어 헤더 */}
-        <div className="flex items-center justify-between px-5 h-14 border-b border-bluegrey-3 shrink-0">
-          <span className="text-[17px] font-bold text-primary">{church.name}</span>
-          <button onClick={onClose} className="p-1.5 -mr-1 text-grey-8" aria-label="메뉴 닫기">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
         {/* 프로필 / 로그인·회원가입 */}
         <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
           {currentUser ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-[15px] font-bold text-white shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-[15px] font-bold text-white shrink-0">
                 {currentUser.name?.[0]}
               </div>
-              <span className="text-[15px] font-semibold text-grey-10">
+              <span className="text-body-2 font-semibold text-grey-10">
                 {currentUser.name}님
               </span>
             </div>
@@ -631,7 +616,7 @@ function MobileDrawer({ isOpen, onClose }) {
         <nav className="flex-1 overflow-y-auto py-2">
           {MOBILE_NAV.map(({ section, items }) => (
             <div key={section}>
-              <p className="px-5 pt-4 pb-1 text-[12px] font-semibold text-grey-5">{section}</p>
+              <p className="p-4 text-[12px] font-semibold text-grey-5 border-b border-bluegrey-3">{section}</p>
               {items.map((item) => (
                 <Link
                   key={item.label}
@@ -657,7 +642,7 @@ function MobileDrawer({ isOpen, onClose }) {
                 logout();
                 onClose();
               }}
-              className="w-full text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
+              className="w-full bg-blue-9 text-center py-2.5 rounded-full border border-bluegrey-3 text-body-4 text-white"
             >
               로그아웃
             </button>
@@ -765,6 +750,7 @@ function IconMyPage({ active }) {
 // Bottom Navigation Bar (md 미만에서만 표시)
 // ─────────────────────────────────────────────────────
 const HIDE_BOTTOM_NAV_ON = ["/login", "/register"];
+const HIDE_FOOTER_ON_MOBILE = ["/login", "/register"];
 
 function BottomNav() {
   // useLocation().pathname은 한글 경로에서 percent-encoding된 채로 오므로, 아래
@@ -827,6 +813,7 @@ function Layout() {
   // 비교가 실제 브라우저 환경에서도 맞는다(BottomNav의 동일 이슈 참고).
   const { pathname: rawPathname } = useLocation();
   const pathname = decodeURIComponent(rawPathname);
+  const { loading: churchLoading } = useChurch();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
   const desktopBarRef = useRef(null);
@@ -838,6 +825,7 @@ function Layout() {
   const headerHeight = desktopBarHeight + mobileBarHeight;
 
   const showBottomNav = !HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p));
+  const hideFooterOnMobile = HIDE_FOOTER_ON_MOBILE.some((p) => pathname.startsWith(p));
   const isBiblePage = BIBLE_PAGES.some((p) => pathname.startsWith(p));
   const isHome = pathname === "/";
   // 홈 히어로 배너 위에서만(맨 위 근처) 헤더를 투명하게 — 배너가 헤더 뒤까지 차오르는 연출.
@@ -882,14 +870,21 @@ function Layout() {
         <Outlet />
       </main>
 
-      {/* 푸터 (bible 전체화면 페이지 제외) */}
-      {!isBiblePage && <Footer isHome={pathname === "/"} />}
+      {/* 푸터 (bible 전체화면 페이지 제외, 로그인은 모바일에서만 숨김) */}
+      {!isBiblePage && (
+        <div className={hideFooterOnMobile ? "hidden md:block" : ""}>
+          <Footer isHome={pathname === "/"} />
+        </div>
+      )}
 
       {/* 모바일 바텀 네비 */}
       <BottomNav />
 
       {/* 검색 오버레이 */}
       <SearchOverlay />
+
+      {/* 모바일 스플래시 — 교회 데이터 로딩 동안 노출 */}
+      <SplashScreen show={churchLoading} />
     </div>
   );
 }

@@ -74,7 +74,7 @@ export default function LoginPage() {
       {/* 오른쪽 폼 영역 */}
       <div className="flex-1 flex items-center justify-center bg-white px-8 py-12">
         <div className="w-full max-w-md">
-          <div className="mb-10">
+          <div className="hidden md:block mb-10">
             <h2 className="text-headline-5 font-bold text-grey-11 mb-2">로그인</h2>
             <p className="text-body-3 text-grey-6">계정 정보를 입력해 주세요</p>
           </div>
@@ -128,10 +128,10 @@ export default function LoginPage() {
                 </label>
               </div>
               <Link
-                to="/find-password"
+                to="/find-id"
                 className="text-body-5 text-blue-6 hover:text-blue-8 transition-colors"
               >
-                비밀번호 찾기
+                아이디/비밀번호 찾기
               </Link>
             </div>
 
@@ -173,14 +173,11 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <div className="flex justify-center items-center gap-4 mt-6 text-body-4 text-grey-7">
-            <Link to="/find-id" className="hover:text-blue-7 transition-colors">
-              아이디 찾기
-            </Link>
-            <span className="text-grey-3">|</span>
+          <div className="flex justify-center items-center gap-1.5 mt-15 text-body-4 text-grey-7">
+            아직 계정이 없으신가요?
             <Link
               to="/register"
-              className="text-blue-7 font-semibold hover:text-blue-8 transition-colors"
+              className="text-blue-12 font-semibold hover:underline transition-colors"
             >
               회원가입
             </Link>

@@ -121,22 +121,17 @@ function ThisWeekMessageSection({ sermon }) {
   return (
     <section className="px-5 py-6">
       <SectionHeader title="이번주 말씀" to="/주보?tab=예배" />
-      <div className="rounded-2xl bg-bluegrey-1 px-5 py-4">
+      <div className="rounded-xl bg-white py-5 my-5 px-4 shadow-lg">
         {sermon ? (
           <>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[14px] font-semibold text-grey-11">{dateLabel}</span>
-              <span className="text-[12px] text-grey-6">{sermon.preacher} 목사</span>
-            </div>
-            <div className="rounded-xl bg-white py-5 my-5 px-4">
-              <p
-                className="text-[15px] font-bold text-grey-11 text-center leading-relaxed"
-                style={{ fontFamily: '"Gowun Batang", serif' }}
-              >
-                {verseText || sermon.scripture}
-              </p>
-            </div>
-            <p className="text-[12px] text-grey-6 text-right">{sermon.scripture}</p>
+            <span className="text-[14px] font-semibold text-grey-11">{dateLabel}</span>
+            <p
+              className="text-body-4 px-6 py-2 font-bold text-grey-11 leading-relaxed"
+              style={{ fontFamily: '"Gowun Batang", serif' }}
+            >
+              "{verseText || sermon.scripture}"
+            </p>
+            <p className="text-body-5 text-grey-6 text-right">—  {sermon.scripture}</p>
           </>
         ) : (
           <p className="text-[13px] text-grey-6 text-center py-4">아직 준비된 말씀이 없습니다</p>

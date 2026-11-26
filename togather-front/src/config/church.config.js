@@ -14,7 +14,7 @@ import floor2 from "@/assets/floors/2.png";
 import floor3 from "@/assets/floors/3.png";
 import floor4 from "@/assets/floors/4.png";
 import floorB1 from "@/assets/floors/B1.png";
-import okcLogo from "@/assets/icons/옥길교회_logo.png";
+import okcLogo from "@/assets/icons/옥길교회_logo_가로.png";
 
 const churchConfig = {
   // ── 식별자 ────────────────────────────────────────────

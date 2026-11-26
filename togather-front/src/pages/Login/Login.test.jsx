@@ -58,12 +58,17 @@ describe("Login", () => {
     );
   });
 
-  it("아이디 찾기·비밀번호 찾기 링크가 올바른 경로를 가리킨다", () => {
+  it("아이디/비밀번호 찾기 링크가 올바른 경로를 가리킨다", () => {
     renderLogin();
-    expect(screen.getByRole("link", { name: "아이디 찾기" })).toHaveAttribute("href", "/find-id");
-    expect(screen.getByRole("link", { name: "비밀번호 찾기" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "아이디/비밀번호 찾기" })).toHaveAttribute(
       "href",
-      "/find-password",
+      "/find-id",
     );
+  });
+
+  it("회원가입 안내 문구와 링크를 보여준다", () => {
+    renderLogin();
+    expect(screen.getByText("아직 계정이 없으신가요?")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "회원가입" })).toHaveAttribute("href", "/register");
   });
 });

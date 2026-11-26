@@ -1,6 +1,6 @@
 import { useChurch } from "@/contexts/ChurchContext";
 import churchSermonBg from "@/assets/church_sermon.png";
-import logo from "@/assets/icons/옥길교회_logo.png";
+import logo from "@/assets/icons/옥길교회_logo_가로.png";
 import locationIcon from "@/assets/web-icon/footer-location.svg";
 import phoneIcon from "@/assets/web-icon/footer-phone.svg";
 import mailIcon from "@/assets/web-icon/footer-email.svg";

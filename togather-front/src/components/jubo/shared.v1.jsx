@@ -1,4 +1,4 @@
-import logoFallback from "@/assets/icons/옥길교회_logo.png";
+import logoFallback from "@/assets/icons/옥길교회_logo_가로.png";
 
 // version1(4페이지) 템플릿 전용 공통 조각 — Figma "주보 4개 ver." 기준.
 // v2(shared.jsx)와는 시각 언어가 달라(섹션 바가 전체 폭을 채우는 진한 블루 바 등) 분리했다.

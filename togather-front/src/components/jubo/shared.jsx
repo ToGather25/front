@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router";
 import BubbleLoader from "@/components/common/BubbleLoader";
-import logoFallback from "@/assets/icons/옥길교회_logo.png";
+import logoFallback from "@/assets/icons/옥길교회_logo_가로.png";
 import { BOOK_ABBREV } from "@/config/bible.config";
 import { JuboPrintModeContext } from "./juboPrintMode";
 
