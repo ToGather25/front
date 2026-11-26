@@ -39,6 +39,8 @@ import EventsManage from "@/pages/admin/EventsManage";
 import MembersManage from "@/pages/admin/MembersManage";
 import JuboManage from "@/pages/admin/JuboManage";
 import GalleryManage from "@/pages/admin/GalleryManage";
+import MenusManage from "@/pages/admin/MenusManage";
+import InquiriesManage from "@/pages/admin/InquiriesManage";
 import AdminSettings from "@/pages/admin/Settings";
 
 // 라우트 트리를 App.jsx에서 분리 — App.jsx는 컴포넌트만 export해야 Fast Refresh가 동작하므로
@@ -105,6 +107,8 @@ export const routes = [
       { path: "members", element: <MembersManage /> },
       { path: "jubo", element: <JuboManage /> },
       { path: "gallery", element: <GalleryManage /> },
+      { path: "menus", element: <MenusManage /> },
+      { path: "inquiries", element: <InquiriesManage /> },
       { path: "settings", element: <AdminSettings /> },
     ],
   },

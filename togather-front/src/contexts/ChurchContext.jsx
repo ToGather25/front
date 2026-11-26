@@ -4,6 +4,7 @@ import { getTenant } from "@/services/tenantService";
 import { getChurchIntro, INTRO_SECTION_TO_CONFIG_KEY } from "@/services/churchIntroService";
 import { getWorshipSchedule } from "@/services/worshipScheduleService";
 import { getChurchProfile } from "@/services/churchProfileService";
+import { getPublicMenus } from "@/services/menuService";
 import { setCurrentChurchId } from "@/services/api";
 
 const ChurchContext = createContext(null);
@@ -56,7 +57,9 @@ function valueOf(settled, label) {
  * 어느 단계가 실패해도 에러 화면을 띄우지 않고 defaultConfig를 유지한 채 "ready"로 전환한다 —
  * 이 저장소는 배포 시 그 자체로 defaultConfig(옥길교회)의 프론트 역할을 하므로, API가 없다는
  * 이유로 화면이 안 보이면 안 된다. 개발자 확인용으로 console.warn만 남긴다.
- * nav(사이트 메뉴 구조)는 프론트 전용 라우팅 데이터라 항상 defaultConfig를 쓴다.
+ * nav(사이트 메뉴 구조)는 서버의 공개 메뉴 API를 우선 쓰고, 조회 실패나 빈 배열(초기 메뉴를
+ * 아직 등록하지 않은 교회)이면 defaultConfig.nav로 폴백한다 — 메뉴 데이터 때문에 사이트
+ * 내비게이션 전체가 깨지면 안 된다.
  *
  * initialChurch: 테스트에서 커스텀 config를 주입할 때만 사용(주어지면 fetch 자체를 생략한다).
  */
@@ -92,10 +95,11 @@ export function ChurchProvider({ children, initialChurch }) {
       }
 
       // 2) 교회별 콘텐츠 — 하나가 실패해도 나머지는 반영한다.
-      const [intro, schedule, profile] = await Promise.allSettled([
+      const [intro, schedule, profile, menus] = await Promise.allSettled([
         getChurchIntro(church.id),
         getWorshipSchedule(),
         getChurchProfile(church.id),
+        getPublicMenus(church.id),
       ]);
 
       church = mergeChurchFields(church, introToChurchFields(valueOf(intro, "교회소개 콘텐츠")));
@@ -112,7 +116,10 @@ export function ChurchProvider({ children, initialChurch }) {
       const instagram = profileData?.instagramUrl;
       if (instagram) church = { ...church, social: { ...church.social, instagram } };
 
-      if (!cancelled) setState({ church: { ...church, nav: defaultConfig.nav }, status: "ready" });
+      const menuData = valueOf(menus, "메뉴");
+      const nav = menuData?.length ? menuData : defaultConfig.nav;
+
+      if (!cancelled) setState({ church: { ...church, nav }, status: "ready" });
     }
 
     void load();

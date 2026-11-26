@@ -22,6 +22,8 @@ const MENU = [
   { label: "교인 관리", to: "/admin/members", icon: IcoUsers },
   { label: "스마트 주보 관리", to: "/admin/jubo", icon: IcoFile },
   { label: "갤러리 관리", to: "/admin/gallery", icon: IcoGallery },
+  { label: "메뉴 관리", to: "/admin/menus", icon: IcoFile },
+  { label: "문의 / 기도 답변", to: "/admin/inquiries", icon: IcoAnnounce },
   { label: "사이트 기본 설정", to: "/admin/settings", icon: IcoSiteSettings },
 ];
 
@@ -70,7 +72,7 @@ function AdminLayoutInner() {
                 </svg>
               </div>
               <div>
-                <p className="text-[11px] font-semibold text-white/50 leading-none mb-0.5">
+                <p className="text-[11px] font-semibold text-white/50 leading-none mb-1.5">
                   ToGather
                 </p>
                 <p className="text-[13px] font-bold text-white leading-none">관리자 모드</p>

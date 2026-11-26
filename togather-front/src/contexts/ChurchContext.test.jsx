@@ -20,6 +20,7 @@ function Probe() {
       <span data-testid="navCount">{church.nav.length}</span>
       <span data-testid="instagram">{church.social?.instagram ?? "none"}</span>
       <span data-testid="greetingTitle">{church.greeting?.title}</span>
+      <span data-testid="sundaySchoolCount">{church.sundaySchool?.length ?? 0}</span>
       <span data-testid="firstWorship">{church.worshipSchedule?.regular?.[0]?.name}</span>
     </div>
   );
@@ -29,7 +30,7 @@ function Probe() {
  * ChurchProvider는 tenant 조회 후 intro/worship-schedule/profile을 병렬로 부른다.
  * url별로 응답을 지정하고, 지정하지 않은 url은 거부(=미설정)시킨다.
  */
-function mockEndpoints({ tenant, intro, schedule, profile }) {
+function mockEndpoints({ tenant, intro, schedule, profile, menus }) {
   api.get.mockImplementation((url) => {
     if (url === "/tenant") {
       return tenant ? Promise.resolve({ data: { data: tenant } }) : Promise.reject(new Error("no tenant"));
@@ -46,6 +47,9 @@ function mockEndpoints({ tenant, intro, schedule, profile }) {
       return profile
         ? Promise.resolve({ data: { data: profile } })
         : Promise.reject(new Error("no profile"));
+    }
+    if (url.endsWith("/menus")) {
+      return menus ? Promise.resolve({ data: { data: menus } }) : Promise.reject(new Error("no menus"));
     }
     return Promise.reject(new Error(`unexpected url: ${url}`));
   });
@@ -167,6 +171,20 @@ describe("ChurchContext", () => {
     await waitFor(() => expect(screen.getByTestId("greetingTitle").textContent).toBe("서버 인사말"));
   });
 
+  it("신규 소개 섹션(SUNDAY_SCHOOL 등)도 church의 해당 블록으로 매핑된다", async () => {
+    mockEndpoints({
+      tenant: { id: 1, name: "주일학교교회" },
+      intro: { SUNDAY_SCHOOL: [{ name: "유치부" }, { name: "초등부" }] },
+    });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("sundaySchoolCount").textContent).toBe("2"));
+  });
+
   it("설정되지 않은 교회소개 섹션은 기본 설정을 유지한다", async () => {
     // 백엔드는 설정된 섹션만 내려준다 — VISION만 와도 GREETING이 지워지면 안 된다
     mockEndpoints({ tenant: { id: 1, name: "부분소개교회" }, intro: { VISION: { year: 2030 } } });
@@ -206,6 +224,30 @@ describe("ChurchContext", () => {
     expect(screen.getByTestId("firstWorship").textContent).toBe(
       defaultConfig.worshipSchedule.regular[0].name,
     );
+  });
+
+  it("공개 메뉴 API가 비어있지 않은 트리를 내려주면 그걸 nav로 쓴다", async () => {
+    mockEndpoints({
+      tenant: { id: 1, name: "메뉴교회" },
+      menus: [{ code: "HOME", label: "홈", to: "/", children: [] }],
+    });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId("navCount").textContent).toBe("1"));
+  });
+
+  it("공개 메뉴 API가 빈 배열이거나 실패하면 defaultConfig.nav로 폴백한다", async () => {
+    mockEndpoints({ tenant: { id: 1, name: "메뉴없는교회" }, menus: [] });
+    render(
+      <ChurchProvider>
+        <Probe />
+      </ChurchProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
+    expect(screen.getByTestId("navCount").textContent).toBe(String(defaultConfig.nav.length));
   });
 
   it("콘텐츠 조회가 모두 실패해도 기본 설정으로 ready 상태가 된다", async () => {
