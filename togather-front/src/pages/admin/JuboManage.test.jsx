@@ -282,7 +282,9 @@ describe("JuboManage — 주보 관리", () => {
     renderWithChurch(<JuboManage />);
     await screen.findByText("제10-7 · 2026년 2월 15일");
     await createIssue(user);
-    await screen.findByDisplayValue("https://example.com/church.jpg");
+    await waitFor(() =>
+      expect(document.querySelector('img[src="https://example.com/church.jpg"]')).toBeTruthy(),
+    );
 
     const saveButtons = screen.getAllByRole("button", { name: "저장" });
     await user.click(saveButtons[0]);

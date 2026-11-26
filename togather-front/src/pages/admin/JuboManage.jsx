@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import {
@@ -20,10 +20,29 @@ import PrayerTopicsSectionEditor from "@/components/admin/jubo/PrayerTopicsSecti
 import SermonNoteSectionEditor from "@/components/admin/jubo/SermonNoteSectionEditor";
 import BubbleLoader from "@/components/common/BubbleLoader";
 
-function SectionCard({ title, children }) {
+function SectionCard({ title, status, onSave, children }) {
+  const { saving, saved, error } = status ?? {};
   return (
     <div className="bg-white rounded-2xl border border-grey-2 p-6">
-      <h2 className="text-sub-tit-5 font-bold text-grey-10 mb-5">{title}</h2>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-sub-tit-3 font-bold text-grey-10">{title}</h2>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving}
+            className="px-5 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
+          >
+            {saving ? "저장 중..." : "저장"}
+          </button>
+          {saved && <span className="text-caption text-blue-7">저장됨</span>}
+          {error && (
+            <span className="text-caption text-red-500">
+              {typeof error === "string" ? error : "저장 실패, 다시 시도해 주세요."}
+            </span>
+          )}
+        </div>
+      </div>
       {children}
     </div>
   );
@@ -56,6 +75,21 @@ export default function JuboManage() {
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState(false);
   const [published, setPublished] = useState(false);
+
+  const sectionRefs = useRef({});
+  const statusCallbacks = useRef({});
+  const [statusMap, setStatusMap] = useState({});
+
+  // onStatusChange는 자식의 effect 의존성 배열에 들어가므로, 렌더마다 새 함수를 주면
+  // (상태가 실제로는 안 바뀌어도) 매 렌더 effect가 재실행 → setStatusMap → 재렌더로
+  // 이어지는 무한 루프가 생긴다. 키별로 한 번만 만들어 재사용한다.
+  function getStatusCallback(key) {
+    if (!statusCallbacks.current[key]) {
+      statusCallbacks.current[key] = (status) =>
+        setStatusMap((prev) => ({ ...prev, [key]: status }));
+    }
+    return statusCallbacks.current[key];
+  }
 
   useEffect(() => {
     if (draft && juboId === null) {
@@ -212,43 +246,153 @@ export default function JuboManage() {
           </div>
 
           <div className="grid gap-5">
-            <SectionCard title="표지">
-              <CoverSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="표지"
+              status={statusMap.cover}
+              onSave={() => sectionRefs.current.cover?.save()}
+            >
+              <CoverSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.cover = el;
+                }}
+                onStatusChange={getStatusCallback("cover")}
+              />
             </SectionCard>
-            <SectionCard title="예배">
-              <WorshipSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="예배"
+              status={statusMap.worship}
+              onSave={() => sectionRefs.current.worship?.save()}
+            >
+              <WorshipSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.worship = el;
+                }}
+                onStatusChange={getStatusCallback("worship")}
+              />
             </SectionCard>
-            <SectionCard title="소식">
-              <NewsSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="소식"
+              status={statusMap.news}
+              onSave={() => sectionRefs.current.news?.save()}
+            >
+              <NewsSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.news = el;
+                }}
+                onStatusChange={getStatusCallback("news")}
+              />
             </SectionCard>
-            <SectionCard title="봉사">
-              <VolunteerSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="봉사"
+              status={statusMap.volunteer}
+              onSave={() => sectionRefs.current.volunteer?.save()}
+            >
+              <VolunteerSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.volunteer = el;
+                }}
+                onStatusChange={getStatusCallback("volunteer")}
+              />
             </SectionCard>
-            <SectionCard title="예물">
-              <OfferingSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="예물"
+              status={statusMap.offering}
+              onSave={() => sectionRefs.current.offering?.save()}
+            >
+              <OfferingSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.offering = el;
+                }}
+                onStatusChange={getStatusCallback("offering")}
+              />
             </SectionCard>
-            <SectionCard title="후원">
-              <SupportSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="후원"
+              status={statusMap.support}
+              onSave={() => sectionRefs.current.support?.save()}
+            >
+              <SupportSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.support = el;
+                }}
+                onStatusChange={getStatusCallback("support")}
+              />
             </SectionCard>
-            <SectionCard title="구역">
-              <DistrictSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="구역"
+              status={statusMap.district}
+              onSave={() => sectionRefs.current.district?.save()}
+            >
+              <DistrictSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.district = el;
+                }}
+                onStatusChange={getStatusCallback("district")}
+              />
             </SectionCard>
-            <SectionCard title="섬기는 분들">
-              <MinistersSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="섬기는 분들"
+              status={statusMap.ministers}
+              onSave={() => sectionRefs.current.ministers?.save()}
+            >
+              <MinistersSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.ministers = el;
+                }}
+                onStatusChange={getStatusCallback("ministers")}
+              />
             </SectionCard>
-            <SectionCard title="말씀">
-              <SermonNoteSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="말씀"
+              status={statusMap.sermonNote}
+              onSave={() => sectionRefs.current.sermonNote?.save()}
+            >
+              <SermonNoteSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.sermonNote = el;
+                }}
+                onStatusChange={getStatusCallback("sermonNote")}
+              />
             </SectionCard>
-            <SectionCard title="기도제목">
-              <PrayerTopicsSectionEditor churchId={church.id} juboId={juboId} />
+            <SectionCard
+              title="기도제목"
+              status={statusMap.prayerTopics}
+              onSave={() => sectionRefs.current.prayerTopics?.save()}
+            >
+              <PrayerTopicsSectionEditor
+                churchId={church.id}
+                juboId={juboId}
+                ref={(el) => {
+                  sectionRefs.current.prayerTopics = el;
+                }}
+                onStatusChange={getStatusCallback("prayerTopics")}
+              />
             </SectionCard>
           </div>
 
-          <div className="mt-6 flex items-center justify-end gap-3">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3">
             <button
               onClick={handlePublish}
               disabled={publishing || published}
-              className="px-10 py-2.5 rounded-xl bg-primary text-white text-body-4 font-semibold disabled:opacity-50 transition-colors"
+              className="px-16 py-4 rounded-xl bg-primary text-white text-body-2 font-bold disabled:opacity-50 transition-colors"
             >
               {published ? "발행 완료" : publishing ? "발행 중..." : "발행하기"}
             </button>

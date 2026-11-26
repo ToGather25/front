@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import BubbleLoader from "@/components/common/BubbleLoader";import { useFetch } from "@/hooks/useFetch";
 import { getMinisters, updateJuboSection } from "@/services/juboService";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-3 py-2 text-body-5 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
-export default function MinistersSectionEditor({ churchId, juboId }) {
+const MinistersSectionEditor = forwardRef(function MinistersSectionEditor(
+  { churchId, juboId, onStatusChange },
+  ref,
+) {
   const {
     data: initial,
     loading: prefillLoading,
@@ -78,6 +81,12 @@ export default function MinistersSectionEditor({ churchId, juboId }) {
     }
   }
 
+  useImperativeHandle(ref, () => ({ save: handleSave }));
+
+  useEffect(() => {
+    onStatusChange?.({ saving, saved, error: saveError });
+  }, [saving, saved, saveError, onStatusChange]);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -142,20 +151,8 @@ export default function MinistersSectionEditor({ churchId, juboId }) {
         ))}
         {groups.length === 0 && <p className="text-caption text-grey-5">등록된 항목이 없습니다.</p>}
       </div>
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-10 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
-          type="button"
-        >
-          {saving ? "저장 중..." : "저장"}
-        </button>
-        {saved && <span className="text-caption text-blue-7">저장됨</span>}
-        {saveError && (
-          <span className="text-caption text-red-500">저장 실패, 다시 시도해 주세요.</span>
-        )}
-      </div>
     </div>
   );
-}
+});
+
+export default MinistersSectionEditor;

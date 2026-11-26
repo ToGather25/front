@@ -1,7 +1,17 @@
+import { createRef } from "react";
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import WorshipSectionEditor from "./WorshipSectionEditor";
+
+// 저장 버튼은 JuboManage의 SectionCard 헤더로 옮겨갔다 — 이 컴포넌트는 ref로 노출한
+// save()만 가진다. 클릭 대신 ref.current.save()로 저장을 트리거하고, 저장 상태는
+// onStatusChange 콜백으로 전달받아 검증한다.
+async function triggerSave(ref) {
+  await act(async () => {
+    await ref.current.save();
+  });
+}
 
 vi.mock("@/services/api", () => ({
   default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
@@ -55,31 +65,41 @@ describe("WorshipSectionEditor — 라벨 없이 여러 예배를 추가해도 �
 
   it("모든 예배에 이름을 입력하지 않으면 저장을 막고 안내 메시지를 보여준다", async () => {
     const user = userEvent.setup();
-    render(<WorshipSectionEditor churchId="church-1" juboId={1} />);
+    const ref = createRef();
+    const onStatusChange = vi.fn();
+    render(<WorshipSectionEditor ref={ref} churchId="church-1" juboId={1} onStatusChange={onStatusChange} />);
     await screen.findByDisplayValue("주일 오전예배");
 
     await user.click(screen.getByRole("button", { name: "+ 예배 추가" }));
-    await user.click(screen.getByRole("button", { name: "저장" }));
+    await triggerSave(ref);
 
-    expect(
-      await screen.findByText("모든 예배에 이름을 입력해주세요."),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(onStatusChange).toHaveBeenCalledWith(
+        expect.objectContaining({ error: "모든 예배에 이름을 입력해주세요." }),
+      ),
+    );
     expect(api.put).not.toHaveBeenCalled();
   });
 
   it("예배명이 중복되면 저장을 막고 중복된 이름을 안내한다", async () => {
     const user = userEvent.setup();
-    render(<WorshipSectionEditor churchId="church-1" juboId={1} />);
+    const ref = createRef();
+    const onStatusChange = vi.fn();
+    render(
+      <WorshipSectionEditor ref={ref} churchId="church-1" juboId={1} onStatusChange={onStatusChange} />,
+    );
     await screen.findByDisplayValue("주일 오전예배");
 
     await user.click(screen.getByRole("button", { name: "+ 예배 추가" }));
     const labelInputs = screen.getAllByLabelText("예배명");
     await user.type(labelInputs[labelInputs.length - 1], "주일 오전예배");
-    await user.click(screen.getByRole("button", { name: "저장" }));
+    await triggerSave(ref);
 
-    expect(
-      await screen.findByText('예배명이 중복되었습니다: "주일 오전예배"'),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(onStatusChange).toHaveBeenCalledWith(
+        expect.objectContaining({ error: '예배명이 중복되었습니다: "주일 오전예배"' }),
+      ),
+    );
     expect(api.put).not.toHaveBeenCalled();
   });
 
@@ -88,27 +108,36 @@ describe("WorshipSectionEditor — 라벨 없이 여러 예배를 추가해도 �
       if (url.includes("WORSHIP_SERVICES")) return Promise.resolve({ data: null });
       return Promise.reject(new Error("network error"));
     });
-    const user = userEvent.setup();
-    render(<WorshipSectionEditor churchId="church-1" juboId={1} />);
+    const ref = createRef();
+    const onStatusChange = vi.fn();
+    render(
+      <WorshipSectionEditor ref={ref} churchId="church-1" juboId={1} onStatusChange={onStatusChange} />,
+    );
     await screen.findByDisplayValue("주일 오전예배");
 
-    await user.click(screen.getByRole("button", { name: "저장" }));
+    await triggerSave(ref);
 
-    expect(
-      await screen.findByText("예배 목록은 저장됐지만 순서표 저장에 실패했습니다. 다시 시도해 주세요."),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(onStatusChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: "예배 목록은 저장됐지만 순서표 저장에 실패했습니다. 다시 시도해 주세요.",
+        }),
+      ),
+    );
   });
 
   it("이름을 유일하게 채우면 저장이 정상적으로 진행된다", async () => {
     api.put.mockResolvedValue({ data: null });
     const user = userEvent.setup();
-    render(<WorshipSectionEditor churchId="church-1" juboId={1} />);
+    const ref = createRef();
+    const onStatusChange = vi.fn();
+    render(<WorshipSectionEditor ref={ref} churchId="church-1" juboId={1} onStatusChange={onStatusChange} />);
     await screen.findByDisplayValue("주일 오전예배");
 
     await user.click(screen.getByRole("button", { name: "+ 예배 추가" }));
     const labelInputs = screen.getAllByLabelText("예배명");
     await user.type(labelInputs[labelInputs.length - 1], "수요예배");
-    await user.click(screen.getByRole("button", { name: "저장" }));
+    await triggerSave(ref);
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
@@ -119,6 +148,8 @@ describe("WorshipSectionEditor — 라벨 없이 여러 예배를 추가해도 �
         ]),
       ),
     );
-    expect(await screen.findByText("저장됨")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(onStatusChange).toHaveBeenCalledWith(expect.objectContaining({ saved: true })),
+    );
   });
 });

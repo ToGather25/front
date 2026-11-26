@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import { useFetch } from "@/hooks/useFetch";
@@ -6,7 +6,10 @@ import { getCover, updateJuboSection } from "@/services/juboService";
 
 const EMPTY_PHOTOS = { church: "", panorama: "", group: "" };
 
-export default function CoverSectionEditor({ churchId, juboId }) {
+const CoverSectionEditor = forwardRef(function CoverSectionEditor(
+  { churchId, juboId, onStatusChange },
+  ref,
+) {
   const {
     data: initial,
     loading: prefillLoading,
@@ -53,6 +56,12 @@ export default function CoverSectionEditor({ churchId, juboId }) {
     }
   }
 
+  useImperativeHandle(ref, () => ({ save: handleSave }));
+
+  useEffect(() => {
+    onStatusChange?.({ saving, saved, error: saveError });
+  }, [saving, saved, saveError, onStatusChange]);
+
   return (
     <div>
       <h3 className="text-body-3 font-bold text-grey-10 mb-4">표지 사진</h3>
@@ -69,6 +78,7 @@ export default function CoverSectionEditor({ churchId, juboId }) {
           aspect={4 / 3}
           value={photos.church}
           onChange={(url) => updatePhoto("church", url)}
+          wide
         />
         <ImageUploadField
           id="cover-panorama-photo"
@@ -76,6 +86,7 @@ export default function CoverSectionEditor({ churchId, juboId }) {
           aspect={21 / 9}
           value={photos.panorama}
           onChange={(url) => updatePhoto("panorama", url)}
+          wide
         />
         <ImageUploadField
           id="cover-group-photo"
@@ -83,22 +94,11 @@ export default function CoverSectionEditor({ churchId, juboId }) {
           aspect={4 / 3}
           value={photos.group}
           onChange={(url) => updatePhoto("group", url)}
+          wide
         />
-      </div>
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-10 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
-          type="button"
-        >
-          {saving ? "저장 중..." : "저장"}
-        </button>
-        {saved && <span className="text-caption text-blue-7">저장됨</span>}
-        {saveError && (
-          <span className="text-caption text-red-500">저장 실패, 다시 시도해 주세요.</span>
-        )}
       </div>
     </div>
   );
-}
+});
+
+export default CoverSectionEditor;
