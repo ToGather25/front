@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import JuboManage from "./JuboManage";
@@ -84,7 +84,7 @@ async function createIssue(user) {
   await user.type(screen.getByLabelText("호수"), "제10-8");
   fireEvent.change(screen.getByLabelText("날짜"), { target: { value: "2026-06-01" } });
   await user.click(screen.getByRole("button", { name: "작성 시작" }));
-  await screen.findByRole("button", { name: "발행하기" });
+  await screen.findByRole("button", { name: "완료" });
 }
 
 describe("JuboManage — 주보 관리", () => {
@@ -151,131 +151,8 @@ describe("JuboManage — 주보 관리", () => {
     ).toBeInTheDocument();
   });
 
-  it("예배 섹션 저장 시 WORSHIP_SERVICES와 WORSHIP_ORDER를 함께 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("주일 오전예배");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[1]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/WORSHIP_SERVICES",
-        expect.any(Array),
-      ),
-    );
-    expect(api.put).toHaveBeenCalledWith(
-      "/church/admin/jubo/42/sections/WORSHIP_ORDER",
-      expect.any(Object),
-    );
-  });
-
-  it("봉사 섹션 저장 시 VOLUNTEER 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("대표기도");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[3]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/VOLUNTEER",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("예물 섹션 저장 시 OFFERING 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("십일조");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[4]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/OFFERING",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("후원 섹션 저장 시 SUPPORT 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("베트남");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[5]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/SUPPORT",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("구역 섹션 저장 시 DISTRICTS 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("1구역");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[6]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/DISTRICTS",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("섬기는 분들 섹션 저장 시 MINISTERS 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("교역자");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[7]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/MINISTERS",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("표지 섹션 저장 시 COVER 섹션을 저장한다", async () => {
+  it("우측 하단 임시저장 버튼을 누르면 전체 호를 한 번에 저장하고 이 기기에도 백업한다", async () => {
+    localStorage.removeItem("jubo-draft-42");
     mockCreateOnce();
     api.put.mockResolvedValue({ data: null });
     const user = userEvent.setup();
@@ -286,168 +163,93 @@ describe("JuboManage — 주보 관리", () => {
       expect(document.querySelector('img[src="https://example.com/church.jpg"]')).toBeTruthy(),
     );
 
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[0]);
+    await user.click(screen.getByRole("button", { name: "임시저장" }));
 
     await waitFor(() =>
       expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/COVER",
-        expect.any(Object),
+        "/church/admin/jubo/42/draft",
+        expect.objectContaining({
+          issueNo: "제10-8",
+          juboDate: "2026-06-01",
+          sections: expect.objectContaining({
+            COVER: expect.any(Object),
+            WORSHIP_SERVICES: expect.any(Array),
+            DISTRICTS: expect.any(Array),
+          }),
+        }),
       ),
     );
+    expect(await screen.findByText("임시저장 완료")).toBeInTheDocument();
+
+    const local = JSON.parse(localStorage.getItem("jubo-draft-42"));
+    expect(local.issueNo).toBe("제10-8");
+    expect(local.sections.COVER).toBeTruthy();
   });
 
-  it("소식 섹션 저장 시 NEWS 섹션을 저장한다", async () => {
+  it("임시저장 API가 실패해도 이 기기에는 백업하고 실패를 토스트로 알린다", async () => {
+    localStorage.removeItem("jubo-draft-42");
     mockCreateOnce();
+    api.put.mockRejectedValueOnce(new Error("network error"));
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+    await waitFor(() =>
+      expect(document.querySelector('img[src="https://example.com/church.jpg"]')).toBeTruthy(),
+    );
+
+    await user.click(screen.getByRole("button", { name: "임시저장" }));
+
+    expect(await screen.findByText("임시저장 실패 — 이 기기에는 백업해 두었습니다")).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem("jubo-draft-42")).issueNo).toBe("제10-8");
+  });
+
+  it("5분(300초) 카운트다운이 끝나면 임시저장이 자동으로 실행되고, 다음 5분으로 리셋된다", async () => {
+    mockCreateOnce();
+    const setIntervalSpy = vi.spyOn(window, "setInterval");
+    const user = userEvent.setup();
+    renderWithChurch(<JuboManage />);
+    await screen.findByText("제10-7 · 2026년 2월 15일");
+    await createIssue(user);
+
+    expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 1000);
+    expect(screen.getByText("05:00")).toBeInTheDocument();
+
+    // 등록된 1초 틱 콜백을 300번 직접 호출해 카운트다운이 0에 도달하는 상황을 재현한다.
     api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("금요기도회");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[2]);
+    api.put.mockClear();
+    const [tickCallback] = setIntervalSpy.mock.calls.find(([, ms]) => ms === 1000);
+    act(() => {
+      for (let i = 0; i < 300; i++) tickCallback();
+    });
 
     await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/NEWS",
-        expect.any(Array),
-      ),
+      expect(api.put).toHaveBeenCalledWith("/church/admin/jubo/42/draft", expect.any(Object)),
     );
+    expect(screen.getByText("05:00")).toBeInTheDocument();
   });
 
-  it("말씀 섹션 저장 시 SERMON_NOTE 섹션을 저장한다", async () => {
+  it("상단 경고 문구 없이 완료 옆에 취소 버튼이 있고, 누르면 유실 경고 후 확인해야 닫힌다", async () => {
     mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
+    vi.spyOn(window, "confirm").mockReturnValue(false);
     const user = userEvent.setup();
     renderWithChurch(<JuboManage />);
     await screen.findByText("제10-7 · 2026년 2월 15일");
     await createIssue(user);
-    await screen.findByDisplayValue("은혜 위에 은혜러라");
 
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[8]);
+    expect(
+      screen.queryByText("작성 중 새로고침하면 저장하지 않은 내용은 유실됩니다."),
+    ).not.toBeInTheDocument();
 
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/SERMON_NOTE",
-        expect.any(Object),
-      ),
+    await user.click(screen.getByRole("button", { name: "취소" }));
+    expect(window.confirm).toHaveBeenCalledWith(
+      "작성 중인 주보를 닫으시겠습니까? 저장하지 않은 섹션 내용은 사라집니다.",
     );
+    // 취소를 확인하지 않았으므로(window.confirm → false) 섹션 에디터가 그대로 남아있어야 한다.
+    expect(screen.getByText("예배")).toBeInTheDocument();
   });
 
-  it("기도제목 섹션 저장 시 PRAYER_TOPICS 섹션을 저장한다", async () => {
-    mockCreateOnce();
-    api.put.mockResolvedValue({ data: null });
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("다음 세대를 위한 기도");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[9]);
-
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith(
-        "/church/admin/jubo/42/sections/PRAYER_TOPICS",
-        expect.any(Array),
-      ),
-    );
-  });
-
-  it("예배 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("주일 오전예배");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[1]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("봉사 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("대표기도");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[3]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("예물 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("십일조");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[4]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("후원 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("베트남");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[5]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("구역 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("1구역");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[6]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("섬기는 분들 섹션 저장이 실패하면 에러 메시지를 보여준다", async () => {
-    mockCreateOnce();
-    api.put.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
-    renderWithChurch(<JuboManage />);
-    await screen.findByText("제10-7 · 2026년 2월 15일");
-    await createIssue(user);
-    await screen.findByDisplayValue("교역자");
-
-    const saveButtons = screen.getAllByRole("button", { name: "저장" });
-    await user.click(saveButtons[7]);
-
-    expect(await screen.findByText("저장 실패, 다시 시도해 주세요.")).toBeInTheDocument();
-  });
-
-  it("발행하기를 누르면 확인 후 publishJubo를 호출하고 발행 완료 상태가 된다", async () => {
+  it("완료를 누르면 확인 후 publishJubo를 호출하고 완료됨 상태가 된다", async () => {
     mockCreateOnce();
     api.post.mockResolvedValueOnce({
       data: { data: { id: 42, issueNo: "제10-8", juboDate: "2026-06-01", published: true } },
@@ -458,13 +260,13 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByText("제10-7 · 2026년 2월 15일");
     await createIssue(user);
 
-    await user.click(screen.getByRole("button", { name: "발행하기" }));
+    await user.click(screen.getByRole("button", { name: "완료" }));
 
     expect(window.confirm).toHaveBeenCalledWith(
       "주보를 발행하시겠습니까? 발행 즉시 공개 화면에 반영됩니다.",
     );
     await waitFor(() => expect(api.post).toHaveBeenCalledWith("/church/admin/jubo/42/publish"));
-    expect(await screen.findByRole("button", { name: "발행 완료" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "완료됨" })).toBeInTheDocument();
   });
 
   it("작성 취소를 확인하면 새 주보 작성 폼으로 돌아간다", async () => {
@@ -475,7 +277,7 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByText("제10-7 · 2026년 2월 15일");
     await createIssue(user);
 
-    await user.click(screen.getByRole("button", { name: "작성 취소" }));
+    await user.click(screen.getByRole("button", { name: "취소" }));
 
     expect(window.confirm).toHaveBeenCalledWith(
       "작성 중인 주보를 닫으시겠습니까? 저장하지 않은 섹션 내용은 사라집니다.",
@@ -492,10 +294,10 @@ describe("JuboManage — 주보 관리", () => {
     await screen.findByText("제10-7 · 2026년 2월 15일");
     await createIssue(user);
 
-    await user.click(screen.getByRole("button", { name: "발행하기" }));
+    await user.click(screen.getByRole("button", { name: "완료" }));
 
     expect(window.confirm).toHaveBeenCalled();
     expect(api.post).not.toHaveBeenCalledWith("/church/admin/jubo/42/publish");
-    expect(screen.getByRole("button", { name: "발행하기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "완료" })).toBeInTheDocument();
   });
 });
