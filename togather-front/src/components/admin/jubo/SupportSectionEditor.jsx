@@ -1,14 +1,11 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import BubbleLoader from "@/components/common/BubbleLoader";import { useFetch } from "@/hooks/useFetch";
-import { getSupport, updateJuboSection } from "@/services/juboService";
+import { getSupport } from "@/services/juboService";
 
 const inputCls =
   "w-full border border-grey-3 rounded-xl px-3 py-2 text-body-5 text-grey-10 focus:outline-none focus:border-primary transition-colors";
 
-const SupportSectionEditor = forwardRef(function SupportSectionEditor(
-  { churchId, juboId, onStatusChange },
-  ref,
-) {
+const SupportSectionEditor = forwardRef(function SupportSectionEditor({ churchId }, ref) {
   const {
     data: initial,
     loading: prefillLoading,
@@ -16,9 +13,6 @@ const SupportSectionEditor = forwardRef(function SupportSectionEditor(
     refetch: refetchPrefill,
   } = useFetch(() => getSupport(churchId), [churchId], null);
   const [rows, setRows] = useState([]);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     if (initial) setRows(initial);
@@ -40,26 +34,7 @@ const SupportSectionEditor = forwardRef(function SupportSectionEditor(
     setRows((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleSave() {
-    setSaving(true);
-    setSaveError(false);
-    try {
-      await updateJuboSection(churchId, juboId, "SUPPORT", rows);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error("[SupportSectionEditor] 저장 실패:", err);
-      setSaveError(true);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  useImperativeHandle(ref, () => ({ save: handleSave }));
-
-  useEffect(() => {
-    onStatusChange?.({ saving, saved, error: saveError });
-  }, [saving, saved, saveError, onStatusChange]);
+  useImperativeHandle(ref, () => ({ getDraft: () => ({ SUPPORT: rows }) }));
 
   return (
     <div>

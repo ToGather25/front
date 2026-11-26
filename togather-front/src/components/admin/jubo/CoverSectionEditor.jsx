@@ -2,14 +2,11 @@ import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import { useFetch } from "@/hooks/useFetch";
-import { getCover, updateJuboSection } from "@/services/juboService";
+import { getCover } from "@/services/juboService";
 
 const EMPTY_PHOTOS = { church: "", panorama: "", group: "" };
 
-const CoverSectionEditor = forwardRef(function CoverSectionEditor(
-  { churchId, juboId, onStatusChange },
-  ref,
-) {
+const CoverSectionEditor = forwardRef(function CoverSectionEditor({ churchId }, ref) {
   const {
     data: initial,
     loading: prefillLoading,
@@ -17,9 +14,6 @@ const CoverSectionEditor = forwardRef(function CoverSectionEditor(
     refetch: refetchPrefill,
   } = useFetch(() => getCover(churchId), [churchId], null);
   const [photos, setPhotos] = useState(EMPTY_PHOTOS);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     if (initial) {
@@ -35,36 +29,20 @@ const CoverSectionEditor = forwardRef(function CoverSectionEditor(
     setPhotos((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSave() {
-    setSaving(true);
-    setSaveError(false);
-    try {
-      await updateJuboSection(churchId, juboId, "COVER", {
+  useImperativeHandle(ref, () => ({
+    getDraft: () => ({
+      COVER: {
         photos: {
           church: photos.church || null,
           panorama: photos.panorama || null,
           group: photos.group || null,
         },
-      });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error("[CoverSectionEditor] 저장 실패:", err);
-      setSaveError(true);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  useImperativeHandle(ref, () => ({ save: handleSave }));
-
-  useEffect(() => {
-    onStatusChange?.({ saving, saved, error: saveError });
-  }, [saving, saved, saveError, onStatusChange]);
+      },
+    }),
+  }));
 
   return (
     <div>
-      <h3 className="text-body-3 font-bold text-grey-10 mb-4">표지 사진</h3>
       {prefillLoading && <div className="flex justify-center py-2"><BubbleLoader size="sm" /></div>}
       {prefillError && (
         <div className="mb-3 flex items-center gap-2">
