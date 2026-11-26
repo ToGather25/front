@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getNotices } from "@/services/noticeService";
-import { searchSermons } from "@/services/sermonService";
+import { searchSermons, getLiveScreen } from "@/services/sermonService";
 import { getPhotos } from "@/services/galleryService";
 import { lookupVerseText } from "@/utils/bibleVerse";
 import defaultBanner from "@/assets/default_banner.png";
@@ -12,6 +12,7 @@ import IcoMenu01 from "@/assets/mob-icon/icon-main-menu-01.svg";
 import IcoMenu02 from "@/assets/mob-icon/icon-main-menu-02.svg";
 import IcoMenu03 from "@/assets/mob-icon/icon-main-menu-03.svg";
 import IcoMenu04 from "@/assets/mob-icon/icon-main-menu-04.svg";
+import IcoPin from "@/assets/mob-icon/pin-02.svg";
 
 function MobileSearchBar() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ function MobileSearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="px-4 pt-5 py-3">
-      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full border border-bluegrey-3">
+      <div className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bluegrey-2">
         <button type="submit" aria-label="검색" className="shrink-0">
           <img src={IcoSearch} className="w-4 h-4" alt="" />
         </button>
@@ -34,17 +35,30 @@ function MobileSearchBar() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="검색어를 입력하세요."
-          className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[14px] text-grey-10 placeholder:text-grey-5"
+          className="flex-1 min-w-0 bg-transparent border-0 outline-none text-body-4 text-grey-10 placeholder:text-grey-5"
         />
       </div>
     </form>
   );
 }
 
-function SectionHeader({ title, to }) {
+function SectionHeader({ title, badge, live, to }) {
   return (
     <div className="flex items-center justify-between mb-3">
-      <span className="text-[17px] font-bold text-grey-11">{title}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-body-2 font-bold text-grey-11">{title}</span>
+        {badge && (
+          <span className="px-2 py-1 rounded-full bg-blue-1 text-[12px] font-semibold text-blue-5">
+            {badge}
+          </span>
+        )}
+        {live && (
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-500 text-white text-[11px] font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            LIVE
+          </span>
+        )}
+      </div>
       {to && (
         <Link to={to} className="flex items-center gap-0.5 text-[13px] text-grey-6">
           더보기
@@ -90,20 +104,20 @@ const QUICK_MENU = [
 
 function QuickMenu() {
   return (
-    <div className="flex justify-center gap-[29px] px-5 pb-6 pt-1">
+    <div className="flex justify-center gap-10 pb-6">
       {QUICK_MENU.map((item, i) => (
         <Link
           key={item.label}
           to={item.to}
-          className="flex flex-col items-center gap-[11px] w-[58px]"
+          className="flex flex-col items-center gap-3 w-18"
         >
-          <div className="w-full h-[58px] rounded-[14px] bg-bluegrey-2 flex items-center justify-center">
-            {i === 0 && <img src={IcoMenu01} className="w-8 h-8" alt="" />}
-            {i === 1 && <img src={IcoMenu02} className="w-8 h-8" alt="" />}
-            {i === 2 && <img src={IcoMenu03} className="w-8 h-8" alt="" />}
-            {i === 3 && <img src={IcoMenu04} className="w-8 h-8" alt="" />}
+          <div className="w-full h-18 rounded-xl bg-bluegrey-2 flex items-center justify-center">
+            {i === 0 && <img src={IcoMenu01} className="w-10 h-10" alt="" />}
+            {i === 1 && <img src={IcoMenu02} className="w-10 h-10" alt="" />}
+            {i === 2 && <img src={IcoMenu03} className="w-10 h-10" alt="" />}
+            {i === 3 && <img src={IcoMenu04} className="w-10 h-10" alt="" />}
           </div>
-          <span className="text-[12px] font-semibold text-grey-10 text-center">
+          <span className="text-body-4 font-semibold text-grey-10 text-center">
             {item.label}
           </span>
         </Link>
@@ -120,11 +134,10 @@ function ThisWeekMessageSection({ sermon }) {
 
   return (
     <section className="px-5 py-6">
-      <SectionHeader title="이번주 말씀" to="/주보?tab=예배" />
-      <div className="rounded-xl bg-white py-5 my-5 px-4 shadow-lg">
+      <SectionHeader title="이번주 말씀" badge={dateLabel} />
+      <div className="rounded-xl bg-white py-5 my-5 px-4 shadow-[0_0_20px_rgba(0,0,0,0.1)]">
         {sermon ? (
           <>
-            <span className="text-[14px] font-semibold text-grey-11">{dateLabel}</span>
             <p
               className="text-body-4 px-6 py-2 font-bold text-grey-11 leading-relaxed"
               style={{ fontFamily: '"Gowun Batang", serif' }}
@@ -149,29 +162,31 @@ function NoticeAlertSection({ notices }) {
       {top && (
         <Link
           to={`/공지사항?id=${top.id}`}
-          className="flex items-center justify-between pb-4 mb-4 border-b border-bluegrey-3"
+          className="flex items-center gap-2 rounded-xl bg-bluegrey-1 px-4 py-3.5 mb-3"
         >
-          <span className="text-[14px] font-medium text-grey-9 truncate">
-            [{top.type}] {top.title}
+          <img src={IcoPin} className="w-4 h-4 shrink-0" alt="" />
+          <span className="flex-1 min-w-0 text-[14px] font-medium text-grey-9 truncate">
+            {top.title}
           </span>
-          <span className="text-[12px] text-grey-6 shrink-0 ml-3">{top.date}</span>
+          <span className="text-[12px] text-grey-6 shrink-0">{top.date}</span>
         </Link>
       )}
-      <div className="flex flex-col gap-3">
-        {rest.slice(0, 6).map((n) => (
+      <div className="flex flex-col rounded-xl bg-white px-4 shadow-[0_0_20px_rgba(0,0,0,0.1)]">
+        {rest.slice(0, 3).map((n, i) => (
           <Link
             key={n.id}
             to={`/공지사항?id=${n.id}`}
-            className="flex items-center gap-3 rounded-xl border border-bluegrey-3 px-4 py-3.5"
+            className={`flex gap-3 py-3.5 ${
+              i > 0 ? "border-t border-dashed border-bluegrey-3" : ""
+            }`}
           >
-            <span className="w-1 h-8 rounded-full bg-primary shrink-0" />
+            <span className={`w-1 h-4 rounded-full shrink-0 ${i === 0 ? "bg-primary" : "bg-blue-1"}`} />
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-bold text-grey-11 leading-snug truncate">
                 {n.title}
               </p>
-              <p className="text-[12px] text-grey-6 leading-snug truncate">{n.body}</p>
+              <p className="text-[12px] text-grey-6 mt-0.5">{n.date}</p>
             </div>
-            <span className="text-[12px] text-grey-6 shrink-0">{n.date}</span>
           </Link>
         ))}
       </div>
@@ -179,10 +194,10 @@ function NoticeAlertSection({ notices }) {
   );
 }
 
-function VideoSection({ youtubeUrl, pastor, title, isLive }) {
+function VideoSection({ youtubeUrl, pastor, title, dateLabel, isLive }) {
   return (
-    <section className="px-5 py-6">
-      <SectionHeader title="예배 영상" to={youtubeUrl || "/"} />
+    <section className="px-5 py-10 bg-bluegrey-2">
+      <SectionHeader title="예배 영상" live={isLive} to="/말씀/설교" />
       <a href={youtubeUrl || "#"} target="_blank" rel="noopener noreferrer" className="block">
         <div className="aspect-video rounded-xl overflow-hidden bg-grey-3 relative">
           <img
@@ -190,17 +205,12 @@ function VideoSection({ youtubeUrl, pastor, title, isLive }) {
             alt="예배 영상 썸네일"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          {isLive && (
-            <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-red-500 text-white text-[12px] font-bold">
-              Live
-            </span>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-1.5">
-            <span className="self-start px-2 py-1 rounded bg-black/40 text-white text-[12px] font-medium">
-              {pastor}
-            </span>
             <p className="text-white text-[16px] font-bold leading-snug">{title}</p>
+            <span className="self-start py-1 rounded bg-black/40 text-white text-[12px] font-medium">
+              {dateLabel ? `${dateLabel} | ${pastor}` : pastor}
+            </span>
           </div>
         </div>
       </a>
@@ -227,8 +237,8 @@ function GallerySection({ photos }) {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/40" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
-              <p className="text-[14px] font-semibold">{p.title}</p>
-              <p className="text-[12px] text-white/70">{p.date}</p>
+              <p className="text-body-4 font-semibold">{p.title}</p>
+              <p className="text-body-5 text-white/70">{p.date}</p>
             </div>
           </Link>
         ))}
@@ -254,7 +264,12 @@ export default function MobileHome() {
     [church.id],
     [],
   );
+  const { data: liveScreen } = useFetch(() => getLiveScreen(church.id), [church.id], null);
   const sundaySermon = sermonResponse.sermons.find((s) => s.worshipType?.startsWith("주일"));
+  const isLive = liveScreen?.state === "LIVE";
+  const videoDateLabel = sundaySermon?.sermonDate
+    ? new Date(sundaySermon.sermonDate).toLocaleDateString("ko-KR")
+    : "";
 
   return (
     <div className="flex flex-col bg-white">
@@ -263,13 +278,16 @@ export default function MobileHome() {
       <QuickMenu />
       <VideoSection
         youtubeUrl={
-          sundaySermon?.youtubeVideoId ?? sundaySermon?.videoId
-            ? `https://www.youtube.com/watch?v=${sundaySermon.youtubeVideoId ?? sundaySermon.videoId}`
-            : church.social?.youtube
+          isLive && liveScreen?.youtubeLiveUrl
+            ? liveScreen.youtubeLiveUrl
+            : (sundaySermon?.youtubeVideoId ?? sundaySermon?.videoId)
+              ? `https://www.youtube.com/watch?v=${sundaySermon.youtubeVideoId ?? sundaySermon.videoId}`
+              : church.social?.youtube
         }
-        pastor={`${sundaySermon?.preacher || church.pastor || "담임목사"} 목사`}
+        pastor={`${sundaySermon?.preacher || church.pastor || "담임목사"}`}
         title={sundaySermon?.title ?? ""}
-        isLive={false}
+        dateLabel={videoDateLabel}
+        isLive={isLive}
       />
       <NoticeAlertSection notices={noticeResponse.data} />
       <GallerySection photos={photos} />

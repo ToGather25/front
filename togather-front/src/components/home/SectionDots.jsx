@@ -25,6 +25,13 @@ export default function SectionDots() {
 
   useEffect(() => {
     function update() {
+      // 데스크톱 전용 기능이다 — data-home-section은 모바일에서도 DOM에 그대로 있고
+      // (hidden md:flex로 화면에서만 숨김) display:none이면 offsetTop이 전부 0이 돼서
+      // 판정이 깨진다. 모바일 너비에서는 아예 계산하지 않는다.
+      if (window.innerWidth < 768) {
+        setSectionCount(0);
+        return;
+      }
       const sections = Array.from(document.querySelectorAll(SECTION_SELECTOR));
       if (sections.length === 0) return;
       const scrollPos = window.scrollY + window.innerHeight / 2;
@@ -47,6 +54,7 @@ export default function SectionDots() {
     }
 
     function onWheel(e) {
+      if (window.innerWidth < 768) return;
       const now = Date.now();
       if (now - lastWheelTimeRef.current < 600) return;
       lastWheelTimeRef.current = now;

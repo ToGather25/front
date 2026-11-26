@@ -492,7 +492,7 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
     >
       <div
         ref={barRef}
-        className="relative bg-white border-b border-bluegrey-1 flex items-center justify-between px-5 h-14"
+        className="relative bg-white border-b border-bluegrey-2 flex items-center justify-between px-5 h-14"
       >
         <Link to="/" className="flex items-center gap-2">
           <ChurchLogo className="h-24 w-25 object-contain" alt="" />
@@ -581,9 +581,9 @@ function MobileDrawer({ isOpen, onClose }) {
       <div
         className={`fixed top-0 right-0 bottom-0 z-[70] w-[280px] bg-white shadow-2xl flex flex-col transition-transform duration-300 md:hidden ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* 프로필 / 로그인·회원가입 */}
-        <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
-          {currentUser ? (
+        {/* 프로필 (로그인 상태일 때만) */}
+        {currentUser && (
+          <div className="px-5 py-4 border-b border-bluegrey-3 shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-[15px] font-bold text-white shrink-0">
                 {currentUser.name?.[0]}
@@ -592,25 +592,8 @@ function MobileDrawer({ isOpen, onClose }) {
                 {currentUser.name}님
               </span>
             </div>
-          ) : (
-            <div className="flex gap-2">
-              <Link
-                to="/register"
-                onClick={onClose}
-                className="flex-1 text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
-              >
-                회원가입
-              </Link>
-              <Link
-                to="/login"
-                onClick={onClose}
-                className="flex-1 text-center py-2.5 rounded-full bg-primary text-white text-[14px] font-semibold"
-              >
-                로그인
-              </Link>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* 네비게이션 */}
         <nav className="flex-1 overflow-y-auto py-2">
@@ -631,12 +614,12 @@ function MobileDrawer({ isOpen, onClose }) {
           ))}
         </nav>
 
-        {/* 로그아웃 */}
-        {currentUser && (
-          <div
-            className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
-            style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-          >
+        {/* 로그아웃 / 로그인·회원가입 */}
+        <div
+          className="px-5 py-5 border-t border-bluegrey-3 shrink-0"
+          style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+        >
+          {currentUser ? (
             <button
               onClick={() => {
                 logout();
@@ -646,8 +629,25 @@ function MobileDrawer({ isOpen, onClose }) {
             >
               로그아웃
             </button>
-          </div>
-        )}
+          ) : (
+            <div className="flex gap-2">
+              <Link
+                to="/register"
+                onClick={onClose}
+                className="flex-1 text-center py-2.5 rounded-full border border-bluegrey-3 text-[14px] font-semibold text-grey-9"
+              >
+                회원가입
+              </Link>
+              <Link
+                to="/login"
+                onClick={onClose}
+                className="flex-1 text-center py-2.5 rounded-full bg-primary text-white text-[14px] font-semibold"
+              >
+                로그인
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
@@ -778,19 +778,34 @@ function BottomNav() {
     { label: "마이페이지", to: "/mypage", icon: (a) => <IconMyPage active={a} />, match: (p) => p.startsWith("/mypage") },
   ];
 
+  const activeIndex = tabs.findIndex((tab) => tab.match(pathname));
+
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] pointer-events-none md:hidden"
     >
-      <nav className="relative w-[400px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/70 backdrop-blur-md shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
-        <div className="flex items-stretch h-full">
+      <nav className="relative w-[400px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/55 backdrop-blur-xl border border-white/50 shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
+        {/* 활성 탭 배경 — 탭이 바뀔 때 슬라이드로 따라 이동한다(overshoot로 살짝 통통 튀는 느낌).
+            어떤 탭과도 매치되지 않는 화면(예: 교회소개)에서는 보여줄 위치가 없으니 숨긴다. */}
+        {activeIndex !== -1 && (
+          <div
+            className="absolute top-1 bottom-1 rounded-full bg-bluegrey-2/80 backdrop-blur-sm transition-[left] duration-[350ms]"
+            style={{
+              left: `calc(${activeIndex} * ${100 / tabs.length}% + 4px)`,
+              width: `calc(${100 / tabs.length}% - 8px)`,
+              transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+          />
+        )}
+        <div className="relative flex items-stretch h-full">
           {tabs.map((tab) => {
             const active = tab.match(pathname);
             return (
               <Link
                 key={tab.label}
                 to={tab.to}
-                className={`flex-1 flex flex-col items-center justify-center gap-1 mx-1 my-1 rounded-full ${active ? "bg-bluegrey-2" : ""}`}
+                onClick={() => navigator.vibrate?.(10)}
+                className="flex-1 flex flex-col items-center justify-center gap-1"
               >
                 {tab.icon(active)}
                 <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
@@ -814,6 +829,7 @@ function Layout() {
   const { pathname: rawPathname } = useLocation();
   const pathname = decodeURIComponent(rawPathname);
   const { loading: churchLoading } = useChurch();
+  const [showSplash, setShowSplash] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { visible: headerVisible, atTop } = useHideHeaderOnScroll();
   const desktopBarRef = useRef(null);
@@ -830,6 +846,17 @@ function Layout() {
   const isHome = pathname === "/";
   // 홈 히어로 배너 위에서만(맨 위 근처) 헤더를 투명하게 — 배너가 헤더 뒤까지 차오르는 연출.
   const headerTransparent = isHome && atTop;
+
+  useEffect(() => {
+    if (!churchLoading) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [churchLoading]);
+
 
   return (
     <div
@@ -884,7 +911,7 @@ function Layout() {
       <SearchOverlay />
 
       {/* 모바일 스플래시 — 교회 데이터 로딩 동안 노출 */}
-      <SplashScreen show={churchLoading} />
+      <SplashScreen show={showSplash} />
     </div>
   );
 }

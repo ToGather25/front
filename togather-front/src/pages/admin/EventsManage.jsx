@@ -11,7 +11,7 @@ import {
 import { EVENT_CATEGORIES, getDepartmentStyle } from "@/config/events.config";
 import { formatDotDate, formatTimeRange } from "@/utils/date";
 import { getRegistrationState } from "@/utils/eventStatus";
-import IcoSearch from "@/assets/web-icon/search-black.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 

@@ -112,10 +112,10 @@ export default function Footer({ isHome = false }) {
 
       {/* Mobile Footer (md 미만에서만 표시) */}
       <footer className="bg-bluegrey-2 border-t border-bluegrey-3 md:hidden pb-[var(--bottom-nav-h)]">
-        <div className="flex flex-col items-center gap-5 px-6 py-8">
+        <div className="flex flex-col items-start gap-4 px-6 py-4">
           {/* 로고 */}
           <Link to="/">
-            <ChurchLogo className="h-10 w-auto object-contain" alt={`${church.name} 로고`} />
+            <ChurchLogo className="h-8 w-auto object-contain" alt={`${church.name} 로고`} />
           </Link>
 
           {/* 약관 */}
@@ -133,7 +133,7 @@ export default function Footer({ isHome = false }) {
           </div>
 
           {/* 교회 정보 */}
-          <div className="flex flex-col items-center gap-1.5 text-[12px] text-grey-6 text-center">
+          <div className="flex flex-col items-start gap-1.5 text-[12px] text-grey-6 text-left">
             <span>{church.address}</span>
             <span>
               TEL {church.tel}
@@ -145,34 +145,6 @@ export default function Footer({ isHome = false }) {
 
           {/* SNS 아이콘 */}
           <div className="flex items-center gap-3">
-            {church.social?.youtube && (
-              <a
-                href={church.social.youtube}
-                aria-label="YouTube"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-xl border border-bluegrey-4 flex items-center justify-center text-grey-7 hover:text-primary transition-colors"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                </svg>
-              </a>
-            )}
-            {church.social?.instagram && (
-              <a
-                href={church.social.instagram}
-                aria-label="Instagram"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-xl border border-bluegrey-4 flex items-center justify-center text-grey-7 hover:text-primary transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" />
-                </svg>
-              </a>
-            )}
             {church.social?.facebook && (
               <a
                 href={church.social.facebook}

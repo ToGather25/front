@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
+import { YEAR_OPTIONS, MONTH_OPTIONS, daysInMonth } from "@/pages/Register/registerFields";
 
 const inputCls =
   "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
 
 const STEP_COUNT = 4;
-const TODAY_ISO = new Date().toISOString().slice(0, 10);
+const WHEEL_ITEM_HEIGHT = 44;
+const WHEEL_VISIBLE_COUNT = 5;
+const WHEEL_PADDING = (WHEEL_ITEM_HEIGHT * (WHEEL_VISIBLE_COUNT - 1)) / 2;
 
 const AGREEMENT_ITEMS = [
   { key: "age", required: true, label: "만14세 이상" },
@@ -61,6 +64,111 @@ function CheckIcon({ checked, className = "" }) {
   );
 }
 
+// 네이티브 <input type="date">는 브라우저/OS마다 렌더링이 달라서(안드로이드는 달력,
+// 너비도 기기마다 들쭉날쭉) 참고 디자인과 다르게 보인다 — scroll-snap만으로 직접 만든
+// 휠 피커라 모든 기기에서 똑같이 보이고 폭도 항상 부모 너비에 맞는다.
+function WheelColumn({ name, options, value, onSettle }) {
+  const scrollRef = useRef(null);
+  const settleTimer = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.max(0, options.indexOf(value));
+    el.scrollTop = idx * WHEEL_ITEM_HEIGHT;
+    // 시트가 열릴 때(= 컴포넌트가 새로 마운트될 때) 현재 값으로 한 번만 스크롤한다 —
+    // value가 바뀔 때마다 다시 실행하면 사용자가 스크롤하는 도중에도 되돌아간다.
+  }, []);
+
+  function handleScroll(e) {
+    const el = e.currentTarget;
+    clearTimeout(settleTimer.current);
+    settleTimer.current = setTimeout(() => {
+      const idx = Math.max(
+        0,
+        Math.min(options.length - 1, Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT)),
+      );
+      el.scrollTo?.({ top: idx * WHEEL_ITEM_HEIGHT, behavior: "smooth" });
+      onSettle(options[idx]);
+    }, 100);
+  }
+
+  return (
+    <div
+      ref={scrollRef}
+      onScroll={handleScroll}
+      data-testid={`wheel-${name}`}
+      className="flex-1 h-[220px] overflow-y-scroll snap-y snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      style={{ paddingTop: WHEEL_PADDING, paddingBottom: WHEEL_PADDING }}
+    >
+      {options.map((opt) => (
+        <div
+          key={opt}
+          className={`snap-center flex items-center justify-center text-body-3 transition-colors ${
+            opt === value ? "font-bold text-grey-11" : "text-grey-4"
+          }`}
+          style={{ height: WHEEL_ITEM_HEIGHT }}
+        >
+          {opt}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BirthdateWheelPicker({ form, onChange, onClose }) {
+  const dayOptions = Array.from(
+    { length: daysInMonth(form.birthYear, form.birthMonth) },
+    (_, i) => i + 1,
+  );
+
+  function set(name, value) {
+    onChange({ target: { name, value: String(value) } });
+  }
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-end">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
+        <div className="relative flex px-4 pt-2">
+          <WheelColumn
+            name="birthYear"
+            options={YEAR_OPTIONS}
+            value={Number(form.birthYear) || YEAR_OPTIONS[20]}
+            onSettle={(v) => set("birthYear", v)}
+          />
+          <WheelColumn
+            name="birthMonth"
+            options={MONTH_OPTIONS}
+            value={Number(form.birthMonth) || 1}
+            onSettle={(v) => set("birthMonth", v)}
+          />
+          <WheelColumn
+            name="birthDay"
+            options={dayOptions}
+            value={Number(form.birthDay) || 1}
+            onSettle={(v) => set("birthDay", v)}
+          />
+          {/* 가운데 선택 영역 표시용 가로줄 */}
+          <div
+            className="absolute left-0 right-0 border-y border-bluegrey-3 pointer-events-none"
+            style={{ top: WHEEL_PADDING, height: WHEEL_ITEM_HEIGHT }}
+          />
+        </div>
+        <div className="px-6 pb-6 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3.5 bg-blue-7 text-white rounded-xl text-btn-normal font-semibold transition-colors"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BackButton({ onClick }) {
   return (
     <button
@@ -82,6 +190,7 @@ export default function MobileRegister({ form, status, submitError, onChange, on
   // revealedCount는 지금까지 화면에 쌓인 질문 개수다. 확인 버튼은 화면 하단에 고정되고,
   // 마지막 질문에서는 실제 제출 버튼으로 바뀐다.
   const [revealedCount, setRevealedCount] = useState(1);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const latestBlockRef = useRef(null);
   const keyboardInset = useKeyboardInset();
 
@@ -98,9 +207,18 @@ export default function MobileRegister({ form, status, submitError, onChange, on
   const allRequiredAgreed = REQUIRED_AGREEMENT_KEYS.every((k) => agreements[k]);
   const allAgreed = allRequiredAgreed && agreements.marketing;
 
+  // onChange(부모의 handleChange)는 매 렌더 새 함수로 내려온다 — 의존성에 넣으면
+  // 호출→부모 리렌더→새 onChange→effect 재실행이 반복되는 무한 루프가 생긴다.
+  // ref에 최신 함수만 담아두고 effect는 allRequiredAgreed가 바뀔 때만 실행한다.
+  const onChangeRef = useRef(onChange);
   useEffect(() => {
-    onChange({ target: { name: "agreePrivacy", type: "checkbox", checked: allRequiredAgreed } });
-  }, [allRequiredAgreed, onChange]);
+    onChangeRef.current = onChange;
+  });
+  useEffect(() => {
+    onChangeRef.current({
+      target: { name: "agreePrivacy", type: "checkbox", checked: allRequiredAgreed },
+    });
+  }, [allRequiredAgreed]);
 
   function toggleAgreement(key) {
     setAgreements((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -124,19 +242,10 @@ export default function MobileRegister({ form, status, submitError, onChange, on
 
   const isLastStep = revealedCount === STEP_COUNT;
 
-  const birthDateValue =
+  const birthDateDisplay =
     form.birthYear && form.birthMonth && form.birthDay
-      ? `${form.birthYear}-${String(form.birthMonth).padStart(2, "0")}-${String(form.birthDay).padStart(2, "0")}`
+      ? `${form.birthYear}년 ${form.birthMonth}월 ${form.birthDay}일`
       : "";
-
-  // 네이티브 <input type="date">를 쓰면 iOS/Android 모두 OS 기본 날짜 휠 피커가 뜬다 —
-  // 커스텀 피커를 직접 만들지 않아도 되고, 소프트 키보드도 뜨지 않는다.
-  function handleBirthDateChange(e) {
-    const [y, m, d] = e.target.value.split("-");
-    onChange({ target: { name: "birthYear", value: y } });
-    onChange({ target: { name: "birthMonth", value: String(Number(m)) } });
-    onChange({ target: { name: "birthDay", value: String(Number(d)) } });
-  }
 
   function handleNext() {
     if (!canProceed[revealedCount - 1]) return;
@@ -160,11 +269,11 @@ export default function MobileRegister({ form, status, submitError, onChange, on
   // 약관 동의는 토스처럼 아래에 쌓이지 않고, 참고 디자인처럼 완전히 새로운 화면으로 전환된다.
   if (isLastStep) {
     return (
-      <form onSubmit={onSubmit} className="min-h-[calc(100vh-72px)] flex flex-col">
-        <div className="flex-1 overflow-y-auto px-6 py-5 pb-28">
+      <form onSubmit={onSubmit} className="h-[calc(100dvh-72px)] flex flex-col">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 pb-28 flex flex-col">
           <BackButton onClick={() => setRevealedCount(STEP_COUNT - 1)} />
 
-          <div className="flex flex-col gap-5 pt-6">
+          <div className="flex-1 min-h-0 flex flex-col justify-center gap-5">
             <button
               type="button"
               onClick={toggleAllAgreements}
@@ -225,11 +334,11 @@ export default function MobileRegister({ form, status, submitError, onChange, on
   }
 
   return (
-    <div className="min-h-[calc(100vh-72px)] flex flex-col" onKeyDown={handleFormKeyDown}>
-      <div className="flex-1 overflow-y-auto px-6 py-5 pb-28">
+    <div className="h-[calc(100dvh-72px)] flex flex-col" onKeyDown={handleFormKeyDown}>
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 pb-28 flex flex-col">
         <BackButton onClick={() => navigate(-1)} />
 
-        <div className="flex flex-col gap-8 pt-6">
+        <div className="flex-1 min-h-0 flex flex-col justify-center gap-8">
           <div ref={revealedCount === 1 ? latestBlockRef : undefined}>
             <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
               이름 <span className="text-red-400">*</span>
@@ -249,14 +358,14 @@ export default function MobileRegister({ form, status, submitError, onChange, on
               <label className="block text-body-4 font-semibold text-grey-8 mb-1.5">
                 생년월일 <span className="text-red-400">*</span>
               </label>
-              <input
-                name="birthdate"
-                type="date"
-                value={birthDateValue}
-                onChange={handleBirthDateChange}
-                max={TODAY_ISO}
-                className={inputCls}
-              />
+              <button
+                type="button"
+                aria-label="생년월일 선택"
+                onClick={() => setShowDatePicker(true)}
+                className={`${inputCls} text-left ${birthDateDisplay ? "" : "text-grey-5"}`}
+              >
+                {birthDateDisplay || "생년월일을 선택해 주세요"}
+              </button>
             </div>
           )}
 
@@ -307,6 +416,14 @@ export default function MobileRegister({ form, status, submitError, onChange, on
           다음
         </button>
       </div>
+
+      {showDatePicker && (
+        <BirthdateWheelPicker
+          form={form}
+          onChange={onChange}
+          onClose={() => setShowDatePicker(false)}
+        />
+      )}
     </div>
   );
 }

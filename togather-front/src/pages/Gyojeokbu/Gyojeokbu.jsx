@@ -7,7 +7,7 @@ import { getMemberDirectory } from "@/services/memberService";
 import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import NumberedPagination from "@/components/common/NumberedPagination";
 import BubbleLoader from "@/components/common/BubbleLoader";
-import IcoSearch from "@/assets/web-icon/search-black.svg";
+import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import { Avatar, RoleChip } from "./shared";
 
 const PAGE_SIZE = 8;

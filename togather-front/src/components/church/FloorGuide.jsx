@@ -26,7 +26,7 @@ export default function FloorGuide() {
     <div className="flex flex-col gap-6">
       {/* 검색 */}
       <div className="relative max-w-[300px] group">
-        <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 brightness-75 group-focus-within:brightness-50 transition-all" alt="" />
+        <img src={IcoSearch} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" alt="" />
         <input
           type="text"
           value={query}

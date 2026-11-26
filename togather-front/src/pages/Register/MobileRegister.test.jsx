@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { describe, it, expect, vi } from "vite-plus/test";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import MobileRegister from "./MobileRegister";
@@ -39,8 +39,25 @@ function renderMobileRegister(props) {
   return renderWithChurch(<Harness {...props} />, { withRouter: true });
 }
 
-function setBirthDate(container, isoDate) {
-  fireEvent.change(container.querySelector('input[type="date"]'), { target: { value: isoDate } });
+// 생년월일은 네이티브 <input type="date">가 아니라 직접 만든 휠 피커(scroll-snap)로
+// 받는다 — 휠을 실제로 굴릴 수 없는 jsdom에서는 각 컬럼에 scroll 이벤트를 쏴서 원하는
+// scrollTop(= 칸 높이 44px * 인덱스)으로 "안착"시키고, 디바운스(100ms)가 지나길 기다린다.
+async function setBirthDate(container, { year, month, day }) {
+  fireEvent.click(screen.getByRole("button", { name: "생년월일 선택" }));
+
+  const currentYear = new Date().getFullYear();
+  fireEvent.scroll(container.querySelector('[data-testid="wheel-birthYear"]'), {
+    target: { scrollTop: (currentYear - year) * 44 },
+  });
+  fireEvent.scroll(container.querySelector('[data-testid="wheel-birthMonth"]'), {
+    target: { scrollTop: (month - 1) * 44 },
+  });
+  fireEvent.scroll(container.querySelector('[data-testid="wheel-birthDay"]'), {
+    target: { scrollTop: (day - 1) * 44 },
+  });
+  await act(() => new Promise((resolve) => setTimeout(resolve, 150)));
+
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
 }
 
 describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가입", () => {
@@ -58,19 +75,20 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
     expect(screen.getByText("생년월일")).toBeInTheDocument();
   });
 
-  it("생년월일은 네이티브 날짜 입력(휠 피커)으로 받는다", async () => {
+  it("생년월일은 네이티브 날짜 입력이 아니라 직접 만든 휠 피커로 받는다", async () => {
     const user = userEvent.setup();
     const { container } = renderMobileRegister();
 
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
 
-    const dateInput = container.querySelector('input[type="date"]');
-    expect(dateInput).toBeTruthy();
+    expect(container.querySelector('input[type="date"]')).toBeFalsy();
+    expect(screen.getByRole("button", { name: "생년월일 선택" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "다음" })).toBeDisabled();
 
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     expect(screen.getByRole("button", { name: "다음" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "생년월일 선택" })).toHaveTextContent("1995년 5월 10일");
   });
 
   it("이름 → 생년월일 → 휴대폰 순으로 질문이 쌓이고, 이전에 답한 내용은 화면에 그대로 남는다", async () => {
@@ -80,13 +98,13 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
 
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     await user.click(screen.getByRole("button", { name: "다음" }));
 
     // 휴대폰 질문이 쌓였지만, 이름과 생년월일 답변은 화면에서 사라지지 않아야 한다
     expect(screen.getByPlaceholderText("010-0000-0000")).toBeInTheDocument();
     expect(screen.getByDisplayValue("김철수")).toBeInTheDocument();
-    expect(container.querySelector('input[type="date"]').value).toBe("1995-05-10");
+    expect(screen.getByRole("button", { name: "생년월일 선택" })).toHaveTextContent("1995년 5월 10일");
   });
 
   it("약관 동의는 쌓이지 않고 완전히 새로운 화면으로 전환되며, 뒤로가기로 돌아오면 이전 입력이 남아있다", async () => {
@@ -95,7 +113,7 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
 
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     await user.click(screen.getByRole("button", { name: "다음" }));
     await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-1111-2222");
     await user.click(screen.getByRole("button", { name: "다음" }));
@@ -119,7 +137,7 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
 
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     await user.click(screen.getByRole("button", { name: "다음" }));
     await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-1111-2222");
     await user.click(screen.getByRole("button", { name: "다음" }));
@@ -153,7 +171,7 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
 
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     await user.click(screen.getByRole("button", { name: "다음" }));
     await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-1111-2222");
     await user.click(screen.getByRole("button", { name: "다음" }));
@@ -175,7 +193,7 @@ describe("MobileRegister — 질문이 아래로 쌓이는 모바일 회원가�
 
     await user.type(screen.getByPlaceholderText("이름을 입력하세요"), "김철수");
     await user.click(screen.getByRole("button", { name: "다음" }));
-    setBirthDate(container, "1995-05-10");
+    await setBirthDate(container, { year: 1995, month: 5, day: 10 });
     await user.click(screen.getByRole("button", { name: "다음" }));
     await user.type(screen.getByPlaceholderText("010-0000-0000"), "010-1111-2222");
     await user.click(screen.getByRole("button", { name: "다음" }));
