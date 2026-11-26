@@ -410,7 +410,7 @@ export default function MainManage() {
               label="배너 이미지"
               value={banner.representativeImageUrl}
               onChange={(url) => setBanner((p) => ({ ...p, representativeImageUrl: url }))}
-              hint="비워두면 기본 배너 이미지가 표시됩니다"
+              hint="* 비워두면 기본 배너 이미지가 표시됩니다"
               aspect={21 / 9}
             />
             <div>
@@ -423,18 +423,6 @@ export default function MainManage() {
                 value={banner.instagramUrl}
                 onChange={(e) => setBanner((p) => ({ ...p, instagramUrl: e.target.value }))}
                 placeholder="https://www.instagram.com/..."
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="banner-website">
-                웹사이트 URL
-              </label>
-              <input
-                id="banner-website"
-                className={inputCls}
-                value={banner.websiteUrl}
-                onChange={(e) => setBanner((p) => ({ ...p, websiteUrl: e.target.value }))}
-                placeholder="https://example.com"
               />
             </div>
           </div>

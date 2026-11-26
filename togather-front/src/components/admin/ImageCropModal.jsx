@@ -13,19 +13,28 @@ export default function ImageCropModal({ file, aspect, onCancel, onConfirm }) {
   const viewportRef = useRef(null);
   const dragRef = useRef(null);
 
-  const [objectUrl] = useState(() => URL.createObjectURL(file));
+  const [objectUrl, setObjectUrl] = useState(null);
   const [natural, setNatural] = useState(null); // { width, height }
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [confirming, setConfirming] = useState(false);
 
-  useEffect(() => () => URL.revokeObjectURL(objectUrl), [objectUrl]);
+  // objectUrl의 생성과 해제를 같은 effect 안에 묶어야 한다 — 생성을 useState
+  // 초기화자에, 해제를 별도 effect cleanup에 나눠두면 StrictMode의 effect
+  // 이중 호출(mount→cleanup→mount) 때 "해제만 다시 실행"되어 버려 화면의
+  // img가 이미 revoke된 blob URL을 가리키게 된다(ERR_FILE_NOT_FOUND).
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    setObjectUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   // 화면에 보여주는 <img>는 로드되기 전까지 width/height가 0이라, 브라우저에 따라 디코딩
   // 자체를 미루기도 한다 — 그래서 치수 측정은 크기 제약이 없는 별도 Image 객체로 한다.
   // 이 객체를 그대로 캔버스 드로잉 소스로도 재사용해 "측정은 됐는데 화면 img는 아직 디코딩
   // 안 됨" 같은 타이밍 문제를 원천적으로 피한다.
   useEffect(() => {
+    if (!objectUrl) return;
     let cancelled = false;
     const probe = new Image();
     probe.onload = () => {

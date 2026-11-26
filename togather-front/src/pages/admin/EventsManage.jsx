@@ -158,7 +158,7 @@ function EventFormModal({ event, onClose, onSave, saving }) {
             label="대표 이미지"
             value={form.imageUrl}
             onChange={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
-            hint="비워두면 기본 배너가 표시됩니다"
+            hint="* 비워두면 기본 배너가 표시됩니다"
           />
 
           <label className="flex items-center gap-2 cursor-pointer">
@@ -478,14 +478,13 @@ export default function EventsManage() {
                   )}
                 </span>
                 <div className="flex gap-1.5 justify-center">
-                  {e.canRegister && (
-                    <button
-                      onClick={() => setRegistrationsFor(e)}
-                      className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"
-                    >
-                      신청자
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setRegistrationsFor(e)}
+                    disabled={!e.canRegister}
+                    className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-grey-3 disabled:hover:text-grey-7"
+                  >
+                    신청자
+                  </button>
                   <button
                     onClick={() => setModal(e)}
                     className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg border border-grey-3 text-body-5 text-grey-7 hover:border-primary hover:text-primary transition-colors"

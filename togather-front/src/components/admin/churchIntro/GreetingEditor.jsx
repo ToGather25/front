@@ -135,7 +135,7 @@ export default function GreetingEditor() {
           </div>
         </div>
         <p className="text-body-5 text-grey-5 mt-3">
-          서명란 옆 사진은 "섬기는 사람들" 탭의 담임목사 사진이 그대로 쓰입니다.
+          * 서명란 옆 사진은 "섬기는 사람들" 탭의 담임목사 사진이 그대로 쓰입니다.
         </p>
       </Card>
     </SectionEditorLayout>
