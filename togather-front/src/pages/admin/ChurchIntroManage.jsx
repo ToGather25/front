@@ -6,6 +6,12 @@ import HistoryEditor from "@/components/admin/churchIntro/HistoryEditor";
 import FloorGuideEditor from "@/components/admin/churchIntro/FloorGuideEditor";
 import DirectionEditor from "@/components/admin/churchIntro/DirectionEditor";
 import ShuttleEditor from "@/components/admin/churchIntro/ShuttleEditor";
+import SundaySchoolEditor from "@/components/admin/churchIntro/SundaySchoolEditor";
+import EvangelismEditor from "@/components/admin/churchIntro/EvangelismEditor";
+import MissionsEditor from "@/components/admin/churchIntro/MissionsEditor";
+import DistrictMeetingsEditor from "@/components/admin/churchIntro/DistrictMeetingsEditor";
+import DiscipleTrainingEditor from "@/components/admin/churchIntro/DiscipleTrainingEditor";
+import NurtureProgramsEditor from "@/components/admin/churchIntro/NurtureProgramsEditor";
 
 const TABS = [
   "인사말",
@@ -15,6 +21,12 @@ const TABS = [
   "층별 안내",
   "오시는 길",
   "차량운행 안내",
+  "주일학교",
+  "전도회 소개",
+  "국내외 선교",
+  "구역모임",
+  "제자훈련",
+  "양육프로그램",
 ];
 
 const TAB_CONTENT = {
@@ -25,6 +37,12 @@ const TAB_CONTENT = {
   "층별 안내": <FloorGuideEditor />,
   "오시는 길": <DirectionEditor />,
   "차량운행 안내": <ShuttleEditor />,
+  주일학교: <SundaySchoolEditor />,
+  "전도회 소개": <EvangelismEditor />,
+  "국내외 선교": <MissionsEditor />,
+  구역모임: <DistrictMeetingsEditor />,
+  제자훈련: <DiscipleTrainingEditor />,
+  양육프로그램: <NurtureProgramsEditor />,
 };
 
 export default function ChurchIntroManage() {

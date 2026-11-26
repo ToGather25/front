@@ -4,7 +4,8 @@ import api from "./api";
  * 교회소개 콘텐츠(섹션별 JSONB passthrough) — 백엔드가 프론트 shape 그대로 저장/반환한다.
  * 즉 각 섹션의 값은 church.config.js의 동명 블록과 동일한 구조다.
  *
- * @typedef {"GREETING"|"VISION"|"HISTORY"|"STAFF"|"FLOOR_GUIDE"|"DIRECTIONS"|"SHUTTLE"|"PARKING"} IntroSectionType
+ * @typedef {"GREETING"|"VISION"|"HISTORY"|"STAFF"|"FLOOR_GUIDE"|"DIRECTIONS"|"SHUTTLE"|"PARKING"|
+ *   "SUNDAY_SCHOOL"|"EVANGELISM"|"MISSIONS"|"DISTRICT_MEETINGS"|"DISCIPLE_TRAINING"|"NURTURE_PROGRAMS"} IntroSectionType
  */
 
 /** 백엔드 섹션 타입 → church(config) 키. ChurchProvider가 이 표로 응답을 병합한다. */
@@ -17,6 +18,12 @@ export const INTRO_SECTION_TO_CONFIG_KEY = {
   DIRECTIONS: "publicTransit",
   SHUTTLE: "transportGuide",
   PARKING: "parking",
+  SUNDAY_SCHOOL: "sundaySchool",
+  EVANGELISM: "evangelism",
+  MISSIONS: "missions",
+  DISTRICT_MEETINGS: "districtMeetings",
+  DISCIPLE_TRAINING: "discipleTraining",
+  NURTURE_PROGRAMS: "nurturePrograms",
 };
 
 /**
