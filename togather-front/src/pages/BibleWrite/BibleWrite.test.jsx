@@ -1,9 +1,21 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import bibleData from "@/data/bible.json";
 import BibleWrite from "./BibleWrite";
+
+vi.mock("@/services/api", () => ({
+  default: { get: vi.fn(), put: vi.fn() },
+}));
+
+import api from "@/services/api";
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  api.get.mockResolvedValue({ data: { data: { completed: [], lastPosition: null } } });
+  api.put.mockResolvedValue({ data: null });
+});
 
 describe("BibleWrite — 로그인 가드", () => {
   beforeEach(() => {
@@ -174,5 +186,71 @@ describe("BibleWrite — 필사 로직", () => {
     renderWrite();
     await user.click(screen.getByRole("button", { name: "내 현황" }));
     expect(screen.getByText("전체 완독률")).toBeInTheDocument();
+  });
+
+  it("정답을 입력하면 완료를 서버에 저장한다", async () => {
+    const user = userEvent.setup();
+    const { container } = renderWrite();
+
+    const targetText = bibleData["창1:1"].trim();
+    await user.type(container.querySelector("textarea"), targetText);
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith("/my/bible/WRITE/progress", {
+        book: "창",
+        chapter: 1,
+        verse: 1,
+        completed: true,
+      }),
+    );
+  });
+
+  it("장·절을 옮기면 마지막 위치를 서버에 저장한다", async () => {
+    const user = userEvent.setup();
+    renderWrite();
+
+    await user.click(screen.getByRole("button", { name: "1절" }));
+    await user.click(screen.getByRole("button", { name: "2" }));
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith("/my/bible/WRITE/position", {
+        book: "창",
+        chapter: 1,
+        verse: 2,
+      }),
+    );
+  });
+});
+
+describe("BibleWrite — 서버 진도 복원", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    localStorage.setItem("user", JSON.stringify({ email: "test@togather.com" }));
+  });
+
+  it("서버 완료 기록에 있는 절은 '내 구절'에 복원되어 보인다", async () => {
+    api.get.mockResolvedValue({
+      data: {
+        data: { completed: [{ book: "창", chapter: 1, verse: 1 }], lastPosition: null },
+      },
+    });
+    const user = userEvent.setup();
+    renderWithChurch(<BibleWrite />, { withAuth: true });
+
+    await user.click(screen.getByRole("button", { name: "내 구절" }));
+    expect(await screen.findByText(bibleData["창1:1"].trim())).toBeInTheDocument();
+  });
+
+  it("서버에 저장된 마지막 위치로 이동한다", async () => {
+    api.get.mockResolvedValue({
+      data: {
+        data: { completed: [], lastPosition: { book: "출", chapter: 3, verse: 5 } },
+      },
+    });
+    renderWithChurch(<BibleWrite />, { withAuth: true });
+
+    expect(await screen.findByRole("button", { name: "출애굽기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "3장" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "5절" })).toBeInTheDocument();
   });
 });

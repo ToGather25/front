@@ -6,6 +6,7 @@ import LoginRequiredModal from "@/components/common/LoginRequiredModal";
 import BibleTutorial from "@/components/bible/BibleTutorial";
 import BibleSourceNotice from "@/components/bible/BibleSourceNotice";
 import { saveLastPosition } from "@/utils/bibleReadingProgress";
+import { getBibleProgress, updateBibleProgress, updateBiblePosition } from "@/services/bibleService";
 import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/config/bible.config";
@@ -320,14 +321,82 @@ export default function BibleRead() {
     }
   }, [state]);
 
+  // completedChapters: null이면 아직 서버에서 완료 기록을 못 받아온 상태 — 그동안은
+  // 체크 상태를 함부로 건드리지 않는다(아래 effect들이 null을 가드로 쓴다).
+  const [completedChapters, setCompletedChapters] = useState(null);
+
   useEffect(() => {
-    if (currentUser) saveLastPosition(selectedBook, chapter);
+    if (!currentUser) return;
+    let cancelled = false;
+    getBibleProgress("READ")
+      .then(({ completed, lastPosition }) => {
+        if (cancelled) return;
+        // 서버는 book을 bible.json 약어(예: "창")로 주고받는다 — 화면 state는 전체 이름을 쓴다.
+        setCompletedChapters(
+          new Set((completed ?? []).map((c) => `${BOOK_MAP[c.book] ?? c.book}-${c.chapter}`)),
+        );
+        // state로 특정 장이 지정된 경우(검색/다른 화면에서 이동)는 그 위치를 우선한다 —
+        // 서버의 마지막 위치로는 덮어쓰지 않는다.
+        if (!state?.book && lastPosition?.book) {
+          setSelectedBook(BOOK_MAP[lastPosition.book] ?? lastPosition.book);
+          setChapter(lastPosition.chapter || 1);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCompletedChapters(new Set());
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    saveLastPosition(selectedBook, chapter);
+    updateBiblePosition("READ", { book: BOOK_ABBREV[selectedBook] ?? selectedBook, chapter }).catch(
+      (err) => console.error("[BibleRead] 위치 저장 실패:", err),
+    );
   }, [currentUser, selectedBook, chapter]);
 
   const verses = getVerses(selectedBook, chapter);
   const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
 
   const allChecked = verses.length > 0 && verses.every((_, idx) => !!checkedVerses[idx]);
+
+  // 장을 옮기면 이미 완료 기록이 있는 장인지 확인해 체크 상태를 복원한다.
+  useEffect(() => {
+    if (completedChapters === null) return;
+    if (!completedChapters.has(`${selectedBook}-${chapter}`)) return;
+    const all = {};
+    verses.forEach((_, idx) => {
+      all[idx] = true;
+    });
+    setCheckedVerses(all);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completedChapters, selectedBook, chapter]);
+
+  // 전체 선택/해제로 장이 완료·취소될 때만 서버에 저장한다(완료 기록과 다를 때만).
+  useEffect(() => {
+    if (!currentUser || completedChapters === null) return;
+    const key = `${selectedBook}-${chapter}`;
+    if (completedChapters.has(key) === allChecked) return;
+    updateBibleProgress("READ", {
+      book: BOOK_ABBREV[selectedBook] ?? selectedBook,
+      chapter,
+      completed: allChecked,
+    })
+      .then(() => {
+        setCompletedChapters((prev) => {
+          const next = new Set(prev);
+          if (allChecked) next.add(key);
+          else next.delete(key);
+          return next;
+        });
+      })
+      .catch((err) => console.error("[BibleRead] 진도 저장 실패:", err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allChecked]);
 
   const toggleVerse = useCallback(
     (idx) => setCheckedVerses((prev) => ({ ...prev, [idx]: !prev[idx] })),

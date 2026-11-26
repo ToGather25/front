@@ -6,6 +6,7 @@ import bibleData from "@/data/bible.json";
 import BibleSidebar from "@/components/bible/BibleSidebar";
 import BibleSourceNotice from "@/components/bible/BibleSourceNotice";
 import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_WRITE_SIDEBAR_MENUS } from "@/config/bible.config";
+import { getBibleProgress, updateBibleProgress, updateBiblePosition } from "@/services/bibleService";
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
@@ -264,6 +265,56 @@ export default function BibleWrite() {
     }
   }, [state]);
 
+  // 책/장/절이 바뀔 때 기본적으로 1(절)/1(장)로 리셋하는 효과들이 아래에 있다 — 서버에서
+  // 복원한 위치가 그 리셋에 덮어써지지 않도록, "지금 이 값으로 가는 중"을 여기 적어두고
+  // 각 리셋 효과가 이 목표와 일치하면 리셋을 건너뛰게 한다(목표에 다 도달하면 비운다).
+  const pendingPositionRef = useRef(null);
+
+  // 서버 완료 기록·마지막 위치 복원 — book은 서버와 selectedBook 둘 다 약어를 쓴다.
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+    getBibleProgress("WRITE")
+      .then(({ completed, lastPosition }) => {
+        if (cancelled) return;
+        setCompletedVerses(
+          (completed ?? []).map(({ book, chapter, verse }) => ({
+            key: `${book}-${chapter}-${verse}`,
+            bookName: BOOK_MAP[book] ?? book,
+            bookAbbr: book,
+            chapter,
+            verse,
+            text: getVerses(book, chapter).find((v) => v.verse === verse)?.text ?? "",
+          })),
+        );
+        if (!state?.book && lastPosition?.book) {
+          const target = {
+            book: lastPosition.book,
+            chapter: lastPosition.chapter || 1,
+            verse: lastPosition.verse || 1,
+          };
+          pendingPositionRef.current = target;
+          setSelectedBook(target.book);
+          setSelectedChapter(target.chapter);
+          setSelectedVerse(target.verse);
+        }
+      })
+      .catch((err) => console.error("[BibleWrite] 진도 조회 실패:", err));
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    updateBiblePosition("WRITE", {
+      book: selectedBook,
+      chapter: selectedChapter,
+      verse: selectedVerse,
+    }).catch((err) => console.error("[BibleWrite] 위치 저장 실패:", err));
+  }, [currentUser, selectedBook, selectedChapter, selectedVerse]);
+
   const chapters = useMemo(() => getChapters(selectedBook), [selectedBook]);
   const verses = useMemo(
     () => getVerses(selectedBook, selectedChapter),
@@ -292,6 +343,8 @@ export default function BibleWrite() {
   const textareaRef = useRef(null);
 
   useEffect(() => {
+    const pending = pendingPositionRef.current;
+    if (pending && pending.book === selectedBook) return;
     setSelectedChapter(1);
     setSelectedVerse(1);
     setTyped("");
@@ -299,12 +352,24 @@ export default function BibleWrite() {
   }, [selectedBook]);
 
   useEffect(() => {
+    const pending = pendingPositionRef.current;
+    if (pending && pending.book === selectedBook && pending.chapter === selectedChapter) return;
     setSelectedVerse(1);
     setTyped("");
     setIsCorrect(null);
   }, [selectedChapter]);
 
   useEffect(() => {
+    const pending = pendingPositionRef.current;
+    if (
+      pending &&
+      pending.book === selectedBook &&
+      pending.chapter === selectedChapter &&
+      pending.verse === selectedVerse
+    ) {
+      pendingPositionRef.current = null;
+      return;
+    }
     setTyped("");
     setIsCorrect(null);
   }, [selectedVerse]);
@@ -328,8 +393,9 @@ export default function BibleWrite() {
     if (val === targetText) {
       setIsCorrect(true);
       const key = `${selectedBook}-${selectedChapter}-${selectedVerse}`;
+      const alreadyCompleted = completedVerses.some((v) => v.key === key);
       setCompletedVerses((prev) => {
-        if (prev.some((v) => v.key === key)) return prev;
+        if (alreadyCompleted) return prev;
         return [
           ...prev,
           {
@@ -342,6 +408,14 @@ export default function BibleWrite() {
           },
         ];
       });
+      if (!alreadyCompleted) {
+        updateBibleProgress("WRITE", {
+          book: selectedBook,
+          chapter: selectedChapter,
+          verse: selectedVerse,
+          completed: true,
+        }).catch((err) => console.error("[BibleWrite] 진도 저장 실패:", err));
+      }
     } else {
       setIsCorrect(null);
     }
