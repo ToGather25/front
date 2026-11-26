@@ -230,7 +230,7 @@ export async function publishJubo(churchId, juboId) {
 /**
  * 미발행 초안 확인 (관리자) — 새로고침 후에도 같은 초안을 이어 편집할 수 있도록 juboId를 복원한다.
  * 초안이 없으면 null.
- * @returns {Promise<{id:number,issueNo:string,juboDate:string,juboTemplateVersion?:string,published:boolean}|null>}
+ * @returns {Promise<{id:number,issueNo:string,juboDate:string,coverImageUrl?:string,juboTemplateVersion?:string,published:boolean}|null>}
  */
 export async function getJuboDraft() {
   try {
@@ -240,6 +240,17 @@ export async function getJuboDraft() {
     if (err?.response?.status === 404) return null;
     throw err;
   }
+}
+
+/**
+ * 초안 임시저장 (관리자) — 메타(호수/날짜/표지URL/버전)와 전달한 섹션들을 한 트랜잭션으로
+ * 저장한다. sections에 없는 섹션은 건드리지 않는다. 이미 발행한 호는 400.
+ * @param {string} churchId
+ * @param {number|string} juboId
+ * @param {{issueNo:string, juboDate:string, coverImageUrl?:string|null, juboTemplateVersion?:string, sections:Record<string,object>}} payload
+ */
+export async function saveJuboDraft(churchId, juboId, payload) {
+  await api.put(`/church/admin/jubo/${juboId}/draft`, payload);
 }
 
 /** 교회 기본 주보 템플릿 버전 (관리자) @returns {Promise<"v1"|"v2"|null>} */

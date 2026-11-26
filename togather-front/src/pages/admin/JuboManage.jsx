@@ -7,7 +7,9 @@ import {
   publishJubo,
   getJuboDraft,
   getJuboSettings,
+  saveJuboDraft,
 } from "@/services/juboService";
+import { saveJuboDraftLocal, clearJuboDraftLocal } from "@/utils/juboDraftStorage";
 import WorshipSectionEditor from "@/components/admin/jubo/WorshipSectionEditor";
 import VolunteerSectionEditor from "@/components/admin/jubo/VolunteerSectionEditor";
 import OfferingSectionEditor from "@/components/admin/jubo/OfferingSectionEditor";
@@ -19,30 +21,15 @@ import NewsSectionEditor from "@/components/admin/jubo/NewsSectionEditor";
 import PrayerTopicsSectionEditor from "@/components/admin/jubo/PrayerTopicsSectionEditor";
 import SermonNoteSectionEditor from "@/components/admin/jubo/SermonNoteSectionEditor";
 import BubbleLoader from "@/components/common/BubbleLoader";
+import ToastStack from "@/components/common/ToastStack";
+import { useToasts } from "@/hooks/useToasts";
 
-function SectionCard({ title, status, onSave, children }) {
-  const { saving, saved, error } = status ?? {};
+const AUTO_SAVE_INTERVAL_SEC = 5 * 60;
+
+function SectionCard({ title, children }) {
   return (
     <div className="bg-white rounded-2xl border border-grey-2 p-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-sub-tit-3 font-bold text-grey-10">{title}</h2>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saving}
-            className="px-5 py-2 rounded-xl bg-primary text-white text-body-5 font-semibold disabled:opacity-50 transition-colors"
-          >
-            {saving ? "저장 중..." : "저장"}
-          </button>
-          {saved && <span className="text-caption text-blue-7">저장됨</span>}
-          {error && (
-            <span className="text-caption text-red-500">
-              {typeof error === "string" ? error : "저장 실패, 다시 시도해 주세요."}
-            </span>
-          )}
-        </div>
-      </div>
+      <h2 className="text-sub-tit-3 font-bold text-grey-10 mb-5">{title}</h2>
       {children}
     </div>
   );
@@ -69,6 +56,7 @@ export default function JuboManage() {
   const [issueNo, setIssueNo] = useState("");
   const [juboDate, setJuboDate] = useState("");
   const [version, setVersion] = useState("v1");
+  const [coverImageUrl, setCoverImageUrl] = useState(null);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState(false);
 
@@ -76,20 +64,11 @@ export default function JuboManage() {
   const [publishError, setPublishError] = useState(false);
   const [published, setPublished] = useState(false);
 
-  const sectionRefs = useRef({});
-  const statusCallbacks = useRef({});
-  const [statusMap, setStatusMap] = useState({});
+  const [draftSaving, setDraftSaving] = useState(false);
+  const [secondsUntilAutoSave, setSecondsUntilAutoSave] = useState(AUTO_SAVE_INTERVAL_SEC);
 
-  // onStatusChange는 자식의 effect 의존성 배열에 들어가므로, 렌더마다 새 함수를 주면
-  // (상태가 실제로는 안 바뀌어도) 매 렌더 effect가 재실행 → setStatusMap → 재렌더로
-  // 이어지는 무한 루프가 생긴다. 키별로 한 번만 만들어 재사용한다.
-  function getStatusCallback(key) {
-    if (!statusCallbacks.current[key]) {
-      statusCallbacks.current[key] = (status) =>
-        setStatusMap((prev) => ({ ...prev, [key]: status }));
-    }
-    return statusCallbacks.current[key];
-  }
+  const sectionRefs = useRef({});
+  const { toasts, pushToast } = useToasts();
 
   useEffect(() => {
     if (draft && juboId === null) {
@@ -97,6 +76,7 @@ export default function JuboManage() {
       setIssueNo(draft.issueNo);
       setJuboDate(draft.juboDate);
       setVersion(draft.juboTemplateVersion ?? "");
+      setCoverImageUrl(draft.coverImageUrl ?? null);
     }
   }, [draft, juboId]);
 
@@ -116,6 +96,7 @@ export default function JuboManage() {
         juboTemplateVersion: version || undefined,
       });
       setJuboId(created.id);
+      setCoverImageUrl(created.coverImageUrl ?? null);
       setPublished(false);
     } catch (err) {
       console.error("[JuboManage] 주보 생성 실패:", err);
@@ -128,6 +109,7 @@ export default function JuboManage() {
   function handleCancelDraft() {
     if (!window.confirm("작성 중인 주보를 닫으시겠습니까? 저장하지 않은 섹션 내용은 사라집니다."))
       return;
+    clearJuboDraftLocal(juboId);
     setJuboId(null);
     setIssueNo("");
     setJuboDate("");
@@ -140,6 +122,7 @@ export default function JuboManage() {
     setPublishError(false);
     try {
       await publishJubo(church.id, juboId);
+      clearJuboDraftLocal(juboId);
       setPublished(true);
       refetchInfo();
     } catch (err) {
@@ -149,6 +132,61 @@ export default function JuboManage() {
       setPublishing(false);
     }
   }
+
+  // 섹션별 "저장"과는 별개로, 전체 호를 한 번에 임시저장한다(자소서 사이트의 우측 하단
+  // 고정 임시저장 버튼과 같은 패턴) — 각 섹션 에디터의 getDraft()로 지금 화면에 입력된
+  // 값을 모아 트랜잭션 하나로 보내고, 네트워크 성공 여부와 무관하게 로컬에도 백업한다.
+  async function handleSaveDraft() {
+    setDraftSaving(true);
+    const sections = Object.values(sectionRefs.current).reduce(
+      (acc, sectionRef) => (sectionRef?.getDraft ? { ...acc, ...sectionRef.getDraft() } : acc),
+      {},
+    );
+    const payload = {
+      issueNo,
+      juboDate,
+      coverImageUrl,
+      juboTemplateVersion: version || undefined,
+      sections,
+    };
+    saveJuboDraftLocal(juboId, payload);
+    try {
+      await saveJuboDraft(church.id, juboId, payload);
+      pushToast("임시저장 완료");
+    } catch (err) {
+      console.error("[JuboManage] 임시저장 실패:", err);
+      pushToast("임시저장 실패 — 이 기기에는 백업해 두었습니다", "error");
+    } finally {
+      setDraftSaving(false);
+      setSecondsUntilAutoSave(AUTO_SAVE_INTERVAL_SEC);
+    }
+  }
+
+  // 5분마다 임시저장 버튼을 자동으로 누른 것처럼 동작한다 — ref에 최신 handleSaveDraft를
+  // 담아두고 그걸 호출해서, setInterval을 매 렌더 다시 걸지 않아도 항상 최신 입력값으로 저장된다.
+  // 1초 틱으로 카운트다운하다가 0에 도달하면 저장하고 다시 5분으로 리셋한다(= 다음 자동저장까지 표시).
+  const handleSaveDraftRef = useRef(handleSaveDraft);
+  useEffect(() => {
+    handleSaveDraftRef.current = handleSaveDraft;
+  });
+
+  useEffect(() => {
+    if (!juboId) return;
+    const tick = setInterval(() => {
+      setSecondsUntilAutoSave((prev) => {
+        if (prev <= 1) {
+          handleSaveDraftRef.current();
+          return AUTO_SAVE_INTERVAL_SEC;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [juboId]);
+
+  const autoSaveLabel = `${String(Math.floor(secondsUntilAutoSave / 60)).padStart(2, "0")}:${String(
+    secondsUntilAutoSave % 60,
+  ).padStart(2, "0")}`;
 
   return (
     <div>
@@ -231,179 +269,138 @@ export default function JuboManage() {
         </div>
       ) : (
         <>
-          <div className="mb-5 flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-blue-1 border border-blue-3 text-caption text-blue-9">
-            <span>
-              작성 중 새로고침하면 저장하지 않은 내용은 유실됩니다. 섹션별로 저장 버튼을 눌러
-              진행 상황을 지켜주세요.
-            </span>
-            <button
-              onClick={handleCancelDraft}
-              className="shrink-0 text-caption font-semibold text-blue-9 underline"
-              type="button"
-            >
-              작성 취소
-            </button>
-          </div>
-
-          <div className="grid gap-5">
-            <SectionCard
-              title="표지"
-              status={statusMap.cover}
-              onSave={() => sectionRefs.current.cover?.save()}
-            >
+          <div className="grid gap-5 pb-5">
+            <SectionCard title="표지">
               <CoverSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.cover = el;
                 }}
-                onStatusChange={getStatusCallback("cover")}
               />
             </SectionCard>
-            <SectionCard
-              title="예배"
-              status={statusMap.worship}
-              onSave={() => sectionRefs.current.worship?.save()}
-            >
+            <SectionCard title="예배">
               <WorshipSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.worship = el;
                 }}
-                onStatusChange={getStatusCallback("worship")}
               />
             </SectionCard>
-            <SectionCard
-              title="소식"
-              status={statusMap.news}
-              onSave={() => sectionRefs.current.news?.save()}
-            >
+            <SectionCard title="소식">
               <NewsSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.news = el;
                 }}
-                onStatusChange={getStatusCallback("news")}
               />
             </SectionCard>
-            <SectionCard
-              title="봉사"
-              status={statusMap.volunteer}
-              onSave={() => sectionRefs.current.volunteer?.save()}
-            >
+            <SectionCard title="봉사">
               <VolunteerSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.volunteer = el;
                 }}
-                onStatusChange={getStatusCallback("volunteer")}
               />
             </SectionCard>
-            <SectionCard
-              title="예물"
-              status={statusMap.offering}
-              onSave={() => sectionRefs.current.offering?.save()}
-            >
+            <SectionCard title="예물">
               <OfferingSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.offering = el;
                 }}
-                onStatusChange={getStatusCallback("offering")}
               />
             </SectionCard>
-            <SectionCard
-              title="후원"
-              status={statusMap.support}
-              onSave={() => sectionRefs.current.support?.save()}
-            >
+            <SectionCard title="후원">
               <SupportSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.support = el;
                 }}
-                onStatusChange={getStatusCallback("support")}
               />
             </SectionCard>
-            <SectionCard
-              title="구역"
-              status={statusMap.district}
-              onSave={() => sectionRefs.current.district?.save()}
-            >
+            <SectionCard title="구역">
               <DistrictSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.district = el;
                 }}
-                onStatusChange={getStatusCallback("district")}
               />
             </SectionCard>
-            <SectionCard
-              title="섬기는 분들"
-              status={statusMap.ministers}
-              onSave={() => sectionRefs.current.ministers?.save()}
-            >
+            <SectionCard title="섬기는 분들">
               <MinistersSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.ministers = el;
                 }}
-                onStatusChange={getStatusCallback("ministers")}
               />
             </SectionCard>
-            <SectionCard
-              title="말씀"
-              status={statusMap.sermonNote}
-              onSave={() => sectionRefs.current.sermonNote?.save()}
-            >
+            <SectionCard title="말씀">
               <SermonNoteSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.sermonNote = el;
                 }}
-                onStatusChange={getStatusCallback("sermonNote")}
               />
             </SectionCard>
-            <SectionCard
-              title="기도제목"
-              status={statusMap.prayerTopics}
-              onSave={() => sectionRefs.current.prayerTopics?.save()}
-            >
+            <SectionCard title="기도제목">
               <PrayerTopicsSectionEditor
                 churchId={church.id}
                 juboId={juboId}
                 ref={(el) => {
                   sectionRefs.current.prayerTopics = el;
                 }}
-                onStatusChange={getStatusCallback("prayerTopics")}
               />
             </SectionCard>
           </div>
 
-          <div className="mt-6 flex flex-col items-center justify-center gap-3">
-            <button
-              onClick={handlePublish}
-              disabled={publishing || published}
-              className="px-16 py-4 rounded-xl bg-primary text-white text-body-2 font-bold disabled:opacity-50 transition-colors"
-            >
-              {published ? "발행 완료" : publishing ? "발행 중..." : "발행하기"}
-            </button>
-            {publishError && (
-              <span className="text-caption text-red-500">
-                발행에 실패했습니다. 다시 시도해 주세요.
-              </span>
-            )}
+          <div className="sticky bottom-0 z-10 -mx-8 -mb-8 border-t border-grey-2 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+            <div className="flex items-center justify-end gap-3 px-8 py-3">
+              {publishError && (
+                <span className="mr-auto text-caption text-red-500">
+                  발행에 실패했습니다. 다시 시도해 주세요.
+                </span>
+              )}
+              <button
+                onClick={handleCancelDraft}
+                className="px-5 py-2.5 rounded-xl border border-grey-3 text-grey-7 text-body-4 font-semibold hover:border-grey-5 transition-colors"
+                type="button"
+              >
+                취소
+              </button>
+              <div className="flex items-center gap-2 rounded-xl border border-grey-3 px-4 py-2.5">
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={draftSaving}
+                  className="text-body-4 font-semibold text-grey-9 disabled:opacity-60 transition-colors"
+                >
+                  {draftSaving ? "저장 중..." : "임시저장"}
+                </button>
+                <span className="text-grey-3">|</span>
+                <span className="text-body-4 text-grey-5 tabular-nums">{autoSaveLabel}</span>
+              </div>
+              <button
+                onClick={handlePublish}
+                disabled={publishing || published}
+                className="px-8 py-2.5 rounded-xl bg-primary text-white text-body-4 font-bold disabled:opacity-50 transition-colors"
+              >
+                {published ? "완료됨" : publishing ? "처리 중..." : "완료"}
+              </button>
+            </div>
           </div>
         </>
       )}
+
+      <ToastStack toasts={toasts} />
     </div>
   );
 }
