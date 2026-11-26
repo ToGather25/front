@@ -1,10 +1,21 @@
-import { describe, it, expect } from "vite-plus/test";
+import { describe, it, expect, beforeAll } from "vite-plus/test";
 import { render, fireEvent, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { routes } from "@/routes";
 import { ChurchProvider } from "@/contexts/ChurchContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import churchConfig from "@/config/church.config";
+
+// 홈 라우트("/")는 MainBanner를 렌더하는데, MainBanner는 제목 줄바꿈 여부를 재려고
+// canvas 2d context로 measureText를 쓴다. jsdom은 canvas 2d context를 구현하지
+// 않아 getContext가 null을 반환 → MainBanner가 렌더 중 크래시 → RouterProvider의
+// 에러 바운더리가 전체 트리를 대체해버려서 이 파일의 모든 header 쿼리가 깨진다.
+// 이 테스트는 메가메뉴만 검증하므로 canvas를 최소 스텁으로 채워 크래시를 피한다.
+beforeAll(() => {
+  HTMLCanvasElement.prototype.getContext = () => ({
+    measureText: () => ({ width: 0 }),
+  });
+});
 
 // RootLayout은 DesktopHeader(<header class="... hidden md:block">)와 MobileHeader
 // (<header class="... md:hidden">) 두 개의 <header>를 함께 렌더하고, MobileDrawer의

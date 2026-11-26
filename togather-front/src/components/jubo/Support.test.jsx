@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { renderWithChurch } from "@/test/renderWithChurch";
 import Support from "./Support";
 
@@ -28,15 +28,11 @@ describe("Support — 후원", () => {
     }
   });
 
-  it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
+  it("조회 실패 시 안내 문구를 보여준다(재시도 버튼 없음)", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
     renderWithChurch(<Support />);
     expect(await screen.findByText("후원 안내를 불러오지 못했습니다.")).toBeInTheDocument();
-
-    api.get.mockResolvedValue({ data: { data: SUPPORT } });
-    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
-
-    expect(await screen.findByText("베트남")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 
   it("404 응답이면 발행된 주보가 없다는 안내를 보여주고 재시도 버튼은 없다", async () => {

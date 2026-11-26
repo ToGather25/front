@@ -47,10 +47,10 @@ describe("Cover — 표지", () => {
   it("조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
     renderWithChurch(<Cover />);
-    expect(await screen.findByText("주보 정보를 불러오지 못했습니다. 다시 시도")).toBeInTheDocument();
+    expect(await screen.findByText("주보 정보를 불러오지 못했습니다.")).toBeInTheDocument();
 
     api.get.mockResolvedValue({ data: { data: { issueNo: "제10-7", date: "2026년 2월 15일" } } });
-    fireEvent.click(screen.getByRole("button", { name: "주보 정보를 불러오지 못했습니다. 다시 시도" }));
+    fireEvent.click(screen.getByRole("button", { name: "주보 정보를 불러오지 못했습니다." }));
 
     expect(await screen.findByText("제10-7")).toBeInTheDocument();
   });
@@ -60,7 +60,7 @@ describe("Cover — 표지", () => {
     renderWithChurch(<Cover />);
     expect(await screen.findByText("아직 발행된 주보가 없습니다.")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "주보 정보를 불러오지 못했습니다. 다시 시도" }),
+      screen.queryByRole("button", { name: "주보 정보를 불러오지 못했습니다." }),
     ).not.toBeInTheDocument();
   });
 });

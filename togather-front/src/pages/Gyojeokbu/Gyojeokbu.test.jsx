@@ -66,7 +66,7 @@ describe("Gyojeokbu — 검색·필터", () => {
     const input = screen.getByPlaceholderText("이름, 구역, 부서, 소그룹으로 검색");
     fireEvent.change(input, { target: { value: "존재하지않는이름12345" } });
 
-    expect(screen.getByText("검색 결과가 없습니다")).toBeInTheDocument();
+    expect(screen.getByText("검색 결과가 없습니다.")).toBeInTheDocument();
   });
 
   it("구역 필터 칩은 실제 명부에 있는 구역만 동적으로 보여주고, 선택하면 해당 구역만 표시된다", async () => {
@@ -82,15 +82,11 @@ describe("Gyojeokbu — 검색·필터", () => {
     expect(within(table).queryByText("김하은")).not.toBeInTheDocument();
   });
 
-  it("명부 조회에 실패하면 다시 시도 버튼이 표시되고, 누르면 재조회한다", async () => {
+  it("명부 조회에 실패하면 안내 문구를 보여준다(재시도 버튼 없음)", async () => {
     api.get.mockRejectedValueOnce(new Error("network"));
-    const { container } = renderWithChurch(<Gyojeokbu />, { withAuth: true });
+    renderWithChurch(<Gyojeokbu />, { withAuth: true });
 
-    const retry = await screen.findByRole("button", { name: "다시 시도" });
-    api.get.mockResolvedValueOnce({ data: { data: DIRECTORY } });
-    fireEvent.click(retry);
-
-    const table = await screen.findByRole("table");
-    expect(within(container.querySelector("table") ?? table).getByText(DIRECTORY[0].name)).toBeInTheDocument();
+    expect(await screen.findByText("교적부를 불러오지 못했습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 });

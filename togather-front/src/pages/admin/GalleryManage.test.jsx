@@ -144,21 +144,11 @@ describe("GalleryManage", () => {
     expect(screen.getByText("여름 수련회")).toBeInTheDocument();
   });
 
-  it("공동체 조회 실패 시 재시도 버튼이 뜨고 클릭하면 다시 조회한다", async () => {
+  it("공동체 조회 실패 시 안내 문구를 보여준다(재시도 버튼 없음)", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
     renderWithChurch(<GalleryManage />);
 
-    expect(await screen.findByText("불러오지 못했습니다. 다시 시도해 주세요.")).toBeInTheDocument();
-
-    api.get.mockImplementation((url) => {
-      if (url === "/churches/1/communities") {
-        return Promise.resolve({ data: { data: COMMUNITIES } });
-      }
-      return Promise.resolve({ data: { data: PHOTOS } });
-    });
-    await user.click(screen.getByRole("button", { name: "다시 시도" }));
-
-    expect(await screen.findByText("청년부")).toBeInTheDocument();
+    expect(await screen.findByText("공동체를 불러오지 못했습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 });

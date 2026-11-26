@@ -52,19 +52,12 @@ describe("WorshipManage — 설교 관리자 CRUD", () => {
     });
   });
 
-  it("목록 조회에 실패하면 재시도 버튼이 뜨고, 클릭하면 다시 조회한다", async () => {
+  it("목록 조회에 실패하면 안내 문구를 보여준다(재시도 버튼 없음)", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
-    const user = userEvent.setup();
     renderWithChurch(<WorshipManage />);
 
-    expect(
-      await screen.findByText("설교 목록을 불러오지 못했습니다. 다시 시도해 주세요."),
-    ).toBeInTheDocument();
-
-    mockEmptyList();
-    await user.click(screen.getByRole("button", { name: "다시 시도" }));
-
-    expect(await screen.findByText("등록된 설교가 없습니다.")).toBeInTheDocument();
+    expect(await screen.findByText("설교 목록을 불러오지 못했습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 
   it("조회수 컬럼이 없다", async () => {

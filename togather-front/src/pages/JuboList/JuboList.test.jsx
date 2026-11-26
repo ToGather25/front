@@ -37,12 +37,11 @@ describe("JuboList — 주보 발행 목록", () => {
     });
   });
 
-  it("발행 목록을 카드로 렌더하고, 최신호에 '이번 주 주보' 배지를 단다", async () => {
+  it("발행 목록을 표로 렌더한다", async () => {
     renderWithChurch(<JuboList />, { withRouter: true });
     expect(
       await screen.findByText("이러한 율법을 행하는 이방인이 정죄하리라"),
     ).toBeInTheDocument();
-    expect(screen.getByText("이번 주 주보")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /이러한 율법을 행하는 이방인이 정죄하리라/ }),
     ).toHaveAttribute("href", "/주보?issue=10");

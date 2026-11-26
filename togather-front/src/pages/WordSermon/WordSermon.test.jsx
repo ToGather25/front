@@ -89,15 +89,11 @@ describe("WordSermon — 예배 목록(서버 검색)", () => {
     expect(screen.getByRole("button", { name: "3" })).toBeInTheDocument();
   });
 
-  it("조회 실패 시 재시도 버튼이 노출되고 클릭하면 다시 조회한다", async () => {
+  it("조회 실패 시 안내 문구를 보여준다(재시도 버튼 없음)", async () => {
     api.get.mockRejectedValueOnce(new Error("network error"));
     renderWithChurch(<WordSermon />, { initialEntries: ["/말씀/설교"] });
 
-    expect(await screen.findByText("불러오지 못했습니다. 다시 시도해 주세요.")).toBeInTheDocument();
-
-    mockSearch(SERMONS);
-    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
-
-    expect(await screen.findByText("부활의 능력")).toBeInTheDocument();
+    expect(await screen.findByText("데이터를 불러오지 못했습니다.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "다시 시도" })).not.toBeInTheDocument();
   });
 });
