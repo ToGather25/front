@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router";
 import { YEAR_OPTIONS, MONTH_OPTIONS, daysInMonth } from "@/pages/Register/registerFields";
 
 const inputCls =
-  "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+  "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:border-blue-7 outline-none transition-all";
 
 const STEP_COUNT = 4;
 const WHEEL_ITEM_HEIGHT = 44;
@@ -18,33 +18,6 @@ const AGREEMENT_ITEMS = [
   { key: "marketing", required: false, label: "마케팅 및 광고 활용" },
 ];
 const REQUIRED_AGREEMENT_KEYS = AGREEMENT_ITEMS.filter((i) => i.required).map((i) => i.key);
-
-// iOS Safari는 키보드가 올라와도 fixed 요소를 layout viewport(키보드 포함 전체 높이)
-// 기준으로 그대로 둬서, 하단 고정 버튼이 키보드에 가려지거나 떠버린다. visualViewport로
-// 실제 보이는 영역을 추적해 키보드 높이만큼 버튼을 밀어올린다(Android는 보통 0).
-function useKeyboardInset() {
-  const [inset, setInset] = useState(0);
-
-  useEffect(() => {
-    const viewport = window.visualViewport;
-    if (!viewport) return;
-
-    function update() {
-      const offset = window.innerHeight - viewport.height - viewport.offsetTop;
-      setInset(Math.max(0, Math.round(offset)));
-    }
-
-    update();
-    viewport.addEventListener("resize", update);
-    viewport.addEventListener("scroll", update);
-    return () => {
-      viewport.removeEventListener("resize", update);
-      viewport.removeEventListener("scroll", update);
-    };
-  }, []);
-
-  return inset;
-}
 
 function CheckIcon({ checked, className = "" }) {
   return (
@@ -129,8 +102,8 @@ function BirthdateWheelPicker({ form, onChange, onClose }) {
   return (
     <div className="fixed inset-0 z-[300] flex items-end">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
-        <div className="relative flex px-4 pt-2">
+      <div className="relative w-full bg-white rounded-t-2xl pt-2 pb-[env(safe-area-inset-bottom)]">
+        <div className="relative flex px-4">
           <WheelColumn
             name="birthYear"
             options={YEAR_OPTIONS}
@@ -192,7 +165,6 @@ export default function MobileRegister({ form, status, submitError, onChange, on
   const [revealedCount, setRevealedCount] = useState(1);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const latestBlockRef = useRef(null);
-  const keyboardInset = useKeyboardInset();
 
   // 약관 5개 항목은 이 화면에서만 쓰는 상태다 — 백엔드는 지금 agreePrivacy 하나만 받으므로,
   // 필수 항목이 전부 체크됐을 때만 실제 제출에 쓰이는 agreePrivacy를 true로 동기화한다.
@@ -261,16 +233,11 @@ export default function MobileRegister({ form, status, submitError, onChange, on
     }
   }
 
-  const bottomBarStyle = {
-    bottom: keyboardInset,
-    paddingBottom: keyboardInset > 0 ? "16px" : "calc(16px + env(safe-area-inset-bottom))",
-  };
-
   // 약관 동의는 토스처럼 아래에 쌓이지 않고, 참고 디자인처럼 완전히 새로운 화면으로 전환된다.
   if (isLastStep) {
     return (
       <form onSubmit={onSubmit} className="h-[calc(100dvh-72px)] flex flex-col">
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 pb-28 flex flex-col">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 flex flex-col">
           <BackButton onClick={() => setRevealedCount(STEP_COUNT - 1)} />
 
           <div className="flex-1 min-h-0 flex flex-col justify-center gap-5">
@@ -320,7 +287,7 @@ export default function MobileRegister({ form, status, submitError, onChange, on
           </div>
         </div>
 
-        <div className="fixed left-0 right-0 bg-white border-t border-grey-2 px-6 py-4" style={bottomBarStyle}>
+        <div className="shrink-0 bg-white border-t border-grey-2 px-6 pt-4 pb-[calc(16px+env(safe-area-inset-bottom))]">
           <button
             type="submit"
             disabled={status === "submitting" || !form.agreePrivacy}
@@ -335,7 +302,7 @@ export default function MobileRegister({ form, status, submitError, onChange, on
 
   return (
     <div className="h-[calc(100dvh-72px)] flex flex-col" onKeyDown={handleFormKeyDown}>
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 pb-28 flex flex-col">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 flex flex-col">
         <BackButton onClick={() => navigate(-1)} />
 
         <div className="flex-1 min-h-0 flex flex-col justify-center gap-8">
@@ -405,8 +372,9 @@ export default function MobileRegister({ form, status, submitError, onChange, on
         </div>
       </div>
 
-      {/* 확인 버튼 — 화면 하단에 고정(키보드가 올라오면 그 위로 따라 올라간다) */}
-      <div className="fixed left-0 right-0 bg-white border-t border-grey-2 px-6 py-4" style={bottomBarStyle}>
+      {/* 확인 버튼 — fixed 대신 flex 흐름의 마지막 자식. 컨테이너가 100dvh 기준이라
+          키보드가 올라와 dvh가 줄어들면 레이아웃 전체가 줄어들며 버튼도 자동으로 따라 올라간다. */}
+      <div className="shrink-0 bg-white border-t border-grey-2 px-6 pt-4 pb-[calc(16px+env(safe-area-inset-bottom))]">
         <button
           type="button"
           onClick={handleNext}

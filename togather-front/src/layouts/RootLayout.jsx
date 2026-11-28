@@ -1,4 +1,4 @@
-import { Outlet, Link, NavLink, useLocation } from "react-router";
+import { Outlet, Link, NavLink, useLocation, useNavigate } from "react-router";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { ChurchProvider, useChurch } from "@/contexts/ChurchContext";
@@ -513,52 +513,6 @@ function MobileHeader({ onMenuOpen, visible, barRef }) {
 // ─────────────────────────────────────────────────────
 // Mobile Drawer
 // ─────────────────────────────────────────────────────
-const MOBILE_NAV = [
-  {
-    section: "교회소개",
-    items: [
-      { label: "예배시간", to: "/말씀?tab=예배 안내" },
-      { label: "섬기는 사람들", to: "/교회소개?tab=섬기는 사람들" },
-      { label: "안내", to: "/교회소개?tab=오시는 길" },
-    ],
-  },
-  {
-    section: "주일학교",
-    items: [
-      { label: "유치부", to: "/주일학교?tab=유치부" },
-      { label: "초등부", to: "/주일학교?tab=초등부" },
-      { label: "중고등부", to: "/주일학교?tab=중·고등부" },
-      { label: "대학청년부", to: "/주일학교?tab=대학·청년부" },
-    ],
-  },
-  {
-    section: "전도・선교",
-    items: [
-      { label: "전도회 소개", to: "/전도선교?tab=전도회 소개" },
-      { label: "국내외 선교", to: "/전도선교?tab=국내외 선교" },
-      { label: "선교지 소식", to: "/전도선교?tab=선교지 소식" },
-    ],
-  },
-  {
-    section: "양육・훈련 게시판",
-    items: [
-      { label: "구역 모임", to: "/양육훈련?tab=구역모임" },
-      { label: "오늘의 묵상", to: "/양육훈련?tab=오늘의 묵상" },
-      { label: "제자 훈련", to: "/양육훈련?tab=제자훈련" },
-      { label: "양육 프로그램", to: "/양육훈련?tab=양육프로그램" },
-      { label: "양육・훈련 게시판", to: "/양육훈련?tab=양육/훈련 게시판" },
-      { label: "성경 읽기/쓰기", to: "/양육훈련?tab=성경읽기/쓰기" },
-    ],
-  },
-  {
-    section: "교회 소식",
-    items: [
-      { label: "공지사항", to: "/공지사항" },
-      { label: "교회행사", to: "/교회행사" },
-      { label: "갤러리", to: "/갤러리" },
-    ],
-  },
-];
 
 function MobileDrawer({ isOpen, onClose }) {
   const { church } = useChurch();
@@ -595,23 +549,34 @@ function MobileDrawer({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* 네비게이션 */}
+        {/* 네비게이션 — 데스크톱 메가메뉴와 같은 church.nav를 쓴다(하드코딩 중복 방지) */}
         <nav className="flex-1 overflow-y-auto py-2">
-          {MOBILE_NAV.map(({ section, items }) => (
-            <div key={section}>
-              <p className="p-4 text-[12px] font-semibold text-grey-5 border-b border-bluegrey-3">{section}</p>
-              {items.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  onClick={onClose}
-                  className="block px-5 py-3 text-[15px] font-medium text-grey-10"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          ))}
+          {church.nav.map((item) =>
+            item.children ? (
+              <div key={item.label}>
+                <p className="p-4 text-[12px] font-semibold text-grey-5 border-b border-bluegrey-3">{item.label}</p>
+                {item.children.map((child) => (
+                  <Link
+                    key={child.label}
+                    to={child.to}
+                    onClick={onClose}
+                    className="block px-5 py-3 text-[15px] font-medium text-grey-10"
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <Link
+                key={item.label}
+                to={item.to}
+                onClick={onClose}
+                className="block px-5 py-3 text-[15px] font-medium text-grey-10 border-b border-bluegrey-3"
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         {/* 로그아웃 / 로그인·회원가입 */}
@@ -757,6 +722,11 @@ function BottomNav() {
   // match 비교들이 리터럴 한글 문자열과 맞춰지도록 디코딩해서 사용한다.
   const { pathname: rawPathname } = useLocation();
   const pathname = decodeURIComponent(rawPathname);
+  const navigate = useNavigate();
+  const railRef = useRef(null);
+  const touchRef = useRef({ startX: 0, width: 0 });
+  // 드래그 중에는 숫자(소수 포함) 인덱스로 손가락을 1:1 추적하고, 손을 떼면 null로 돌아가 activeIndex 기준 스냅 애니메이션을 탄다.
+  const [dragIndex, setDragIndex] = useState(null);
 
   if (HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p))) return null;
 
@@ -779,19 +749,54 @@ function BottomNav() {
   ];
 
   const activeIndex = tabs.findIndex((tab) => tab.match(pathname));
+  const isDragging = dragIndex !== null;
+  // 드래그 중엔 activeIndex가 없는 화면(교회소개 등)이라도 손가락이 짚은 위치를 기준으로 인디케이터를 보여준다.
+  const indicatorIndex = isDragging ? dragIndex : activeIndex;
+
+  const handleTouchStart = (e) => {
+    if (activeIndex === -1 || !railRef.current) return;
+    touchRef.current = { startX: e.touches[0].clientX, width: railRef.current.offsetWidth };
+    setDragIndex(activeIndex);
+  };
+
+  const handleTouchMove = (e) => {
+    if (dragIndex === null) return;
+    const tabWidth = touchRef.current.width / tabs.length;
+    const dx = e.touches[0].clientX - touchRef.current.startX;
+    const next = Math.min(tabs.length - 1, Math.max(0, activeIndex + dx / tabWidth));
+    setDragIndex(next);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragIndex === null) return;
+    const target = Math.round(dragIndex);
+    setDragIndex(null);
+    if (target !== activeIndex) {
+      navigator.vibrate?.(10);
+      void navigate(tabs[target].to);
+    }
+  };
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-gradient-to-b from-bluegrey-1/0 to-bluegrey-1 pt-[10px] pb-[calc(21px+env(safe-area-inset-bottom))] pointer-events-none md:hidden"
     >
-      <nav className="relative w-[400px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/55 backdrop-blur-xl border border-white/50 shadow-[0px_3px_40px_0px_rgba(36,42,57,0.08)] pointer-events-auto">
+      <nav
+        ref={railRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        className="relative w-[400px] max-w-[calc(100%-38px)] h-[60px] rounded-full bg-white/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/50 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0px_3px_40px_0px_rgba(36,42,57,0.1)] touch-none pointer-events-auto"
+      >
         {/* 활성 탭 배경 — 탭이 바뀔 때 슬라이드로 따라 이동한다(overshoot로 살짝 통통 튀는 느낌).
+            드래그 중에는 손가락을 1:1로 따라가야 하니 transition을 끄고, 손을 떼는 순간 다시 스프링 애니메이션을 켠다.
             어떤 탭과도 매치되지 않는 화면(예: 교회소개)에서는 보여줄 위치가 없으니 숨긴다. */}
-        {activeIndex !== -1 && (
+        {indicatorIndex !== -1 && (
           <div
-            className="absolute top-1 bottom-1 rounded-full bg-bluegrey-2/80 backdrop-blur-sm transition-[left] duration-[350ms]"
+            className={`absolute top-1 bottom-1 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_2px_0_rgba(255,255,255,0.9),0_2px_10px_0_rgba(59,82,128,0.18)] ${isDragging ? "" : "transition-[left] duration-[350ms]"}`}
             style={{
-              left: `calc(${activeIndex} * ${100 / tabs.length}% + 4px)`,
+              left: `calc(${indicatorIndex} * ${100 / tabs.length}% + 4px)`,
               width: `calc(${100 / tabs.length}% - 8px)`,
               transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
@@ -805,7 +810,7 @@ function BottomNav() {
                 key={tab.label}
                 to={tab.to}
                 onClick={() => navigator.vibrate?.(10)}
-                className="flex-1 flex flex-col items-center justify-center gap-1"
+                className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform duration-150"
               >
                 {tab.icon(active)}
                 <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-grey-6"}`}>{tab.label}</span>
@@ -843,6 +848,9 @@ function Layout() {
   const showBottomNav = !HIDE_BOTTOM_NAV_ON.some((p) => pathname.startsWith(p));
   const hideFooterOnMobile = HIDE_FOOTER_ON_MOBILE.some((p) => pathname.startsWith(p));
   const isBiblePage = BIBLE_PAGES.some((p) => pathname.startsWith(p));
+  // 모바일에서 푸터가 보이면 푸터 자신이 바텀 네비 높이만큼 하단 여백을 이미 두므로,
+  // main에 또 같은 여백을 주면 콘텐츠와 푸터 사이에 빈 공간이 이중으로 생긴다.
+  const footerVisibleOnMobile = !isBiblePage && !hideFooterOnMobile;
   const isHome = pathname === "/";
   // 홈 히어로 배너 위에서만(맨 위 근처) 헤더를 투명하게 — 배너가 헤더 뒤까지 차오르는 연출.
   const headerTransparent = isHome && atTop;
@@ -893,7 +901,7 @@ function Layout() {
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {/* 페이지 컨텐츠 */}
-      <main className={`flex-1 ${showBottomNav ? "pb-[var(--bottom-nav-h)] md:pb-0" : ""}`}>
+      <main className={`flex-1 ${showBottomNav && !footerVisibleOnMobile ? "pb-[var(--bottom-nav-h)] md:pb-0" : ""}`}>
         <Outlet />
       </main>
 

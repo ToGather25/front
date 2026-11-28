@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth";
 import { useChurch } from "@/contexts/ChurchContext";
 import { useFetch } from "@/hooks/useFetch";
@@ -35,6 +35,16 @@ const CATEGORY_COLORS = {
 export default function Nurture() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "성경읽기/쓰기";
+  const navigate = useNavigate();
+
+  // "성경읽기/쓰기" 탭은 이 페이지 안에 전용 모바일 화면이 없다 — 모바일에서는
+  // 실제 모바일 화면(MobileBible)을 가진 /말씀/읽기로 바로 보낸다.
+  useEffect(() => {
+    if (activeTab === "성경읽기/쓰기" && window.innerWidth < 768) {
+      void navigate("/말씀/읽기", { replace: true });
+    }
+  }, [activeTab, navigate]);
+
   const { church } = useChurch();
   const ZONES = church.districtMeetings ?? [];
   const NURTURE_PROGRAMS = church.nurturePrograms ?? [];
@@ -82,8 +92,9 @@ export default function Nurture() {
 
   return (
     <div>
-      {/* Hero Banner */}
-      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
+      {/* Hero Banner — 모바일은 흰 배경 + 제목만 */}
+      <h1 className="md:hidden px-5 pt-4.5 pb-2 text-sub-tit-3 font-bold text-grey-11">양육·훈련</h1>
+      <div className="hidden md:flex relative h-[150px] bg-blue-9 items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">양육·훈련</h1>
@@ -95,13 +106,13 @@ export default function Nurture() {
         className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
         style={{ top: "var(--header-offset)" }}
       >
-        <div className="max-w-[1400px] mx-auto px-8">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setSearchParams({ tab })}
-                className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
+                className={`px-3.5 py-3 text-body-5 md:px-5 md:py-5 md:text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
                     : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"

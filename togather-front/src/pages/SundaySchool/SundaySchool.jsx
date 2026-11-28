@@ -94,9 +94,10 @@ export default function SundaySchool() {
 
   return (
     <div>
-      {/* Hero Banner */}
+      {/* Hero Banner — 모바일은 흰 배경 + 제목만 */}
+      <h1 className="md:hidden px-5 pt-4.5 pb-2 text-sub-tit-3 font-bold text-grey-11">{dept.key}</h1>
       <div
-        className="relative h-[150px] bg-blue-9 flex flex-col justify-end overflow-hidden"
+        className="hidden md:flex relative h-[150px] bg-blue-9 flex-col justify-end overflow-hidden"
         style={
           dept.bgImage
             ? {
@@ -147,7 +148,7 @@ export default function SundaySchool() {
               <button
                 key={d.key}
                 onClick={() => setSearchParams({ tab: d.key })}
-                className={`px-6 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
+                className={`px-3.5 py-3 text-body-5 md:px-6 md:py-5 md:text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === d.key
                     ? "border-blue-8 text-blue-8"
                     : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"

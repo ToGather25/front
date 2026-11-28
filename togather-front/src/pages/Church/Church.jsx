@@ -6,6 +6,7 @@ import History from "@/components/church/History";
 import FloorGuide from "@/components/church/FloorGuide";
 import Direction from "@/components/church/Direction";
 import TransportGuide from "@/components/church/TransportGuide";
+import MobileChurch from "./MobileChurch";
 
 const TABS = [
   "인사말",
@@ -32,40 +33,46 @@ export default function Church() {
   const activeTab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "인사말";
 
   return (
-    <div>
-      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
-        <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
-          <h1 className="text-headline-4 font-bold text-white">교회 소개</h1>
-        </div>
+    <>
+      <div className="md:hidden">
+        <MobileChurch initialTab={activeTab} />
       </div>
 
-      <div
-        className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
-        style={{ top: "var(--header-offset)" }}
-      >
-        <div className="max-w-[1400px] mx-auto px-8">
-          <div className="flex overflow-x-auto">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSearchParams({ tab })}
-                className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
-                  activeTab === tab
-                    ? "border-blue-8 text-blue-8 font-semibold"
-                    : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+      <div className="hidden md:block">
+        <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
+          <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
+            <h1 className="text-headline-4 font-bold text-white">교회 소개</h1>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
-        {TAB_CONTENT[activeTab]}
+        <div
+          className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
+          style={{ top: "var(--header-offset)" }}
+        >
+          <div className="max-w-[1400px] mx-auto px-8">
+            <div className="flex overflow-x-auto">
+              {TABS.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSearchParams({ tab })}
+                  className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
+                    activeTab === tab
+                      ? "border-blue-8 text-blue-8 font-semibold"
+                      : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-[1400px] mx-auto px-4 pt-5 pb-15 md:px-8 md:pt-10 md:pb-25">
+          {TAB_CONTENT[activeTab]}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

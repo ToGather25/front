@@ -10,6 +10,7 @@ import { getBibleProgress, updateBibleProgress, updateBiblePosition } from "@/se
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
+import MobileBible from "@/components/bible/MobileBible";
 
 // ── 유틸 ───────────────────────────────────────────────
 function getChapters(bookAbbr) {
@@ -433,7 +434,11 @@ export default function BibleWrite() {
   }
 
   return (
-    <div className="flex h-screen">
+    <>
+      <div className="md:hidden">
+        <MobileBible mode="WRITE" />
+      </div>
+      <div className="hidden md:flex h-screen">
       {/* 공통 사이드바 */}
       <BibleSidebar
         sidebarOpen={sidebarOpen}
@@ -837,6 +842,7 @@ export default function BibleWrite() {
           onClose={() => setBookModalOpen(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }

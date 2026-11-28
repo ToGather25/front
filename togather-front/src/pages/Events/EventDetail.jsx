@@ -4,11 +4,11 @@ import { useFetch } from "@/hooks/useFetch";
 import { getEventById } from "@/services/eventsService";
 import { getDepartmentStyle } from "@/config/events.config";
 import { formatKoreanDate, formatTimeRange } from "@/utils/date";
-import { getRegistrationState } from "@/utils/eventStatus";
 import RegistrationButton from "@/components/events/RegistrationButton";
 import DefaultBanner from "@/assets/default_banner.png";
 import ArrowLeft from "@/assets/web-icon/arrow-narrow-left.svg";
 import BubbleLoader from "@/components/common/BubbleLoader";
+import MobileEventDetail from "./MobileEventDetail";
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -27,25 +27,32 @@ export default function EventDetail() {
     );
   }
 
-  if (!event) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-16 md:px-8 text-center">
-        <p className="text-body-2 text-grey-7 mb-4">행사를 찾을 수 없습니다.</p>
-        <Link
-          to="/교회행사"
-          className="text-body-4 text-blue-7 hover:text-blue-8 transition-colors"
-        >
-          ← 행사 캘린더로 돌아가기
-        </Link>
-      </div>
-    );
-  }
-
-  const ds = getDepartmentStyle(event.department);
-  const regState = getRegistrationState(event);
+  const ds = event ? getDepartmentStyle(event.department) : null;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pt-6 pb-28 md:px-8 md:pt-10 md:pb-10">
+    <>
+      <div className="md:hidden">
+        <MobileEventDetail event={event} onRegistered={refetch} />
+      </div>
+      <div className="hidden md:block">
+        {!event ? (
+          <div className="max-w-2xl mx-auto px-4 py-16 md:px-8 text-center">
+            <p className="text-body-2 text-grey-7 mb-4">행사를 찾을 수 없습니다.</p>
+            <Link to="/교회행사" className="text-body-4 text-blue-7 hover:text-blue-8 transition-colors">
+              ← 행사 캘린더로 돌아가기
+            </Link>
+          </div>
+        ) : (
+          <EventDetailDesktop event={event} ds={ds} refetch={refetch} />
+        )}
+      </div>
+    </>
+  );
+}
+
+function EventDetailDesktop({ event, ds, refetch }) {
+  return (
+    <div className="max-w-2xl mx-auto px-4 pt-6 pb-10 md:px-8 md:pt-10">
       <Link
         to="/교회행사"
         className="flex items-center gap-3 w-fit text-bluegrey-8 hover:text-primary transition-colors text-body-4 mb-4 group"
@@ -92,25 +99,9 @@ export default function EventDetail() {
       {/* Description */}
       <p className="text-body-2 text-grey-8 whitespace-pre-line mb-10">{event.description}</p>
 
-      {/* 신청 버튼 — 데스크탑 인라인 */}
-      <div className="hidden md:flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-2">
         <RegistrationButton event={event} size="lg" onRegistered={refetch} />
       </div>
-
-      {/* 신청 버튼 — 모바일 sticky bar (BottomNav 위, canRegister:false면 미노출) */}
-      {regState.status !== "none" && (
-        <div
-          className="md:hidden fixed left-0 right-0 z-40 bg-white border-t border-bluegrey-3 px-4 py-3"
-          style={{ bottom: "var(--bottom-nav-h)" }}
-        >
-          <RegistrationButton
-            event={event}
-            size="lg"
-            className="w-full !px-0"
-            onRegistered={refetch}
-          />
-        </div>
-      )}
     </div>
   );
 }

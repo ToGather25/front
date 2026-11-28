@@ -76,9 +76,9 @@ export default function Register() {
   };
 
   const inputCls =
-    "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+    "w-full px-4 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:border-blue-7 outline-none transition-all";
   const birthSelectCls =
-    "px-3 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 bg-white focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all";
+    "px-3 py-3 border border-bluegrey-3 rounded-xl text-body-3 text-grey-10 bg-white focus:border-blue-7 outline-none transition-all";
 
   if (status === "done") {
     return (

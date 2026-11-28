@@ -13,6 +13,7 @@ import { BOOK_MAP, BOOK_ABBREV, OT, NT, BIBLE_READ_SIDEBAR_MENUS } from "@/confi
 import BibleRankingView from "@/components/bible/BibleRankingView";
 import BibleVersesView from "@/components/bible/BibleVersesView";
 import BibleStatusView from "@/components/bible/BibleStatusView";
+import MobileBible from "@/components/bible/MobileBible";
 import IcoSearch from "@/assets/web-icon/search-grey.svg";
 
 // 성경 전체 검색 (키워드 → [{book, chapter, num, text}])
@@ -500,7 +501,10 @@ export default function BibleRead() {
   return (
     <>
       <BibleTutorial />
-      <div className="flex h-screen">
+      <div className="md:hidden">
+        <MobileBible mode="READ" />
+      </div>
+      <div className="hidden md:flex h-screen">
         {/* 공통 사이드바 */}
         <BibleSidebar
           sidebarOpen={sidebarOpen}

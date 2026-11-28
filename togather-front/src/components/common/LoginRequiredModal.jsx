@@ -3,11 +3,11 @@ import { Link } from "react-router";
 export default function LoginRequiredModal({ message, onCancel }) {
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-white md:bg-black/40"
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-[90vw] max-w-[320px] md:max-w-[450px] px-8 py-10 md:py-12 flex flex-col items-center gap-6"
+        className="w-full h-full md:h-auto md:w-[90vw] md:max-w-[450px] bg-white md:rounded-2xl md:shadow-2xl px-8 py-10 md:py-12 flex flex-col items-center justify-center gap-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-1 flex items-center justify-center">
@@ -31,7 +31,7 @@ export default function LoginRequiredModal({ message, onCancel }) {
           </p>
           <p className="text-body-4 md:text-body-3 text-grey-6">{message}</p>
         </div>
-        <div className="flex gap-3 w-full">
+        <div className="flex gap-3 w-full max-w-xs md:max-w-none">
           <button
             onClick={onCancel}
             className="flex-1 py-3 md:py-3.5 rounded-full border border-bluegrey-3 text-body-4 md:text-body-3 font-semibold text-grey-9 hover:border-blue-5 hover:text-primary transition-colors"

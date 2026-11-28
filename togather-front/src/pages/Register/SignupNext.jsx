@@ -107,7 +107,7 @@ export default function SignupNext() {
   };
 
   const inputCls = (field) =>
-    `w-full px-4 py-3 border rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:ring-2 focus:ring-blue-3/50 focus:border-blue-7 outline-none transition-all ${
+    `w-full px-4 py-3 border rounded-xl text-body-3 text-grey-10 placeholder:text-grey-5 focus:border-blue-7 outline-none transition-all ${
       errors[field] ? "border-red-400 bg-red-50" : "border-bluegrey-3"
     }`;
 

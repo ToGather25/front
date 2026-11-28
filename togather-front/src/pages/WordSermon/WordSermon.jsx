@@ -4,6 +4,7 @@ import { useChurch } from "@/contexts/ChurchContext";
 import WordTabBar from "@/components/word/WordTabBar";
 import WorshipInfo from "@/components/church/WorshipInfo";
 import JuboList from "@/pages/JuboList/JuboList";
+import MobileWorshipInfo from "./MobileWorshipInfo";
 import IcoSearch from "@/assets/web-icon/search-grey.svg";
 import { getRecentSermons } from "@/services/sermonService";
 
@@ -33,6 +34,15 @@ export default function WordSermon() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "예배 목록";
+
+  // "스마트 주보" 탭은 여기서 JuboList(발행 목록) 화면을 보여줄 뿐 전용 모바일 화면이
+  // 없다 — 모바일에서는 실제 모바일 화면(MobileJubo)을 가진 /주보로 바로 보낸다.
+  useEffect(() => {
+    if (activeTab === "스마트 주보" && window.innerWidth < 768) {
+      void navigate("/주보", { replace: true });
+    }
+  }, [activeTab, navigate]);
+
   const { church } = useChurch();
   const [allSermons, setAllSermons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,8 +95,9 @@ export default function WordSermon() {
 
   return (
     <div>
-      {/* Hero */}
-      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
+      {/* Hero — 모바일은 흰 배경 + 제목만 */}
+      <h1 className="md:hidden px-5 pt-4.5 pb-2 text-sub-tit-3 font-bold text-grey-11">예배·방송</h1>
+      <div className="hidden md:flex relative h-[150px] bg-blue-9 items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-4 pb-6 md:px-8 md:pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">예배·방송</h1>
@@ -235,9 +246,14 @@ export default function WordSermon() {
       )}
 
       {activeTab === "예배 안내" && (
-      <div className="flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full">
-        <WorshipInfo />
-      </div>
+        <>
+          <div className="md:hidden">
+            <MobileWorshipInfo />
+          </div>
+          <div className="hidden md:block flex-1 max-w-[1400px] mx-auto px-6 py-10 md:px-12 md:py-12 w-full">
+            <WorshipInfo />
+          </div>
+        </>
       )}
 
       {activeTab === "스마트 주보" && (

@@ -95,8 +95,9 @@ export default function Notice() {
 
   return (
     <>
-      {/* 헤더 */}
-      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden mb-8">
+      {/* 헤더 — 모바일은 흰 배경 + 제목만 */}
+      <h1 className="md:hidden px-5 pt-4.5 pb-2 text-sub-tit-3 font-bold text-grey-11">공지사항</h1>
+      <div className="hidden md:flex relative h-[150px] bg-blue-9 items-end overflow-hidden mb-8">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">공지사항</h1>

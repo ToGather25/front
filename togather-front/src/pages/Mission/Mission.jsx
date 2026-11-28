@@ -82,8 +82,9 @@ export default function Mission() {
         </div>
       )}
 
-      {/* Hero Banner */}
-      <div className="relative h-[150px] bg-blue-9 flex items-end overflow-hidden">
+      {/* Hero Banner — 모바일은 흰 배경 + 제목만 */}
+      <h1 className="md:hidden px-5 pt-4.5 pb-2 text-sub-tit-3 font-bold text-grey-11">전도·선교</h1>
+      <div className="hidden md:flex relative h-[150px] bg-blue-9 items-end overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-10/80 via-blue-9/60 to-blue-7/40" />
         <div className="relative max-w-[1400px] mx-auto px-8 pb-8 w-full">
           <h1 className="text-headline-4 font-bold text-white">전도·선교</h1>
@@ -95,13 +96,13 @@ export default function Mission() {
         className="border-b border-bluegrey-3 bg-white sticky z-40 transition-[top] duration-300 ease-in-out"
         style={{ top: "var(--header-offset)" }}
       >
-        <div className="max-w-[1400px] mx-auto px-8">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8">
           <div className="flex overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setSearchParams({ tab })}
-                className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
+                className={`px-3.5 py-3 text-body-5 md:px-5 md:py-5 md:text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                   activeTab === tab
                     ? "border-blue-8 text-blue-8 font-semibold"
                     : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"

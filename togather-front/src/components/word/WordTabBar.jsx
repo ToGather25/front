@@ -21,7 +21,7 @@ export default function WordTabBar() {
             <button
               key={tabItem.tab}
               onClick={() => setSearchParams({ tab: tabItem.tab })}
-              className={`px-5 py-5 text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
+              className={`px-3.5 py-3 text-body-5 md:px-5 md:py-5 md:text-body-2 whitespace-nowrap border-b-2 transition-colors font-medium ${
                 activeTab === tabItem.tab
                   ? "border-blue-8 text-blue-8 font-semibold"
                   : "border-transparent text-bluegrey-6 hover:text-bluegrey-10"
